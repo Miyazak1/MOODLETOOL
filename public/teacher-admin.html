@@ -1517,6 +1517,38 @@
         return `${(value / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
       }
 
+      function coursePackageTaskKey(course = fields.course.value) {
+        return `ossd-course-package-task:${String(course || "").toUpperCase()}`;
+      }
+
+      function createCoursePackageTaskId() {
+        const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const random = window.crypto?.randomUUID ? window.crypto.randomUUID().slice(0, 8) : Math.random().toString(16).slice(2, 10);
+        return `${stamp}-${random}`;
+      }
+
+      function rememberCoursePackageTask(task) {
+        if (!task?.course || !task?.importId) return;
+        localStorage.setItem(
+          coursePackageTaskKey(task.course),
+          JSON.stringify({
+            course: task.course,
+            importId: task.importId,
+            filename: task.filename || "",
+            status: task.status || "",
+            updatedAt: task.updatedAt || new Date().toISOString(),
+          }),
+        );
+      }
+
+      function readRememberedCoursePackageTask(course = fields.course.value) {
+        try {
+          return JSON.parse(localStorage.getItem(coursePackageTaskKey(course)) || "null");
+        } catch {
+          return null;
+        }
+      }
+
       function setCoursePackageStatus({ title, detail = "", percent = null, showProgress = false, error = false }) {
         coursePackageStatus.hidden = false;
         coursePackageStatusTitle.textContent = title;
@@ -1528,6 +1560,72 @@
         } else {
           coursePackageProgressBar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
         }
+      }
+
+      function renderCoursePackageTaskStatus(task) {
+        if (!task) return;
+        rememberCoursePackageTask(task);
+        const total = task.totalBytes || 0;
+        const loaded = task.bytesReceived || 0;
+        if (task.status === "uploading") {
+          setCoursePackageStatus({
+            title: `正在上传 ${task.filename || "整课 ZIP"}`,
+            detail: total
+              ? `服务器已收到 ${formatBytes(loaded)} / ${formatBytes(total)} (${task.percent || 0}%)。刷新页面会中断浏览器正在发送的上传。`
+              : `服务器已收到 ${formatBytes(loaded)}。刷新页面会中断浏览器正在发送的上传。`,
+            percent: task.percent || 0,
+            showProgress: true,
+          });
+          return;
+        }
+        if (task.status === "processing") {
+          setCoursePackageStatus({
+            title: `服务器正在处理 ${task.filename || "整课 ZIP"}`,
+            detail: "上传已到服务器，正在解压、扫描和生成预览。",
+            percent: 100,
+            showProgress: true,
+          });
+          return;
+        }
+        if (task.status === "complete") {
+          setCoursePackageStatus({
+            title: "最近一次上传已生成预览",
+            detail: `已扫描 ${task.summary?.total || task.review?.operations?.length || 0} 个导入项。确认无误后点击“确认导入到当前课程”。`,
+            percent: 100,
+            showProgress: true,
+          });
+          if (task.review) {
+            currentCoursePackageImport = task.review;
+            coursePackageCommitButton.disabled = false;
+            renderCoursePackagePreview(task.review);
+          }
+          return;
+        }
+        if (task.status === "failed") {
+          setCoursePackageStatus({
+            title: "最近一次上传未完成",
+            detail: task.error || "上传连接已中断或服务器处理失败，请重新选择文件上传。",
+            error: true,
+          });
+        }
+      }
+
+      async function restoreCoursePackageTask({ writeOutput = false } = {}) {
+        const remembered = readRememberedCoursePackageTask();
+        if (!remembered?.importId || !adminAuthenticated) return null;
+        const params = new URLSearchParams({
+          course: fields.course.value,
+          importId: remembered.importId,
+        });
+        const response = await fetch(`/api/admin/course-package/status?${params.toString()}`, { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.ok && data.task) {
+          renderCoursePackageTaskStatus(data.task);
+          if (writeOutput) write(data);
+          return data.task;
+        }
+        if (writeOutput) write(data);
+        return null;
       }
 
       function uploadBinaryWithProgress(url, file, onProgress) {
@@ -1700,6 +1798,7 @@
           await readUsers({ writeOutput: false });
           await readCourseLifecycle({ writeOutput: false });
           await readCourseLifecycleJobs({ writeOutput: false });
+          await restoreCoursePackageTask({ writeOutput: false });
           write(`已登录：${data.username}`);
         }
         return data;
@@ -1721,6 +1820,7 @@
           await readUsers({ writeOutput: false });
           await readCourseLifecycle({ writeOutput: false });
           await readCourseLifecycleJobs({ writeOutput: false });
+          await restoreCoursePackageTask({ writeOutput: false });
         }
         write(data);
       }
@@ -2056,13 +2156,21 @@
         coursePackageCommitButton.disabled = true;
         coursePackageUploadButton.disabled = true;
         coursePackagePanel.hidden = true;
+        const importId = createCoursePackageTaskId();
         const params = new URLSearchParams({
           course: fields.course.value,
           filename: file.name,
+          importId,
+        });
+        rememberCoursePackageTask({
+          course: fields.course.value,
+          importId,
+          filename: file.name,
+          status: "uploading",
         });
         setCoursePackageStatus({
           title: `正在上传 ${file.name}`,
-          detail: `已上传 0 B / ${formatBytes(file.size)}。大文件上传期间请不要刷新页面。`,
+          detail: `已上传 0 B / ${formatBytes(file.size)}。上传时刷新页面会中断浏览器正在发送的数据。`,
           percent: 0,
           showProgress: true,
         });
@@ -2070,6 +2178,12 @@
         try {
           const data = await uploadBinaryWithProgress(`/api/admin/course-package/upload?${params.toString()}`, file, (loaded, total) => {
             const percent = total ? Math.round((loaded / total) * 100) : 0;
+            rememberCoursePackageTask({
+              course: fields.course.value,
+              importId,
+              filename: file.name,
+              status: "uploading",
+            });
             setCoursePackageStatus({
               title: `正在上传 ${file.name}`,
               detail: `已上传 ${formatBytes(loaded)} / ${formatBytes(total)} (${percent}%)。上传完成后服务器会继续解压和扫描。`,
@@ -2083,9 +2197,21 @@
             percent: 100,
             showProgress: true,
           });
+          rememberCoursePackageTask({
+            course: fields.course.value,
+            importId: data.importId || importId,
+            filename: file.name,
+            status: "complete",
+          });
           write(data);
           if (data.ok) renderCoursePackagePreview(data);
         } catch (error) {
+          rememberCoursePackageTask({
+            course: fields.course.value,
+            importId,
+            filename: file.name,
+            status: "failed",
+          });
           setCoursePackageStatus({
             title: "上传失败",
             detail: error instanceof Error ? error.message : String(error),
@@ -2243,6 +2369,7 @@
         renderCourseLifecycle(courseLifecycleData);
         loadSelectedCourseManifest()
           .then(renderCurrentCourseUploadTasks)
+          .then(() => restoreCoursePackageTask({ writeOutput: false }))
           .catch((error) => write(`Error: ${error.message}`));
       });
       fields.unit.addEventListener("change", populateLessonOptions);

@@ -4,6 +4,7 @@ import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync
 import { basename, dirname, extname, join, normalize, relative, resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { pipeline } from "node:stream/promises";
+import { Transform } from "node:stream";
 import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 
 const projectRoot = resolve(import.meta.dirname);
@@ -60,6 +61,7 @@ const allowedExtensionsByType = {
 };
 const lifecycleJobs = new Map();
 const loginFailures = new Map();
+const coursePackageTasks = new Map();
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -1076,13 +1078,13 @@ function setSessionCookie(res, username) {
   const secure = adminCookieSecure ? "; Secure" : "";
   res.setHeader(
     "Set-Cookie",
-    `${adminSessionCookie}=${encodeURIComponent(token)}; Path=/api/admin; HttpOnly; SameSite=Strict; Max-Age=${adminSessionMaxAgeSeconds}${secure}`,
+    `${adminSessionCookie}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${adminSessionMaxAgeSeconds}${secure}`,
   );
 }
 
 function clearSessionCookie(res) {
   const secure = adminCookieSecure ? "; Secure" : "";
-  res.setHeader("Set-Cookie", `${adminSessionCookie}=; Path=/api/admin; HttpOnly; SameSite=Strict; Max-Age=0${secure}`);
+  res.setHeader("Set-Cookie", `${adminSessionCookie}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${secure}`);
 }
 
 function loginConfigured() {
@@ -1984,6 +1986,114 @@ function coursePackageReviewPath(course, importId) {
   return ensureInside(coursePackageDir(course, importId), join(coursePackageDir(course, importId), "review.json"));
 }
 
+function coursePackageStatusPath(course, importId) {
+  return ensureInside(coursePackageDir(course, importId), join(coursePackageDir(course, importId), "status.json"));
+}
+
+function coursePackageTaskKey(course, importId) {
+  return `${safeSegment(course).toUpperCase()}:${safeSegment(importId)}`;
+}
+
+function readJsonFileSyncSafe(path) {
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function readCoursePackageTask(course, importId) {
+  const safeCourse = safeSegment(course).toUpperCase();
+  const safeImportId = safeSegment(importId);
+  if (!safeImportId) return null;
+  const key = coursePackageTaskKey(safeCourse, safeImportId);
+  const cached = coursePackageTasks.get(key);
+  if (cached) return cached;
+
+  const status = readJsonFileSyncSafe(coursePackageStatusPath(safeCourse, safeImportId));
+  if (status) {
+    coursePackageTasks.set(key, status);
+    return status;
+  }
+
+  const review = readJsonFileSyncSafe(coursePackageReviewPath(safeCourse, safeImportId));
+  if (!review) return null;
+  const restored = {
+    ok: true,
+    course: safeCourse,
+    importId: safeImportId,
+    status: "complete",
+    phase: "ready",
+    percent: 100,
+    summary: review.summary,
+    review,
+    updatedAt: review.generatedAt || new Date().toISOString(),
+  };
+  coursePackageTasks.set(key, restored);
+  return restored;
+}
+
+function writeCoursePackageTask(course, importId, patch) {
+  const safeCourse = safeSegment(course).toUpperCase();
+  const safeImportId = safeSegment(importId);
+  const key = coursePackageTaskKey(safeCourse, safeImportId);
+  const previous = coursePackageTasks.get(key) || readJsonFileSyncSafe(coursePackageStatusPath(safeCourse, safeImportId)) || {};
+  const next = {
+    ...previous,
+    ok: patch.status !== "failed",
+    course: safeCourse,
+    importId: safeImportId,
+    ...patch,
+    updatedAt: new Date().toISOString(),
+  };
+  mkdirSync(coursePackageDir(safeCourse, safeImportId), { recursive: true });
+  writeJsonFile(coursePackageStatusPath(safeCourse, safeImportId), next);
+  coursePackageTasks.set(key, next);
+  return next;
+}
+
+async function latestCoursePackageTasks(course, limit = 5) {
+  const packagesRoot = ensureInside(courseRoot(course), join(courseRoot(course), "_admin_uploads", "course-packages"));
+  if (!existsSync(packagesRoot)) return [];
+  const entries = await readdir(packagesRoot, { withFileTypes: true });
+  const tasks = entries
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => readCoursePackageTask(course, entry.name))
+    .filter(Boolean)
+    .sort((a, b) => String(b.updatedAt || "").localeCompare(String(a.updatedAt || "")));
+  return tasks.slice(0, limit);
+}
+
+async function writeRequestToFileWithProgress(req, targetPath, { course, importId, contentLength }) {
+  let bytesReceived = 0;
+  let lastWriteAt = 0;
+  const progress = new Transform({
+    transform(chunk, encoding, callback) {
+      bytesReceived += chunk.length;
+      const now = Date.now();
+      if (now - lastWriteAt > 1000 || bytesReceived === contentLength) {
+        lastWriteAt = now;
+        writeCoursePackageTask(course, importId, {
+          status: "uploading",
+          phase: "uploading",
+          bytesReceived,
+          totalBytes: contentLength,
+          percent: contentLength ? Math.round((bytesReceived / contentLength) * 100) : null,
+        });
+      }
+      callback(null, chunk);
+    },
+  });
+  await pipeline(req, progress, createWriteStream(targetPath));
+  writeCoursePackageTask(course, importId, {
+    status: "processing",
+    phase: "extracting",
+    bytesReceived,
+    totalBytes: contentLength,
+    percent: 100,
+  });
+}
+
 async function packageContentRoot(extractRoot) {
   const entries = await readdir(extractRoot, { withFileTypes: true });
   const visible = entries.filter((entry) => !entry.name.startsWith("."));
@@ -2829,21 +2939,59 @@ async function handleAdminApi(req, res) {
       }
       const originalFilename = requestUrl.searchParams.get("filename") || "course-package.zip";
       if (extname(originalFilename).toLowerCase() !== ".zip") throw new Error("Course package upload must be a .zip file.");
-      const importId = coursePackageId();
+      const importId = safeSegment(requestUrl.searchParams.get("importId") || coursePackageId());
       const packageDir = coursePackageDir(course, importId);
       const sourceZip = ensureInside(packageDir, join(packageDir, safeSegment(originalFilename)));
       await mkdir(dirname(sourceZip), { recursive: true });
-      await pipeline(req, createWriteStream(sourceZip));
-      const review = await createCoursePackageReview({ course, sourceZip, originalFilename, importId });
-      await appendAdminHistory(course, {
-        actor: adminActor(req),
-        action: "course-package-upload-preview",
-        importId: review.importId,
+      writeCoursePackageTask(course, importId, {
+        status: "uploading",
+        phase: "uploading",
         filename: originalFilename,
-        bytes: contentLength,
-        summary: review.summary,
+        bytesReceived: 0,
+        totalBytes: contentLength,
+        percent: 0,
+        startedAt: new Date().toISOString(),
       });
-      sendJson(res, 200, review);
+      try {
+        await writeRequestToFileWithProgress(req, sourceZip, { course, importId, contentLength });
+        const review = await createCoursePackageReview({ course, sourceZip, originalFilename, importId });
+        writeCoursePackageTask(course, importId, {
+          status: "complete",
+          phase: "ready",
+          percent: 100,
+          summary: review.summary,
+          review,
+        });
+        await appendAdminHistory(course, {
+          actor: adminActor(req),
+          action: "course-package-upload-preview",
+          importId: review.importId,
+          filename: originalFilename,
+          bytes: contentLength,
+          summary: review.summary,
+        });
+        sendJson(res, 200, review);
+      } catch (error) {
+        writeCoursePackageTask(course, importId, {
+          status: "failed",
+          phase: "failed",
+          error: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
+      }
+      return true;
+    }
+
+    if (requestUrl.pathname === "/api/admin/course-package/status" && req.method === "GET") {
+      const requestedCourse = safeSegment(requestUrl.searchParams.get("course") || course).toUpperCase();
+      const importId = safeSegment(requestUrl.searchParams.get("importId") || "");
+      if (importId) {
+        const task = readCoursePackageTask(requestedCourse, importId);
+        sendJson(res, task ? 200 : 404, task ? { ok: true, task } : { ok: false, error: "Course package task not found." });
+        return true;
+      }
+      const tasks = await latestCoursePackageTasks(requestedCourse);
+      sendJson(res, 200, { ok: true, course: requestedCourse, tasks });
       return true;
     }
 
