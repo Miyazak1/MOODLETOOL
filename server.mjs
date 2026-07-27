@@ -62,6 +62,7 @@ const allowedExtensionsByType = {
 const lifecycleJobs = new Map();
 const loginFailures = new Map();
 const coursePackageTasks = new Map();
+const coursePackageFinalizeTasks = new Map();
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -2196,6 +2197,54 @@ async function mergeCoursePackageChunks({ course, importId, originalFilename, ch
   return review;
 }
 
+function startCoursePackageFinalize({ course, importId, actor }) {
+  const task = readCoursePackageTask(course, importId);
+  if (!task || task.status === "complete") return task;
+  if (!task.chunkTotal || Number(task.chunksReceived || 0) < Number(task.chunkTotal || 0)) return task;
+
+  const key = coursePackageTaskKey(course, importId);
+  if (coursePackageFinalizeTasks.has(key)) {
+    return writeCoursePackageTask(course, importId, {
+      status: "processing",
+      phase: task.phase === "extracting" ? "extracting" : "merging",
+      filename: task.filename,
+      totalBytes: task.totalBytes,
+      chunkTotal: task.chunkTotal,
+      chunksReceived: task.chunksReceived,
+      percent: task.percent || 100,
+    });
+  }
+
+  const promise = mergeCoursePackageChunks({
+    course,
+    importId,
+    originalFilename: task.filename || "course-package.zip",
+    chunkTotal: Number(task.chunkTotal),
+    totalBytes: Number(task.totalBytes || 0),
+    actor,
+  })
+    .catch((error) => {
+      writeCoursePackageTask(course, importId, {
+        status: "failed",
+        phase: "failed",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    })
+    .finally(() => {
+      coursePackageFinalizeTasks.delete(key);
+    });
+  coursePackageFinalizeTasks.set(key, promise);
+  return writeCoursePackageTask(course, importId, {
+    status: "processing",
+    phase: "merging",
+    filename: task.filename,
+    totalBytes: task.totalBytes,
+    chunkTotal: task.chunkTotal,
+    chunksReceived: task.chunksReceived,
+    percent: 100,
+  });
+}
+
 async function packageContentRoot(extractRoot) {
   const entries = await readdir(extractRoot, { withFileTypes: true });
   const visible = entries.filter((entry) => !entry.name.startsWith("."));
@@ -3138,15 +3187,20 @@ async function handleAdminApi(req, res) {
           return true;
         }
 
-        const review = await mergeCoursePackageChunks({
+        const task = startCoursePackageFinalize({
           course,
           importId,
-          originalFilename,
-          chunkTotal,
-          totalBytes,
           actor: adminActor(req),
         });
-        sendJson(res, 200, { ...review, complete: true });
+        sendJson(res, 202, {
+          ok: true,
+          complete: true,
+          processing: true,
+          task,
+          course,
+          importId,
+          filename: originalFilename,
+        });
       } catch (error) {
         writeCoursePackageTask(course, importId, {
           status: "failed",
@@ -3162,7 +3216,14 @@ async function handleAdminApi(req, res) {
       const requestedCourse = safeSegment(requestUrl.searchParams.get("course") || course).toUpperCase();
       const importId = safeSegment(requestUrl.searchParams.get("importId") || "");
       if (importId) {
-        const task = readCoursePackageTask(requestedCourse, importId);
+        let task = readCoursePackageTask(requestedCourse, importId);
+        if (task && task.status !== "complete" && task.status !== "failed" && Number(task.chunksReceived || 0) >= Number(task.chunkTotal || Infinity)) {
+          task = startCoursePackageFinalize({
+            course: requestedCourse,
+            importId,
+            actor: adminActor(req),
+          });
+        }
         sendJson(res, task ? 200 : 404, task ? { ok: true, task } : { ok: false, error: "Course package task not found." });
         return true;
       }

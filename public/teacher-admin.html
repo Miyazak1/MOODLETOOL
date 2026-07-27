@@ -1584,9 +1584,10 @@
           return;
         }
         if (task.status === "processing") {
+          const phase = task.phase === "merging" ? "合并分片" : task.phase === "extracting" ? "解压和扫描" : "处理";
           setCoursePackageStatus({
             title: `服务器正在处理 ${task.filename || "整课 ZIP"}`,
-            detail: "上传已到服务器，正在解压、扫描和生成预览。",
+            detail: `上传已到服务器，正在${phase}。大课包可能需要几分钟，请保持服务运行。`,
             percent: 100,
             showProgress: true,
           });
@@ -1631,6 +1632,24 @@
         }
         if (writeOutput) write(data);
         return null;
+      }
+
+      async function waitForCoursePackageReview(importId) {
+        for (let attempt = 0; attempt < 360; attempt += 1) {
+          const params = new URLSearchParams({
+            course: fields.course.value,
+            importId,
+          });
+          const response = await fetch(`/api/admin/course-package/status?${params.toString()}`, { credentials: "same-origin" });
+          const data = await response.json();
+          if (data.ok && data.task) {
+            renderCoursePackageTaskStatus(data.task);
+            if (data.task.status === "complete" && data.task.review) return data.task.review;
+            if (data.task.status === "failed") throw new Error(data.task.error || "服务器处理整课包失败。");
+          }
+          await sleep(5000);
+        }
+        throw new Error("服务器仍在处理整课包，请稍后刷新后台查看任务状态。");
       }
 
       function uploadBinaryWithProgress(url, file, onProgress) {
@@ -2198,7 +2217,7 @@
         const restoredTask = await restoreCoursePackageTask({ writeOutput: false });
         let startChunk = 0;
         if (restoredTask?.importId === importId && restoredTask.filename === file.name && Number(restoredTask.totalBytes || 0) === file.size) {
-          startChunk = Math.max(0, Math.min(chunkTotal - 1, Number(restoredTask.chunksReceived || 0)));
+          startChunk = Math.max(0, Math.min(chunkTotal, Number(restoredTask.chunksReceived || 0)));
         }
         rememberCoursePackageTask({
           course: fields.course.value,
@@ -2274,13 +2293,16 @@
               showProgress: true,
             });
             if (data.complete) {
-              finalData = data;
+              finalData = data.processing ? await waitForCoursePackageReview(importId) : data;
               break;
             }
           }
           if (!finalData) {
             const task = await restoreCoursePackageTask({ writeOutput: false });
             finalData = task?.review || currentCoursePackageImport;
+          }
+          if (finalData?.processing || !finalData?.operations) {
+            finalData = await waitForCoursePackageReview(importId);
           }
           if (!finalData?.ok) throw new Error("所有分片已上传，但服务器没有返回导入预览。请刷新任务状态。");
           setCoursePackageStatus({
