@@ -1,0 +1,79 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.636Z",
+  "course": {
+    "code": "MPM1D",
+    "title": "Principles of Mathematics, Grade 9, Academic",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MPM1D\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 4,
+    "unitPlans": 0,
+    "lessonPlanExpected": 4,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Number Sense and Algebra"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Linear Relations and Linear Equations"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Analytic Geometry"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Measurement and Geometry"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 4,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

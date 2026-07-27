@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.586Z",
+  "course": {
+    "code": "BBB4M",
+    "title": "BBB4M · International Business Fundamentals",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\BBB4M\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 29,
+    "unitPlans": 4,
+    "lessonPlanExpected": 29,
+    "lessonPlans": 29,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [],
+    "missingLessonPlans": [],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 29,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

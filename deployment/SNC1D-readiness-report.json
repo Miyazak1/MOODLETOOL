@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.614Z",
+  "course": {
+    "code": "SNC1D",
+    "title": "SNC1D · Science",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SNC1D\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 1,
+    "lessons": 1,
+    "unitPlans": 0,
+    "lessonPlanExpected": 1,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 1,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Textbook Reference"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U1L1",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Textbook Reference"
+      }
+    ],
+    "textsNeedingReview": [
+      {
+        "id": "grade-9-on-science-textbook",
+        "title": "Grade 9 ON Science Textbook (McGraw-Hill Ryerson)",
+        "author": "McGraw-Hill Ryerson",
+        "notes": "Detected as a Moodle Book container in SNC1D; local downloadable textbook file has not been added."
+      }
+    ],
+    "textsMissingDownload": [
+      {
+        "id": "grade-9-on-science-textbook",
+        "title": "Grade 9 ON Science Textbook (McGraw-Hill Ryerson)",
+        "author": "McGraw-Hill Ryerson",
+        "notes": "Detected as a Moodle Book container in SNC1D; local downloadable textbook file has not been added."
+      }
+    ],
+    "linkOnlyTexts": [
+      {
+        "id": "grade-9-on-science-textbook",
+        "title": "Grade 9 ON Science Textbook (McGraw-Hill Ryerson)",
+        "author": "McGraw-Hill Ryerson",
+        "notes": "Detected as a Moodle Book container in SNC1D; local downloadable textbook file has not been added."
+      }
+    ],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 1,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

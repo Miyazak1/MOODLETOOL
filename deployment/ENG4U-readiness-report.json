@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.589Z",
+  "course": {
+    "code": "ENG4U",
+    "title": "ENG4U · English",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG4U\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 26,
+    "unitPlans": 4,
+    "lessonPlanExpected": 26,
+    "lessonPlans": 26,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [],
+    "missingLessonPlans": [],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 26,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

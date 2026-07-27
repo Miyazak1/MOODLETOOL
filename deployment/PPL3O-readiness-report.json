@@ -1,0 +1,151 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.641Z",
+  "course": {
+    "code": "PPL3O",
+    "title": "Healthy Active Living Education, Grade 11, Open",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\PPL3O\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 16,
+    "unitPlans": 0,
+    "lessonPlanExpected": 16,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Introduction to Health and Healthy Active Living"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Introduction to Health Growth and Sexuality"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Mental Health and Stress Management"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Safety and Decision Making"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Introduction to Health"
+      },
+      {
+        "id": "U01L02",
+        "unit": 1,
+        "lesson": 2,
+        "title": "Why Exercise?"
+      },
+      {
+        "id": "U01L03",
+        "unit": 1,
+        "lesson": 3,
+        "title": "Injury Prevention"
+      },
+      {
+        "id": "U01L04",
+        "unit": 1,
+        "lesson": 4,
+        "title": "Types of Exercise"
+      },
+      {
+        "id": "U01L05",
+        "unit": 1,
+        "lesson": 5,
+        "title": "Transferable Movement"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Infertility in Men"
+      },
+      {
+        "id": "U02L02",
+        "unit": 2,
+        "lesson": 2,
+        "title": "Infertility in Women"
+      },
+      {
+        "id": "U02L03",
+        "unit": 2,
+        "lesson": 3,
+        "title": "The Female Athlete"
+      },
+      {
+        "id": "U02L04",
+        "unit": 2,
+        "lesson": 4,
+        "title": "Healthy Relationships"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Mental Health and Stress"
+      },
+      {
+        "id": "U03L02",
+        "unit": 3,
+        "lesson": 2,
+        "title": "Defence Mechanisms and Positive Strategies"
+      },
+      {
+        "id": "U03L03",
+        "unit": 3,
+        "lesson": 3,
+        "title": "Types of Mental Illnesses"
+      },
+      {
+        "id": "U03L04",
+        "unit": 3,
+        "lesson": 4,
+        "title": "Seeking Help"
+      },
+      {
+        "id": "U03L05",
+        "unit": 3,
+        "lesson": 5,
+        "title": "Managing Stress for Life"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Accidents and Risks"
+      },
+      {
+        "id": "U04L02",
+        "unit": 4,
+        "lesson": 2,
+        "title": "Drug Use and Risks"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 16,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

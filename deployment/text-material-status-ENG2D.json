@@ -1,0 +1,419 @@
+{
+  "generatedAt": "2026-07-24T09:34:02.683Z",
+  "totals": {
+    "courses": 1,
+    "coursesWithTexts": 1,
+    "textEntries": 12,
+    "downloadableTexts": 12,
+    "missingDownloadableTexts": 0
+  },
+  "courses": [
+    {
+      "course": "ENG2D",
+      "title": "English, Grade 10, Academic",
+      "textEntries": 12,
+      "downloadableTexts": 12,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 21,
+      "moodleLinkedTexts": 0,
+      "texts": [
+        {
+          "id": "othello",
+          "title": "Othello",
+          "author": "William Shakespeare",
+          "units": [
+            4
+          ],
+          "lessons": [
+            "U04L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Core drama text for ENG2D Unit 4.",
+          "materials": [
+            {
+              "label": "Othello_Project_Gutenberg_1531.txt",
+              "type": "txt",
+              "path": "texts/othello/Othello_Project_Gutenberg_1531.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 175829
+            },
+            {
+              "label": "The Play: \"Othello\" by William Shakespeare",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U04L01-466-c53b5227e5/c53b5227e5-Othello-Text.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 2111416
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "lady-or-the-tiger",
+          "title": "The Lady or the Tiger?",
+          "author": "Frank R. Stockton",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Detected from ENG2D Unit 1 resource title.",
+          "materials": [
+            {
+              "label": "The_Lady_or_the_Tiger_Wikisource.txt",
+              "type": "txt",
+              "path": "texts/lady-or-the-tiger/The_Lady_or_the_Tiger_Wikisource.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 15704
+            },
+            {
+              "label": "Short Story: \"The Lady or the Tiger?\" by Frank R. Stockton",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U01L01-387-fdec11f698/fdec11f698-The-Lady-or-the-Tiger-Frank-R-Stockton.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 86288
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "the-interlopers",
+          "title": "The Interlopers",
+          "author": "Saki",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Detected from ENG2D Unit 1 resource title.",
+          "materials": [
+            {
+              "label": "The_Interlopers_Wikisource.txt",
+              "type": "txt",
+              "path": "texts/the-interlopers/The_Interlopers_Wikisource.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 12252
+            },
+            {
+              "label": "Short Story + Activity: \"The Interlopers\" by Saki",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U01L01-390-e54b328a9c/e54b328a9c-The-Interlopers-Short-Story-and-Activity-by-Saki.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 4914633
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "the-rocking-horse-winner",
+          "title": "The Rocking Horse Winner",
+          "author": "D.H. Lawrence",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Detected from ENG2D Unit 1 resource title.",
+          "materials": [
+            {
+              "label": "The_Rocking_Horse_Winner_Pressbooks.txt",
+              "type": "txt",
+              "path": "texts/the-rocking-horse-winner/The_Rocking_Horse_Winner_Pressbooks.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 31391
+            },
+            {
+              "label": "Short Story + Activity: \"The Rocking Horse Winner\" by D.H. Lawrence",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U01L01-392-eb47d84f70/eb47d84f70-The-Rocking-Horse-Winner-Activity.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 1293010
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "myth-of-prometheus",
+          "title": "The Myth of Prometheus",
+          "author": "Classical myth",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Public domain source tradition",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Detected from ENG2D Unit 1 mythology resources.",
+          "materials": [
+            {
+              "label": "Prometheus_Project_Gutenberg_9313.txt",
+              "type": "txt",
+              "path": "texts/myth-of-prometheus/Prometheus_Project_Gutenberg_9313.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 7218
+            },
+            {
+              "label": "Myth: \"The Myth of Prometheus\"",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U01L01-395-654d47f21e/654d47f21e-The-Myth-of-Prometheus.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 128125
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "daedalus-and-icarus",
+          "title": "The Story of Daedalus and Icarus",
+          "author": "Classical myth",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Public domain source tradition",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Detected from ENG2D Unit 1 mythology resources.",
+          "materials": [
+            {
+              "label": "Icarus_and_Daedalus_Project_Gutenberg_9313.txt",
+              "type": "txt",
+              "path": "texts/daedalus-and-icarus/Icarus_and_Daedalus_Project_Gutenberg_9313.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 4094
+            },
+            {
+              "label": "Myth: \"The Story of Daedalus and Icarus\"",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U01L01-398-a6e11f45b7/a6e11f45b7-The-Story-of-Daedalus-and-Icarus.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 25591
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "landscape-with-the-fall-of-icarus",
+          "title": "Landscape With The Fall of Icarus",
+          "author": "William Carlos Williams",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Detected from ENG2D Unit 1 poetry resources.",
+          "materials": [
+            {
+              "label": "Poem: \"Landscape With The Fall of Icarus\" by William Carlos Williams",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U01L01-402-a4a4e06570/a4a4e06570-Landscape-With-The-Fall-of-Icarus-by-William-Carlos-Williams.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 109380
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "queen-elizabeth-address-to-the-troops",
+          "title": "Address to the Troops at Tilbury",
+          "author": "Queen Elizabeth I",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Detected from ENG2D persuasive/speech resource sequence.",
+          "materials": [
+            {
+              "label": "Speech_to_the_Troops_at_Tilbury_Wikisource.txt",
+              "type": "txt",
+              "path": "texts/queen-elizabeth-address-to-the-troops/Speech_to_the_Troops_at_Tilbury_Wikisource.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 1865
+            },
+            {
+              "label": "Speech: Queen Elizabeth I Address to the Troops",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U02L01-410-c3d9da6610/c3d9da6610-Queen-Elizabeth-I-Speech-and-Questions.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 94399
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "i-have-a-dream",
+          "title": "I Have a Dream",
+          "author": "Martin Luther King Jr.",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Detected from ENG2D persuasive/speech resource sequence.",
+          "materials": [
+            {
+              "label": "Speech: \"I Have a Dream\" by Martin Luther King Jr.",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U02L01-413-89cec9ae3f/89cec9ae3f-I-Have-a-Dream-by-Martin-Luther-King-Jr.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 1553041
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "jfk-inaugural-address",
+          "title": "Inaugural Address",
+          "author": "John F. Kennedy",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Detected from ENG2D persuasive/speech resource sequence.",
+          "materials": [
+            {
+              "label": "JFK_Inaugural_Address_Project_Gutenberg_3.txt",
+              "type": "txt",
+              "path": "texts/jfk-inaugural-address/JFK_Inaugural_Address_Project_Gutenberg_3.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 27290
+            },
+            {
+              "label": "Speech: Inaugural Address by President John F. Kennedy",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U02L01-414-6e4f1c9873/6e4f1c9873-Inaugural-Address-by-President-John-F-Kennedy.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 30849
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "pearl-harbor-address",
+          "title": "Pearl Harbor Address to the Nation",
+          "author": "Franklin D. Roosevelt",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Detected from ENG2D persuasive/speech resource sequence.",
+          "materials": [
+            {
+              "label": "Day_of_Infamy_Speech_Project_Gutenberg_21805.txt",
+              "type": "txt",
+              "path": "texts/pearl-harbor-address/Day_of_Infamy_Speech_Project_Gutenberg_21805.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 22720
+            },
+            {
+              "label": "Speech: Pearl Harbor Address to the Nation by Franklin D. Roosevelt",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U02L01-415-0004899e88/0004899e88-Pearl-Harbor-Address-to-the-Nation-by-Franklin-D-Roosevelt.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 87547
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "lord-of-the-flies",
+          "title": "Lord of the Flies",
+          "author": "William Golding",
+          "units": [
+            3
+          ],
+          "lessons": [
+            "U03L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Local Moodle file",
+          "notes": "Core novel for ENG2D Unit 3.",
+          "materials": [
+            {
+              "label": "Novel: \"Lord of the Flies\" by William Golding",
+              "type": "pdf",
+              "path": "localized-moodle-activities/resource/U03L01-432-62dcd6d6de/62dcd6d6de-Lord-of-the-Flies-Text.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 238216
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        }
+      ]
+    }
+  ]
+}

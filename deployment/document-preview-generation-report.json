@@ -1,0 +1,285 @@
+{
+  "generatedAt": "2026-07-22T09:30:07.721Z",
+  "dryRun": true,
+  "officeBin": "dry-run-no-libreoffice",
+  "status": "ok",
+  "totals": {
+    "scanned": 926,
+    "converted": 921,
+    "unchanged": 0,
+    "updated": 926,
+    "failed": 0
+  },
+  "results": [
+    {
+      "course": "BBB4M",
+      "skipped": false,
+      "scanned": 33,
+      "converted": 33,
+      "unchanged": 0,
+      "updated": 33,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "BBI1O",
+      "skipped": false,
+      "scanned": 4,
+      "converted": 4,
+      "unchanged": 0,
+      "updated": 4,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "BOH4M",
+      "skipped": false,
+      "scanned": 37,
+      "converted": 37,
+      "unchanged": 0,
+      "updated": 37,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "CGW4U",
+      "skipped": false,
+      "scanned": 29,
+      "converted": 29,
+      "unchanged": 0,
+      "updated": 29,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "CHC2D",
+      "skipped": false,
+      "scanned": 4,
+      "converted": 4,
+      "unchanged": 0,
+      "updated": 4,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "CHV2O",
+      "skipped": false,
+      "scanned": 5,
+      "converted": 4,
+      "unchanged": 0,
+      "updated": 5,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "ENG3U",
+      "skipped": false,
+      "scanned": 193,
+      "converted": 193,
+      "unchanged": 0,
+      "updated": 193,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "ENG4U",
+      "skipped": false,
+      "scanned": 30,
+      "converted": 30,
+      "unchanged": 0,
+      "updated": 30,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "ESLDO",
+      "skipped": false,
+      "scanned": 42,
+      "converted": 42,
+      "unchanged": 0,
+      "updated": 42,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "ESLEO",
+      "skipped": false,
+      "scanned": 32,
+      "converted": 32,
+      "unchanged": 0,
+      "updated": 32,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "GLC2O",
+      "skipped": false,
+      "scanned": 7,
+      "converted": 7,
+      "unchanged": 0,
+      "updated": 7,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "HFA4U",
+      "skipped": false,
+      "scanned": 33,
+      "converted": 33,
+      "unchanged": 0,
+      "updated": 33,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "HFC3M",
+      "skipped": false,
+      "scanned": 4,
+      "converted": 4,
+      "unchanged": 0,
+      "updated": 4,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "HHS4U",
+      "skipped": false,
+      "scanned": 3,
+      "converted": 3,
+      "unchanged": 0,
+      "updated": 3,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "ICS3U",
+      "skipped": false,
+      "scanned": 31,
+      "converted": 31,
+      "unchanged": 0,
+      "updated": 31,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "LKBDU",
+      "skipped": false,
+      "scanned": 9,
+      "converted": 5,
+      "unchanged": 0,
+      "updated": 9,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "MCR3U",
+      "skipped": false,
+      "scanned": 31,
+      "converted": 31,
+      "unchanged": 0,
+      "updated": 31,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "MCV4U",
+      "skipped": false,
+      "scanned": 22,
+      "converted": 22,
+      "unchanged": 0,
+      "updated": 22,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "MDM4U",
+      "skipped": false,
+      "scanned": 28,
+      "converted": 28,
+      "unchanged": 0,
+      "updated": 28,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "MHF4U",
+      "skipped": false,
+      "scanned": 39,
+      "converted": 39,
+      "unchanged": 0,
+      "updated": 39,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "MPM2D",
+      "skipped": false,
+      "scanned": 33,
+      "converted": 33,
+      "unchanged": 0,
+      "updated": 33,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "SBI3U",
+      "skipped": false,
+      "scanned": 66,
+      "converted": 66,
+      "unchanged": 0,
+      "updated": 66,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "SBI4U",
+      "skipped": false,
+      "scanned": 32,
+      "converted": 32,
+      "unchanged": 0,
+      "updated": 32,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "SCH3U",
+      "skipped": false,
+      "scanned": 47,
+      "converted": 47,
+      "unchanged": 0,
+      "updated": 47,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "SCH4U",
+      "skipped": false,
+      "scanned": 53,
+      "converted": 53,
+      "unchanged": 0,
+      "updated": 53,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "SPH3U",
+      "skipped": false,
+      "scanned": 41,
+      "converted": 41,
+      "unchanged": 0,
+      "updated": 41,
+      "failed": 0,
+      "failures": []
+    },
+    {
+      "course": "SPH4U",
+      "skipped": false,
+      "scanned": 38,
+      "converted": 38,
+      "unchanged": 0,
+      "updated": 38,
+      "failed": 0,
+      "failures": []
+    }
+  ]
+}

@@ -1,0 +1,2054 @@
+{
+  "generatedAt": "2026-07-27T08:55:16.142Z",
+  "sources": {
+    "readiness": "deployment/course-readiness-summary.json",
+    "uploadGap": "deployment/upload-gap-checklist.json",
+    "onlineResources": "deployment/online-resource-readiness.json"
+  },
+  "totals": {
+    "courses": 54,
+    "ready": 0,
+    "needCourseContent": 54,
+    "needPolish": 0,
+    "missingCourseOutlines": 46,
+    "iSpringMissingCourses": 53,
+    "previewQueue": 70,
+    "textReviewItems": 17
+  },
+  "rows": [
+    {
+      "course": "ENG2D",
+      "title": "English, Grade 10, Academic",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 2,
+      "fileResources": 139,
+      "fileIssueEntries": 2,
+      "textReviewItems": 3,
+      "directUploadItems": 10,
+      "reviewItems": 3,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ENG2D_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 311,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。",
+        "生成 Office PDF 预览：2 个。",
+        "补可下载文学文本：3 项。"
+      ]
+    },
+    {
+      "course": "MAP4C",
+      "title": "MAP4C · Foundations for College Mathematics",
+      "units": 1,
+      "lessons": 1,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 1,
+      "missingLessonPlans": 1,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 2,
+      "fileIssueEntries": 2,
+      "textReviewItems": 1,
+      "directUploadItems": 4,
+      "reviewItems": 1,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "MAP4C_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 310,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：1 个。",
+        "补 Lesson Plan：1 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。",
+        "补可下载文学文本：1 项。"
+      ]
+    },
+    {
+      "course": "OLC4O",
+      "title": "Ontario Secondary School Literacy Course, Grade 12, Open",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 6,
+      "fileIssueEntries": 5,
+      "textReviewItems": 9,
+      "directUploadItems": 10,
+      "reviewItems": 9,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "OLC4O_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 310,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。",
+        "补可下载文学文本：9 项。"
+      ]
+    },
+    {
+      "course": "SNC1D",
+      "title": "SNC1D · Science",
+      "units": 1,
+      "lessons": 1,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 1,
+      "missingLessonPlans": 1,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 2,
+      "fileIssueEntries": 2,
+      "textReviewItems": 1,
+      "directUploadItems": 4,
+      "reviewItems": 1,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "SNC1D_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 310,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：1 个。",
+        "补 Lesson Plan：1 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。",
+        "补可下载文学文本：1 项。"
+      ]
+    },
+    {
+      "course": "MTH1W",
+      "title": "Mathematics, Grade 9, De-Streamed",
+      "units": 6,
+      "lessons": 28,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 6,
+      "missingLessonPlans": 28,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 1,
+      "fileResources": 118,
+      "fileIssueEntries": 3,
+      "textReviewItems": 0,
+      "directUploadItems": 36,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "MTH1W_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285.5,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：6 个。",
+        "补 Lesson Plan：28 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。",
+        "生成 Office PDF 预览：1 个。"
+      ]
+    },
+    {
+      "course": "ASM3M",
+      "title": "Media Arts, Grade 11, University/College",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ASM3M_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "AVI1O",
+      "title": "Visual Arts, Grade 9, Open",
+      "units": 5,
+      "lessons": 5,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 5,
+      "missingLessonPlans": 5,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 6,
+      "fileIssueEntries": 6,
+      "textReviewItems": 0,
+      "directUploadItems": 12,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "AVI1O_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：5 个。",
+        "补 Lesson Plan：5 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "AVI2O",
+      "title": "Visual Arts, Grade 10, Open",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "AVI2O_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "AVI3M",
+      "title": "Visual Arts, Grade 11, University/College",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "AVI3M_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "BAF3M",
+      "title": "Financial Accounting Fundamentals, Grade 11, University/College",
+      "units": 5,
+      "lessons": 5,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 5,
+      "missingLessonPlans": 5,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 6,
+      "fileIssueEntries": 6,
+      "textReviewItems": 0,
+      "directUploadItems": 12,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "BAF3M_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：5 个。",
+        "补 Lesson Plan：5 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "BBI2O",
+      "title": "Introduction to Business, Grade 10, Open",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "BBI2O_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "BTT1O",
+      "title": "Information and Communication Technology in Business, Grade 9, Open",
+      "units": 5,
+      "lessons": 5,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 5,
+      "missingLessonPlans": 5,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 35,
+      "fileIssueEntries": 35,
+      "textReviewItems": 0,
+      "directUploadItems": 12,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "BTT1O_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：5 个。",
+        "补 Lesson Plan：5 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "CGC1D",
+      "title": "Issues in Canadian Geography, Grade 9 Academic",
+      "units": 5,
+      "lessons": 8,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 5,
+      "missingLessonPlans": 8,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 107,
+      "fileIssueEntries": 2,
+      "textReviewItems": 0,
+      "directUploadItems": 15,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "CGC1D_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：5 个。",
+        "补 Lesson Plan：8 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "CIA4U",
+      "title": "Analysing Current Economic Issues, Grade 12, University",
+      "units": 8,
+      "lessons": 8,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 8,
+      "missingLessonPlans": 8,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 9,
+      "fileIssueEntries": 9,
+      "textReviewItems": 0,
+      "directUploadItems": 18,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "CIA4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：8 个。",
+        "补 Lesson Plan：8 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "EPS3O",
+      "title": "Presentation and Speaking Skills, Grade 11, Open",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "EPS3O_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "ESLAO",
+      "title": "English as a Second Language, ESL Level 1, Open",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ESLAO_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "ESLBO",
+      "title": "English as a Second Language, ESL Level 2, Open",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ESLBO_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "ESLCO",
+      "title": "English as a Second Language, ESL Level 3, Open",
+      "units": 4,
+      "lessons": 21,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 21,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 22,
+      "fileIssueEntries": 22,
+      "textReviewItems": 0,
+      "directUploadItems": 27,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ESLCO_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：21 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "HFN1O",
+      "title": "Food and Nutrition, Grade 9 or 10",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "HFN1O_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "ICS2O",
+      "title": "Introduction to Computer Studies, Grade 10, Open",
+      "units": 3,
+      "lessons": 31,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 3,
+      "missingLessonPlans": 31,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 75,
+      "fileIssueEntries": 75,
+      "textReviewItems": 0,
+      "directUploadItems": 36,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ICS2O_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：3 个。",
+        "补 Lesson Plan：31 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "ICS4U",
+      "title": "Computer Science, Grade 12, University",
+      "units": 4,
+      "lessons": 26,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 26,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 57,
+      "fileIssueEntries": 57,
+      "textReviewItems": 0,
+      "directUploadItems": 32,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ICS4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：26 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "LKBCU",
+      "title": "International Languages, Simplified Chinese, Level 2, University",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "LKBCU_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "MBF3C",
+      "title": "Foundations for College Mathematics, Grade 11, College",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "MBF3C_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "MPM1D",
+      "title": "Principles of Mathematics, Grade 9, Academic",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "MPM1D_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "PPL1O",
+      "title": "Healthy Active Living Education, Grade 9, Open",
+      "units": 4,
+      "lessons": 12,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 12,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 42,
+      "fileIssueEntries": 42,
+      "textReviewItems": 0,
+      "directUploadItems": 18,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "PPL1O_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：12 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "PPL3O",
+      "title": "Healthy Active Living Education, Grade 11, Open",
+      "units": 4,
+      "lessons": 16,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 16,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 73,
+      "fileIssueEntries": 73,
+      "textReviewItems": 0,
+      "directUploadItems": 22,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "PPL3O_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：16 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "SNC2D",
+      "title": "SNC2D · Science",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 4,
+      "missingLessonPlans": 4,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 5,
+      "textReviewItems": 0,
+      "directUploadItems": 10,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "SNC2D_Course_Outline.docx",
+      "blockers": [
+        "course-outline",
+        "unit-plans",
+        "lesson-plans"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 285,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 Unit Plan：4 个。",
+        "补 Lesson Plan：4 个。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "ESLEO",
+      "title": "ESLEO · ESL Level 5",
+      "units": 4,
+      "lessons": 28,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 67,
+      "fileResources": 133,
+      "fileIssueEntries": 67,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ESLEO_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 175,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。",
+        "生成 Office PDF 预览：67 个。"
+      ]
+    },
+    {
+      "course": "BBB4M",
+      "title": "BBB4M · International Business Fundamentals",
+      "units": 4,
+      "lessons": 29,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 33,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "BBB4M_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "BOH4M",
+      "title": "BOH4M · Business Leadership: Management Fundamentals",
+      "units": 5,
+      "lessons": 32,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 40,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "BOH4M_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "CGW4U",
+      "title": "CGW4U · Canadian and World Issues",
+      "units": 4,
+      "lessons": 25,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 29,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "CGW4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "ENG4U",
+      "title": "ENG4U · English",
+      "units": 4,
+      "lessons": 26,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 30,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ENG4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "ESLDO",
+      "title": "ESLDO · ESL Level 4",
+      "units": 4,
+      "lessons": 38,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 42,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ESLDO_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "HFA4U",
+      "title": "HFA4U · Nutrition and Health",
+      "units": 4,
+      "lessons": 29,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 43,
+      "fileIssueEntries": 10,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "HFA4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "ICS3U",
+      "title": "ICS3U · Introduction to Computer Studies",
+      "units": 4,
+      "lessons": 27,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 31,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "ICS3U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "MCR3U",
+      "title": "MCR3U · Functions",
+      "units": 4,
+      "lessons": 27,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 31,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "MCR3U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "MCV4U",
+      "title": "MCV4U · Calculus and Vectors",
+      "units": 4,
+      "lessons": 18,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 22,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "MCV4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "MDM4U",
+      "title": "MDM4U · Mathematics of Data Management",
+      "units": 4,
+      "lessons": 24,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 28,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "MDM4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "MHF4U",
+      "title": "MHF4U · Advanced Functions",
+      "units": 4,
+      "lessons": 35,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 39,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "MHF4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "MPM2D",
+      "title": "MPM2D · Principles of Mathematics",
+      "units": 4,
+      "lessons": 29,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 33,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "MPM2D_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "SBI3U",
+      "title": "SBI3U · Biology",
+      "units": 5,
+      "lessons": 61,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 267,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "SBI3U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "SBI4U",
+      "title": "SBI4U · Biology",
+      "units": 5,
+      "lessons": 27,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 32,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "SBI4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "SCH3U",
+      "title": "SCH3U · Chemistry",
+      "units": 5,
+      "lessons": 42,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 47,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "SCH3U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "SCH4U",
+      "title": "SCH4U · Chemistry",
+      "units": 5,
+      "lessons": 46,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 51,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "SCH4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "SPH3U",
+      "title": "SPH3U · Physics",
+      "units": 5,
+      "lessons": 36,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 41,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "SPH3U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "SPH4U",
+      "title": "SPH4U · Physics",
+      "units": 5,
+      "lessons": 33,
+      "courseDocuments": 0,
+      "missingCourseOutline": true,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 38,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 2,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "SPH4U_Course_Outline.docx",
+      "blockers": [
+        "course-outline"
+      ],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "blocked-by-content",
+      "priorityScore": 145,
+      "nextActions": [
+        "补 Course Outline：优先从 Moodle 文件 URL 批量导入，或后台上传。",
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "BBI1O",
+      "title": "BBI1O · Introduction to Business",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 1,
+      "missingCourseOutline": false,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 1,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "",
+      "blockers": [],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "needs-course-content",
+      "priorityScore": 45,
+      "nextActions": [
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "CHC2D",
+      "title": "CHC2D · Canadian History since World War I",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 1,
+      "missingCourseOutline": false,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 1,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "",
+      "blockers": [],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "needs-course-content",
+      "priorityScore": 45,
+      "nextActions": [
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "CHV2O",
+      "title": "CHV2O · Civics and Citizenship",
+      "units": 1,
+      "lessons": 3,
+      "courseDocuments": 1,
+      "missingCourseOutline": false,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 1,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "",
+      "blockers": [],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "needs-course-content",
+      "priorityScore": 45,
+      "nextActions": [
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "GLC2O",
+      "title": "GLC2O · Career Studies",
+      "units": 3,
+      "lessons": 3,
+      "courseDocuments": 1,
+      "missingCourseOutline": false,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 7,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 1,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "",
+      "blockers": [],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "needs-course-content",
+      "priorityScore": 45,
+      "nextActions": [
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "HFC3M",
+      "title": "HFC3M · Food and Culture",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 1,
+      "missingCourseOutline": false,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 5,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 1,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "",
+      "blockers": [],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "needs-course-content",
+      "priorityScore": 45,
+      "nextActions": [
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "HHS4U",
+      "title": "HHS4U · Families in Canada",
+      "units": 1,
+      "lessons": 1,
+      "courseDocuments": 1,
+      "missingCourseOutline": false,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 3,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 1,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "",
+      "blockers": [],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "needs-course-content",
+      "priorityScore": 45,
+      "nextActions": [
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "LKBDU",
+      "title": "LKBDU · International Languages, Simplified Chinese",
+      "units": 4,
+      "lessons": 4,
+      "courseDocuments": 1,
+      "missingCourseOutline": false,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 0,
+      "iSpringExpected": 0,
+      "iSpringConnected": "0",
+      "iSpringMissing": true,
+      "previewQueue": 0,
+      "fileResources": 9,
+      "fileIssueEntries": 0,
+      "textReviewItems": 0,
+      "directUploadItems": 1,
+      "reviewItems": 0,
+      "externalItems": 1,
+      "suggestedOutlineFilename": "",
+      "blockers": [],
+      "important": [
+        "ispring",
+        "introduction"
+      ],
+      "status": "needs-course-content",
+      "priorityScore": 45,
+      "nextActions": [
+        "补 iSpring：收集/上传本课程 iSpring ZIP，按 Unit/Lesson 绑定。"
+      ]
+    },
+    {
+      "course": "ENG3U",
+      "title": "English, Grade 11, University",
+      "units": 5,
+      "lessons": 36,
+      "courseDocuments": 1,
+      "missingCourseOutline": false,
+      "missingIntroduction": true,
+      "missingUnitPlans": 0,
+      "missingLessonPlans": 0,
+      "iSpringEntries": 37,
+      "iSpringExpected": 37,
+      "iSpringConnected": "37",
+      "iSpringMissing": false,
+      "previewQueue": 0,
+      "fileResources": 524,
+      "fileIssueEntries": 0,
+      "textReviewItems": 3,
+      "directUploadItems": 1,
+      "reviewItems": 3,
+      "externalItems": 0,
+      "suggestedOutlineFilename": "",
+      "blockers": [],
+      "important": [
+        "introduction"
+      ],
+      "status": "needs-course-content",
+      "priorityScore": 25,
+      "nextActions": [
+        "补可下载文学文本：3 项。"
+      ]
+    }
+  ]
+}

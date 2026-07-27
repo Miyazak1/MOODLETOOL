@@ -1,0 +1,510 @@
+{
+  "generatedAt": "2026-07-24T08:26:50.101Z",
+  "course": "MTH1W",
+  "dryRun": false,
+  "force": true,
+  "rows": 33,
+  "downloads": [
+    {
+      "label": "2D measurement II",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L03-5903-04c3b38d24/index.html",
+      "type": "html",
+      "bytes": 1176,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5903",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5903"
+    },
+    {
+      "label": "2D measurement III",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L03-5904-065bd3c852/index.html",
+      "type": "html",
+      "bytes": 1178,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5904",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5904"
+    },
+    {
+      "label": "2D measurement IV",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L03-5905-836847efa9/index.html",
+      "type": "html",
+      "bytes": 1176,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5905",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5905"
+    },
+    {
+      "label": "3D measurement I",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L04-5907-5dcdaf8983/index.html",
+      "type": "html",
+      "bytes": 1174,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5907",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5907"
+    },
+    {
+      "label": "3D measurement II",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L04-5908-eef2784900/index.html",
+      "type": "html",
+      "bytes": 1176,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5908",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5908"
+    },
+    {
+      "label": "3D measurement III",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L04-5909-f255e7576b/index.html",
+      "type": "html",
+      "bytes": 1178,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5909",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5909"
+    },
+    {
+      "label": "3D measurement IV",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L04-5910-0ce5770366/index.html",
+      "type": "html",
+      "bytes": 1176,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5910",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5910"
+    },
+    {
+      "label": "Optimization I",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L05-5912-cfb5c929f3/index.html",
+      "type": "html",
+      "bytes": 1170,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5912",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5912"
+    },
+    {
+      "label": "Optimization II",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L05-5913-b1a7eb5d2b/index.html",
+      "type": "html",
+      "bytes": 1172,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5913",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5913"
+    },
+    {
+      "label": "Optimization III",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L05-5914-8cb1db0680/index.html",
+      "type": "html",
+      "bytes": 1174,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5914",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5914"
+    },
+    {
+      "label": "Optimization IV",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L05-5915-18e8984dde/index.html",
+      "type": "html",
+      "bytes": 1172,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5915",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5915"
+    },
+    {
+      "label": "PPT Lessons",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U04L06-5916-1a222bb10c/index.html",
+      "type": "html",
+      "bytes": 302378,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=5916",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U04L06-5916-1a222bb10c/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Geometric-Relationships-I.pptx",
+          "type": "pptx",
+          "path": "localized-moodle-activities/folder/U04L06-5916-1a222bb10c/files/b94e02573c-Geometric-Relationships-I.pptx",
+          "href": "files/b94e02573c-Geometric-Relationships-I.pptx",
+          "bytes": 3583915,
+          "source": "https://www.esunnybrook.com/pluginfile.php/6001/mod_folder/content/0/Geometric-Relationships-I.pptx?forcedownload=1"
+        },
+        {
+          "label": "Geometric-Relationships-II.pptx",
+          "type": "pptx",
+          "path": "localized-moodle-activities/folder/U04L06-5916-1a222bb10c/files/42db8b917e-Geometric-Relationships-II.pptx",
+          "href": "files/42db8b917e-Geometric-Relationships-II.pptx",
+          "bytes": 3760346,
+          "source": "https://www.esunnybrook.com/pluginfile.php/6001/mod_folder/content/0/Geometric-Relationships-II.pptx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Python In 5 Problems | Introduction",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U05L01-5917-3dcfb1a5ec/index.html",
+      "type": "html",
+      "bytes": 1212,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5917",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5917"
+    },
+    {
+      "label": "Python In 5 Problems | Introduction",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/page/U05L01-5918-f855f13071/index.html",
+      "type": "html",
+      "bytes": 301640,
+      "source": "https://www.esunnybrook.com/mod/page/view.php?id=5918",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/page/U05L01-5918-f855f13071/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Python In 5 Problems | Problem #1",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U05L02-5919-04cd27e3a1/index.html",
+      "type": "html",
+      "bytes": 1208,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5919",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5919"
+    },
+    {
+      "label": "Python In 5 Problems | Problem #1",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/page/U05L02-5920-9de2bdef69/index.html",
+      "type": "html",
+      "bytes": 301642,
+      "source": "https://www.esunnybrook.com/mod/page/view.php?id=5920",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/page/U05L02-5920-9de2bdef69/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Python In 5 Problems | Problem #2",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U05L03-5921-55be29f3bf/index.html",
+      "type": "html",
+      "bytes": 1208,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5921",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5921"
+    },
+    {
+      "label": "Python In 5 Problems | Problem #2",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/page/U05L03-5922-4a5817221d/index.html",
+      "type": "html",
+      "bytes": 301561,
+      "source": "https://www.esunnybrook.com/mod/page/view.php?id=5922",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/page/U05L03-5922-4a5817221d/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Python In 5 Problems | Problem #3",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U05L04-5923-33df2c7e0b/index.html",
+      "type": "html",
+      "bytes": 1208,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5923",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5923"
+    },
+    {
+      "label": "Python In 5 Problems | Problem #3",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/page/U05L04-5924-795cedba48/index.html",
+      "type": "html",
+      "bytes": 301911,
+      "source": "https://www.esunnybrook.com/mod/page/view.php?id=5924",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/page/U05L04-5924-795cedba48/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Python In 5 Problems | Problem #4",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U05L05-5925-6c2f6dd83c/index.html",
+      "type": "html",
+      "bytes": 1208,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5925",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5925"
+    },
+    {
+      "label": "Python In 5 Problems | Problem #4",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/page/U05L05-5926-c268099e7f/index.html",
+      "type": "html",
+      "bytes": 301902,
+      "source": "https://www.esunnybrook.com/mod/page/view.php?id=5926",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/page/U05L05-5926-c268099e7f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Python In 5 Problems | Problem #5",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U05L06-5927-3f32a3f481/index.html",
+      "type": "html",
+      "bytes": 1208,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5927",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5927"
+    },
+    {
+      "label": "Python In 5 Problems | Problem #5",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/page/U05L06-5928-9d982b904a/index.html",
+      "type": "html",
+      "bytes": 301902,
+      "source": "https://www.esunnybrook.com/mod/page/view.php?id=5928",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/page/U05L06-5928-9d982b904a/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Python In 5 Problems | Final Notes",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U05L07-5929-297c49e326/index.html",
+      "type": "html",
+      "bytes": 1210,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5929",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5929"
+    },
+    {
+      "label": "Python In 5 Problems | Final Notes",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/page/U05L07-5930-2834e02057/index.html",
+      "type": "html",
+      "bytes": 301648,
+      "source": "https://www.esunnybrook.com/mod/page/view.php?id=5930",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/page/U05L07-5930-2834e02057/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Reference Guide",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U05L07-5931-5dfeaa1da8/index.html",
+      "type": "html",
+      "bytes": 1172,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=5931",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/mod/url/view.php?id=5931"
+    },
+    {
+      "label": "Learning Log (AAL): Financial Literacy",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U06L01-5932-9adbcbb36d/index.html",
+      "type": "html",
+      "bytes": 1697,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5932",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U06L01-5932-9adbcbb36d/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Learning-Log.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U06L01-5932-9adbcbb36d/files/3598630aad-Learning-Log.docx",
+          "href": "files/3598630aad-Learning-Log.docx",
+          "bytes": 63636,
+          "source": "https://www.esunnybrook.com/pluginfile.php/6017/mod_assign/introattachment/0/Learning-Log.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Exit Ticket (AAL)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U06L01-5933-25782fe044/index.html",
+      "type": "html",
+      "bytes": 1645,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5933",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U06L01-5933-25782fe044/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Exit-Ticket.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U06L01-5933-25782fe044/files/3e163cf6b7-Exit-Ticket.pdf",
+          "href": "files/3e163cf6b7-Exit-Ticket.pdf",
+          "bytes": 282897,
+          "source": "https://www.esunnybrook.com/pluginfile.php/6018/mod_assign/introattachment/0/Exit-Ticket.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Unit Test 5 - Financial Literacy - AOL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U06L01-5958-001150f915/index.html",
+      "type": "html",
+      "bytes": 1579,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5958",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U06L01-5958-001150f915/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "TEST-5-FINANCIAL-LITERACY-REVISED.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U06L01-5958-001150f915/files/f0a85b40c6-TEST-5-FINANCIAL-LITERACY-REVISED.docx",
+          "href": "files/f0a85b40c6-TEST-5-FINANCIAL-LITERACY-REVISED.docx",
+          "bytes": 74588,
+          "source": "https://www.esunnybrook.com/pluginfile.php/6043/mod_assign/introattachment/0/TEST-5-FINANCIAL-LITERACY-REVISED.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Assignment 5: Financial Literacy - AOL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U06L01-5966-4238bd88c4/index.html",
+      "type": "html",
+      "bytes": 1536,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5966",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U06L01-5966-4238bd88c4/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Assignment-5.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U06L01-5966-4238bd88c4/files/1477aab020-Assignment-5.docx",
+          "href": "files/1477aab020-Assignment-5.docx",
+          "bytes": 441870,
+          "source": "https://www.esunnybrook.com/pluginfile.php/6051/mod_assign/introattachment/0/Assignment-5.docx?forcedownload=1"
+        }
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "label": "Unit plan",
+      "url": "https://www.esunnybrook.com/mod/resource/view.php?id=5824",
+      "error": "HTTP 404"
+    },
+    {
+      "label": "Learning Log",
+      "url": "https://www.esunnybrook.com/mod/resource/view.php?id=5825",
+      "error": "HTTP 404"
+    }
+  ],
+  "auth": {
+    "loggedIn": true,
+    "reason": "credentials"
+  }
+}

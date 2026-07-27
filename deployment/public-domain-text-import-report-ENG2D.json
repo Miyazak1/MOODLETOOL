@@ -1,0 +1,190 @@
+{
+  "generatedAt": "2026-07-23T07:14:06.781Z",
+  "course": "ENG2D",
+  "dryRun": false,
+  "sources": [
+    {
+      "course": "ENG2D",
+      "textId": "othello",
+      "filename": "Othello_Project_Gutenberg_1531.txt",
+      "sourceKind": "urlText",
+      "sourceUrl": "https://www.gutenberg.org/cache/epub/1531/pg1531.txt",
+      "sourceLabel": "Project Gutenberg eBook #1531",
+      "rights": "Public domain in the USA according to Project Gutenberg."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "lady-or-the-tiger",
+      "filename": "The_Lady_or_the_Tiger_Wikisource.txt",
+      "sourceKind": "wikisourceExtract",
+      "page": "The lady, or the tiger? and other stories/The Lady, or the Tiger?",
+      "sourceUrl": "https://en.wikisource.org/wiki/The_lady,_or_the_tiger%3F_and_other_stories/The_Lady,_or_the_Tiger%3F",
+      "sourceLabel": "Wikisource transcription",
+      "rights": "Underlying work is public domain; Wikisource transcription is available under its site terms."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "the-interlopers",
+      "filename": "The_Interlopers_Wikisource.txt",
+      "sourceKind": "wikisourceExtract",
+      "page": "The Interlopers",
+      "sourceUrl": "https://en.wikisource.org/wiki/The_Interlopers",
+      "sourceLabel": "Wikisource transcription",
+      "rights": "Underlying work is public domain; Wikisource transcription is available under its site terms."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "the-rocking-horse-winner",
+      "filename": "The_Rocking_Horse_Winner_Pressbooks.txt",
+      "sourceKind": "htmlTextSection",
+      "sourceUrl": "https://viva.pressbooks.pub/compreader/chapter/the-rocking-horse-winner/",
+      "sourceLabel": "VIVA Pressbooks, Let's Read: A Collection of Texts for College Composition",
+      "rights": "Source page marks this work as public domain / free of known copyright restrictions.",
+      "startMarker": "<p>There was a woman",
+      "endMarker": "<hr />"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "myth-of-prometheus",
+      "filename": "Prometheus_Project_Gutenberg_9313.txt",
+      "sourceKind": "urlTextSection",
+      "sourceUrl": "https://www.gutenberg.org/cache/epub/9313/pg9313.txt",
+      "sourceLabel": "Project Gutenberg eBook #9313, Old Greek Folk Stories Told Anew",
+      "rights": "Public domain in the USA according to Project Gutenberg.",
+      "startMarker": "PROMETHEUS.",
+      "endMarker": "THE DELUGE."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "daedalus-and-icarus",
+      "filename": "Icarus_and_Daedalus_Project_Gutenberg_9313.txt",
+      "sourceKind": "urlTextSection",
+      "sourceUrl": "https://www.gutenberg.org/cache/epub/9313/pg9313.txt",
+      "sourceLabel": "Project Gutenberg eBook #9313, Old Greek Folk Stories Told Anew",
+      "rights": "Public domain in the USA according to Project Gutenberg.",
+      "startMarker": "ICARUS AND DAEDALUS.",
+      "endMarker": "PHAETHON."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "queen-elizabeth-address-to-the-troops",
+      "filename": "Speech_to_the_Troops_at_Tilbury_Wikisource.txt",
+      "sourceKind": "wikisourceExtract",
+      "page": "Speech to the Troops at Tilbury",
+      "sourceUrl": "https://en.wikisource.org/wiki/Speech_to_the_Troops_at_Tilbury",
+      "sourceLabel": "Wikisource transcription",
+      "rights": "Historical speech text; Wikisource transcription is available under its site terms."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "jfk-inaugural-address",
+      "filename": "JFK_Inaugural_Address_Project_Gutenberg_3.txt",
+      "sourceKind": "urlText",
+      "sourceUrl": "https://www.gutenberg.org/cache/epub/3/pg3.txt",
+      "sourceLabel": "Project Gutenberg eBook #3",
+      "rights": "Public domain in the USA according to Project Gutenberg."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "pearl-harbor-address",
+      "filename": "Day_of_Infamy_Speech_Project_Gutenberg_21805.txt",
+      "sourceKind": "urlText",
+      "sourceUrl": "https://www.gutenberg.org/cache/epub/21805/pg21805.txt",
+      "sourceLabel": "Project Gutenberg eBook #21805",
+      "rights": "Public domain in the USA according to Project Gutenberg."
+    }
+  ],
+  "imports": [
+    {
+      "course": "ENG2D",
+      "textId": "othello",
+      "filename": "Othello_Project_Gutenberg_1531.txt",
+      "path": "texts/othello/Othello_Project_Gutenberg_1531.txt",
+      "bytes": 175829,
+      "sourceUrl": "https://www.gutenberg.org/cache/epub/1531/pg1531.txt",
+      "sourceLabel": "Project Gutenberg eBook #1531",
+      "rights": "Public domain in the USA according to Project Gutenberg."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "lady-or-the-tiger",
+      "filename": "The_Lady_or_the_Tiger_Wikisource.txt",
+      "path": "texts/lady-or-the-tiger/The_Lady_or_the_Tiger_Wikisource.txt",
+      "bytes": 15704,
+      "sourceUrl": "https://en.wikisource.org/wiki/The_lady,_or_the_tiger%3F_and_other_stories/The_Lady,_or_the_Tiger%3F",
+      "sourceLabel": "Wikisource transcription",
+      "rights": "Underlying work is public domain; Wikisource transcription is available under its site terms."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "the-interlopers",
+      "filename": "The_Interlopers_Wikisource.txt",
+      "path": "texts/the-interlopers/The_Interlopers_Wikisource.txt",
+      "bytes": 12252,
+      "sourceUrl": "https://en.wikisource.org/wiki/The_Interlopers",
+      "sourceLabel": "Wikisource transcription",
+      "rights": "Underlying work is public domain; Wikisource transcription is available under its site terms."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "the-rocking-horse-winner",
+      "filename": "The_Rocking_Horse_Winner_Pressbooks.txt",
+      "path": "texts/the-rocking-horse-winner/The_Rocking_Horse_Winner_Pressbooks.txt",
+      "bytes": 31391,
+      "sourceUrl": "https://viva.pressbooks.pub/compreader/chapter/the-rocking-horse-winner/",
+      "sourceLabel": "VIVA Pressbooks, Let's Read: A Collection of Texts for College Composition",
+      "rights": "Source page marks this work as public domain / free of known copyright restrictions."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "myth-of-prometheus",
+      "filename": "Prometheus_Project_Gutenberg_9313.txt",
+      "path": "texts/myth-of-prometheus/Prometheus_Project_Gutenberg_9313.txt",
+      "bytes": 7218,
+      "sourceUrl": "https://www.gutenberg.org/cache/epub/9313/pg9313.txt",
+      "sourceLabel": "Project Gutenberg eBook #9313, Old Greek Folk Stories Told Anew",
+      "rights": "Public domain in the USA according to Project Gutenberg."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "daedalus-and-icarus",
+      "filename": "Icarus_and_Daedalus_Project_Gutenberg_9313.txt",
+      "path": "texts/daedalus-and-icarus/Icarus_and_Daedalus_Project_Gutenberg_9313.txt",
+      "bytes": 4094,
+      "sourceUrl": "https://www.gutenberg.org/cache/epub/9313/pg9313.txt",
+      "sourceLabel": "Project Gutenberg eBook #9313, Old Greek Folk Stories Told Anew",
+      "rights": "Public domain in the USA according to Project Gutenberg."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "queen-elizabeth-address-to-the-troops",
+      "filename": "Speech_to_the_Troops_at_Tilbury_Wikisource.txt",
+      "path": "texts/queen-elizabeth-address-to-the-troops/Speech_to_the_Troops_at_Tilbury_Wikisource.txt",
+      "bytes": 1865,
+      "sourceUrl": "https://en.wikisource.org/wiki/Speech_to_the_Troops_at_Tilbury",
+      "sourceLabel": "Wikisource transcription",
+      "rights": "Historical speech text; Wikisource transcription is available under its site terms."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "jfk-inaugural-address",
+      "filename": "JFK_Inaugural_Address_Project_Gutenberg_3.txt",
+      "path": "texts/jfk-inaugural-address/JFK_Inaugural_Address_Project_Gutenberg_3.txt",
+      "bytes": 27290,
+      "sourceUrl": "https://www.gutenberg.org/cache/epub/3/pg3.txt",
+      "sourceLabel": "Project Gutenberg eBook #3",
+      "rights": "Public domain in the USA according to Project Gutenberg."
+    },
+    {
+      "course": "ENG2D",
+      "textId": "pearl-harbor-address",
+      "filename": "Day_of_Infamy_Speech_Project_Gutenberg_21805.txt",
+      "path": "texts/pearl-harbor-address/Day_of_Infamy_Speech_Project_Gutenberg_21805.txt",
+      "bytes": 22720,
+      "sourceUrl": "https://www.gutenberg.org/cache/epub/21805/pg21805.txt",
+      "sourceLabel": "Project Gutenberg eBook #21805",
+      "rights": "Public domain in the USA according to Project Gutenberg."
+    }
+  ],
+  "failures": []
+}

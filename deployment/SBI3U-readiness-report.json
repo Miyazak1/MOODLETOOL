@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-07-24T03:42:12.163Z",
+  "course": {
+    "code": "SBI3U",
+    "title": "SBI3U · Biology",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SBI3U\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 5,
+    "lessons": 61,
+    "unitPlans": 5,
+    "lessonPlanExpected": 61,
+    "lessonPlans": 61,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [],
+    "missingLessonPlans": [],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 61,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

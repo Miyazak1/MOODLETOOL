@@ -1,0 +1,181 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.630Z",
+  "course": {
+    "code": "ESLCO",
+    "title": "English as a Second Language, ESL Level 3, Open",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ESLCO\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 21,
+    "unitPlans": 0,
+    "lessonPlanExpected": 21,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Unit 1"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Unit 2"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Unit 3"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Unit 4"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Formal Language"
+      },
+      {
+        "id": "U01L02",
+        "unit": 1,
+        "lesson": 2,
+        "title": "Asking Questions"
+      },
+      {
+        "id": "U01L03",
+        "unit": 1,
+        "lesson": 3,
+        "title": "Non-Fiction Text Features"
+      },
+      {
+        "id": "U01L04",
+        "unit": 1,
+        "lesson": 4,
+        "title": "Reliable Sources"
+      },
+      {
+        "id": "U01L05",
+        "unit": 1,
+        "lesson": 5,
+        "title": "Presentation Skills"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Short Story Elements: Plot"
+      },
+      {
+        "id": "U02L02",
+        "unit": 2,
+        "lesson": 2,
+        "title": "Setting & Point of View"
+      },
+      {
+        "id": "U02L03",
+        "unit": 2,
+        "lesson": 3,
+        "title": "Characterization"
+      },
+      {
+        "id": "U02L04",
+        "unit": 2,
+        "lesson": 4,
+        "title": "Theme & Setting"
+      },
+      {
+        "id": "U02L05",
+        "unit": 2,
+        "lesson": 5,
+        "title": "Point of View"
+      },
+      {
+        "id": "U02L06",
+        "unit": 2,
+        "lesson": 6,
+        "title": "Figurative Language"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "In My Opinion: Fact vs Opinion"
+      },
+      {
+        "id": "U03L02",
+        "unit": 3,
+        "lesson": 2,
+        "title": "Supporting Your Opinion with Facts"
+      },
+      {
+        "id": "U03L03",
+        "unit": 3,
+        "lesson": 3,
+        "title": "The Art of Persuasion"
+      },
+      {
+        "id": "U03L04",
+        "unit": 3,
+        "lesson": 4,
+        "title": "Persuasion in the Media"
+      },
+      {
+        "id": "U03L05",
+        "unit": 3,
+        "lesson": 5,
+        "title": "Opinion Essay"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Canada and the Media: All About Canada"
+      },
+      {
+        "id": "U04L02",
+        "unit": 4,
+        "lesson": 2,
+        "title": "Canada and the Media: The Government of Canada"
+      },
+      {
+        "id": "U04L03",
+        "unit": 4,
+        "lesson": 3,
+        "title": "Canada and the Media: Canadian Citizenship"
+      },
+      {
+        "id": "U04L04",
+        "unit": 4,
+        "lesson": 4,
+        "title": "Canada and the Media: Rights and Responsibilities of Canadian Citizens"
+      },
+      {
+        "id": "U04L05",
+        "unit": 4,
+        "lesson": 5,
+        "title": "Canada and the Media: The News"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 21,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

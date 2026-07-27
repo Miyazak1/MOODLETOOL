@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-07-23T08:50:27.145Z",
+  "sources": {
+    "onlineResources": "deployment/online-resource-readiness.json",
+    "workbench": "deployment/course-content-workbench.json"
+  },
+  "totals": {
+    "coursesWithPreviewWork": 0,
+    "previewFiles": 0,
+    "issueEntries": 0
+  },
+  "courses": [],
+  "queue": []
+}

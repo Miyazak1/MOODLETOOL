@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.594Z",
+  "course": {
+    "code": "MAP4C",
+    "title": "MAP4C · Foundations for College Mathematics",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MAP4C\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 1,
+    "lessons": 1,
+    "unitPlans": 0,
+    "lessonPlanExpected": 1,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 1,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Textbook Reference"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U1L1",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Textbook Reference"
+      }
+    ],
+    "textsNeedingReview": [
+      {
+        "id": "foundations-for-college-mathematics-12",
+        "title": "Foundations for College Mathematics 12",
+        "author": "Textbook reference",
+        "notes": "Detected as a Moodle Book container in MAP4C; local downloadable textbook file has not been added."
+      }
+    ],
+    "textsMissingDownload": [
+      {
+        "id": "foundations-for-college-mathematics-12",
+        "title": "Foundations for College Mathematics 12",
+        "author": "Textbook reference",
+        "notes": "Detected as a Moodle Book container in MAP4C; local downloadable textbook file has not been added."
+      }
+    ],
+    "linkOnlyTexts": [
+      {
+        "id": "foundations-for-college-mathematics-12",
+        "title": "Foundations for College Mathematics 12",
+        "author": "Textbook reference",
+        "notes": "Detected as a Moodle Book container in MAP4C; local downloadable textbook file has not been added."
+      }
+    ],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 1,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

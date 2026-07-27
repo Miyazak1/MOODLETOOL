@@ -1,0 +1,2940 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-24T04:45:13.006Z",
+  "source": {
+    "catalog": "public/course-catalog.json",
+    "moodleIndex": "public/moodle-course-resource-index.json",
+    "readinessSummary": "deployment/course-readiness-summary.json",
+    "documentQueue": "inbox/moodle-course-document-queue.csv",
+    "authenticatedRescanQueue": "deployment/moodle-authenticated-rescan-queue.json"
+  },
+  "totals": {
+    "portalCourses": 54,
+    "moodleIndexedCourses": 54,
+    "readyOutlines": 51,
+    "needsUrlOutlines": 3,
+    "localCourseOutlines": 13,
+    "moodleBooks": 91,
+    "byStatus": {
+      "ready": 1,
+      "planning-only": 53
+    },
+    "byPhase": {
+      "ready-maintenance": 1,
+      "planning-course-enrichment": 24,
+      "planning-gap-fill": 26,
+      "source-discovery": 3
+    }
+  },
+  "courses": [
+    {
+      "course": "ASM3M",
+      "title": "ASM3M · ASM3M",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=66",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/assign/view.php?id=6980",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ASM3M_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "AVI1O",
+      "title": "AVI1O · AVI1O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=5",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=74",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 5,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 5,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 5,
+        "missingLessonPlans": 5,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "AVI1O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 5 missing unit plan gap(s).",
+        "Fill 5 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "AVI2O",
+      "title": "AVI2O · AVI2O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=4",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/url/view.php?id=3",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "AVI2O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "AVI3M",
+      "title": "AVI3M · AVI3M",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=68",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=7117",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "AVI3M_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "BAF3M",
+      "title": "BAF3M · BAF3M",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=32",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=3372",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 5,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 5,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 5,
+        "missingLessonPlans": 5,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "BAF3M_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 5 missing unit plan gap(s).",
+        "Fill 5 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "BBB4M",
+      "title": "BBB4M · International Business Fundamentals",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=70",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/7438/mod_assign/introattachment/0/BBB4M-Course-Oultine.docx?forcedownload=1",
+        "bookCount": 4,
+        "numberedLessonCount": 30
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 29,
+        "unitPlans": 4,
+        "lessonPlans": 29,
+        "lessonPlanExpected": 29,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "BBB4M_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 66,
+        "lessonPlans": 58,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "BBI2O",
+      "title": "BBI2O · BBI2O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=65",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=6867",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "BBI2O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "BOH4M",
+      "title": "BOH4M · Business Leadership: Management Fundamentals",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=71",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/7576/mod_assign/introattachment/0/BOH4M-Course-Outline.docx?forcedownload=1",
+        "bookCount": 5,
+        "numberedLessonCount": 31
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 32,
+        "unitPlans": 5,
+        "lessonPlans": 32,
+        "lessonPlanExpected": 32,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "BOH4M_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 74,
+        "lessonPlans": 64,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "CGC1D",
+      "title": "CGC1D · CGC1D",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=43",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=4393",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 8,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 8,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 5,
+        "missingLessonPlans": 8,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "CGC1D_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 5 missing unit plan gap(s).",
+        "Fill 8 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "CIA4U",
+      "title": "CIA4U · CIA4U",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=40",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=4102",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 8,
+        "lessons": 8,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 8,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 8,
+        "missingLessonPlans": 8,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "CIA4U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 8 missing unit plan gap(s).",
+        "Fill 8 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ENG2D",
+      "title": "ENG2D · ENG2D",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=8",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=376",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ENG2D_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ENG4U",
+      "title": "ENG4U · English",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=72",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/7734/mod_assign/introattachment/0/ENG4U-Course-Oultine-v2.0.docx?forcedownload=1",
+        "bookCount": 4,
+        "numberedLessonCount": 26
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 26,
+        "unitPlans": 4,
+        "lessonPlans": 26,
+        "lessonPlanExpected": 26,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ENG4U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 60,
+        "lessonPlans": 52,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "EPS3O",
+      "title": "EPS3O · EPS3O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=10",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=591",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "EPS3O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ESLAO",
+      "title": "ESLAO · ESLAO",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=48",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/course/view.php?id=48#collapseSection-527",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ESLAO_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ESLBO",
+      "title": "ESLBO · ESLBO",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=49",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/course/view.php?id=49#collapseSection-537",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ESLBO_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ESLCO",
+      "title": "ESLCO · ESLCO",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=73",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/assign/view.php?id=7650",
+        "bookCount": 4,
+        "numberedLessonCount": 21
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 21,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 21,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 21,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ESLCO_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 21 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ESLDO",
+      "title": "ESLDO · ESL Level 4",
+      "level": "ESL",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=74",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/7957/mod_assign/introattachment/0/ESLDO-Course-Outline-v2.docx?forcedownload=1",
+        "bookCount": 4,
+        "numberedLessonCount": 38
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 38,
+        "unitPlans": 4,
+        "lessonPlans": 38,
+        "lessonPlanExpected": 38,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ESLDO_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 8,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ESLEO",
+      "title": "ESLEO · ESL Level 5",
+      "level": "ESL",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=75",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8095/mod_assign/introattachment/0/ESLEO-Course-Oultine.docx?forcedownload=1",
+        "bookCount": 4,
+        "numberedLessonCount": 28
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 28,
+        "unitPlans": 4,
+        "lessonPlans": 28,
+        "lessonPlanExpected": 28,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ESLEO_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 64,
+        "lessonPlans": 56,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "HFN1O",
+      "title": "HFN1O · HFN1O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=55",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5570",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "HFN1O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ICS2O",
+      "title": "ICS2O · ICS2O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=36",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=3753",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 3,
+        "lessons": 31,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 31,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 3,
+        "missingLessonPlans": 31,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ICS2O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 3 missing unit plan gap(s).",
+        "Fill 31 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ICS3U",
+      "title": "ICS3U · Introduction to Computer Studies",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=87",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/9676/mod_assign/introattachment/0/ICS3U-Course-Outline.docx?forcedownload=1",
+        "bookCount": 4,
+        "numberedLessonCount": 27
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 27,
+        "unitPlans": 4,
+        "lessonPlans": 27,
+        "lessonPlanExpected": 27,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ICS3U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 78,
+        "lessonPlans": 70,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ICS4U",
+      "title": "ICS4U · ICS4U",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=37",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=3829",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 26,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 26,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 26,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ICS4U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 26 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "LKBCU",
+      "title": "LKBCU · LKBCU",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=44",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=4496",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "LKBCU_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "MAP4C",
+      "title": "MAP4C · Foundations for College Mathematics",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=17",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=1450",
+        "bookCount": 1,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 1,
+        "lessons": 1,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 1,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 1,
+        "missingLessonPlans": 1,
+        "textsNeedingReview": 1,
+        "linkOnlyTexts": 1
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "MAP4C_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 1 missing unit plan gap(s).",
+        "Fill 1 missing lesson plan gap(s).",
+        "Review 1 text/material source item(s).",
+        "Replace 1 link-only text item(s) with local/approved files when available.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "MBF3C",
+      "title": "MBF3C · MBF3C",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=18",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/assign/view.php?id=1598",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "MBF3C_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "MCR3U",
+      "title": "MCR3U · Functions",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=76",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8222/mod_assign/introattachment/0/MCR3U-Course-Outline-2.0.docx?forcedownload=1",
+        "bookCount": 4,
+        "numberedLessonCount": 27
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 27,
+        "unitPlans": 4,
+        "lessonPlans": 27,
+        "lessonPlanExpected": 27,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "MCR3U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 8,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "MCV4U",
+      "title": "MCV4U · Calculus and Vectors",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=77",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8319/mod_assign/introattachment/0/MCV4U-Course-Outline.docx?forcedownload=1",
+        "bookCount": 3,
+        "numberedLessonCount": 18
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 18,
+        "unitPlans": 4,
+        "lessonPlans": 18,
+        "lessonPlanExpected": 18,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "MCV4U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 8,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "MDM4U",
+      "title": "MDM4U · Mathematics of Data Management",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=78",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8408/mod_assign/introattachment/0/MDM4U-Course-Outline-v1.0.docx?forcedownload=1",
+        "bookCount": 5,
+        "numberedLessonCount": 29
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 24,
+        "unitPlans": 4,
+        "lessonPlans": 24,
+        "lessonPlanExpected": 24,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "MDM4U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 8,
+        "lessonPlans": 48,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "MHF4U",
+      "title": "MHF4U · Advanced Functions",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=79",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8548/mod_assign/introattachment/0/MHF4U-Course-Outline-v2.1%28revised%29.docx?forcedownload=1",
+        "bookCount": 4,
+        "numberedLessonCount": 35
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 35,
+        "unitPlans": 4,
+        "lessonPlans": 35,
+        "lessonPlanExpected": 35,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "MHF4U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "MPM1D",
+      "title": "MPM1D · MPM1D",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=19",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/url/view.php?id=1686",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "MPM1D_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "MPM2D",
+      "title": "MPM2D · Principles of Mathematics",
+      "level": "Grade 10",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=80",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8688/mod_assign/introattachment/0/MPM2D-Course-Outline.docx?forcedownload=1",
+        "bookCount": 4,
+        "numberedLessonCount": 29
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 29,
+        "unitPlans": 4,
+        "lessonPlans": 29,
+        "lessonPlanExpected": 29,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "MPM2D_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 66,
+        "lessonPlans": 58,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "MTH1W",
+      "title": "MTH1W · MTH1W",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=59",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5821",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 6,
+        "lessons": 28,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 28,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 6,
+        "missingLessonPlans": 28,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "MTH1W_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 6 missing unit plan gap(s).",
+        "Fill 28 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "OLC4O",
+      "title": "OLC4O · OLC4O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=9",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=494",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "OLC4O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "PPL1O",
+      "title": "PPL1O · PPL1O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=57",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5704",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 12,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 12,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 12,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "PPL1O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 12 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "PPL3O",
+      "title": "PPL3O · PPL3O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=58",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5747",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 16,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 16,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 16,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "PPL3O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 16 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "SBI3U",
+      "title": "SBI3U · Biology",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=89",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/10065/mod_assign/introattachment/0/SBI3U-Course-Oultine-v3.0.docx?forcedownload=1",
+        "bookCount": 5,
+        "numberedLessonCount": 61
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 61,
+        "unitPlans": 5,
+        "lessonPlans": 61,
+        "lessonPlanExpected": 61,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "SBI3U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 10,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "SBI4U",
+      "title": "SBI4U · Biology",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=88",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/9927/mod_assign/introattachment/0/SBI4U-Course-Oultine-v3.0.docx?forcedownload=1",
+        "bookCount": 5,
+        "numberedLessonCount": 27
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 27,
+        "unitPlans": 5,
+        "lessonPlans": 27,
+        "lessonPlanExpected": 27,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "SBI4U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 64,
+        "lessonPlans": 54,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "SCH3U",
+      "title": "SCH3U · Chemistry",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=81",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8818/mod_assign/introattachment/0/SCH3U-Course-Outline-v2.0.docx?forcedownload=1",
+        "bookCount": 5,
+        "numberedLessonCount": 41
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 42,
+        "unitPlans": 5,
+        "lessonPlans": 42,
+        "lessonPlanExpected": 42,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "SCH3U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 16,
+        "lessonPlans": 1,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "SCH4U",
+      "title": "SCH4U · Chemistry",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=82",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8956/mod_assign/introattachment/0/SCH4U-Course-Oultine.docx?forcedownload=1",
+        "bookCount": 5,
+        "numberedLessonCount": 46
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 46,
+        "unitPlans": 5,
+        "lessonPlans": 46,
+        "lessonPlanExpected": 46,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "SCH4U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 35,
+        "lessonPlans": 10,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "SNC1D",
+      "title": "SNC1D · Science",
+      "level": "Grade 9",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=62",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=6350",
+        "bookCount": 1,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 1,
+        "lessons": 1,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 1,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 1,
+        "missingLessonPlans": 1,
+        "textsNeedingReview": 1,
+        "linkOnlyTexts": 1
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "SNC1D_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 1 missing unit plan gap(s).",
+        "Fill 1 missing lesson plan gap(s).",
+        "Review 1 text/material source item(s).",
+        "Replace 1 link-only text item(s) with local/approved files when available.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "SNC2D",
+      "title": "SNC2D · Science",
+      "level": "Grade 10",
+      "status": "planning-only",
+      "phase": "planning-gap-fill",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=67",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/7171/mod_assign/introattachment/0/SNC2D-COURSE-OUTLINE.docx?forcedownload=1",
+        "bookCount": 4,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 4,
+        "missingLessonPlans": 4,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "SNC2D_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Fill 4 missing unit plan gap(s).",
+        "Fill 4 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "SPH3U",
+      "title": "SPH3U · Physics",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=83",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/9151/mod_assign/introattachment/0/SPH3U-Course-Outline.docx?forcedownload=1",
+        "bookCount": 5,
+        "numberedLessonCount": 36
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 36,
+        "unitPlans": 5,
+        "lessonPlans": 36,
+        "lessonPlanExpected": 36,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "SPH3U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 2,
+        "lessonPlans": 1,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "SPH4U",
+      "title": "SPH4U · Physics",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 78,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=84",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/9263/mod_assign/introattachment/0/SPH4U-Course-Outline.docx?forcedownload=1",
+        "bookCount": 5,
+        "numberedLessonCount": 33
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 33,
+        "unitPlans": 5,
+        "lessonPlans": 33,
+        "lessonPlanExpected": 33,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "SPH4U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 11,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Download Course Outline into local courseware and rebuild manifest.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "BTT1O",
+      "title": "BTT1O · BTT1O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "phase": "source-discovery",
+      "priority": 70,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=31",
+        "outlineStatus": "needs-url",
+        "outlineUrl": "",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 5,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 5,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 5,
+        "missingLessonPlans": 5,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "needs-url",
+        "targetFilename": "BTT1O_Course_Outline.docx",
+        "hasUrl": false
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Find or confirm Course Outline source.",
+        "Add or generate course introduction.",
+        "Fill 5 missing unit plan gap(s).",
+        "Fill 5 missing lesson plan gap(s).",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "CGW4U",
+      "title": "CGW4U · Canadian and World Issues",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "source-discovery",
+      "priority": 70,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/search.php?search=CGW4U",
+        "outlineStatus": "needs-url",
+        "outlineUrl": "",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 25,
+        "unitPlans": 4,
+        "lessonPlans": 25,
+        "lessonPlanExpected": 25,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "needs-url",
+        "targetFilename": "CGW4U_Course_Outline.docx",
+        "hasUrl": false
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 8,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Find or confirm Course Outline source.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "HFA4U",
+      "title": "HFA4U · Nutrition and Health",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "source-discovery",
+      "priority": 70,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=91",
+        "outlineStatus": "needs-url",
+        "outlineUrl": "",
+        "bookCount": 1,
+        "numberedLessonCount": 10
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 29,
+        "unitPlans": 4,
+        "lessonPlans": 29,
+        "lessonPlanExpected": 29,
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "needs-url",
+        "targetFilename": "HFA4U_Course_Outline.docx",
+        "hasUrl": false
+      },
+      "localEvidence": {
+        "courseOutlines": 0,
+        "unitPlans": 66,
+        "lessonPlans": 58,
+        "ispringFiles": 0,
+        "outlineExamples": []
+      },
+      "nextActions": [
+        "Find or confirm Course Outline source.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "BBI1O",
+      "title": "BBI1O · Introduction to Business",
+      "level": "Grade 9/10",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 55,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=30",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=3284",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 4,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 0,
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "BBI1O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 1,
+        "unitPlans": 8,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": [
+          "BBI1O-BBI2O-Course-Outline.pdf"
+        ]
+      },
+      "nextActions": [
+        "Confirm the local Course Outline is linked in the manifest and preview queue.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "CHC2D",
+      "title": "CHC2D · Canadian History since World War I",
+      "level": "Grade 10",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 55,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=42",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=4257",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 4,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 0,
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "CHC2D_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 1,
+        "unitPlans": 8,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": [
+          "CHC2D-Course-Outline.pdf"
+        ]
+      },
+      "nextActions": [
+        "Confirm the local Course Outline is linked in the manifest and preview queue.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "CHV2O",
+      "title": "CHV2O · Civics and Citizenship",
+      "level": "Grade 10",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 55,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=41",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/4292/mod_assign/introattachment/0/CHV20-Curriculum-outline.docx?forcedownload=1",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 1,
+        "lessons": 3,
+        "unitPlans": 1,
+        "lessonPlans": 3,
+        "lessonPlanExpected": 3,
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "CHV2O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 2,
+        "unitPlans": 0,
+        "lessonPlans": 6,
+        "ispringFiles": 0,
+        "outlineExamples": [
+          "CHV20-Curriculum-outline.docx.html",
+          "CHV20-Curriculum-outline.docx"
+        ]
+      },
+      "nextActions": [
+        "Confirm the local Course Outline is linked in the manifest and preview queue.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "GLC2O",
+      "title": "GLC2O · Career Studies",
+      "level": "Grade 10",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 55,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=53",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/5450/mod_assign/introattachment/0/GLC2-Course-Outline-and-Success-Criteria.docx?forcedownload=1",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 3,
+        "lessons": 3,
+        "unitPlans": 3,
+        "lessonPlans": 3,
+        "lessonPlanExpected": 3,
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "GLC2O_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 2,
+        "unitPlans": 22,
+        "lessonPlans": 16,
+        "ispringFiles": 0,
+        "outlineExamples": [
+          "GLC2O-Course-Outline-and-Success-Criteria.docx.html",
+          "GLC2O-Course-Outline-and-Success-Criteria.docx"
+        ]
+      },
+      "nextActions": [
+        "Confirm the local Course Outline is linked in the manifest and preview queue.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "HFC3M",
+      "title": "HFC3M · Food and Culture",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 55,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=56",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5646",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 4,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 0,
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "HFC3M_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 1,
+        "unitPlans": 8,
+        "lessonPlans": 0,
+        "ispringFiles": 0,
+        "outlineExamples": [
+          "HFC3M-CourseOutline.pdf"
+        ]
+      },
+      "nextActions": [
+        "Confirm the local Course Outline is linked in the manifest and preview queue.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "HHS4U",
+      "title": "HHS4U · Families in Canada",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 55,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=54",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5415",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 1,
+        "lessons": 1,
+        "unitPlans": 1,
+        "lessonPlans": 1,
+        "lessonPlanExpected": 1,
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "HHS4U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 2,
+        "unitPlans": 0,
+        "lessonPlans": 2,
+        "ispringFiles": 0,
+        "outlineExamples": [
+          "HHS4U-Course-Outline.doc.pdf",
+          "HHS4U-Course-Outline.doc"
+        ]
+      },
+      "nextActions": [
+        "Confirm the local Course Outline is linked in the manifest and preview queue.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "LKBDU",
+      "title": "LKBDU · International Languages, Simplified Chinese",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "phase": "planning-course-enrichment",
+      "priority": 55,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=45",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=4578",
+        "bookCount": 0,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 4,
+        "lessonPlans": 4,
+        "lessonPlanExpected": 4,
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "LKBDU_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 2,
+        "unitPlans": 8,
+        "lessonPlans": 8,
+        "ispringFiles": 0,
+        "outlineExamples": [
+          "LKBDU-Course-Outline-12 (1).doc.html",
+          "LKBDU-Course-Outline-12 (1).doc"
+        ]
+      },
+      "nextActions": [
+        "Confirm the local Course Outline is linked in the manifest and preview queue.",
+        "Add or generate course introduction.",
+        "Connect iSpring package if the course has one in Moodle/source files."
+      ]
+    },
+    {
+      "course": "ENG3U",
+      "title": "ENG3U · English",
+      "level": "Grade 11",
+      "status": "ready",
+      "phase": "ready-maintenance",
+      "priority": 30,
+      "moodle": {
+        "coursePage": "https://www.esunnybrook.com/course/view.php?id=86",
+        "outlineStatus": "ready",
+        "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/9475/mod_assign/introattachment/0/ENG3U-Course-Oultine-v2.0.docx?forcedownload=1",
+        "bookCount": 5,
+        "numberedLessonCount": 0
+      },
+      "readiness": {
+        "units": 5,
+        "lessons": 36,
+        "unitPlans": 5,
+        "lessonPlans": 36,
+        "lessonPlanExpected": 36,
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": 0,
+        "missingLessonPlans": 0,
+        "textsNeedingReview": 0,
+        "linkOnlyTexts": 0
+      },
+      "queue": {
+        "status": "ready",
+        "targetFilename": "ENG3U_Course_Outline.docx",
+        "hasUrl": true
+      },
+      "localEvidence": {
+        "courseOutlines": 2,
+        "unitPlans": 10,
+        "lessonPlans": 74,
+        "ispringFiles": 5253,
+        "outlineExamples": [
+          "Course_Outline.docx.html",
+          "Course_Outline.docx"
+        ]
+      },
+      "nextActions": [
+        "Confirm the local Course Outline is linked in the manifest and preview queue.",
+        "Add or generate course introduction."
+      ]
+    }
+  ],
+  "authenticatedRescanQueue": [
+    {
+      "priority": 246,
+      "course": "SCH4U",
+      "title": "SCH4U · Chemistry",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 82,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=82",
+      "bookCount": 5,
+      "bookIds": [
+        8738,
+        8780,
+        8820,
+        8860,
+        8891
+      ],
+      "numberedLessonCount": 46,
+      "manifestLessons": 46,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 46,
+      "reason": "Moodle Book lessons detected (46), but no local book-section import is present yet."
+    },
+    {
+      "priority": 242,
+      "course": "SCH3U",
+      "title": "SCH3U · Chemistry",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 81,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=81",
+      "bookCount": 5,
+      "bookIds": [
+        8602,
+        8630,
+        8649,
+        8678,
+        8705
+      ],
+      "numberedLessonCount": 41,
+      "manifestLessons": 42,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 42,
+      "reason": "Moodle Book lessons detected (41), but no local book-section import is present yet."
+    },
+    {
+      "priority": 238,
+      "course": "ESLDO",
+      "title": "ESLDO · ESL Level 4",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 74,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=74",
+      "bookCount": 4,
+      "bookIds": [
+        7755,
+        7777,
+        7800,
+        7822
+      ],
+      "numberedLessonCount": 38,
+      "manifestLessons": 38,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 38,
+      "reason": "Moodle Book lessons detected (38), but no local book-section import is present yet."
+    },
+    {
+      "priority": 236,
+      "course": "SPH3U",
+      "title": "SPH3U · Physics",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 83,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=83",
+      "bookCount": 5,
+      "bookIds": [
+        8931,
+        8951,
+        8971,
+        8992,
+        9013
+      ],
+      "numberedLessonCount": 36,
+      "manifestLessons": 36,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 36,
+      "reason": "Moodle Book lessons detected (36), but no local book-section import is present yet."
+    },
+    {
+      "priority": 235,
+      "course": "MHF4U",
+      "title": "MHF4U · Advanced Functions",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 79,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=79",
+      "bookCount": 4,
+      "bookIds": [
+        8336,
+        8362,
+        8393,
+        8415
+      ],
+      "numberedLessonCount": 35,
+      "manifestLessons": 35,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 35,
+      "reason": "Moodle Book lessons detected (35), but no local book-section import is present yet."
+    },
+    {
+      "priority": 233,
+      "course": "SPH4U",
+      "title": "SPH4U · Physics",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 84,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=84",
+      "bookCount": 5,
+      "bookIds": [
+        9041,
+        9070,
+        9096,
+        9126,
+        9150
+      ],
+      "numberedLessonCount": 33,
+      "manifestLessons": 33,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 33,
+      "reason": "Moodle Book lessons detected (33), but no local book-section import is present yet."
+    },
+    {
+      "priority": 232,
+      "course": "BOH4M",
+      "title": "BOH4M · Business Leadership: Management Fundamentals",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 71,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=71",
+      "bookCount": 5,
+      "bookIds": [
+        7380,
+        7403,
+        7427,
+        7447,
+        7481
+      ],
+      "numberedLessonCount": 31,
+      "manifestLessons": 32,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 32,
+      "reason": "Moodle Book lessons detected (31), but no local book-section import is present yet."
+    },
+    {
+      "priority": 230,
+      "course": "BBB4M",
+      "title": "BBB4M · International Business Fundamentals",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 70,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=70",
+      "bookCount": 4,
+      "bookIds": [
+        7244,
+        7265,
+        7289,
+        7314
+      ],
+      "numberedLessonCount": 30,
+      "manifestLessons": 29,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 30,
+      "reason": "Moodle Book lessons detected (30), but no local book-section import is present yet."
+    },
+    {
+      "priority": 229,
+      "course": "HFA4U",
+      "title": "HFA4U · Nutrition and Health",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 91,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=91",
+      "bookCount": 1,
+      "bookIds": [
+        9805
+      ],
+      "numberedLessonCount": 10,
+      "manifestLessons": 29,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 29,
+      "reason": "Moodle Book lessons detected (10), but no local book-section import is present yet."
+    },
+    {
+      "priority": 229,
+      "course": "MDM4U",
+      "title": "MDM4U · Mathematics of Data Management",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 78,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=78",
+      "bookCount": 5,
+      "bookIds": [
+        8198,
+        8222,
+        8241,
+        8262,
+        8282
+      ],
+      "numberedLessonCount": 29,
+      "manifestLessons": 24,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 29,
+      "reason": "Moodle Book lessons detected (29), but no local book-section import is present yet."
+    },
+    {
+      "priority": 229,
+      "course": "MPM2D",
+      "title": "MPM2D · Principles of Mathematics",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 80,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=80",
+      "bookCount": 4,
+      "bookIds": [
+        8474,
+        8497,
+        8520,
+        8545
+      ],
+      "numberedLessonCount": 29,
+      "manifestLessons": 29,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 29,
+      "reason": "Moodle Book lessons detected (29), but no local book-section import is present yet."
+    },
+    {
+      "priority": 228,
+      "course": "ESLEO",
+      "title": "ESLEO · ESL Level 5",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 75,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=75",
+      "bookCount": 4,
+      "bookIds": [
+        7891,
+        7914,
+        7938,
+        7960
+      ],
+      "numberedLessonCount": 28,
+      "manifestLessons": 28,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 28,
+      "reason": "Moodle Book lessons detected (28), but no local book-section import is present yet."
+    },
+    {
+      "priority": 227,
+      "course": "ICS3U",
+      "title": "ICS3U · Introduction to Computer Studies",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 87,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=87",
+      "bookCount": 4,
+      "bookIds": [
+        9393,
+        9420,
+        9446,
+        9466
+      ],
+      "numberedLessonCount": 27,
+      "manifestLessons": 27,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 27,
+      "reason": "Moodle Book lessons detected (27), but no local book-section import is present yet."
+    },
+    {
+      "priority": 227,
+      "course": "MCR3U",
+      "title": "MCR3U · Functions",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 76,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=76",
+      "bookCount": 4,
+      "bookIds": [
+        8016,
+        8043,
+        8064,
+        8085
+      ],
+      "numberedLessonCount": 27,
+      "manifestLessons": 27,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 27,
+      "reason": "Moodle Book lessons detected (27), but no local book-section import is present yet."
+    },
+    {
+      "priority": 227,
+      "course": "SBI4U",
+      "title": "SBI4U · Biology",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 88,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=88",
+      "bookCount": 5,
+      "bookIds": [
+        9506,
+        9527,
+        9549,
+        9566,
+        9589
+      ],
+      "numberedLessonCount": 27,
+      "manifestLessons": 27,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 27,
+      "reason": "Moodle Book lessons detected (27), but no local book-section import is present yet."
+    },
+    {
+      "priority": 226,
+      "course": "ENG4U",
+      "title": "ENG4U · English",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 72,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=72",
+      "bookCount": 4,
+      "bookIds": [
+        7536,
+        7561,
+        7583,
+        7603
+      ],
+      "numberedLessonCount": 26,
+      "manifestLessons": 26,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 26,
+      "reason": "Moodle Book lessons detected (26), but no local book-section import is present yet."
+    },
+    {
+      "priority": 221,
+      "course": "ESLCO",
+      "title": "ESLCO · ESLCO",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 73,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=73",
+      "bookCount": 4,
+      "bookIds": [
+        7653,
+        7671,
+        7688,
+        7702
+      ],
+      "numberedLessonCount": 21,
+      "manifestLessons": 21,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 21,
+      "reason": "Moodle Book lessons detected (21), but no local book-section import is present yet."
+    },
+    {
+      "priority": 218,
+      "course": "MCV4U",
+      "title": "MCV4U · Calculus and Vectors",
+      "status": "login-required",
+      "category": "moodle-book",
+      "moodleCourseId": 77,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=77",
+      "bookCount": 3,
+      "bookIds": [
+        8111,
+        8141,
+        8165
+      ],
+      "numberedLessonCount": 18,
+      "manifestLessons": 18,
+      "localBookSectionLessons": 0,
+      "localBookSections": 0,
+      "missingLessonSections": 18,
+      "reason": "Moodle Book lessons detected (18), but no local book-section import is present yet."
+    }
+  ]
+}

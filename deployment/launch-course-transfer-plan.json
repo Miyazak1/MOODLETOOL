@@ -1,0 +1,222 @@
+{
+  "generatedAt": "2026-07-27T07:29:28.752Z",
+  "status": "ready",
+  "targetRoot": "/www/wwwroot/ossd-portal/courseware-active",
+  "courses": [
+    "ENG3U",
+    "ESLEO"
+  ],
+  "totals": {
+    "courses": 2,
+    "files": 11708,
+    "directories": 1476,
+    "bytes": 14504903933,
+    "sizeGb": 13.51,
+    "blockers": 0
+  },
+  "blockers": [],
+  "plans": [
+    {
+      "code": "ENG3U",
+      "title": "ENG3U · English",
+      "sourceRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG3U",
+      "targetPath": "/www/wwwroot/ossd-portal/courseware-active/ENG3U",
+      "status": "ready",
+      "blockers": [],
+      "stats": {
+        "files": 7163,
+        "directories": 1327,
+        "bytes": 10252953146,
+        "largestFiles": [
+          {
+            "path": "Unit 1/Lesson 6 - Macbeth Act V/html5-package.zip",
+            "bytes": 191759457
+          },
+          {
+            "path": "Unit 1/Lesson 2 - Macbeth Act I/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L2.mp4",
+            "bytes": 181066669
+          },
+          {
+            "path": "Unit 1/Lesson 2 - Macbeth Act I/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L2-2.mp4",
+            "bytes": 181066669
+          },
+          {
+            "path": "Unit 1/Lesson 2 - Macbeth Act I/downloaded_resources/consolidation/video/ENG3U-U1L2.mp4",
+            "bytes": 181066669
+          },
+          {
+            "path": "Unit 1/Lesson 7 - Macbeth Themes Motifs and Symbols/html5-package.zip",
+            "bytes": 161061951
+          },
+          {
+            "path": "Unit 1/Lesson 6 - Macbeth Act V/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L6.mp4",
+            "bytes": 154776332
+          },
+          {
+            "path": "Unit 1/Lesson 6 - Macbeth Act V/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L6-2.mp4",
+            "bytes": 154776332
+          },
+          {
+            "path": "Unit 1/Lesson 6 - Macbeth Act V/downloaded_resources/consolidation/video/ENG3U-U1L6.mp4",
+            "bytes": 154776332
+          },
+          {
+            "path": "Unit 1/Lesson 3 - Macbeth Act II/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L3.mp4",
+            "bytes": 151565070
+          },
+          {
+            "path": "Unit 1/Lesson 3 - Macbeth Act II/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L3-2.mp4",
+            "bytes": 151565070
+          },
+          {
+            "path": "Unit 1/Lesson 3 - Macbeth Act II/downloaded_resources/consolidation/video/ENG3U-U1L3.mp4",
+            "bytes": 151565070
+          },
+          {
+            "path": "Unit 1/Lesson 4 - Macbeth Act III/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L4.mp4",
+            "bytes": 139651866
+          },
+          {
+            "path": "Unit 1/Lesson 4 - Macbeth Act III/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L4-2.mp4",
+            "bytes": 139651866
+          },
+          {
+            "path": "Unit 1/Lesson 4 - Macbeth Act III/downloaded_resources/consolidation/video/ENG3U-U1L4.mp4",
+            "bytes": 139651866
+          },
+          {
+            "path": "Unit 1/Lesson 5 - Macbeth Act IV/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L5.mp4",
+            "bytes": 112856799
+          },
+          {
+            "path": "Unit 1/Lesson 5 - Macbeth Act IV/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L5-2.mp4",
+            "bytes": 112856799
+          },
+          {
+            "path": "Unit 1/Lesson 5 - Macbeth Act IV/downloaded_resources/consolidation/video/ENG3U-U1L5.mp4",
+            "bytes": 112856799
+          },
+          {
+            "path": "Unit 1/Lesson 5 - Macbeth Act IV/html5-package.zip",
+            "bytes": 104889519
+          },
+          {
+            "path": "Unit 3/Lesson 4 - Propaganda/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U3L4-P3.mp4",
+            "bytes": 95395728
+          },
+          {
+            "path": "Unit 3/Lesson 4 - Propaganda/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U3L4-P3-2.mp4",
+            "bytes": 95395728
+          }
+        ],
+        "sizeGb": 9.55
+      },
+      "commands": {
+        "rcloneSftp": "rclone copy \"D:\\工作文件\\SUNNYBROOK\\courseware\\ENG3U\" \"<server-sftp-remote>:/www/wwwroot/ossd-portal/courseware-active/ENG3U\" --transfers 4 --checkers 8 --progress --log-file \"deployment/logs/ENG3U-course-transfer.log\" --log-level INFO",
+        "rsync": "rsync -avh --partial --progress 'D:/工作文件/SUNNYBROOK/courseware/ENG3U/' 'root@your-server:/www/wwwroot/ossd-portal/courseware-active/ENG3U/'",
+        "serverVerify": "test -f '/www/wwwroot/ossd-portal/courseware-active/ENG3U/course-manifest.json' && find '/www/wwwroot/ossd-portal/courseware-active/ENG3U' -type f | wc -l"
+      }
+    },
+    {
+      "code": "ESLEO",
+      "title": "ESLEO · ESL Level 5",
+      "sourceRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ESLEO",
+      "targetPath": "/www/wwwroot/ossd-portal/courseware-active/ESLEO",
+      "status": "ready",
+      "blockers": [],
+      "stats": {
+        "files": 4545,
+        "directories": 149,
+        "bytes": 4251950787,
+        "largestFiles": [
+          {
+            "path": "ispring-localized/unit-01/U01L04.zip",
+            "bytes": 161612794
+          },
+          {
+            "path": "localized-moodle/video/ded892a891-ESLEO-U2L2.mp4",
+            "bytes": 101887158
+          },
+          {
+            "path": "ispring-localized/unit-03/U03L03.zip",
+            "bytes": 83296825
+          },
+          {
+            "path": "ispring-localized/unit-03/U03L04.zip",
+            "bytes": 78983037
+          },
+          {
+            "path": "localized-moodle/video/b0270fc61b-ESLEO-U2L4.mp4",
+            "bytes": 78330869
+          },
+          {
+            "path": "ispring-localized/unit-03/U03L05.zip",
+            "bytes": 71145594
+          },
+          {
+            "path": "ispring-localized/unit-03/U03L06.zip",
+            "bytes": 69746728
+          },
+          {
+            "path": "ispring-localized/unit-03/U03L01.zip",
+            "bytes": 68965865
+          },
+          {
+            "path": "ispring-localized/unit-04/U04L02.zip",
+            "bytes": 67307932
+          },
+          {
+            "path": "localized-moodle/video/df9cbb865a-ESLEO-U2L6.mp4",
+            "bytes": 66266197
+          },
+          {
+            "path": "ispring-localized/unit-02/U02L04.zip",
+            "bytes": 65212985
+          },
+          {
+            "path": "ispring-localized/unit-04/U04L06.zip",
+            "bytes": 64552619
+          },
+          {
+            "path": "ispring-localized/unit-01/U01L01.zip",
+            "bytes": 63536820
+          },
+          {
+            "path": "ispring-localized/unit-04/U04L03.zip",
+            "bytes": 61670806
+          },
+          {
+            "path": "ispring-localized/unit-03/U03L02.zip",
+            "bytes": 60256196
+          },
+          {
+            "path": "ispring-localized/unit-04/U04L05.zip",
+            "bytes": 58537989
+          },
+          {
+            "path": "localized-moodle/video/d9f010d84e-ESLEO-U2L5.mp4",
+            "bytes": 57310902
+          },
+          {
+            "path": "ispring-localized/unit-02/U02L08.zip",
+            "bytes": 56901755
+          },
+          {
+            "path": "ispring-localized/unit-02/U02L06.zip",
+            "bytes": 56719955
+          },
+          {
+            "path": "ispring-localized/unit-04/U04L01.zip",
+            "bytes": 56244659
+          }
+        ],
+        "sizeGb": 3.96
+      },
+      "commands": {
+        "rcloneSftp": "rclone copy \"D:\\工作文件\\SUNNYBROOK\\courseware\\ESLEO\" \"<server-sftp-remote>:/www/wwwroot/ossd-portal/courseware-active/ESLEO\" --transfers 4 --checkers 8 --progress --log-file \"deployment/logs/ESLEO-course-transfer.log\" --log-level INFO",
+        "rsync": "rsync -avh --partial --progress 'D:/工作文件/SUNNYBROOK/courseware/ESLEO/' 'root@your-server:/www/wwwroot/ossd-portal/courseware-active/ESLEO/'",
+        "serverVerify": "test -f '/www/wwwroot/ossd-portal/courseware-active/ESLEO/course-manifest.json' && find '/www/wwwroot/ossd-portal/courseware-active/ESLEO' -type f | wc -l"
+      }
+    }
+  ]
+}

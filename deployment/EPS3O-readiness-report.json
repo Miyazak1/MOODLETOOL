@@ -1,0 +1,79 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.628Z",
+  "course": {
+    "code": "EPS3O",
+    "title": "Presentation and Speaking Skills, Grade 11, Open",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\EPS3O\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 4,
+    "unitPlans": 0,
+    "lessonPlanExpected": 4,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Understanding Presentations - Speaking for Yourself"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Understanding Presentations - Speaking for the Classroom"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Making Presentations - Speaking for the Workplace"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Making Presentations - Speaking for the Community"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 4,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

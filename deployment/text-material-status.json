@@ -1,0 +1,1449 @@
+{
+  "generatedAt": "2026-07-24T03:34:05.057Z",
+  "totals": {
+    "courses": 54,
+    "coursesWithTexts": 5,
+    "textEntries": 31,
+    "downloadableTexts": 14,
+    "missingDownloadableTexts": 14
+  },
+  "courses": [
+    {
+      "course": "ENG3U",
+      "title": "English, Grade 11, University",
+      "textEntries": 7,
+      "downloadableTexts": 4,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 4,
+      "moodleLinkedTexts": 0,
+      "texts": [
+        {
+          "id": "macbeth",
+          "title": "Macbeth",
+          "author": "William Shakespeare",
+          "units": [
+            1
+          ],
+          "lessons": [],
+          "copyrightStatus": "public_domain",
+          "sourceStatus": "downloadable",
+          "notes": "Core text for Unit 1.",
+          "materials": [
+            {
+              "label": "Macbeth_Project_Gutenberg_1533.txt",
+              "type": "txt",
+              "path": "texts/macbeth/Macbeth_Project_Gutenberg_1533.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 130331
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "frankenstein",
+          "title": "Frankenstein",
+          "author": "Mary Shelley",
+          "units": [
+            2
+          ],
+          "lessons": [],
+          "copyrightStatus": "public_domain",
+          "sourceStatus": "downloadable",
+          "notes": "Core text for Unit 2.",
+          "materials": [
+            {
+              "label": "Frankenstein_Project_Gutenberg_84.txt",
+              "type": "txt",
+              "path": "texts/frankenstein/Frankenstein_Project_Gutenberg_84.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 448885
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "the-birthmark",
+          "title": "The Birthmark",
+          "author": "Nathaniel Hawthorne",
+          "units": [
+            5
+          ],
+          "lessons": [
+            "U5L1"
+          ],
+          "copyrightStatus": "public_domain",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from Unit 5 resource filename The_Birthmark-2.pdf.",
+          "materials": [
+            {
+              "label": "The_Birthmark-2.pdf",
+              "type": "pdf",
+              "path": "Unit 5/Lesson 1 - Introduction to Short Stories/downloaded_resources_from_direct_index/homework/pdf/The_Birthmark-2.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 44285
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "sunday-park",
+          "title": "Sunday in the Park",
+          "author": "Bel Kaufman",
+          "units": [
+            5
+          ],
+          "lessons": [
+            "U5L3"
+          ],
+          "copyrightStatus": "copyrighted",
+          "sourceStatus": "unavailable",
+          "notes": "No source-text file found in Moodle/local resources; Moodle only contains response questions for Unit 5 Lesson 3.",
+          "materials": [],
+          "externalLinks": [],
+          "downloadable": false,
+          "missingDownload": false
+        },
+        {
+          "id": "borders",
+          "title": "Borders",
+          "author": "Thomas King",
+          "units": [
+            5
+          ],
+          "lessons": [
+            "U5L4"
+          ],
+          "copyrightStatus": "copyrighted",
+          "sourceStatus": "unavailable",
+          "notes": "No source-text file found in Moodle/local resources; Moodle only contains response questions for Unit 5 Lesson 4.",
+          "materials": [],
+          "externalLinks": [],
+          "downloadable": false,
+          "missingDownload": false
+        },
+        {
+          "id": "train-from-rhodesia",
+          "title": "Train from Rhodesia",
+          "author": "Nadine Gordimer",
+          "units": [
+            5
+          ],
+          "lessons": [
+            "U5L5"
+          ],
+          "copyrightStatus": "copyrighted",
+          "sourceStatus": "downloadable",
+          "notes": "Full literary text file required for Unit 5 Lesson 5 download.",
+          "materials": [
+            {
+              "label": "Unit-5-Lesson-5-Train-from-Rhodesia-docxMarxism.docx",
+              "type": "docx",
+              "path": "Unit 5/Lesson 5 - Psychoanalytic Lens/downloaded_resources_from_direct_index/homework/docx/Unit-5-Lesson-5-Train-from-Rhodesia-docxMarxism.docx",
+              "url": null,
+              "exists": true,
+              "bytes": 29272
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "indian-education",
+          "title": "Indian Education",
+          "author": "Sherman Alexie",
+          "units": [
+            5
+          ],
+          "lessons": [
+            "U5L6"
+          ],
+          "copyrightStatus": "copyrighted",
+          "sourceStatus": "unavailable",
+          "notes": "No source-text file found in Moodle/local resources; Moodle only contains response questions for Unit 5 Lesson 6.",
+          "materials": [],
+          "externalLinks": [],
+          "downloadable": false,
+          "missingDownload": false
+        }
+      ]
+    },
+    {
+      "course": "ESLDO",
+      "title": "ESLDO · ESL Level 4",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "ESLEO",
+      "title": "ESLEO · ESL Level 5",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "CHC2D",
+      "title": "CHC2D · Canadian History since World War I",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "CHV2O",
+      "title": "CHV2O · Civics and Citizenship",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "GLC2O",
+      "title": "GLC2O · Career Studies",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "MPM2D",
+      "title": "MPM2D · Principles of Mathematics",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "SNC2D",
+      "title": "SNC2D · Science",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "HFC3M",
+      "title": "HFC3M · Food and Culture",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "ICS3U",
+      "title": "ICS3U · Introduction to Computer Studies",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "MCR3U",
+      "title": "MCR3U · Functions",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "SBI3U",
+      "title": "SBI3U · Biology",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "SCH3U",
+      "title": "SCH3U · Chemistry",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "SPH3U",
+      "title": "SPH3U · Physics",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "BBB4M",
+      "title": "BBB4M · International Business Fundamentals",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "BOH4M",
+      "title": "BOH4M · Business Leadership: Management Fundamentals",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "CGW4U",
+      "title": "CGW4U · Canadian and World Issues",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "ENG4U",
+      "title": "ENG4U · English",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "HFA4U",
+      "title": "HFA4U · Nutrition and Health",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "HHS4U",
+      "title": "HHS4U · Families in Canada",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "LKBDU",
+      "title": "LKBDU · International Languages, Simplified Chinese",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "MAP4C",
+      "title": "MAP4C · Foundations for College Mathematics",
+      "textEntries": 1,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 1,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 1,
+      "texts": [
+        {
+          "id": "foundations-for-college-mathematics-12",
+          "title": "Foundations for College Mathematics 12",
+          "author": "Textbook reference",
+          "units": [
+            1
+          ],
+          "lessons": [],
+          "copyrightStatus": "needs_review",
+          "sourceStatus": "link_only",
+          "notes": "Detected as a Moodle Book container in MAP4C; local downloadable textbook file has not been added.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Moodle textbook book",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/book/view.php?id=1456",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        }
+      ]
+    },
+    {
+      "course": "MCV4U",
+      "title": "MCV4U · Calculus and Vectors",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "MDM4U",
+      "title": "MDM4U · Mathematics of Data Management",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "MHF4U",
+      "title": "MHF4U · Advanced Functions",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "SBI4U",
+      "title": "SBI4U · Biology",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "SCH4U",
+      "title": "SCH4U · Chemistry",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "SPH4U",
+      "title": "SPH4U · Physics",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "SNC1D",
+      "title": "SNC1D · Science",
+      "textEntries": 1,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 1,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 1,
+      "texts": [
+        {
+          "id": "grade-9-on-science-textbook",
+          "title": "Grade 9 ON Science Textbook (McGraw-Hill Ryerson)",
+          "author": "McGraw-Hill Ryerson",
+          "units": [
+            1
+          ],
+          "lessons": [],
+          "copyrightStatus": "needs_review",
+          "sourceStatus": "link_only",
+          "notes": "Detected as a Moodle Book container in SNC1D; local downloadable textbook file has not been added.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Moodle textbook book",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/book/view.php?id=6351",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        }
+      ]
+    },
+    {
+      "course": "BBI1O",
+      "title": "BBI1O · Introduction to Business",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "ASM3M",
+      "title": "Media Arts, Grade 11, University/College",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "AVI1O",
+      "title": "Visual Arts, Grade 9, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "AVI2O",
+      "title": "Visual Arts, Grade 10, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "AVI3M",
+      "title": "Visual Arts, Grade 11, University/College",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "BAF3M",
+      "title": "Financial Accounting Fundamentals, Grade 11, University/College",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "BBI2O",
+      "title": "Introduction to Business, Grade 10, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "BTT1O",
+      "title": "Information and Communication Technology in Business, Grade 9, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "CGC1D",
+      "title": "Issues in Canadian Geography, Grade 9 Academic",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "CIA4U",
+      "title": "Analysing Current Economic Issues, Grade 12, University",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "ENG2D",
+      "title": "English, Grade 10, Academic",
+      "textEntries": 12,
+      "downloadableTexts": 9,
+      "missingDownloadableTexts": 3,
+      "localMaterialFiles": 9,
+      "moodleLinkedTexts": 12,
+      "texts": [
+        {
+          "id": "othello",
+          "title": "Othello",
+          "author": "William Shakespeare",
+          "units": [
+            4
+          ],
+          "lessons": [
+            "U04L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "downloadable",
+          "notes": "Core drama text for ENG2D Unit 4.",
+          "materials": [
+            {
+              "label": "Othello_Project_Gutenberg_1531.txt",
+              "type": "txt",
+              "path": "texts/othello/Othello_Project_Gutenberg_1531.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 175829
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "The Play: \"Othello\" by William Shakespeare",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=466",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "lady-or-the-tiger",
+          "title": "The Lady or the Tiger?",
+          "author": "Frank R. Stockton",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from ENG2D Unit 1 resource title.",
+          "materials": [
+            {
+              "label": "The_Lady_or_the_Tiger_Wikisource.txt",
+              "type": "txt",
+              "path": "texts/lady-or-the-tiger/The_Lady_or_the_Tiger_Wikisource.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 15704
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "Short Story: \"The Lady or the Tiger?\" by Frank R. Stockton",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=387",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "the-interlopers",
+          "title": "The Interlopers",
+          "author": "Saki",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from ENG2D Unit 1 resource title.",
+          "materials": [
+            {
+              "label": "The_Interlopers_Wikisource.txt",
+              "type": "txt",
+              "path": "texts/the-interlopers/The_Interlopers_Wikisource.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 12252
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "Short Story + Activity: \"The Interlopers\" by Saki",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=390",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "the-rocking-horse-winner",
+          "title": "The Rocking Horse Winner",
+          "author": "D.H. Lawrence",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from ENG2D Unit 1 resource title.",
+          "materials": [
+            {
+              "label": "The_Rocking_Horse_Winner_Pressbooks.txt",
+              "type": "txt",
+              "path": "texts/the-rocking-horse-winner/The_Rocking_Horse_Winner_Pressbooks.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 31391
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "Short Story + Activity: \"The Rocking Horse Winner\" by D.H. Lawrence",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=392",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "myth-of-prometheus",
+          "title": "The Myth of Prometheus",
+          "author": "Classical myth",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Public domain source tradition",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from ENG2D Unit 1 mythology resources.",
+          "materials": [
+            {
+              "label": "Prometheus_Project_Gutenberg_9313.txt",
+              "type": "txt",
+              "path": "texts/myth-of-prometheus/Prometheus_Project_Gutenberg_9313.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 7218
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "Myth: \"The Myth of Prometheus\"",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=395",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "daedalus-and-icarus",
+          "title": "The Story of Daedalus and Icarus",
+          "author": "Classical myth",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Public domain source tradition",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from ENG2D Unit 1 mythology resources.",
+          "materials": [
+            {
+              "label": "Icarus_and_Daedalus_Project_Gutenberg_9313.txt",
+              "type": "txt",
+              "path": "texts/daedalus-and-icarus/Icarus_and_Daedalus_Project_Gutenberg_9313.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 4094
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "Myth: \"The Story of Daedalus and Icarus\"",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=398",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "landscape-with-the-fall-of-icarus",
+          "title": "Landscape With The Fall of Icarus",
+          "author": "William Carlos Williams",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from ENG2D Unit 1 poetry resources.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Poem: \"Landscape With The Fall of Icarus\" by William Carlos Williams",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=402",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "queen-elizabeth-address-to-the-troops",
+          "title": "Address to the Troops at Tilbury",
+          "author": "Queen Elizabeth I",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from ENG2D persuasive/speech resource sequence.",
+          "materials": [
+            {
+              "label": "Speech_to_the_Troops_at_Tilbury_Wikisource.txt",
+              "type": "txt",
+              "path": "texts/queen-elizabeth-address-to-the-troops/Speech_to_the_Troops_at_Tilbury_Wikisource.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 1865
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "Speech: Queen Elizabeth I Address to the Troops",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=410",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "i-have-a-dream",
+          "title": "I Have a Dream",
+          "author": "Martin Luther King Jr.",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from ENG2D persuasive/speech resource sequence.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Speech: \"I Have a Dream\" by Martin Luther King Jr.",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=413",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "jfk-inaugural-address",
+          "title": "Inaugural Address",
+          "author": "John F. Kennedy",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from ENG2D persuasive/speech resource sequence.",
+          "materials": [
+            {
+              "label": "JFK_Inaugural_Address_Project_Gutenberg_3.txt",
+              "type": "txt",
+              "path": "texts/jfk-inaugural-address/JFK_Inaugural_Address_Project_Gutenberg_3.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 27290
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "Speech: Inaugural Address by President John F. Kennedy",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=414",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "pearl-harbor-address",
+          "title": "Pearl Harbor Address to the Nation",
+          "author": "Franklin D. Roosevelt",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from ENG2D persuasive/speech resource sequence.",
+          "materials": [
+            {
+              "label": "Day_of_Infamy_Speech_Project_Gutenberg_21805.txt",
+              "type": "txt",
+              "path": "texts/pearl-harbor-address/Day_of_Infamy_Speech_Project_Gutenberg_21805.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 22720
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "Speech: Pearl Harbor Address to the Nation by Franklin D. Roosevelt",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=415",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "lord-of-the-flies",
+          "title": "Lord of the Flies",
+          "author": "William Golding",
+          "units": [
+            3
+          ],
+          "lessons": [
+            "U03L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Core novel for ENG2D Unit 3.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Novel: \"Lord of the Flies\" by William Golding",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=432",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        }
+      ]
+    },
+    {
+      "course": "EPS3O",
+      "title": "Presentation and Speaking Skills, Grade 11, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "ESLAO",
+      "title": "English as a Second Language, ESL Level 1, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "ESLBO",
+      "title": "English as a Second Language, ESL Level 2, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "ESLCO",
+      "title": "English as a Second Language, ESL Level 3, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "HFN1O",
+      "title": "Food and Nutrition, Grade 9 or 10",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "ICS2O",
+      "title": "Introduction to Computer Studies, Grade 10, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "ICS4U",
+      "title": "Computer Science, Grade 12, University",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "LKBCU",
+      "title": "International Languages, Simplified Chinese, Level 2, University",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "MBF3C",
+      "title": "Foundations for College Mathematics, Grade 11, College",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "MPM1D",
+      "title": "Principles of Mathematics, Grade 9, Academic",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "MTH1W",
+      "title": "Mathematics, Grade 9, De-Streamed",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "OLC4O",
+      "title": "Ontario Secondary School Literacy Course, Grade 12, Open",
+      "textEntries": 10,
+      "downloadableTexts": 1,
+      "missingDownloadableTexts": 9,
+      "localMaterialFiles": 1,
+      "moodleLinkedTexts": 10,
+      "texts": [
+        {
+          "id": "lather-and-nothing-else",
+          "title": "Lather and Nothing Else",
+          "author": "Hernando Tellez",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 1 Lesson 3 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 3 - \"Lather and Nothing Else\" by Hernando Tellez",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=511",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "all-i-really-need-kindergarten",
+          "title": "All I Really Need To Know I Learned in Kindergarten",
+          "author": "Robert Fulghum",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 1 Lesson 8 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 8 - \"All I Really Need To Know I Learned in Kindergarten\" by Robert Fulghum",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=520",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "night-of-the-mustang",
+          "title": "Night of the Mustang",
+          "author": "Unknown",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 2 Lesson 4 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 4 - Analyzing Non-Fiction: \"Night of the Mustang\"",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=534",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "barney",
+          "title": "Barney",
+          "author": "Will Stanton",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 2 Lesson 5 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 5 - Short Story: \"Barney\" by Will Stanton",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=536",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "urban-legends-how-they-start",
+          "title": "Urban Legends - How They Start and Why They Persist",
+          "author": "Heather Whipps",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 2 Lesson 6 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 6 - \"Urban Legends -How They Start and Why They Persist\" by Heather Whipps",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=538",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "do-we-really-see-4000-ads",
+          "title": "Do we really see 4000 ads a day?",
+          "author": "Bryce Sanders",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 2 Lesson 7 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 7 - \"Do we really see 4000 ads a day?\" by Bryce Sanders",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=540",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "buddy-can-you-spare-a-home",
+          "title": "Buddy can you spare a home?",
+          "author": "Unknown",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 2 Lesson 9 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 9 - Article: \"Buddy can you spare a home?\"",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=547",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "i-have-a-dream",
+          "title": "I Have a Dream",
+          "author": "Martin Luther King Jr.",
+          "units": [
+            3
+          ],
+          "lessons": [
+            "U03L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 3 Lesson 1 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Speech: \"I Have a Dream\" - by Martin Luther King Jr.",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=554",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "the-road-not-taken",
+          "title": "The Road Not Taken",
+          "author": "Robert Frost",
+          "units": [
+            3
+          ],
+          "lessons": [
+            "U03L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from OLC4O Unit 3 Lesson 6 resource title.",
+          "materials": [
+            {
+              "label": "The_Road_Not_Taken_Wikisource.txt",
+              "type": "txt",
+              "path": "texts/the-road-not-taken/The_Road_Not_Taken_Wikisource.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 1851
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "Lesson 6 - Poem: \"The Road Not Taken\" by Robert Frost",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=567",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "global-warming-charles-f-keller",
+          "title": "Global Warming",
+          "author": "Charles F. Keller",
+          "units": [
+            3
+          ],
+          "lessons": [
+            "U03L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 3 Lesson 9 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 9 - Article: \"Global Warming\" by Charles F. Keller",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=576",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        }
+      ]
+    },
+    {
+      "course": "PPL1O",
+      "title": "Healthy Active Living Education, Grade 9, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    },
+    {
+      "course": "PPL3O",
+      "title": "Healthy Active Living Education, Grade 11, Open",
+      "textEntries": 0,
+      "downloadableTexts": 0,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 0,
+      "moodleLinkedTexts": 0,
+      "texts": []
+    }
+  ]
+}

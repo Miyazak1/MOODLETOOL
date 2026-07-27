@@ -1,0 +1,107 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.625Z",
+  "course": {
+    "code": "CGC1D",
+    "title": "Issues in Canadian Geography, Grade 9 Academic",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\CGC1D\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 5,
+    "lessons": 8,
+    "unitPlans": 0,
+    "lessonPlanExpected": 8,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Canadian Connections and Methods of Geographical Inquiry"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Canada's Ecozones and Cultural Connections"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Canada's Economic Connections"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Canada's Global and Future Connections"
+      },
+      {
+        "unit": 5,
+        "title": "Final Summative Project"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Week 1: Inquiry Methods and Mapping Foundations"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Week 2: Ecozones, Landforms, Climate, and Biosphere"
+      },
+      {
+        "id": "U02L02",
+        "unit": 2,
+        "lesson": 2,
+        "title": "Week 3: Cultural Connections and Population"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Week 4: Industries, Urbanization, and Location Factors"
+      },
+      {
+        "id": "U03L02",
+        "unit": 3,
+        "lesson": 2,
+        "title": "Week 5: Energy, Land Use, and Business Location"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Week 6: Canada and the World Community"
+      },
+      {
+        "id": "U04L02",
+        "unit": 4,
+        "lesson": 2,
+        "title": "Week 7: Trade, Culture, and Development"
+      },
+      {
+        "id": "U05L01",
+        "unit": 5,
+        "lesson": 1,
+        "title": "Week 8: Final Summative and Exam"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 8,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

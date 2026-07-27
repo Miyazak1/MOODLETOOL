@@ -1,0 +1,2048 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OSSD Teacher Admin</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #18212f;
+        --muted: #667085;
+        --line: #d7dee8;
+        --page: #f4f7fa;
+        --surface: #fff;
+        --navy: #15365d;
+        --teal: #16736a;
+        --gold: #a06a12;
+        --red: #a23b3b;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Arial, "Microsoft YaHei", sans-serif;
+        color: var(--ink);
+        background: var(--page);
+      }
+      header {
+        padding: 22px 28px;
+        color: #fff;
+        background: linear-gradient(110deg, #15365d 0%, #225375 58%, #236b65 100%);
+      }
+      h1 {
+        margin: 0;
+        font-size: 26px;
+      }
+      main {
+        display: grid;
+        gap: 16px;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 22px;
+      }
+      section {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px;
+        background: var(--surface);
+      }
+      h2 {
+        margin: 0 0 12px;
+        font-size: 18px;
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      input,
+      select,
+      button {
+        font: inherit;
+      }
+      input,
+      select {
+        width: 100%;
+        min-height: 40px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 0 10px;
+        background: #fff;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+      }
+      .grid.compact {
+        grid-template-columns: minmax(260px, 1.3fr) repeat(3, minmax(140px, 0.7fr));
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+      button {
+        min-height: 38px;
+        border: 1px solid #93abc6;
+        border-radius: 6px;
+        padding: 7px 12px;
+        color: #123d67;
+        font-weight: 700;
+        background: #f7fbff;
+        cursor: pointer;
+      }
+      button.primary {
+        border-color: #6ca39b;
+        color: #0f5b54;
+        background: #e7f4ef;
+      }
+      pre {
+        min-height: 120px;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        white-space: pre-wrap;
+        background: #f7f9fc;
+      }
+      .warn {
+        color: var(--gold);
+      }
+      .hint {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+      .meta-line {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .stat {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: #f7f9fc;
+      }
+      .stat span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .stat strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 18px;
+      }
+      .inline-action {
+        min-height: 30px;
+        margin-left: 8px;
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      .error {
+        color: var(--red);
+      }
+      .readiness {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+      }
+      .readiness-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 10px;
+      }
+      .readiness-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: #f7f9fc;
+      }
+      .readiness-card.ok {
+        border-color: #94c9bd;
+        background: #f0faf6;
+      }
+      .readiness-card.warn-card {
+        border-color: #e4c687;
+        background: #fff8eb;
+      }
+      .readiness-card span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .readiness-card strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 16px;
+      }
+      .gap-list {
+        display: grid;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .gap-list li {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 8px 10px;
+        background: #fff;
+      }
+      .task-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .task-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: #fff;
+      }
+      .task-card strong,
+      .task-card span {
+        overflow-wrap: anywhere;
+      }
+      .task-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .chip {
+        border-radius: 999px;
+        background: #eef4fb;
+        color: var(--ink);
+        padding: 3px 8px;
+        font-weight: 700;
+      }
+      .filename {
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      }
+      button.small {
+        min-height: 30px;
+        padding: 5px 9px;
+        font-size: 12px;
+      }
+      .table-wrap {
+        margin-top: 12px;
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .checkbox-grid label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 32px;
+        margin: 0;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 5px 8px;
+        color: var(--ink);
+        background: #fff;
+      }
+      .checkbox-grid input {
+        width: auto;
+        min-height: 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 780px;
+      }
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 9px 10px;
+        text-align: left;
+        font-size: 13px;
+      }
+      th {
+        color: var(--muted);
+        background: #f7f9fc;
+        font-size: 12px;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      td.nowrap,
+      th.nowrap {
+        white-space: nowrap;
+      }
+      .status-ok {
+        color: #0f6a46;
+        font-weight: 700;
+      }
+      .status-missing {
+        color: var(--gold);
+        font-weight: 700;
+      }
+      .status-risk {
+        color: var(--red);
+        font-weight: 700;
+      }
+      .toolbar-grid {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) minmax(170px, 0.55fr) minmax(220px, 0.8fr);
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .notice {
+        margin-top: 12px;
+        border: 1px solid #e4c687;
+        border-radius: 8px;
+        padding: 10px 12px;
+        color: #735014;
+        background: #fff8eb;
+        line-height: 1.45;
+      }
+      .badge {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 3px 8px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #eef3f8;
+      }
+      .badge.risk {
+        color: #8b2f2f;
+        background: #fdecec;
+      }
+      .selection-banner {
+        margin-top: 12px;
+        border: 1px solid #94c9bd;
+        border-radius: 8px;
+        padding: 10px 12px;
+        color: #0f5b54;
+        background: #f0faf6;
+        line-height: 1.45;
+      }
+      tr.selected-row td {
+        background: #eef8f5;
+      }
+      tr.selected-row td:first-child {
+        border-left: 4px solid var(--teal);
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>OSSD Teacher Admin</h1>
+    </header>
+    <main>
+      <section>
+        <h2>管理员登录</h2>
+        <div class="grid">
+          <div>
+            <label for="username">Username</label>
+            <input id="username" autocomplete="username" />
+          </div>
+          <div>
+            <label for="password">Password</label>
+            <input id="password" type="password" autocomplete="current-password" />
+            <p class="hint" id="localTokenHint" hidden>
+              本地启动默认账号：<strong>admin</strong> / <strong>local-admin-password</strong>
+              <button class="inline-action" id="fillLocalLogin" type="button">填入</button>
+            </p>
+          </div>
+        </div>
+        <p class="warn">正式服务器需要在宝塔/Node 环境变量里设置 ADMIN_UPLOADS_ENABLED=1、ADMIN_USERNAME、ADMIN_PASSWORD、ADMIN_SESSION_SECRET。默认限制：普通文件 50MB，iSpring ZIP 2048MB。</p>
+        <div class="actions">
+          <button class="primary" id="loginButton" type="button">登录</button>
+          <button id="logoutButton" type="button" hidden>退出登录</button>
+        </div>
+      </section>
+
+      <section class="auth-required" hidden>
+        <h2>连接</h2>
+        <div class="grid">
+          <div>
+            <label for="course">Course</label>
+            <select id="course">
+              <option value="ENG3U">ENG3U · English · Grade 11</option>
+            </select>
+            <p class="meta-line" id="courseMeta">Courses loaded from Unit Plans and Lesson Plans. Textbooks are excluded.</p>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="statusButton" type="button">读取状态</button>
+        </div>
+        <div class="stats" id="statusStats" hidden></div>
+        <div class="readiness" id="readinessPanel" hidden></div>
+      </section>
+
+      <section class="auth-required" hidden>
+        <h2>课程启用 / 归档</h2>
+        <p class="meta-line">状态按钮只控制前台可见性；归档任务会调用服务器脚本生成课程压缩包。只有选择“并删除 active”才会在归档校验通过后删除解压目录。</p>
+        <div>
+          <label for="courseStatusNote">状态备注</label>
+          <input id="courseStatusNote" placeholder="例如：暂不上线，只保留归档包" />
+        </div>
+        <div class="toolbar-grid">
+          <div>
+            <label for="launchCourses">首批上线课程</label>
+            <input id="launchCourses" value="ENG3U,ESLEO" />
+          </div>
+          <div>
+            <label for="lifecycleFilter">状态筛选</label>
+            <select id="lifecycleFilter">
+              <option value="all">全部课程</option>
+              <option value="risk">风险：未完成但 active</option>
+              <option value="active">active</option>
+              <option value="archived">archived</option>
+              <option value="ready">Catalog ready</option>
+              <option value="planning">Catalog planning-only</option>
+            </select>
+          </div>
+          <div>
+            <label for="lifecycleSearch">搜索课程</label>
+            <input id="lifecycleSearch" placeholder="ENG3U / English / Biology" />
+          </div>
+        </div>
+        <div id="courseLifecycleSummary" class="stats" hidden></div>
+        <div id="courseLifecycleNotice" class="notice" hidden></div>
+        <div id="selectedCourseBanner" class="selection-banner" hidden></div>
+        <div class="actions">
+          <button id="refreshCourseStatusButton" type="button">读取课程状态</button>
+          <button class="primary" id="applyLaunchCoursesButton" type="button">应用首批上线状态</button>
+          <button class="primary" id="activateCourseButton" type="button">启用当前课程</button>
+          <button id="archiveCourseButton" type="button">归档当前课程</button>
+          <button id="archivePackageButton" type="button">生成归档包</button>
+          <button id="archiveAndDeleteButton" type="button">归档并删除 active</button>
+          <button id="restoreArchiveButton" type="button">从归档包解压启用</button>
+          <button id="refreshLifecycleJobsButton" type="button">刷新任务</button>
+        </div>
+        <div id="courseLifecycleTable" hidden></div>
+        <div id="courseLifecycleJobs" hidden></div>
+      </section>
+
+      <section class="auth-required" hidden>
+        <h2>上传</h2>
+        <div id="courseUploadTasks" hidden></div>
+        <div class="grid compact">
+          <div>
+            <label for="type">类型</label>
+            <select id="type">
+              <optgroup label="课程级资料">
+                <option value="course-outline">Course Outline / Syllabus</option>
+                <option value="course-introduction">Course Introduction</option>
+              </optgroup>
+              <optgroup label="Unit 结构资料">
+                <option value="unit-plan">Unit Plan</option>
+                <option value="lesson-plan">Lesson Plan</option>
+              </optgroup>
+              <optgroup label="文学文本">
+                <option value="text-material">Literary Text</option>
+              </optgroup>
+              <optgroup label="页面展示模块">
+                <option value="ispring-zip">iSpring ZIP</option>
+                <option value="ispring-batch-zip">iSpring ZIP Batch</option>
+              </optgroup>
+            </select>
+            <p class="meta-line" id="typeHelp">课程级资料不需要填写 Unit/Lesson。</p>
+          </div>
+          <div id="unitField">
+            <label for="unit">Unit</label>
+            <select id="unit">
+              <option value="1">Unit 1</option>
+            </select>
+          </div>
+          <div id="lessonField">
+            <label for="lesson">Lesson</label>
+            <select id="lesson">
+              <option value="1">Lesson 1</option>
+            </select>
+          </div>
+          <div id="textIdField" hidden>
+            <label for="textId">Text ID</label>
+            <input id="textId" placeholder="sunday-park" />
+          </div>
+        </div>
+        <div style="margin-top: 12px">
+          <label for="file">文件</label>
+          <input id="file" type="file" />
+        </div>
+        <div class="actions">
+          <button class="primary" id="uploadButton" type="button">上传并刷新 manifest</button>
+        </div>
+      </section>
+
+      <section class="auth-required" hidden>
+        <h2>整课 ZIP 导入</h2>
+        <p class="meta-line">上传一门课的完整压缩包后，系统会先解压到临时区并自动识别 Course Outline、Unit Plan、Lesson Plan、lesson book、iSpring、视频和资源文件。确认导入前不会覆盖正式课程。</p>
+        <div>
+          <label for="coursePackageFile">课程压缩包</label>
+          <input id="coursePackageFile" type="file" accept=".zip" />
+        </div>
+        <div class="actions">
+          <button id="coursePackageUploadButton" type="button">上传并生成预览</button>
+          <button class="primary" id="coursePackageCommitButton" type="button" disabled>确认导入到当前课程</button>
+        </div>
+        <div id="coursePackagePanel" hidden></div>
+      </section>
+
+      <section class="auth-required" hidden>
+        <h2>全课程概览</h2>
+        <div class="actions">
+          <button id="readinessButton" type="button">读取全课程缺口</button>
+          <button id="uploadGapsButton" type="button">读取上传清单</button>
+          <button id="contentWorkbenchButton" type="button">读取内容工作台</button>
+        </div>
+        <div class="stats" id="readinessSummaryStats" hidden></div>
+        <div id="courseReadinessTable" hidden></div>
+        <div id="uploadGapTable" hidden></div>
+        <div id="contentWorkbenchTable" hidden></div>
+      </section>
+
+      <section class="auth-required" hidden>
+        <h2>用户与课程权限</h2>
+        <p class="meta-line">这里管理老师登录门户后的可见课程。保存后立即写入服务器用户文件；用户下次登录会使用新的权限。</p>
+        <div class="grid compact">
+          <div>
+            <label for="portalUsername">Username</label>
+            <input id="portalUsername" placeholder="teacher1" />
+          </div>
+          <div>
+            <label for="portalPassword">Password</label>
+            <input id="portalPassword" type="password" placeholder="新用户必填；留空则不改密码" />
+          </div>
+          <div>
+            <label for="portalRole">Role</label>
+            <select id="portalRole">
+              <option value="teacher">teacher</option>
+              <option value="admin">admin</option>
+            </select>
+          </div>
+          <div>
+            <label for="portalStatus">Status</label>
+            <select id="portalStatus">
+              <option value="active">active</option>
+              <option value="disabled">disabled</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top: 12px">
+          <label>可访问课程</label>
+          <div class="checkbox-grid" id="userCourseCheckboxes"></div>
+        </div>
+        <div class="actions">
+          <button id="refreshUsersButton" type="button">刷新用户</button>
+          <button class="primary" id="saveUserButton" type="button">保存用户/权限</button>
+          <button id="clearUserFormButton" type="button">清空表单</button>
+          <button id="deleteUserButton" type="button">删除当前用户</button>
+        </div>
+        <div id="userTable" hidden></div>
+      </section>
+
+      <section class="auth-required" hidden>
+        <h2>维护</h2>
+        <p class="meta-line">清理只针对后台上传产生的临时上传/解压目录，不会删除正式课程文件。iSpring ZIP 原包默认保留，除非选择清理 ZIP。</p>
+        <div class="actions">
+          <button id="historyButton" type="button">读取上传历史</button>
+          <button id="backupsButton" type="button">读取备份列表</button>
+          <button id="generatePreviewsButton" type="button">生成当前课程预览</button>
+          <button id="cleanupTempButton" type="button">清理临时上传/解压目录</button>
+          <button id="cleanupZipButton" type="button">清理 iSpring ZIP 原包</button>
+        </div>
+        <div id="backupList" hidden></div>
+      </section>
+
+      <section>
+        <h2>结果</h2>
+        <pre id="output">Ready.</pre>
+      </section>
+    </main>
+    <script>
+      const output = document.querySelector("#output");
+      const fields = {
+        course: document.querySelector("#course"),
+        username: document.querySelector("#username"),
+        password: document.querySelector("#password"),
+        type: document.querySelector("#type"),
+        unit: document.querySelector("#unit"),
+        lesson: document.querySelector("#lesson"),
+        textId: document.querySelector("#textId"),
+        file: document.querySelector("#file"),
+        portalUsername: document.querySelector("#portalUsername"),
+        portalPassword: document.querySelector("#portalPassword"),
+        portalRole: document.querySelector("#portalRole"),
+        portalStatus: document.querySelector("#portalStatus"),
+        courseStatusNote: document.querySelector("#courseStatusNote"),
+        launchCourses: document.querySelector("#launchCourses"),
+        lifecycleFilter: document.querySelector("#lifecycleFilter"),
+        lifecycleSearch: document.querySelector("#lifecycleSearch"),
+        coursePackageFile: document.querySelector("#coursePackageFile"),
+      };
+      const unitField = document.querySelector("#unitField");
+      const lessonField = document.querySelector("#lessonField");
+      const textIdField = document.querySelector("#textIdField");
+      const typeHelp = document.querySelector("#typeHelp");
+      const courseMeta = document.querySelector("#courseMeta");
+      const statusStats = document.querySelector("#statusStats");
+      const readinessPanel = document.querySelector("#readinessPanel");
+      const readinessSummaryStats = document.querySelector("#readinessSummaryStats");
+      const courseReadinessTable = document.querySelector("#courseReadinessTable");
+      const uploadGapTable = document.querySelector("#uploadGapTable");
+      const contentWorkbenchTable = document.querySelector("#contentWorkbenchTable");
+      const coursePackagePanel = document.querySelector("#coursePackagePanel");
+      const coursePackageCommitButton = document.querySelector("#coursePackageCommitButton");
+      const courseUploadTasks = document.querySelector("#courseUploadTasks");
+      const backupList = document.querySelector("#backupList");
+      const userCourseCheckboxes = document.querySelector("#userCourseCheckboxes");
+      const userTable = document.querySelector("#userTable");
+      const courseLifecycleTable = document.querySelector("#courseLifecycleTable");
+      const courseLifecycleSummary = document.querySelector("#courseLifecycleSummary");
+      const courseLifecycleNotice = document.querySelector("#courseLifecycleNotice");
+      const selectedCourseBanner = document.querySelector("#selectedCourseBanner");
+      const courseLifecycleJobs = document.querySelector("#courseLifecycleJobs");
+      const isLocalAccess = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+      let currentManifest = null;
+      let currentUploadGapData = null;
+      let currentDirectUploadItems = [];
+      let currentCoursePackageImport = null;
+      let portalUsersData = { users: [], courses: [] };
+      let courseLifecycleData = { courses: [] };
+      let courseLifecycleJobsData = { jobs: [] };
+      let selectedLifecycleCourse = "";
+
+      if (isLocalAccess) {
+        document.querySelector("#localTokenHint").hidden = false;
+        fields.username.placeholder = "本地默认：admin";
+        fields.password.placeholder = "本地默认：local-admin-password";
+      }
+
+      function write(value) {
+        output.textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+      }
+
+      function formatBytes(bytes) {
+        if (!bytes) return "0 B";
+        const units = ["B", "KB", "MB", "GB", "TB"];
+        let size = bytes;
+        let index = 0;
+        while (size >= 1024 && index < units.length - 1) {
+          size /= 1024;
+          index += 1;
+        }
+        return `${size.toFixed(size >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function uploadTypeLabel(type) {
+        return {
+          "course-outline": "Course Outline",
+          "course-introduction": "Introduction",
+          "unit-plan": "Unit Plan",
+          "lesson-plan": "Lesson Plan",
+          "text-material": "Literary Text",
+          "ispring-zip": "iSpring ZIP",
+          "ispring-batch-zip": "iSpring ZIP Batch",
+        }[type] || type;
+      }
+
+      function unitLessonText(item) {
+        const parts = [];
+        if (item.unit) parts.push(`Unit ${item.unit}`);
+        if (item.lesson) parts.push(`Lesson ${item.lesson}`);
+        return parts.join(" · ") || "Course level";
+      }
+
+      function renderStatusStats(data) {
+        const disk = data.storage?.disk;
+        const stats = [
+          ["Units", data.units],
+          ["Lessons", data.lessons],
+          ["Courseware", formatBytes(data.storage?.coursewareBytes || 0)],
+          ["Admin uploads", formatBytes(data.storage?.adminUploadBytes || 0)],
+        ];
+        if (disk) {
+          stats.push(["Disk free", formatBytes(disk.freeBytes)]);
+          stats.push(["Disk total", formatBytes(disk.totalBytes)]);
+        }
+        statusStats.innerHTML = stats
+          .map(([label, value]) => `<div class="stat"><span>${label}</span><strong>${value}</strong></div>`)
+          .join("");
+        statusStats.hidden = false;
+      }
+
+      function readinessCard(label, value, ok) {
+        return `<div class="readiness-card ${ok ? "ok" : "warn-card"}"><span>${label}</span><strong>${value}</strong></div>`;
+      }
+
+      function shortGapList(items, formatter, emptyText) {
+        if (!items.length) return `<li>${emptyText}</li>`;
+        return items.slice(0, 8).map((item) => `<li>${formatter(item)}</li>`).join("");
+      }
+
+      function directUploadTaskCard(item, index) {
+        return `
+          <div class="task-card">
+            <div>
+              <strong>${escapeHtml(uploadTypeLabel(item.uploadType))}</strong>
+              <div class="task-meta">
+                <span class="chip">${escapeHtml(item.course)}</span>
+                <span>${escapeHtml(unitLessonText(item))}</span>
+                <span class="filename">${escapeHtml(item.suggestedFilename || "")}</span>
+              </div>
+              ${item.note ? `<p class="meta-line">${escapeHtml(item.note)}</p>` : ""}
+            </div>
+            <button class="small" type="button" data-gap-action="fill" data-gap-index="${index}">填入表单</button>
+          </div>
+        `;
+      }
+
+      function renderCurrentCourseUploadTasks() {
+        if (!currentUploadGapData) {
+          courseUploadTasks.hidden = true;
+          return;
+        }
+        const course = fields.course.value;
+        const direct = currentDirectUploadItems
+          .map((item, index) => ({ item, index }))
+          .filter(({ item }) => item.course === course);
+        const reviews = (currentUploadGapData.reviewItems || []).filter((item) => item.course === course);
+        const external = (currentUploadGapData.externalItems || []).filter((item) => item.course === course);
+
+        if (!direct.length && !reviews.length && !external.length) {
+          courseUploadTasks.innerHTML = '<p class="meta-line">当前课程没有待上传文件。若要补 iSpring，请先确认是否有对应 ZIP 包。</p>';
+          courseUploadTasks.hidden = false;
+          return;
+        }
+
+        const directHtml = direct.map(({ item, index }) => directUploadTaskCard(item, index)).join("");
+        const reviewHtml = reviews
+          .map((item) => `<li>${escapeHtml(item.textTitle)} · ${escapeHtml(item.author)}${item.note ? `：${escapeHtml(item.note)}` : ""}</li>`)
+          .join("");
+        const externalHtml = external
+          .map((item) => `<li>${escapeHtml(uploadTypeLabel(item.uploadType))}：${item.connectedCount || 0}/${item.lessonCount || 0} connected. ${escapeHtml(item.note || "")}</li>`)
+          .join("");
+
+        courseUploadTasks.innerHTML = `
+          <h3>当前课程待处理</h3>
+          ${directHtml ? `<div class="task-list">${directHtml}</div>` : '<p class="meta-line">当前课程没有直接待上传文件。</p>'}
+          ${reviewHtml ? `<ul class="gap-list">${reviewHtml}</ul>` : ""}
+          ${externalHtml ? `<ul class="gap-list">${externalHtml}</ul>` : ""}
+        `;
+        courseUploadTasks.hidden = false;
+      }
+
+      function renderReadiness(data) {
+        const readiness = data.readiness;
+        if (!readiness) {
+          readinessPanel.hidden = true;
+          return;
+        }
+        const unitMissing = readiness.unitPlans.missing || [];
+        const lessonMissing = readiness.lessonPlans.missing || [];
+        const textReview = readiness.texts.needsReview || [];
+        const missingDownloads = readiness.texts.missingDownloads || [];
+        readinessPanel.innerHTML = `
+          <div class="readiness-grid">
+            ${readinessCard("Course Outline", readiness.courseOutline.ok ? "OK" : "Missing", readiness.courseOutline.ok)}
+            ${readinessCard("Introduction", readiness.introduction.ok ? "OK" : "Missing", readiness.introduction.ok)}
+            ${readinessCard("Unit Plans", `${readiness.unitPlans.count}/${readiness.unitPlans.expected}`, unitMissing.length === 0)}
+            ${readinessCard("Lesson Plans", `${readiness.lessonPlans.count}/${readiness.lessonPlans.expected}`, lessonMissing.length === 0)}
+            ${readinessCard("iSpring", readiness.ispring.connected ? `${readiness.ispring.count} connected` : "Not connected", readiness.ispring.connected)}
+            ${readinessCard("Missing Text Downloads", missingDownloads.length ? `${missingDownloads.length} item(s)` : "OK", missingDownloads.length === 0)}
+          </div>
+          <ul class="gap-list">
+            ${shortGapList(unitMissing, (item) => `Missing unit plan: Unit ${item.unit} · ${item.title}`, "No missing unit plans.")}
+            ${shortGapList(lessonMissing, (item) => `Missing lesson plan: ${item.id} · ${item.title}`, "No missing lesson plans.")}
+            ${shortGapList(missingDownloads, (item) => `Missing text download: ${item.title} · ${item.author}`, "No missing text downloads.")}
+            ${shortGapList(textReview, (item) => `Text needs review: ${item.title} · ${item.author}`, "No text review items.")}
+          </ul>
+        `;
+        readinessPanel.hidden = false;
+      }
+
+      function okText(ok) {
+        return ok ? '<span class="status-ok">OK</span>' : '<span class="status-missing">Missing</span>';
+      }
+
+      function countText(count, expected) {
+        const ok = count === expected;
+        return `<span class="${ok ? "status-ok" : "status-missing"}">${count}/${expected}</span>`;
+      }
+
+      function option(label, value) {
+        const element = document.createElement("option");
+        element.value = String(value);
+        element.textContent = label;
+        return element;
+      }
+
+      function courseCodeSortKey(course) {
+        return String(course?.code || course?.course || "").toUpperCase();
+      }
+
+      function sortCoursesByCode(courses) {
+        return [...(courses || [])].sort((left, right) =>
+          courseCodeSortKey(left).localeCompare(courseCodeSortKey(right), "en", {
+            numeric: true,
+            sensitivity: "base",
+          }),
+        );
+      }
+
+      function renderUserCourseCheckboxes(selectedCourses = []) {
+        const selected = new Set(selectedCourses);
+        const courses = sortCoursesByCode(portalUsersData.courses || []);
+        userCourseCheckboxes.innerHTML = `
+          <label><input type="checkbox" value="*" ${selected.has("*") ? "checked" : ""} /> 全部课程</label>
+          ${courses
+            .map(
+              (course) =>
+                `<label><input type="checkbox" value="${escapeHtml(course.code)}" ${selected.has(course.code) ? "checked" : ""} /> ${escapeHtml(course.code)}</label>`,
+            )
+            .join("")}
+        `;
+      }
+
+      function selectedUserCourses() {
+        const values = [...userCourseCheckboxes.querySelectorAll("input:checked")].map((input) => input.value);
+        return values.includes("*") ? ["*"] : values;
+      }
+
+      function clearUserForm() {
+        fields.portalUsername.value = "";
+        fields.portalPassword.value = "";
+        fields.portalRole.value = "teacher";
+        fields.portalStatus.value = "active";
+        renderUserCourseCheckboxes([]);
+      }
+
+      function fillUserForm(username) {
+        const user = portalUsersData.users.find((item) => item.username === username);
+        if (!user) return;
+        fields.portalUsername.value = user.username;
+        fields.portalPassword.value = "";
+        fields.portalRole.value = user.role || "teacher";
+        fields.portalStatus.value = user.status || "active";
+        renderUserCourseCheckboxes(user.courses || []);
+        write(`已载入用户：${user.username}`);
+      }
+
+      function renderUsers(data) {
+        portalUsersData = data;
+        renderUserCourseCheckboxes(selectedUserCourses());
+        const rows = (data.users || [])
+          .map(
+            (user) => `
+              <tr>
+                <td><strong>${escapeHtml(user.username)}</strong></td>
+                <td>${escapeHtml(user.role)}</td>
+                <td>${escapeHtml(user.status)}</td>
+                <td>${escapeHtml((user.courses || []).join(", "))}</td>
+                <td>${escapeHtml(user.passwordStored || "")}</td>
+                <td class="nowrap"><button class="small" type="button" data-user-action="edit" data-username="${escapeHtml(user.username)}">编辑</button></td>
+              </tr>
+            `,
+          )
+          .join("");
+        userTable.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Courses</th>
+                  <th>Password</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>${rows || '<tr><td colspan="6">No users configured.</td></tr>'}</tbody>
+            </table>
+          </div>
+          <p class="meta-line">Users file: ${escapeHtml(data.usersFile || "")}</p>
+        `;
+        userTable.hidden = false;
+      }
+
+      function lifecycleLabel(status) {
+        const value = String(status || "active");
+        const className = value === "active" ? "status-ok" : value === "archived" ? "status-missing" : "warn";
+        return `<span class="${className}">${escapeHtml(value)}</span>`;
+      }
+
+      function isPlanningActive(course) {
+        return course.status === "active" && course.catalogStatus && course.catalogStatus !== "ready";
+      }
+
+      function lifecycleStatusCounts(courses) {
+        return {
+          total: courses.length,
+          active: courses.filter((course) => course.status === "active").length,
+          archived: courses.filter((course) => course.status === "archived").length,
+          risk: courses.filter(isPlanningActive).length,
+        };
+      }
+
+      function renderCourseLifecycleSummary(courses, visibleCourses) {
+        const counts = lifecycleStatusCounts(courses);
+        courseLifecycleSummary.innerHTML = [
+          ["全部", counts.total],
+          ["当前显示", visibleCourses.length],
+          ["Active", counts.active],
+          ["Archived", counts.archived],
+          ["未完成但 Active", counts.risk],
+        ]
+          .map(([label, value]) => `<div class="stat"><span>${label}</span><strong>${value}</strong></div>`)
+          .join("");
+        courseLifecycleSummary.hidden = false;
+
+        if (counts.risk) {
+          courseLifecycleNotice.innerHTML = `有 <strong>${counts.risk}</strong> 门 catalog 仍是 planning-only 但 lifecycle 是 active。首批上线前建议点击“应用首批上线状态”，只开放首批课程，其余课程先隐藏。`;
+          courseLifecycleNotice.hidden = false;
+        } else {
+          courseLifecycleNotice.hidden = true;
+        }
+      }
+
+      function filteredLifecycleCourses(courses) {
+        const filter = fields.lifecycleFilter.value;
+        const query = fields.lifecycleSearch.value.trim().toLowerCase();
+        return courses.filter((course) => {
+          if (filter === "risk" && !isPlanningActive(course)) return false;
+          if (filter === "active" && course.status !== "active") return false;
+          if (filter === "archived" && course.status !== "archived") return false;
+          if (filter === "ready" && course.catalogStatus !== "ready") return false;
+          if (filter === "planning" && course.catalogStatus === "ready") return false;
+          if (!query) return true;
+          return `${course.code} ${course.title} ${course.catalogStatus} ${course.status}`.toLowerCase().includes(query);
+        });
+      }
+
+      function renderSelectedCourseBanner(course) {
+        if (!course) {
+          selectedCourseBanner.hidden = true;
+          return;
+        }
+        selectedCourseBanner.innerHTML = `
+          当前操作课程：<strong>${escapeHtml(course.code)}</strong> · ${escapeHtml(course.title || "")}
+          · ${lifecycleLabel(course.status)}
+          · Catalog: ${escapeHtml(course.catalogStatus || "")}
+        `;
+        selectedCourseBanner.hidden = false;
+      }
+
+      function renderCourseLifecycle(data) {
+        const courses = sortCoursesByCode(data.courses || []);
+        courseLifecycleData = { ...data, courses };
+        const visibleCourses = filteredLifecycleCourses(courses);
+        renderCourseLifecycleSummary(courses, visibleCourses);
+        const selectedRecord = courses.find((course) => course.code === selectedLifecycleCourse || course.code === fields.course.value);
+        renderSelectedCourseBanner(selectedRecord);
+        const rows = visibleCourses
+          .map(
+            (course) => {
+              const risk = isPlanningActive(course);
+              const selected = course.code === (selectedLifecycleCourse || fields.course.value);
+              return `
+              <tr class="${selected ? "selected-row" : ""}">
+                <td><strong>${escapeHtml(course.code)}</strong></td>
+                <td>${escapeHtml(course.title)}</td>
+                <td>${lifecycleLabel(course.status)}</td>
+                <td>${escapeHtml(course.catalogStatus || "")}${risk ? ' <span class="badge risk">需隐藏</span>' : ""}</td>
+                <td>${escapeHtml(course.updatedAt || "")}</td>
+                <td>${escapeHtml(course.updatedBy || "")}</td>
+                <td>${escapeHtml(course.note || "")}</td>
+                <td class="nowrap"><button class="small ${selected ? "primary" : ""}" type="button" data-course-action="select" data-course="${escapeHtml(course.code)}">${selected ? "已选择" : "选择"}</button></td>
+              </tr>
+            `;
+            },
+          )
+          .join("");
+        courseLifecycleTable.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Title</th>
+                  <th>Lifecycle</th>
+                  <th>Catalog</th>
+                  <th>Updated</th>
+                  <th>By</th>
+                  <th>Note</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>${rows || '<tr><td colspan="8">No courses found.</td></tr>'}</tbody>
+            </table>
+          </div>
+          <p class="meta-line">Status file: ${escapeHtml(data.statusFile || "")}</p>
+        `;
+        courseLifecycleTable.hidden = false;
+      }
+
+      function renderCourseLifecycleJobs(data) {
+        courseLifecycleJobsData = data;
+        const rows = (data.jobs || [])
+          .map(
+            (job) => `
+              <tr>
+                <td><strong>${escapeHtml(job.course)}</strong></td>
+                <td>${escapeHtml(job.action)}</td>
+                <td>${lifecycleLabel(job.status)}</td>
+                <td>${job.deleteActive ? "yes" : "no"}</td>
+                <td>${escapeHtml(job.requestedAt || "")}</td>
+                <td>${escapeHtml(job.finishedAt || "")}</td>
+                <td>${escapeHtml(job.error || job.payload?.archivePath || job.payload?.targetCourseRoot || "")}</td>
+              </tr>
+            `,
+          )
+          .join("");
+        courseLifecycleJobs.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Action</th>
+                  <th>Status</th>
+                  <th>Delete active</th>
+                  <th>Started</th>
+                  <th>Finished</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody>${rows || '<tr><td colspan="7">No lifecycle jobs yet.</td></tr>'}</tbody>
+            </table>
+          </div>
+          <p class="meta-line">Active root: ${escapeHtml(data.activeRoot || "")}<br />Archive root: ${escapeHtml(data.archiveRoot || "")}</p>
+        `;
+        courseLifecycleJobs.hidden = false;
+      }
+
+      function selectedUnitRecord() {
+        const unitNumber = Number(fields.unit.value || 1);
+        return (currentManifest?.units || []).find((unit) => unit.unit === unitNumber) || null;
+      }
+
+      function populateLessonOptions() {
+        const type = fields.type.value;
+        const unit = selectedUnitRecord();
+        const lessons = unit?.lessons || [];
+        fields.lesson.innerHTML = "";
+
+        if (lessons.length) {
+          lessons.forEach((lesson) => {
+            fields.lesson.append(option(`Lesson ${lesson.lesson} · ${lesson.title}`, lesson.lesson));
+          });
+        }
+
+        if (type === "lesson-plan") {
+          const nextLesson = lessons.length ? Math.max(...lessons.map((lesson) => lesson.lesson)) + 1 : 1;
+          fields.lesson.append(option(`New Lesson ${nextLesson}`, nextLesson));
+        } else if (!lessons.length) {
+          fields.lesson.append(option("No lessons indexed", 1));
+          fields.lesson.disabled = true;
+          return;
+        }
+
+        fields.lesson.disabled = false;
+      }
+
+      function populateUnitOptions() {
+        const type = fields.type.value;
+        const units = currentManifest?.units || [];
+        fields.unit.innerHTML = "";
+
+        if (units.length) {
+          units.forEach((unit) => {
+            fields.unit.append(option(`Unit ${unit.unit} · ${unit.title}`, unit.unit));
+          });
+        }
+
+        if (type === "unit-plan" || type === "lesson-plan") {
+          const nextUnit = units.length ? Math.max(...units.map((unit) => unit.unit)) + 1 : 1;
+          fields.unit.append(option(`New Unit ${nextUnit}`, nextUnit));
+        } else if (!units.length) {
+          fields.unit.append(option("Unit 1", 1));
+        }
+
+        fields.unit.disabled = false;
+        populateLessonOptions();
+      }
+
+      async function loadSelectedCourseManifest() {
+        currentManifest = null;
+        const course = encodeURIComponent(fields.course.value || "ENG3U");
+        try {
+          const response = await fetch(`/courseware/${course}/course-manifest.json`, { cache: "no-store" });
+          if (!response.ok) throw new Error(`Manifest request failed: ${response.status}`);
+          currentManifest = await response.json();
+        } catch (error) {
+          fields.unit.innerHTML = "";
+          fields.lesson.innerHTML = "";
+          fields.unit.append(option("Unit 1", 1));
+          fields.lesson.append(option("Lesson 1", 1));
+          write(`课程 manifest 无法读取，Unit/Lesson 使用默认值。${error.message}`);
+        }
+        populateUnitOptions();
+      }
+
+      function renderAllCourseReadiness(data) {
+        const summary = data.summary || {};
+        const stats = [
+          ["Courses", data.courseCount],
+          ["Missing outlines", summary.missingCourseOutlines || 0],
+          ["Unit gaps", summary.unitPlanGapCourses || 0],
+          ["Lesson gaps", summary.lessonPlanGapCourses || 0],
+          ["No iSpring", summary.ispringMissingCourses || 0],
+          ["Text review", summary.textReviewCourses || 0],
+        ];
+        readinessSummaryStats.innerHTML = stats
+          .map(([label, value]) => `<div class="stat"><span>${label}</span><strong>${value}</strong></div>`)
+          .join("");
+        readinessSummaryStats.hidden = false;
+
+        const rows = (data.courses || [])
+          .map((course) => {
+            const readiness = course.readiness;
+            return `
+              <tr>
+                <td><strong>${course.code}</strong></td>
+                <td>${course.title}</td>
+                <td>${okText(readiness.courseOutline.ok)}</td>
+                <td>${okText(readiness.introduction.ok)}</td>
+                <td>${countText(readiness.unitPlans.count, readiness.unitPlans.expected)}</td>
+                <td>${countText(readiness.lessonPlans.count, readiness.lessonPlans.expected)}</td>
+                <td>${readiness.ispring.connected ? `<span class="status-ok">${readiness.ispring.count}</span>` : '<span class="status-missing">0</span>'}</td>
+                <td>${readiness.texts.needsReview.length ? `<span class="status-missing">${readiness.texts.needsReview.length}</span>` : '<span class="status-ok">0</span>'}</td>
+              </tr>
+            `;
+          })
+          .join("");
+        courseReadinessTable.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Title</th>
+                  <th>Outline</th>
+                  <th>Intro</th>
+                  <th>Unit Plans</th>
+                  <th>Lesson Plans</th>
+                  <th>iSpring</th>
+                  <th>Text Review</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+        courseReadinessTable.hidden = false;
+      }
+
+      function renderBackupList(data) {
+        const backups = data.backups || [];
+        if (!backups.length) {
+          backupList.innerHTML = '<p class="meta-line">当前课程暂无覆盖备份。</p>';
+          backupList.hidden = false;
+          return;
+        }
+        const rows = backups
+          .map((backup) => {
+            const files = (backup.files || []).map((file) => file.path).join("<br />") || "No files";
+            return `
+              <tr>
+                <td><strong>${backup.id}</strong></td>
+                <td>${formatBytes(backup.bytes || 0)}</td>
+                <td>${backup.path}</td>
+                <td>${files}</td>
+              </tr>
+            `;
+          })
+          .join("");
+        backupList.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Backup</th>
+                  <th>Size</th>
+                  <th>Folder</th>
+                  <th>Files</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+        backupList.hidden = false;
+      }
+
+      function renderUploadGaps(data) {
+        currentUploadGapData = data;
+        currentDirectUploadItems = [...(data.uploadItems || []), ...(data.reviewItems || [])];
+        renderCurrentCourseUploadTasks();
+
+        const directRows = currentDirectUploadItems
+          .map(
+            (item, index) => `
+              <tr>
+                <td class="nowrap"><strong>${escapeHtml(item.course)}</strong></td>
+                <td>${escapeHtml(uploadTypeLabel(item.uploadType))}</td>
+                <td class="nowrap">${item.unit || ""}</td>
+                <td class="nowrap">${item.lesson || ""}</td>
+                <td class="filename">${escapeHtml(item.suggestedFilename || "")}</td>
+                <td>${escapeHtml(item.note || "")}</td>
+                <td class="nowrap"><button class="small" type="button" data-gap-action="fill" data-gap-index="${index}">填入表单</button></td>
+              </tr>
+            `,
+          )
+          .join("");
+        const reviewRows = (data.reviewItems || [])
+          .map(
+            (item) => `
+              <tr>
+                <td class="nowrap"><strong>${escapeHtml(item.course)}</strong></td>
+                <td class="nowrap">${escapeHtml(item.textId || "")}</td>
+                <td>${escapeHtml(item.textTitle)}</td>
+                <td>${escapeHtml(item.author)}</td>
+                <td class="filename">${escapeHtml(item.suggestedFilename || "")}</td>
+                <td>${escapeHtml(item.note || "")}</td>
+              </tr>
+            `,
+          )
+          .join("");
+        const externalRows = (data.externalItems || [])
+          .map(
+            (item) => `
+              <tr>
+                <td class="nowrap"><strong>${escapeHtml(item.course)}</strong></td>
+                <td>${escapeHtml(uploadTypeLabel(item.uploadType))}</td>
+                <td class="nowrap">${item.lessonCount}</td>
+                <td class="nowrap">${item.connectedCount}</td>
+                <td>${escapeHtml(item.note || "")}</td>
+              </tr>
+            `,
+          )
+          .join("");
+
+        uploadGapTable.innerHTML = `
+          <div class="stats">
+            <div class="stat"><span>Direct uploads</span><strong>${data.summary?.directUploads || 0}</strong></div>
+            <div class="stat"><span>Text reviews</span><strong>${data.summary?.textReviews || 0}</strong></div>
+            <div class="stat"><span>iSpring decisions</span><strong>${data.summary?.externalDecisions || 0}</strong></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Upload Type</th>
+                  <th>Unit</th>
+                  <th>Lesson</th>
+                  <th>Suggested Filename</th>
+                  <th>Note</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>${directRows || '<tr><td colspan="7">No direct uploads pending.</td></tr>'}</tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Text ID</th>
+                  <th>Text</th>
+                  <th>Author</th>
+                  <th>Suggested Filename</th>
+                  <th>Note</th>
+                </tr>
+              </thead>
+              <tbody>${reviewRows || '<tr><td colspan="6">No text review items.</td></tr>'}</tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Upload Type</th>
+                  <th>Lessons</th>
+                  <th>Connected</th>
+                  <th>Note</th>
+                </tr>
+              </thead>
+              <tbody>${externalRows || '<tr><td colspan="5">No external iSpring decisions.</td></tr>'}</tbody>
+            </table>
+          </div>
+        `;
+        uploadGapTable.hidden = false;
+      }
+
+      function renderCoursePackagePreview(data) {
+        currentCoursePackageImport = data.ok ? data : null;
+        coursePackageCommitButton.disabled = !currentCoursePackageImport || !(data.summary?.ready > 0);
+        const rows = (data.operations || [])
+          .slice(0, 200)
+          .map((item) => {
+            const statusClass = item.status === "ready" ? "status-ok" : item.status === "needs-review" ? "status-missing" : "meta-line";
+            return `
+              <tr>
+                <td class="nowrap"><strong>${escapeHtml(item.kind || "")}</strong></td>
+                <td class="${statusClass}">${escapeHtml(item.status || "")}</td>
+                <td>${escapeHtml(item.lessonId || (item.unit ? `U${item.unit}${item.lesson ? `L${item.lesson}` : ""}` : ""))}</td>
+                <td>${escapeHtml(item.sourcePath || "")}</td>
+                <td>${escapeHtml(item.targetPath || item.reason || "")}</td>
+              </tr>
+            `;
+          })
+          .join("");
+        coursePackagePanel.innerHTML = `
+          <div class="stats">
+            <div class="stat"><span>Ready</span><strong>${data.summary?.ready || 0}</strong></div>
+            <div class="stat"><span>Need Review</span><strong>${data.summary?.needsReview || 0}</strong></div>
+            <div class="stat"><span>Skipped</span><strong>${data.summary?.skipped || 0}</strong></div>
+            <div class="stat"><span>iSpring</span><strong>${data.summary?.ispring || 0}</strong></div>
+            <div class="stat"><span>Book Sections</span><strong>${data.summary?.bookSections || 0}</strong></div>
+            <div class="stat"><span>Resources</span><strong>${data.summary?.resources || 0}</strong></div>
+          </div>
+          <p class="meta-line">Import ID: ${escapeHtml(data.importId || "")} · Course: ${escapeHtml(data.course || "")}</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Kind</th>
+                  <th>Status</th>
+                  <th>Lesson</th>
+                  <th>Source</th>
+                  <th>Target / Reason</th>
+                </tr>
+              </thead>
+              <tbody>${rows || '<tr><td colspan="5">No files found in this package.</td></tr>'}</tbody>
+            </table>
+          </div>
+        `;
+        coursePackagePanel.hidden = false;
+      }
+
+      function renderContentWorkbench(data) {
+        const rows = (data.rows || [])
+          .slice(0, 27)
+          .map(
+            (row) => `
+              <tr>
+                <td class="nowrap"><strong>${escapeHtml(row.course)}</strong></td>
+                <td>${escapeHtml(row.status)}</td>
+                <td class="nowrap">${row.priorityScore}</td>
+                <td class="nowrap">${row.units}</td>
+                <td class="nowrap">${row.lessons}</td>
+                <td>${row.missingCourseOutline ? '<span class="status-missing">Missing</span>' : '<span class="status-ok">OK</span>'}</td>
+                <td>${row.iSpringMissing ? '<span class="status-missing">Missing</span>' : '<span class="status-ok">OK</span>'}</td>
+                <td class="nowrap">${row.previewQueue || 0}</td>
+                <td class="nowrap">${row.textReviewItems || 0}</td>
+                <td>${escapeHtml((row.nextActions || [])[0] || "")}</td>
+              </tr>
+            `,
+          )
+          .join("");
+        contentWorkbenchTable.innerHTML = `
+          <div class="stats">
+            <div class="stat"><span>Courses</span><strong>${data.totals?.courses || 0}</strong></div>
+            <div class="stat"><span>Missing outlines</span><strong>${data.totals?.missingCourseOutlines || 0}</strong></div>
+            <div class="stat"><span>iSpring missing</span><strong>${data.totals?.iSpringMissingCourses || 0}</strong></div>
+            <div class="stat"><span>Preview queue</span><strong>${data.totals?.previewQueue || 0}</strong></div>
+            <div class="stat"><span>Text review</span><strong>${data.totals?.textReviewItems || 0}</strong></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Units</th>
+                  <th>Lessons</th>
+                  <th>Outline</th>
+                  <th>iSpring</th>
+                  <th>Preview</th>
+                  <th>Text</th>
+                  <th>Next Action</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+        contentWorkbenchTable.hidden = false;
+      }
+
+      async function fillUploadFormFromGap(index) {
+        const item = currentDirectUploadItems[Number(index)];
+        if (!item) return;
+
+        if (fields.course.value !== item.course) {
+          fields.course.value = item.course;
+          await loadSelectedCourseManifest();
+        }
+
+        fields.type.value = item.uploadType;
+        updateTypeFields();
+        if (item.textId) {
+          fields.textId.value = item.textId;
+        }
+
+        if (item.unit) {
+          fields.unit.value = String(item.unit);
+          populateLessonOptions();
+        }
+        if (item.lesson) {
+          fields.lesson.value = String(item.lesson);
+        }
+
+        renderCurrentCourseUploadTasks();
+        fields.file.focus();
+        write(`已填入：${item.course} · ${uploadTypeLabel(item.uploadType)} · ${unitLessonText(item)}。请选择文件：${item.suggestedFilename || "对应资料"}`);
+      }
+
+      async function loadCourses() {
+        try {
+          const response = await fetch("/admin-course-options.json", { cache: "no-store" });
+          if (!response.ok) throw new Error(`Course options request failed: ${response.status}`);
+          const data = await response.json();
+          const courses = sortCoursesByCode(data.courses || []);
+          fields.course.innerHTML = "";
+          courses.forEach((course) => {
+            const option = document.createElement("option");
+            option.value = course.code;
+            option.textContent = `${course.code} · ${course.title} · ${course.grade}`;
+            fields.course.append(option);
+          });
+          fields.course.value = data.defaultCourse || "ENG3U";
+          courseMeta.textContent = `${courses.length} courses loaded from Unit Plans and Lesson Plans. Textbooks are excluded.`;
+          await loadSelectedCourseManifest();
+        } catch (error) {
+          courseMeta.textContent = `Course options unavailable. Using ENG3U only. ${error.message}`;
+          await loadSelectedCourseManifest();
+        }
+      }
+
+      function updateTypeFields() {
+        const type = fields.type.value;
+        const needsUnit = type === "unit-plan" || type === "lesson-plan" || type === "ispring-zip";
+        const needsLesson = type === "lesson-plan" || type === "ispring-zip";
+        const needsTextId = type === "text-material";
+        unitField.hidden = !needsUnit;
+        lessonField.hidden = !needsLesson;
+        textIdField.hidden = !needsTextId;
+
+        const help = {
+          "course-outline": "课程级资料：上传后进入课程文件区，不绑定 Unit/Lesson。",
+          "course-introduction": "课程级资料：上传后进入课程文件区，不绑定 Unit/Lesson。",
+          "unit-plan": "Unit Plan：请选择课程和 Unit。",
+          "lesson-plan": "Lesson Plan：请选择课程、Unit 和 Lesson。",
+          "text-material": "Literary Text：请选择课程并填写 Text ID，文件会进入 courseware/课程/texts/Text ID/。",
+          "ispring-zip": "iSpring ZIP：请选择课程、Unit 和 Lesson；ZIP 内需要包含 presentation.html。",
+          "ispring-batch-zip": "iSpring ZIP Batch：请选择课程；外层 ZIP 内放多个 iSpring ZIP，文件名用 U01_L01.zip 或 课程_U01_L01.zip。",
+        };
+        typeHelp.textContent = help[type] || "";
+        populateUnitOptions();
+      }
+
+      function setAuthenticated(isAuthenticated) {
+        document.querySelectorAll(".auth-required").forEach((item) => {
+          item.hidden = !isAuthenticated;
+        });
+        document.querySelector("#logoutButton").hidden = !isAuthenticated;
+        document.querySelector("#loginButton").hidden = isAuthenticated;
+      }
+
+      async function checkSession() {
+        const response = await fetch("/api/admin/session", { credentials: "same-origin" });
+        const data = await response.json();
+        setAuthenticated(Boolean(data.authenticated));
+        if (data.authenticated) {
+          await readUsers({ writeOutput: false });
+          await readCourseLifecycle({ writeOutput: false });
+          await readCourseLifecycleJobs({ writeOutput: false });
+          write(`已登录：${data.username}`);
+        }
+        return data;
+      }
+
+      async function login() {
+        const response = await fetch("/api/admin/login", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: fields.username.value,
+            password: fields.password.value,
+          }),
+        });
+        const data = await response.json();
+        setAuthenticated(Boolean(data.ok));
+        if (data.ok) {
+          await readUsers({ writeOutput: false });
+          await readCourseLifecycle({ writeOutput: false });
+          await readCourseLifecycleJobs({ writeOutput: false });
+        }
+        write(data);
+      }
+
+      async function logout() {
+        const response = await fetch("/api/admin/logout", {
+          method: "POST",
+          credentials: "same-origin",
+        });
+        const data = await response.json();
+        setAuthenticated(false);
+        write(data);
+      }
+
+      async function readStatus({ writeOutput = true } = {}) {
+        const url = `/api/admin/status?course=${encodeURIComponent(fields.course.value)}`;
+        const response = await fetch(url, { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.ok) {
+          renderStatusStats(data);
+          renderReadiness(data);
+        }
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function readHistory() {
+        const url = `/api/admin/history?course=${encodeURIComponent(fields.course.value)}&limit=30`;
+        const response = await fetch(url, { credentials: "same-origin" });
+        write(await response.json());
+      }
+
+      async function readBackups({ writeOutput = true } = {}) {
+        const url = `/api/admin/backups?course=${encodeURIComponent(fields.course.value)}&limit=30`;
+        const response = await fetch(url, { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.ok) renderBackupList(data);
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function readAllCourseReadiness({ writeOutput = true } = {}) {
+        const response = await fetch("/api/admin/readiness", { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.ok) renderAllCourseReadiness(data);
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function readUploadGaps({ writeOutput = true } = {}) {
+        const response = await fetch("/api/admin/upload-gaps", { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.ok) renderUploadGaps(data);
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function readContentWorkbench({ writeOutput = true } = {}) {
+        const response = await fetch("/api/admin/content-workbench", { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.ok) renderContentWorkbench(data);
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function readUsers({ writeOutput = true } = {}) {
+        const response = await fetch("/api/admin/users", { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.ok) renderUsers(data);
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function readCourseLifecycle({ writeOutput = true } = {}) {
+        const response = await fetch("/api/admin/course-status", { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.ok) renderCourseLifecycle(data);
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function selectLifecycleCourse(courseCode) {
+        const code = String(courseCode || "").trim().toUpperCase();
+        if (!code) return;
+        selectedLifecycleCourse = code;
+        fields.course.value = code;
+        renderCourseLifecycle(courseLifecycleData);
+        await loadSelectedCourseManifest();
+        renderCurrentCourseUploadTasks();
+        const status = await readStatus({ writeOutput: false });
+        const lifecycleRecord = (courseLifecycleData.courses || []).find((course) => course.code === code);
+        write({
+          ok: true,
+          selectedCourse: code,
+          title: lifecycleRecord?.title || currentManifest?.course?.title || "",
+          lifecycle: lifecycleRecord?.status || null,
+          catalogStatus: lifecycleRecord?.catalogStatus || null,
+          message: `${code} 已选中。启用、归档、上传和状态读取都会作用于这门课程。`,
+          readiness: status?.readiness || null,
+        });
+      }
+
+      async function setSelectedCourseLifecycle(status) {
+        const payload = {
+          course: fields.course.value,
+          status,
+          note: fields.courseStatusNote.value.trim(),
+        };
+        const response = await fetch("/api/admin/course-status", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        write(data);
+        if (data.ok) {
+          await readCourseLifecycle({ writeOutput: false });
+          await readUsers({ writeOutput: false });
+          if (status === "active") {
+            await loadSelectedCourseManifest();
+          }
+        }
+      }
+
+      async function applyLaunchCourseAllowlist() {
+        const courses = fields.launchCourses.value
+          .split(",")
+          .map((course) => course.trim().toUpperCase())
+          .filter(Boolean);
+        if (!courses.length) {
+          write("请填写首批上线课程，例如 ENG3U,ESLEO。");
+          return;
+        }
+        const message = `确认只开放 ${courses.join(", ")}？其他 catalog 课程会设为 archived，在前台隐藏并拦截直链。`;
+        if (!confirm(message)) return;
+        const response = await fetch("/api/admin/course-status/launch-allowlist", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            courses,
+            note: fields.courseStatusNote.value.trim() || "Initial launch course; visible to assigned teachers.",
+          }),
+        });
+        const data = await response.json();
+        write(data);
+        if (data.ok) {
+          fields.lifecycleFilter.value = "all";
+          await readCourseLifecycle({ writeOutput: false });
+          await readUsers({ writeOutput: false });
+        }
+      }
+
+      async function readCourseLifecycleJobs({ writeOutput = true } = {}) {
+        const response = await fetch("/api/admin/course-lifecycle-jobs", { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.ok) renderCourseLifecycleJobs(data);
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function startCourseLifecycleJob(action, options = {}) {
+        const payload = {
+          course: fields.course.value,
+          action,
+          ...options,
+        };
+        const response = await fetch("/api/admin/course-lifecycle-jobs", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        write(data);
+        if (data.ok) {
+          await readCourseLifecycle({ writeOutput: false });
+          await readCourseLifecycleJobs({ writeOutput: false });
+          for (let index = 0; index < 6; index += 1) {
+            await new Promise((resolve) => setTimeout(resolve, 1200));
+            const jobs = await readCourseLifecycleJobs({ writeOutput: false });
+            const job = (jobs.jobs || []).find((item) => item.id === data.job.id);
+            if (job && job.status !== "running") break;
+          }
+          await readCourseLifecycle({ writeOutput: false });
+        }
+      }
+
+      async function saveUser() {
+        const payload = {
+          course: fields.course.value,
+          username: fields.portalUsername.value.trim(),
+          password: fields.portalPassword.value,
+          role: fields.portalRole.value,
+          status: fields.portalStatus.value,
+          courses: selectedUserCourses(),
+        };
+        if (!payload.username) {
+          write("请填写 Username。");
+          return;
+        }
+        if (!payload.courses.length) {
+          write("请至少选择一门课程，或选择全部课程。");
+          return;
+        }
+        const response = await fetch("/api/admin/users", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (data.ok) {
+          fields.portalPassword.value = "";
+          renderUsers(data);
+        }
+        write(data);
+      }
+
+      async function deleteUser() {
+        const username = fields.portalUsername.value.trim();
+        if (!username) {
+          write("请先选择或填写要删除的用户。");
+          return;
+        }
+        if (!confirm(`确认删除用户 ${username}？`)) return;
+        const params = new URLSearchParams({
+          username,
+          course: fields.course.value,
+        });
+        const response = await fetch(`/api/admin/users?${params.toString()}`, {
+          method: "DELETE",
+          credentials: "same-origin",
+        });
+        const data = await response.json();
+        if (data.ok) {
+          clearUserForm();
+          renderUsers(data);
+        }
+        write(data);
+      }
+
+      async function cleanup(mode) {
+        const params = new URLSearchParams({ course: fields.course.value, mode });
+        const response = await fetch(`/api/admin/cleanup?${params.toString()}`, {
+          method: "POST",
+          credentials: "same-origin",
+        });
+        const data = await response.json();
+        write(data);
+        if (data.ok) {
+          readStatus().catch((error) => write(`Error: ${error.message}`));
+        }
+      }
+
+      async function generatePreviews() {
+        const params = new URLSearchParams({ course: fields.course.value });
+        write(`正在生成 ${fields.course.value} 的 Office 在线预览...`);
+        const response = await fetch(`/api/admin/generate-previews?${params.toString()}`, {
+          method: "POST",
+          credentials: "same-origin",
+        });
+        const data = await response.json();
+        write(data);
+        if (data.previewWarning) {
+          write(`预览生成未完成：${data.previewWarning}\n\n服务器需要安装 LibreOffice，并设置 LIBREOFFICE_BIN。文件仍然可以下载。`);
+        }
+        if (data.ok) {
+          await loadSelectedCourseManifest();
+          await readStatus({ writeOutput: false });
+        }
+      }
+
+      async function upload() {
+        const file = fields.file.files[0];
+        if (!file) {
+          write("请选择文件。");
+          return;
+        }
+        if (fields.type.value === "ispring-zip" && fields.lesson.disabled) {
+          write("当前 Unit 没有可绑定的 Lesson，不能上传 iSpring。请先上传或生成对应 Lesson Plan。");
+          return;
+        }
+        if (fields.type.value === "text-material" && !fields.textId.value.trim()) {
+          write("请填写 Text ID，例如 sunday-park。");
+          return;
+        }
+        const params = new URLSearchParams({
+          course: fields.course.value,
+          type: fields.type.value,
+          filename: file.name,
+          unit: fields.unit.value,
+          lesson: fields.lesson.value,
+          textId: fields.textId.value.trim(),
+        });
+        write(`Uploading ${file.name}...`);
+        const response = await fetch(`/api/admin/upload?${params.toString()}`, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/octet-stream",
+          },
+          body: file,
+        });
+        const data = await response.json();
+        write(data);
+        if (data.ok) {
+          fields.file.value = "";
+          await loadSelectedCourseManifest();
+          await readStatus({ writeOutput: false });
+          await readAllCourseReadiness({ writeOutput: false });
+          await readUploadGaps({ writeOutput: false });
+          if (data.backups?.length) {
+            await readBackups({ writeOutput: false });
+          }
+        }
+      }
+
+      async function uploadCoursePackage() {
+        const file = fields.coursePackageFile.files[0];
+        if (!file) {
+          write("请选择整课 ZIP 压缩包。");
+          return;
+        }
+        if (!file.name.toLowerCase().endsWith(".zip")) {
+          write("整课包必须是 .zip 文件。");
+          return;
+        }
+        currentCoursePackageImport = null;
+        coursePackageCommitButton.disabled = true;
+        const params = new URLSearchParams({
+          course: fields.course.value,
+          filename: file.name,
+        });
+        write(`正在上传并扫描整课包：${file.name}...`);
+        const response = await fetch(`/api/admin/course-package/upload?${params.toString()}`, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/octet-stream",
+          },
+          body: file,
+        });
+        const data = await response.json();
+        write(data);
+        if (data.ok) renderCoursePackagePreview(data);
+      }
+
+      async function commitCoursePackage() {
+        if (!currentCoursePackageImport?.importId) {
+          write("请先上传整课 ZIP 并生成预览。");
+          return;
+        }
+        if (!confirm(`确认把 ${currentCoursePackageImport.summary?.ready || 0} 个资源导入 ${fields.course.value}？现有同名文件会先备份。`)) {
+          return;
+        }
+        write(`正在导入整课包：${currentCoursePackageImport.importId}...`);
+        const response = await fetch("/api/admin/course-package/commit", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            course: fields.course.value,
+            importId: currentCoursePackageImport.importId,
+          }),
+        });
+        const data = await response.json();
+        write(data);
+        if (data.ok) {
+          fields.coursePackageFile.value = "";
+          currentCoursePackageImport = null;
+          coursePackageCommitButton.disabled = true;
+          await loadSelectedCourseManifest();
+          await readStatus({ writeOutput: false });
+          await readAllCourseReadiness({ writeOutput: false });
+          await readUploadGaps({ writeOutput: false });
+          if (data.backups?.length) await readBackups({ writeOutput: false });
+        }
+      }
+
+      document.querySelector("#statusButton").addEventListener("click", () => {
+        readStatus().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#fillLocalLogin").addEventListener("click", () => {
+        fields.username.value = "admin";
+        fields.password.value = "local-admin-password";
+        write("已填入本地默认账号密码。");
+      });
+      document.querySelector("#loginButton").addEventListener("click", () => {
+        login().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#logoutButton").addEventListener("click", () => {
+        logout().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#uploadButton").addEventListener("click", () => {
+        upload().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#coursePackageUploadButton").addEventListener("click", () => {
+        uploadCoursePackage().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#coursePackageCommitButton").addEventListener("click", () => {
+        commitCoursePackage().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#historyButton").addEventListener("click", () => {
+        readHistory().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#backupsButton").addEventListener("click", () => {
+        readBackups().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#generatePreviewsButton").addEventListener("click", () => {
+        generatePreviews().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#readinessButton").addEventListener("click", () => {
+        readAllCourseReadiness().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#uploadGapsButton").addEventListener("click", () => {
+        readUploadGaps().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#contentWorkbenchButton").addEventListener("click", () => {
+        readContentWorkbench().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#refreshCourseStatusButton").addEventListener("click", () => {
+        readCourseLifecycle().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#applyLaunchCoursesButton").addEventListener("click", () => {
+        applyLaunchCourseAllowlist().catch((error) => write(`Error: ${error.message}`));
+      });
+      fields.lifecycleFilter.addEventListener("change", () => {
+        renderCourseLifecycle(courseLifecycleData);
+      });
+      fields.lifecycleSearch.addEventListener("input", () => {
+        renderCourseLifecycle(courseLifecycleData);
+      });
+      document.querySelector("#activateCourseButton").addEventListener("click", () => {
+        setSelectedCourseLifecycle("active").catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#archiveCourseButton").addEventListener("click", () => {
+        if (confirm(`确认将 ${fields.course.value} 设为 archived？前台将隐藏该课程，直链也会被拦截。`)) {
+          setSelectedCourseLifecycle("archived").catch((error) => write(`Error: ${error.message}`));
+        }
+      });
+      document.querySelector("#archivePackageButton").addEventListener("click", () => {
+        if (confirm(`确认为 ${fields.course.value} 生成归档包？课程仍保持 active。`)) {
+          startCourseLifecycleJob("archive", { setArchived: false }).catch((error) => write(`Error: ${error.message}`));
+        }
+      });
+      document.querySelector("#archiveAndDeleteButton").addEventListener("click", () => {
+        if (confirm(`确认归档 ${fields.course.value} 并在校验通过后删除 active 目录？这个操作会释放空间，但课程需重新解压后才能在线播放。`)) {
+          startCourseLifecycleJob("archive", { deleteActive: true, setArchived: true }).catch((error) => write(`Error: ${error.message}`));
+        }
+      });
+      document.querySelector("#restoreArchiveButton").addEventListener("click", () => {
+        if (confirm(`确认从最新归档包解压启用 ${fields.course.value}？如果 active 目录已存在，任务会拒绝覆盖。`)) {
+          startCourseLifecycleJob("activate").catch((error) => write(`Error: ${error.message}`));
+        }
+      });
+      document.querySelector("#refreshLifecycleJobsButton").addEventListener("click", () => {
+        readCourseLifecycleJobs().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#refreshUsersButton").addEventListener("click", () => {
+        readUsers().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#saveUserButton").addEventListener("click", () => {
+        saveUser().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#clearUserFormButton").addEventListener("click", () => {
+        clearUserForm();
+        write("已清空用户表单。");
+      });
+      document.querySelector("#deleteUserButton").addEventListener("click", () => {
+        deleteUser().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#cleanupTempButton").addEventListener("click", () => {
+        cleanup("temp").catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#cleanupZipButton").addEventListener("click", () => {
+        if (confirm("确认清理当前课程后台上传保存的 iSpring ZIP 原包？正式 iSpring 页面不会被删除。")) {
+          cleanup("zips").catch((error) => write(`Error: ${error.message}`));
+        }
+      });
+      fields.type.addEventListener("change", updateTypeFields);
+      fields.course.addEventListener("change", () => {
+        selectedLifecycleCourse = fields.course.value;
+        currentCoursePackageImport = null;
+        coursePackageCommitButton.disabled = true;
+        coursePackagePanel.hidden = true;
+        renderCourseLifecycle(courseLifecycleData);
+        loadSelectedCourseManifest()
+          .then(renderCurrentCourseUploadTasks)
+          .catch((error) => write(`Error: ${error.message}`));
+      });
+      fields.unit.addEventListener("change", populateLessonOptions);
+      document.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element)) return;
+        const button = event.target.closest("[data-gap-action='fill']");
+        if (!button) return;
+        fillUploadFormFromGap(button.dataset.gapIndex).catch((error) => write(`Error: ${error.message}`));
+      });
+      userTable.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element)) return;
+        const button = event.target.closest("[data-user-action='edit']");
+        if (!button) return;
+        fillUserForm(button.dataset.username);
+      });
+      courseLifecycleTable.addEventListener("click", (event) => {
+        if (!(event.target instanceof Element)) return;
+        const button = event.target.closest("[data-course-action='select']");
+        if (!button) return;
+        selectLifecycleCourse(button.dataset.course).catch((error) => write(`Error: ${error.message}`));
+      });
+      loadCourses().catch((error) => write(`Error: ${error.message}`));
+      updateTypeFields();
+      checkSession().catch((error) => write(`Error: ${error.message}`));
+    </script>
+  </body>
+</html>

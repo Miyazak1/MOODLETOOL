@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-07-23T07:21:36.629Z",
+  "course": "OLC4O",
+  "dryRun": false,
+  "sources": [
+    {
+      "course": "OLC4O",
+      "textId": "the-road-not-taken",
+      "filename": "The_Road_Not_Taken_Wikisource.txt",
+      "sourceKind": "wikisourceExtract",
+      "page": "Mountain Interval/The Road Not Taken",
+      "sourceUrl": "https://en.wikisource.org/wiki/Road_Not_Taken",
+      "sourceLabel": "Wikisource transcription of Mountain Interval/The Road Not Taken",
+      "rights": "Public domain in the United States; first published before January 1, 1931 according to Wikisource."
+    }
+  ],
+  "imports": [
+    {
+      "course": "OLC4O",
+      "textId": "the-road-not-taken",
+      "filename": "The_Road_Not_Taken_Wikisource.txt",
+      "path": "texts/the-road-not-taken/The_Road_Not_Taken_Wikisource.txt",
+      "bytes": 1851,
+      "sourceUrl": "https://en.wikisource.org/wiki/Road_Not_Taken",
+      "sourceLabel": "Wikisource transcription of Mountain Interval/The Road Not Taken",
+      "rights": "Public domain in the United States; first published before January 1, 1931 according to Wikisource."
+    }
+  ],
+  "failures": []
+}

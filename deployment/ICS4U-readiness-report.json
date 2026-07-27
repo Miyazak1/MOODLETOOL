@@ -1,0 +1,211 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.633Z",
+  "course": {
+    "code": "ICS4U",
+    "title": "Computer Science, Grade 12, University",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ICS4U\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 26,
+    "unitPlans": 0,
+    "lessonPlanExpected": 26,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Programming Concepts and Skills Review"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Object-Oriented Programming"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Design and Analysis of Algorithms"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Software Development Life Cycle"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Lesson 1.1"
+      },
+      {
+        "id": "U01L02",
+        "unit": 1,
+        "lesson": 2,
+        "title": "Lesson 1.2"
+      },
+      {
+        "id": "U01L03",
+        "unit": 1,
+        "lesson": 3,
+        "title": "Lesson 1.3"
+      },
+      {
+        "id": "U01L04",
+        "unit": 1,
+        "lesson": 4,
+        "title": "Lesson 1.4"
+      },
+      {
+        "id": "U01L05",
+        "unit": 1,
+        "lesson": 5,
+        "title": "Lesson 1.5"
+      },
+      {
+        "id": "U01L06",
+        "unit": 1,
+        "lesson": 6,
+        "title": "Lesson 1.6"
+      },
+      {
+        "id": "U01L07",
+        "unit": 1,
+        "lesson": 7,
+        "title": "Lesson 1.7"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Lesson 2.1"
+      },
+      {
+        "id": "U02L02",
+        "unit": 2,
+        "lesson": 2,
+        "title": "Lesson 2.2"
+      },
+      {
+        "id": "U02L03",
+        "unit": 2,
+        "lesson": 3,
+        "title": "Lesson 2.3"
+      },
+      {
+        "id": "U02L04",
+        "unit": 2,
+        "lesson": 4,
+        "title": "Lesson 2.4"
+      },
+      {
+        "id": "U02L05",
+        "unit": 2,
+        "lesson": 5,
+        "title": "Lesson 2.5"
+      },
+      {
+        "id": "U02L06",
+        "unit": 2,
+        "lesson": 6,
+        "title": "Lesson 2.6"
+      },
+      {
+        "id": "U02L07",
+        "unit": 2,
+        "lesson": 7,
+        "title": "Lesson 2.7"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Lesson 3.1"
+      },
+      {
+        "id": "U03L02",
+        "unit": 3,
+        "lesson": 2,
+        "title": "Lesson 3.2"
+      },
+      {
+        "id": "U03L03",
+        "unit": 3,
+        "lesson": 3,
+        "title": "Lesson 3.3"
+      },
+      {
+        "id": "U03L04",
+        "unit": 3,
+        "lesson": 4,
+        "title": "Lesson 3.4"
+      },
+      {
+        "id": "U03L05",
+        "unit": 3,
+        "lesson": 5,
+        "title": "Lesson 3.5"
+      },
+      {
+        "id": "U03L06",
+        "unit": 3,
+        "lesson": 6,
+        "title": "Lesson 3.6"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Lesson 4.1"
+      },
+      {
+        "id": "U04L02",
+        "unit": 4,
+        "lesson": 2,
+        "title": "Lesson 4.2"
+      },
+      {
+        "id": "U04L03",
+        "unit": 4,
+        "lesson": 3,
+        "title": "Lesson 4.3"
+      },
+      {
+        "id": "U04L04",
+        "unit": 4,
+        "lesson": 4,
+        "title": "Lesson 4.4"
+      },
+      {
+        "id": "U04L05",
+        "unit": 4,
+        "lesson": 5,
+        "title": "Lesson 4.5"
+      },
+      {
+        "id": "U04L06",
+        "unit": 4,
+        "lesson": 6,
+        "title": "Lesson 4.6"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 26,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

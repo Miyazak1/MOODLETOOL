@@ -1,0 +1,98 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.627Z",
+  "course": {
+    "code": "ENG2D",
+    "title": "English, Grade 10, Academic",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG2D\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 4,
+    "unitPlans": 0,
+    "lessonPlanExpected": 4,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 12,
+    "textMaterials": 9
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Short Stories & Poetry"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Persuasive Texts & Media"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Novel Study - Lord of the Flies"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Drama - Othello"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [
+      {
+        "id": "landscape-with-the-fall-of-icarus",
+        "title": "Landscape With The Fall of Icarus",
+        "author": "William Carlos Williams",
+        "notes": "Detected from ENG2D Unit 1 poetry resources."
+      },
+      {
+        "id": "i-have-a-dream",
+        "title": "I Have a Dream",
+        "author": "Martin Luther King Jr.",
+        "notes": "Detected from ENG2D persuasive/speech resource sequence."
+      },
+      {
+        "id": "lord-of-the-flies",
+        "title": "Lord of the Flies",
+        "author": "William Golding",
+        "notes": "Core novel for ENG2D Unit 3."
+      }
+    ],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 4,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "generatedAt": "2026-07-24T10:44:57.342Z",
+  "totals": {
+    "courses": 1,
+    "coursesWithTexts": 1,
+    "textEntries": 2,
+    "downloadableTexts": 1,
+    "missingDownloadableTexts": 0
+  },
+  "courses": [
+    {
+      "course": "ESLEO",
+      "title": "ESLEO · ESL Level 5",
+      "textEntries": 2,
+      "downloadableTexts": 1,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 1,
+      "moodleLinkedTexts": 0,
+      "texts": [
+        {
+          "id": "romeo-and-juliet",
+          "title": "Romeo and Juliet",
+          "author": "William Shakespeare",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L03",
+            "U02L04",
+            "U02L05",
+            "U02L06",
+            "U02L07",
+            "U02L08"
+          ],
+          "copyrightStatus": "public_domain",
+          "sourceStatus": "downloadable",
+          "notes": "Core drama text detected from ESLEO Moodle Book Unit 2 lesson sequence.",
+          "materials": [
+            {
+              "label": "Romeo_and_Juliet_Project_Gutenberg_1513.txt",
+              "type": "txt",
+              "path": "texts/romeo-and-juliet/Romeo_and_Juliet_Project_Gutenberg_1513.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 169504
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "of-mice-and-men",
+          "title": "Of Mice and Men",
+          "author": "John Steinbeck",
+          "units": [
+            4
+          ],
+          "lessons": [
+            "U04L01",
+            "U04L02",
+            "U04L03",
+            "U04L04",
+            "U04L05"
+          ],
+          "copyrightStatus": "copyrighted",
+          "sourceStatus": "unavailable",
+          "notes": "Core novella detected from ESLEO Moodle Book Unit 4 lesson sequence; no complete local source-text file was found in Moodle-localized resources.",
+          "materials": [],
+          "externalLinks": [],
+          "downloadable": false,
+          "missingDownload": false
+        }
+      ]
+    }
+  ]
+}

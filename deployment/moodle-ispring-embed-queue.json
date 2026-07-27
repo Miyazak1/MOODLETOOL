@@ -1,0 +1,291 @@
+{
+  "generatedAt": "2026-07-24T11:03:24.090Z",
+  "course": "ESLEO",
+  "rows": [
+    {
+      "course": "ESLEO",
+      "unit": 1,
+      "lesson": 1,
+      "lessonId": "U01L01",
+      "lessonTitle": "Lesson 1: Pre-writing Strategies",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/806bfd46-c56d-11eb-8ea6-2adb2595bd04?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMUwxIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U01_L01.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 1,
+      "lesson": 2,
+      "lessonId": "U01L02",
+      "lessonTitle": "Lesson 2: Writing Structure",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/3c18d6cc-c56e-11eb-921b-2adb2595bd04?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMUwyIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U01_L02.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 1,
+      "lesson": 3,
+      "lessonId": "U01L03",
+      "lessonTitle": "Lesson 3: Writing for Different Audiences",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/bc439b0c-c56e-11eb-a397-46b5a28b7fb2?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMUwzIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U01_L03.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 1,
+      "lesson": 4,
+      "lessonId": "U01L04",
+      "lessonTitle": "Lesson 4: Revising and Editing Your Draft Part 1",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/3903fe3e-c56f-11eb-8a33-2adb2595bd04?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMUw0IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U01_L04.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 1,
+      "lesson": 5,
+      "lessonId": "U01L05",
+      "lessonTitle": "Lesson 5: Revising and Editing Your Draft Part 2",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/bf2de664-c56f-11eb-ae7a-4aa6e78ad83f?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMUw1IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U01_L05.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 1,
+      "lesson": 6,
+      "lessonId": "U01L06",
+      "lessonTitle": "Lesson 6: Presenting Your Work",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/07ceecc4-c570-11eb-872b-4aa6e78ad83f?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMUw2IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U01_L06.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 1,
+      "lesson": 7,
+      "lessonId": "U01L07",
+      "lessonTitle": "Lesson 7: Clauses",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/7088474c-c570-11eb-ba5d-46b5a28b7fb2?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMUw3IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U01_L07.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 2,
+      "lesson": 1,
+      "lessonId": "U02L01",
+      "lessonTitle": "Lesson 1: Comprehension Strategies",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/ed90133c-c570-11eb-bd88-527c142e6c9a?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMkwxIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U02_L01.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 2,
+      "lesson": 2,
+      "lessonId": "U02L02",
+      "lessonTitle": "Lesson 2: Developing Your Vocabulary",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/d5b1309c-c571-11eb-b99a-527c142e6c9a?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMkwyIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U02_L02.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 2,
+      "lesson": 3,
+      "lessonId": "U02L03",
+      "lessonTitle": "Lesson 3: Romeo & Juliet - Introduction",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/5d39d88e-c572-11eb-ae2d-527c142e6c9a?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMkwzIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U02_L03.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 2,
+      "lesson": 4,
+      "lessonId": "U02L04",
+      "lessonTitle": "Lesson 4: Romeo & Juliet - Act I",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/768e4dbe-c573-11eb-b6a8-46b5a28b7fb2?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMkw0IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U02_L04.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 2,
+      "lesson": 5,
+      "lessonId": "U02L05",
+      "lessonTitle": "Lesson 5: Romeo & Juliet - Act II",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/67c65a6e-c574-11eb-b6f6-527c142e6c9a?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMkw1IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U02_L05.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 2,
+      "lesson": 6,
+      "lessonId": "U02L06",
+      "lessonTitle": "Lesson 6: Romeo & Juliet - Act III",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/0b678660-c576-11eb-af7f-46b5a28b7fb2?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMkw2IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U02_L06.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 2,
+      "lesson": 7,
+      "lessonId": "U02L07",
+      "lessonTitle": "Lesson 7: Romeo & Juliet - Act IV",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/ceaa5214-c577-11eb-bad8-2adb2595bd04?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMkw3IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U02_L07.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 2,
+      "lesson": 8,
+      "lessonId": "U02L08",
+      "lessonTitle": "Lesson 8 : Romeo & Juliet - Act V",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/70ff7de6-c578-11eb-b309-46b5a28b7fb2?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVMkw4IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U02_L08.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 3,
+      "lesson": 1,
+      "lessonId": "U03L01",
+      "lessonTitle": "Lesson 1: Canadian News & Media",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/eb624ece-c578-11eb-9b8a-2adb2595bd04?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVM0wxIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U03_L01.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 3,
+      "lesson": 2,
+      "lessonId": "U03L02",
+      "lessonTitle": "Lesson 2: Structure of a News Article",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/6c120a1e-c579-11eb-9739-46b5a28b7fb2?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVM0wyIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U03_L02.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 3,
+      "lesson": 3,
+      "lessonId": "U03L03",
+      "lessonTitle": "Lesson 3: Media Bias",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/08e97944-c57a-11eb-a8c5-4aa6e78ad83f?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVM0wzIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U03_L03.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 3,
+      "lesson": 4,
+      "lessonId": "U03L04",
+      "lessonTitle": "Lesson 4: Advertisements",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/8bab9934-c57a-11eb-afad-4aa6e78ad83f?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVM0w0IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U03_L04.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 3,
+      "lesson": 5,
+      "lessonId": "U03L05",
+      "lessonTitle": "Lesson 5: Communication",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/f2ff8bea-c57a-11eb-85ca-4aa6e78ad83f?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVM0w1IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U03_L05.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 3,
+      "lesson": 6,
+      "lessonId": "U03L06",
+      "lessonTitle": "Lesson 6: The Canadian Identity & Citizenship",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/966acc18-c57b-11eb-b89d-46b5a28b7fb2?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVM0w2IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U03_L06.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 3,
+      "lesson": 7,
+      "lessonId": "U03L07",
+      "lessonTitle": "Lesson 7: Ontario's Secondary School System & Becoming a Great Student",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/013117aa-fa42-11eb-96d7-2ea553e60053?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVM0w3IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U03_L07.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 4,
+      "lesson": 1,
+      "lessonId": "U04L01",
+      "lessonTitle": "Lesson 1: Introduction to Of Mice and Men",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/20a35882-c57c-11eb-9d07-527c142e6c9a?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVNEwxIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U04_L01.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 4,
+      "lesson": 2,
+      "lessonId": "U04L02",
+      "lessonTitle": "Lesson 2: Of Mice and Men - Chapters 1 & 2",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/b81e50b8-c57c-11eb-8113-4aa6e78ad83f?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVNEwyIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U04_L02.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 4,
+      "lesson": 3,
+      "lessonId": "U04L03",
+      "lessonTitle": "Lesson 3: Of Mice and Men - Chapters 3 & 4",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/55a09b20-c57d-11eb-9134-46b5a28b7fb2?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVNEwzIiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U04_L03.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 4,
+      "lesson": 4,
+      "lessonId": "U04L04",
+      "lessonTitle": "Lesson 4: Of Mice and Men - Chapters 5 & 6",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/cfe08f1c-c57d-11eb-ba1a-527c142e6c9a?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVNEw0IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U04_L04.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 4,
+      "lesson": 5,
+      "lessonId": "U04L05",
+      "lessonTitle": "Lesson 5: Of Mice and Men - Themes, Motifs & Symbols",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/593f1ce2-c57e-11eb-92e5-527c142e6c9a?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVNEw1IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U04_L05.zip"
+    },
+    {
+      "course": "ESLEO",
+      "unit": 4,
+      "lesson": 6,
+      "lessonId": "U04L06",
+      "lessonTitle": "Lesson 6: Effective Oral Communications",
+      "section": "Lesson",
+      "url": "https://hexstruct.ispring.com/s/embed_player/c5338c12-c57e-11eb-b36d-527c142e6c9a?layoutOptions=eyJsb2dvVHlwZSI6InNwYWNlIiwidGl0bGUiOiJFU0xFTyBVNEw2IiwiYmFja2dyb3VuZENvbG9yIjoiIzAwM0RBRSIsInRleHRDb2xvciI6IiNGRkZGRkYifQ%253D%253D",
+      "expectedFilename": "ESLEO_U04_L06.zip"
+    }
+  ],
+  "totals": {
+    "rows": 28,
+    "courses": 1,
+    "lessons": 28
+  }
+}

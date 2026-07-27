@@ -1,0 +1,3978 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.642Z",
+  "reports": [
+    {
+      "generatedAt": "2026-07-23T09:38:40.552Z",
+      "course": {
+        "code": "ENG3U",
+        "title": "English, Grade 11, University",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG3U\\"
+      },
+      "counts": {
+        "courseDocuments": 1,
+        "courseOutlines": 1,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 36,
+        "unitPlans": 5,
+        "lessonPlanExpected": 36,
+        "lessonPlans": 36,
+        "ispringEntries": 37,
+        "lessonDownloads": 405,
+        "textEntries": 7,
+        "textMaterials": 4
+      },
+      "gaps": {
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [
+          {
+            "id": "sunday-park",
+            "title": "Sunday in the Park",
+            "author": "Bel Kaufman",
+            "notes": "Full literary text file required for Unit 5 Lesson 3 download."
+          },
+          {
+            "id": "borders",
+            "title": "Borders",
+            "author": "Thomas King",
+            "notes": "Full literary text file required for Unit 5 Lesson 4 download."
+          },
+          {
+            "id": "indian-education",
+            "title": "Indian Education",
+            "author": "Sherman Alexie",
+            "notes": "Full literary text file required for Unit 5 Lesson 6 download."
+          }
+        ],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 36,
+        "ispringExpected": 37,
+        "ispringComplete": 37,
+        "resourceUniqueCovered": 165,
+        "resourceUniqueTotal": 165,
+        "validationOk": 165,
+        "validationChecked": 165
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.561Z",
+      "course": {
+        "code": "ESLDO",
+        "title": "ESLDO · ESL Level 4",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ESLDO\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 38,
+        "unitPlans": 4,
+        "lessonPlanExpected": 38,
+        "lessonPlans": 38,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 38,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.563Z",
+      "course": {
+        "code": "ESLEO",
+        "title": "ESLEO · ESL Level 5",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ESLEO\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 28,
+        "unitPlans": 4,
+        "lessonPlanExpected": 28,
+        "lessonPlans": 28,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 28,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.565Z",
+      "course": {
+        "code": "CHC2D",
+        "title": "CHC2D · Canadian History since World War I",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\CHC2D\\"
+      },
+      "counts": {
+        "courseDocuments": 1,
+        "courseOutlines": 1,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 4,
+        "lessonPlanExpected": 0,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.566Z",
+      "course": {
+        "code": "CHV2O",
+        "title": "CHV2O · Civics and Citizenship",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\CHV2O\\"
+      },
+      "counts": {
+        "courseDocuments": 1,
+        "courseOutlines": 1,
+        "introductions": 0,
+        "units": 1,
+        "lessons": 3,
+        "unitPlans": 1,
+        "lessonPlanExpected": 3,
+        "lessonPlans": 3,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 3,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.568Z",
+      "course": {
+        "code": "GLC2O",
+        "title": "GLC2O · Career Studies",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\GLC2O\\"
+      },
+      "counts": {
+        "courseDocuments": 1,
+        "courseOutlines": 1,
+        "introductions": 0,
+        "units": 3,
+        "lessons": 3,
+        "unitPlans": 3,
+        "lessonPlanExpected": 3,
+        "lessonPlans": 3,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 3,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.571Z",
+      "course": {
+        "code": "MPM2D",
+        "title": "MPM2D · Principles of Mathematics",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MPM2D\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 29,
+        "unitPlans": 4,
+        "lessonPlanExpected": 29,
+        "lessonPlans": 29,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 29,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.575Z",
+      "course": {
+        "code": "SNC2D",
+        "title": "SNC2D · Science",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SNC2D\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U1L1",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Lessons Book"
+          },
+          {
+            "id": "U2L1",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Lessons Book"
+          },
+          {
+            "id": "U3L1",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Lessons Book"
+          },
+          {
+            "id": "U4L1",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Lessons Book"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.578Z",
+      "course": {
+        "code": "HFC3M",
+        "title": "HFC3M · Food and Culture",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\"
+      },
+      "counts": {
+        "courseDocuments": 1,
+        "courseOutlines": 1,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 4,
+        "lessonPlanExpected": 0,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.580Z",
+      "course": {
+        "code": "ICS3U",
+        "title": "ICS3U · Introduction to Computer Studies",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ICS3U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 27,
+        "unitPlans": 4,
+        "lessonPlanExpected": 27,
+        "lessonPlans": 27,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 27,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.581Z",
+      "course": {
+        "code": "MCR3U",
+        "title": "MCR3U · Functions",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MCR3U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 27,
+        "unitPlans": 4,
+        "lessonPlanExpected": 27,
+        "lessonPlans": 27,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 27,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.582Z",
+      "course": {
+        "code": "SBI3U",
+        "title": "SBI3U · Biology",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SBI3U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 61,
+        "unitPlans": 5,
+        "lessonPlanExpected": 61,
+        "lessonPlans": 61,
+        "ispringEntries": 0,
+        "lessonDownloads": 13,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 61,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.584Z",
+      "course": {
+        "code": "SCH3U",
+        "title": "SCH3U · Chemistry",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SCH3U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 42,
+        "unitPlans": 5,
+        "lessonPlanExpected": 42,
+        "lessonPlans": 42,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 42,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.585Z",
+      "course": {
+        "code": "SPH3U",
+        "title": "SPH3U · Physics",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SPH3U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 36,
+        "unitPlans": 5,
+        "lessonPlanExpected": 36,
+        "lessonPlans": 36,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 36,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.586Z",
+      "course": {
+        "code": "BBB4M",
+        "title": "BBB4M · International Business Fundamentals",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\BBB4M\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 29,
+        "unitPlans": 4,
+        "lessonPlanExpected": 29,
+        "lessonPlans": 29,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 29,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.587Z",
+      "course": {
+        "code": "BOH4M",
+        "title": "BOH4M · Business Leadership: Management Fundamentals",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\BOH4M\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 32,
+        "unitPlans": 5,
+        "lessonPlanExpected": 32,
+        "lessonPlans": 32,
+        "ispringEntries": 0,
+        "lessonDownloads": 3,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 32,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.588Z",
+      "course": {
+        "code": "CGW4U",
+        "title": "CGW4U · Canadian and World Issues",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\CGW4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 25,
+        "unitPlans": 4,
+        "lessonPlanExpected": 25,
+        "lessonPlans": 25,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 25,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.589Z",
+      "course": {
+        "code": "ENG4U",
+        "title": "ENG4U · English",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 26,
+        "unitPlans": 4,
+        "lessonPlanExpected": 26,
+        "lessonPlans": 26,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 26,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.591Z",
+      "course": {
+        "code": "HFA4U",
+        "title": "HFA4U · Nutrition and Health",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFA4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 29,
+        "unitPlans": 4,
+        "lessonPlanExpected": 29,
+        "lessonPlans": 29,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 29,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.592Z",
+      "course": {
+        "code": "HHS4U",
+        "title": "HHS4U · Families in Canada",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\HHS4U\\"
+      },
+      "counts": {
+        "courseDocuments": 1,
+        "courseOutlines": 1,
+        "introductions": 0,
+        "units": 1,
+        "lessons": 1,
+        "unitPlans": 1,
+        "lessonPlanExpected": 1,
+        "lessonPlans": 1,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 1,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.593Z",
+      "course": {
+        "code": "LKBDU",
+        "title": "LKBDU · International Languages, Simplified Chinese",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\LKBDU\\"
+      },
+      "counts": {
+        "courseDocuments": 1,
+        "courseOutlines": 1,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 4,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 4,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.594Z",
+      "course": {
+        "code": "MAP4C",
+        "title": "MAP4C · Foundations for College Mathematics",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MAP4C\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 1,
+        "lessons": 1,
+        "unitPlans": 0,
+        "lessonPlanExpected": 1,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 1,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Textbook Reference"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U1L1",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Textbook Reference"
+          }
+        ],
+        "textsNeedingReview": [
+          {
+            "id": "foundations-for-college-mathematics-12",
+            "title": "Foundations for College Mathematics 12",
+            "author": "Textbook reference",
+            "notes": "Detected as a Moodle Book container in MAP4C; local downloadable textbook file has not been added."
+          }
+        ],
+        "textsMissingDownload": [
+          {
+            "id": "foundations-for-college-mathematics-12",
+            "title": "Foundations for College Mathematics 12",
+            "author": "Textbook reference",
+            "notes": "Detected as a Moodle Book container in MAP4C; local downloadable textbook file has not been added."
+          }
+        ],
+        "linkOnlyTexts": [
+          {
+            "id": "foundations-for-college-mathematics-12",
+            "title": "Foundations for College Mathematics 12",
+            "author": "Textbook reference",
+            "notes": "Detected as a Moodle Book container in MAP4C; local downloadable textbook file has not been added."
+          }
+        ],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 1,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.596Z",
+      "course": {
+        "code": "MCV4U",
+        "title": "MCV4U · Calculus and Vectors",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MCV4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 18,
+        "unitPlans": 4,
+        "lessonPlanExpected": 18,
+        "lessonPlans": 18,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 18,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.597Z",
+      "course": {
+        "code": "MDM4U",
+        "title": "MDM4U · Mathematics of Data Management",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MDM4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 24,
+        "unitPlans": 4,
+        "lessonPlanExpected": 24,
+        "lessonPlans": 24,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 24,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.598Z",
+      "course": {
+        "code": "MHF4U",
+        "title": "MHF4U · Advanced Functions",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MHF4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 35,
+        "unitPlans": 4,
+        "lessonPlanExpected": 35,
+        "lessonPlans": 35,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 35,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.600Z",
+      "course": {
+        "code": "SBI4U",
+        "title": "SBI4U · Biology",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SBI4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 27,
+        "unitPlans": 5,
+        "lessonPlanExpected": 27,
+        "lessonPlans": 27,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 27,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.610Z",
+      "course": {
+        "code": "SCH4U",
+        "title": "SCH4U · Chemistry",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SCH4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 46,
+        "unitPlans": 5,
+        "lessonPlanExpected": 46,
+        "lessonPlans": 46,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 46,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.612Z",
+      "course": {
+        "code": "SPH4U",
+        "title": "SPH4U · Physics",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SPH4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 33,
+        "unitPlans": 5,
+        "lessonPlanExpected": 33,
+        "lessonPlans": 33,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 33,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.614Z",
+      "course": {
+        "code": "SNC1D",
+        "title": "SNC1D · Science",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SNC1D\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 1,
+        "lessons": 1,
+        "unitPlans": 0,
+        "lessonPlanExpected": 1,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 1,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Textbook Reference"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U1L1",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Textbook Reference"
+          }
+        ],
+        "textsNeedingReview": [
+          {
+            "id": "grade-9-on-science-textbook",
+            "title": "Grade 9 ON Science Textbook (McGraw-Hill Ryerson)",
+            "author": "McGraw-Hill Ryerson",
+            "notes": "Detected as a Moodle Book container in SNC1D; local downloadable textbook file has not been added."
+          }
+        ],
+        "textsMissingDownload": [
+          {
+            "id": "grade-9-on-science-textbook",
+            "title": "Grade 9 ON Science Textbook (McGraw-Hill Ryerson)",
+            "author": "McGraw-Hill Ryerson",
+            "notes": "Detected as a Moodle Book container in SNC1D; local downloadable textbook file has not been added."
+          }
+        ],
+        "linkOnlyTexts": [
+          {
+            "id": "grade-9-on-science-textbook",
+            "title": "Grade 9 ON Science Textbook (McGraw-Hill Ryerson)",
+            "author": "McGraw-Hill Ryerson",
+            "notes": "Detected as a Moodle Book container in SNC1D; local downloadable textbook file has not been added."
+          }
+        ],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 1,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.616Z",
+      "course": {
+        "code": "BBI1O",
+        "title": "BBI1O · Introduction to Business",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\BBI1O\\"
+      },
+      "counts": {
+        "courseDocuments": 1,
+        "courseOutlines": 1,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 4,
+        "lessonPlanExpected": 0,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": false,
+        "missingIntroduction": true,
+        "missingUnitPlans": [],
+        "missingLessonPlans": [],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.619Z",
+      "course": {
+        "code": "ASM3M",
+        "title": "Media Arts, Grade 11, University/College",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ASM3M\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Design"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Character Design"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Video Art and Animation"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Video Game"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.620Z",
+      "course": {
+        "code": "AVI1O",
+        "title": "Visual Arts, Grade 9, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\AVI1O\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 5,
+        "unitPlans": 0,
+        "lessonPlanExpected": 5,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Elements and Principles of Design"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Shading and Portraiture Details"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Color Theory"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Printmaking"
+          },
+          {
+            "unit": 5,
+            "title": "Unit 5: Sculpting"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U05L01",
+            "unit": 5,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 5,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.621Z",
+      "course": {
+        "code": "AVI2O",
+        "title": "Visual Arts, Grade 10, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\AVI2O\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Drawing"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Painting"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Printmaking"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Sculpture"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.622Z",
+      "course": {
+        "code": "AVI3M",
+        "title": "Visual Arts, Grade 11, University/College",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\AVI3M\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Elements and Principle of Art"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Art Criticism"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Studio Practice"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Portfolio Development"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.623Z",
+      "course": {
+        "code": "BAF3M",
+        "title": "Financial Accounting Fundamentals, Grade 11, University/College",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\BAF3M\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 5,
+        "unitPlans": 0,
+        "lessonPlanExpected": 5,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Accounting Basics and Double Entries"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Accounting Ethics and T Accounts"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Business Entities and Trial Balance"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Internal Control and Profit/Loss Account"
+          },
+          {
+            "unit": 5,
+            "title": "Unit 5: Advanced Statements, Depreciation, and Careers"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U05L01",
+            "unit": 5,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 5,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.623Z",
+      "course": {
+        "code": "BBI2O",
+        "title": "Introduction to Business, Grade 10, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\BBI2O\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Business Fundamentals"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Functions of a Business"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Finance"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Entrepreneurship"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.624Z",
+      "course": {
+        "code": "BTT1O",
+        "title": "Information and Communication Technology in Business, Grade 9, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\BTT1O\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 5,
+        "unitPlans": 0,
+        "lessonPlanExpected": 5,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Building a Webpage"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Using Microsoft Word in Communication"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Using Microsoft Excel in Business"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Making Creative Presentations Using Microsoft PowerPoint"
+          },
+          {
+            "unit": 5,
+            "title": "Culminating Final Assessment"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Building Webpages with HTML/CSS"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Microsoft Word Communication Projects"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Microsoft Excel in Business"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Creative PowerPoint Presentations"
+          },
+          {
+            "id": "U05L01",
+            "unit": 5,
+            "lesson": 1,
+            "title": "Culminating Final"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 5,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.625Z",
+      "course": {
+        "code": "CGC1D",
+        "title": "Issues in Canadian Geography, Grade 9 Academic",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\CGC1D\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 5,
+        "lessons": 8,
+        "unitPlans": 0,
+        "lessonPlanExpected": 8,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Canadian Connections and Methods of Geographical Inquiry"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Canada's Ecozones and Cultural Connections"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Canada's Economic Connections"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Canada's Global and Future Connections"
+          },
+          {
+            "unit": 5,
+            "title": "Final Summative Project"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Week 1: Inquiry Methods and Mapping Foundations"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Week 2: Ecozones, Landforms, Climate, and Biosphere"
+          },
+          {
+            "id": "U02L02",
+            "unit": 2,
+            "lesson": 2,
+            "title": "Week 3: Cultural Connections and Population"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Week 4: Industries, Urbanization, and Location Factors"
+          },
+          {
+            "id": "U03L02",
+            "unit": 3,
+            "lesson": 2,
+            "title": "Week 5: Energy, Land Use, and Business Location"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Week 6: Canada and the World Community"
+          },
+          {
+            "id": "U04L02",
+            "unit": 4,
+            "lesson": 2,
+            "title": "Week 7: Trade, Culture, and Development"
+          },
+          {
+            "id": "U05L01",
+            "unit": 5,
+            "lesson": 1,
+            "title": "Week 8: Final Summative and Exam"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 8,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.626Z",
+      "course": {
+        "code": "CIA4U",
+        "title": "Analysing Current Economic Issues, Grade 12, University",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\CIA4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 8,
+        "lessons": 8,
+        "unitPlans": 0,
+        "lessonPlanExpected": 8,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Basic Economic Ideas"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Productive Resources and Economic Systems"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Demand and Supply"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Demand and Supply: The Canadian Perspective"
+          },
+          {
+            "unit": 5,
+            "title": "Unit 5: Application of Demand and Supply"
+          },
+          {
+            "unit": 6,
+            "title": "Unit 6: Real Estate Market and Contract Law"
+          },
+          {
+            "unit": 7,
+            "title": "Unit 7: Big and Small Businesses"
+          },
+          {
+            "unit": 8,
+            "title": "Unit 8: Revision and Summative Assessment"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U05L01",
+            "unit": 5,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U06L01",
+            "unit": 6,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U07L01",
+            "unit": 7,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U08L01",
+            "unit": 8,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 8,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.627Z",
+      "course": {
+        "code": "ENG2D",
+        "title": "English, Grade 10, Academic",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG2D\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 12,
+        "textMaterials": 9
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Short Stories & Poetry"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Persuasive Texts & Media"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Novel Study - Lord of the Flies"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Drama - Othello"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [
+          {
+            "id": "landscape-with-the-fall-of-icarus",
+            "title": "Landscape With The Fall of Icarus",
+            "author": "William Carlos Williams",
+            "notes": "Detected from ENG2D Unit 1 poetry resources."
+          },
+          {
+            "id": "i-have-a-dream",
+            "title": "I Have a Dream",
+            "author": "Martin Luther King Jr.",
+            "notes": "Detected from ENG2D persuasive/speech resource sequence."
+          },
+          {
+            "id": "lord-of-the-flies",
+            "title": "Lord of the Flies",
+            "author": "William Golding",
+            "notes": "Core novel for ENG2D Unit 3."
+          }
+        ],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.628Z",
+      "course": {
+        "code": "EPS3O",
+        "title": "Presentation and Speaking Skills, Grade 11, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\EPS3O\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Understanding Presentations - Speaking for Yourself"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Understanding Presentations - Speaking for the Classroom"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Making Presentations - Speaking for the Workplace"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Making Presentations - Speaking for the Community"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.629Z",
+      "course": {
+        "code": "ESLAO",
+        "title": "English as a Second Language, ESL Level 1, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ESLAO\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Writing"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Canada and Me"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Short Stories - Fiction and Non-Fiction"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Media Introduction and Course Review"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.629Z",
+      "course": {
+        "code": "ESLBO",
+        "title": "English as a Second Language, ESL Level 2, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ESLBO\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Unit 1"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Unit 2"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Unit 3"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Unit 4"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.630Z",
+      "course": {
+        "code": "ESLCO",
+        "title": "English as a Second Language, ESL Level 3, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ESLCO\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 21,
+        "unitPlans": 0,
+        "lessonPlanExpected": 21,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Unit 1"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Unit 2"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Unit 3"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Unit 4"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Formal Language"
+          },
+          {
+            "id": "U01L02",
+            "unit": 1,
+            "lesson": 2,
+            "title": "Asking Questions"
+          },
+          {
+            "id": "U01L03",
+            "unit": 1,
+            "lesson": 3,
+            "title": "Non-Fiction Text Features"
+          },
+          {
+            "id": "U01L04",
+            "unit": 1,
+            "lesson": 4,
+            "title": "Reliable Sources"
+          },
+          {
+            "id": "U01L05",
+            "unit": 1,
+            "lesson": 5,
+            "title": "Presentation Skills"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Short Story Elements: Plot"
+          },
+          {
+            "id": "U02L02",
+            "unit": 2,
+            "lesson": 2,
+            "title": "Setting & Point of View"
+          },
+          {
+            "id": "U02L03",
+            "unit": 2,
+            "lesson": 3,
+            "title": "Characterization"
+          },
+          {
+            "id": "U02L04",
+            "unit": 2,
+            "lesson": 4,
+            "title": "Theme & Setting"
+          },
+          {
+            "id": "U02L05",
+            "unit": 2,
+            "lesson": 5,
+            "title": "Point of View"
+          },
+          {
+            "id": "U02L06",
+            "unit": 2,
+            "lesson": 6,
+            "title": "Figurative Language"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "In My Opinion: Fact vs Opinion"
+          },
+          {
+            "id": "U03L02",
+            "unit": 3,
+            "lesson": 2,
+            "title": "Supporting Your Opinion with Facts"
+          },
+          {
+            "id": "U03L03",
+            "unit": 3,
+            "lesson": 3,
+            "title": "The Art of Persuasion"
+          },
+          {
+            "id": "U03L04",
+            "unit": 3,
+            "lesson": 4,
+            "title": "Persuasion in the Media"
+          },
+          {
+            "id": "U03L05",
+            "unit": 3,
+            "lesson": 5,
+            "title": "Opinion Essay"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Canada and the Media: All About Canada"
+          },
+          {
+            "id": "U04L02",
+            "unit": 4,
+            "lesson": 2,
+            "title": "Canada and the Media: The Government of Canada"
+          },
+          {
+            "id": "U04L03",
+            "unit": 4,
+            "lesson": 3,
+            "title": "Canada and the Media: Canadian Citizenship"
+          },
+          {
+            "id": "U04L04",
+            "unit": 4,
+            "lesson": 4,
+            "title": "Canada and the Media: Rights and Responsibilities of Canadian Citizens"
+          },
+          {
+            "id": "U04L05",
+            "unit": 4,
+            "lesson": 5,
+            "title": "Canada and the Media: The News"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 21,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.631Z",
+      "course": {
+        "code": "HFN1O",
+        "title": "Food and Nutrition, Grade 9 or 10",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFN1O\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Nutrition and Health"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Food Choices"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Local and Global Foods"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Food Preparation Skills"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.632Z",
+      "course": {
+        "code": "ICS2O",
+        "title": "Introduction to Computer Studies, Grade 10, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ICS2O\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 3,
+        "lessons": 31,
+        "unitPlans": 0,
+        "lessonPlanExpected": 31,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Understanding Computers"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Introduction to Programming"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Computers and Societies"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Lesson 1"
+          },
+          {
+            "id": "U01L02",
+            "unit": 1,
+            "lesson": 2,
+            "title": "Lesson 2"
+          },
+          {
+            "id": "U01L03",
+            "unit": 1,
+            "lesson": 3,
+            "title": "Lesson 3"
+          },
+          {
+            "id": "U01L04",
+            "unit": 1,
+            "lesson": 4,
+            "title": "Lesson 4"
+          },
+          {
+            "id": "U01L05",
+            "unit": 1,
+            "lesson": 5,
+            "title": "Lesson 5"
+          },
+          {
+            "id": "U01L06",
+            "unit": 1,
+            "lesson": 6,
+            "title": "Lesson 6"
+          },
+          {
+            "id": "U01L07",
+            "unit": 1,
+            "lesson": 7,
+            "title": "Lesson 7"
+          },
+          {
+            "id": "U01L08",
+            "unit": 1,
+            "lesson": 8,
+            "title": "Lesson 8"
+          },
+          {
+            "id": "U01L09",
+            "unit": 1,
+            "lesson": 9,
+            "title": "Lesson 9"
+          },
+          {
+            "id": "U01L10",
+            "unit": 1,
+            "lesson": 10,
+            "title": "Lesson 10"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Lesson 1"
+          },
+          {
+            "id": "U02L02",
+            "unit": 2,
+            "lesson": 2,
+            "title": "Lesson 2"
+          },
+          {
+            "id": "U02L03",
+            "unit": 2,
+            "lesson": 3,
+            "title": "Lesson 3"
+          },
+          {
+            "id": "U02L04",
+            "unit": 2,
+            "lesson": 4,
+            "title": "Lesson 4"
+          },
+          {
+            "id": "U02L05",
+            "unit": 2,
+            "lesson": 5,
+            "title": "Lesson 5"
+          },
+          {
+            "id": "U02L06",
+            "unit": 2,
+            "lesson": 6,
+            "title": "Lesson 6"
+          },
+          {
+            "id": "U02L07",
+            "unit": 2,
+            "lesson": 7,
+            "title": "Lesson 7"
+          },
+          {
+            "id": "U02L08",
+            "unit": 2,
+            "lesson": 8,
+            "title": "Lesson 8"
+          },
+          {
+            "id": "U02L09",
+            "unit": 2,
+            "lesson": 9,
+            "title": "Lesson 9"
+          },
+          {
+            "id": "U02L10",
+            "unit": 2,
+            "lesson": 10,
+            "title": "Lesson 10"
+          },
+          {
+            "id": "U02L11",
+            "unit": 2,
+            "lesson": 11,
+            "title": "Lesson 11"
+          },
+          {
+            "id": "U02L12",
+            "unit": 2,
+            "lesson": 12,
+            "title": "Lesson 12"
+          },
+          {
+            "id": "U02L13",
+            "unit": 2,
+            "lesson": 13,
+            "title": "Lesson 13"
+          },
+          {
+            "id": "U02L14",
+            "unit": 2,
+            "lesson": 14,
+            "title": "Lesson 14"
+          },
+          {
+            "id": "U02L15",
+            "unit": 2,
+            "lesson": 15,
+            "title": "Lesson 15"
+          },
+          {
+            "id": "U02L16",
+            "unit": 2,
+            "lesson": 16,
+            "title": "Lesson 16"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Lesson 1"
+          },
+          {
+            "id": "U03L02",
+            "unit": 3,
+            "lesson": 2,
+            "title": "Lesson 2"
+          },
+          {
+            "id": "U03L03",
+            "unit": 3,
+            "lesson": 3,
+            "title": "Lesson 3"
+          },
+          {
+            "id": "U03L04",
+            "unit": 3,
+            "lesson": 4,
+            "title": "Computer Society 1"
+          },
+          {
+            "id": "U03L05",
+            "unit": 3,
+            "lesson": 5,
+            "title": "Computer and Society"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 31,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.633Z",
+      "course": {
+        "code": "ICS4U",
+        "title": "Computer Science, Grade 12, University",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ICS4U\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 26,
+        "unitPlans": 0,
+        "lessonPlanExpected": 26,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Programming Concepts and Skills Review"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Object-Oriented Programming"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Design and Analysis of Algorithms"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Software Development Life Cycle"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Lesson 1.1"
+          },
+          {
+            "id": "U01L02",
+            "unit": 1,
+            "lesson": 2,
+            "title": "Lesson 1.2"
+          },
+          {
+            "id": "U01L03",
+            "unit": 1,
+            "lesson": 3,
+            "title": "Lesson 1.3"
+          },
+          {
+            "id": "U01L04",
+            "unit": 1,
+            "lesson": 4,
+            "title": "Lesson 1.4"
+          },
+          {
+            "id": "U01L05",
+            "unit": 1,
+            "lesson": 5,
+            "title": "Lesson 1.5"
+          },
+          {
+            "id": "U01L06",
+            "unit": 1,
+            "lesson": 6,
+            "title": "Lesson 1.6"
+          },
+          {
+            "id": "U01L07",
+            "unit": 1,
+            "lesson": 7,
+            "title": "Lesson 1.7"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Lesson 2.1"
+          },
+          {
+            "id": "U02L02",
+            "unit": 2,
+            "lesson": 2,
+            "title": "Lesson 2.2"
+          },
+          {
+            "id": "U02L03",
+            "unit": 2,
+            "lesson": 3,
+            "title": "Lesson 2.3"
+          },
+          {
+            "id": "U02L04",
+            "unit": 2,
+            "lesson": 4,
+            "title": "Lesson 2.4"
+          },
+          {
+            "id": "U02L05",
+            "unit": 2,
+            "lesson": 5,
+            "title": "Lesson 2.5"
+          },
+          {
+            "id": "U02L06",
+            "unit": 2,
+            "lesson": 6,
+            "title": "Lesson 2.6"
+          },
+          {
+            "id": "U02L07",
+            "unit": 2,
+            "lesson": 7,
+            "title": "Lesson 2.7"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Lesson 3.1"
+          },
+          {
+            "id": "U03L02",
+            "unit": 3,
+            "lesson": 2,
+            "title": "Lesson 3.2"
+          },
+          {
+            "id": "U03L03",
+            "unit": 3,
+            "lesson": 3,
+            "title": "Lesson 3.3"
+          },
+          {
+            "id": "U03L04",
+            "unit": 3,
+            "lesson": 4,
+            "title": "Lesson 3.4"
+          },
+          {
+            "id": "U03L05",
+            "unit": 3,
+            "lesson": 5,
+            "title": "Lesson 3.5"
+          },
+          {
+            "id": "U03L06",
+            "unit": 3,
+            "lesson": 6,
+            "title": "Lesson 3.6"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Lesson 4.1"
+          },
+          {
+            "id": "U04L02",
+            "unit": 4,
+            "lesson": 2,
+            "title": "Lesson 4.2"
+          },
+          {
+            "id": "U04L03",
+            "unit": 4,
+            "lesson": 3,
+            "title": "Lesson 4.3"
+          },
+          {
+            "id": "U04L04",
+            "unit": 4,
+            "lesson": 4,
+            "title": "Lesson 4.4"
+          },
+          {
+            "id": "U04L05",
+            "unit": 4,
+            "lesson": 5,
+            "title": "Lesson 4.5"
+          },
+          {
+            "id": "U04L06",
+            "unit": 4,
+            "lesson": 6,
+            "title": "Lesson 4.6"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 26,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.634Z",
+      "course": {
+        "code": "LKBCU",
+        "title": "International Languages, Simplified Chinese, Level 2, University",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\LKBCU\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Unit 1"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Unit 2"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Unit 3"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Unit 4"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.635Z",
+      "course": {
+        "code": "MBF3C",
+        "title": "Foundations for College Mathematics, Grade 11, College",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MBF3C\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Trigonometry and Geometry"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Mathematical Models"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Personal Finance and Exponential Relations"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Data Management"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.636Z",
+      "course": {
+        "code": "MPM1D",
+        "title": "Principles of Mathematics, Grade 9, Academic",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MPM1D\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Number Sense and Algebra"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Linear Relations and Linear Equations"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Analytic Geometry"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Measurement and Geometry"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.638Z",
+      "course": {
+        "code": "MTH1W",
+        "title": "Mathematics, Grade 9, De-Streamed",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MTH1W\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 6,
+        "lessons": 28,
+        "unitPlans": 0,
+        "lessonPlanExpected": 28,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Number"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Algebra"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Data"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Geometry and Measurement"
+          },
+          {
+            "unit": 5,
+            "title": "Unit 5: Coding"
+          },
+          {
+            "unit": 6,
+            "title": "Unit 6: Financial Literacy"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Setup and Learning Logs"
+          },
+          {
+            "id": "U01L02",
+            "unit": 1,
+            "lesson": 2,
+            "title": "Integers"
+          },
+          {
+            "id": "U01L03",
+            "unit": 1,
+            "lesson": 3,
+            "title": "Fractions"
+          },
+          {
+            "id": "U01L04",
+            "unit": 1,
+            "lesson": 4,
+            "title": "Sets and Subsets"
+          },
+          {
+            "id": "U01L05",
+            "unit": 1,
+            "lesson": 5,
+            "title": "Exponents"
+          },
+          {
+            "id": "U01L06",
+            "unit": 1,
+            "lesson": 6,
+            "title": "Rates, Unit Rate, Ratio, Proportions and Percent"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Learning Logs"
+          },
+          {
+            "id": "U02L02",
+            "unit": 2,
+            "lesson": 2,
+            "title": "Monomials"
+          },
+          {
+            "id": "U02L03",
+            "unit": 2,
+            "lesson": 3,
+            "title": "Polynomials"
+          },
+          {
+            "id": "U02L04",
+            "unit": 2,
+            "lesson": 4,
+            "title": "Solving and Modelling Equations"
+          },
+          {
+            "id": "U02L05",
+            "unit": 2,
+            "lesson": 5,
+            "title": "Linear Relations"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Learning Logs"
+          },
+          {
+            "id": "U03L02",
+            "unit": 3,
+            "lesson": 2,
+            "title": "Basics of Graphing"
+          },
+          {
+            "id": "U03L03",
+            "unit": 3,
+            "lesson": 3,
+            "title": "Distance Time Graphs"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Learning Logs"
+          },
+          {
+            "id": "U04L02",
+            "unit": 4,
+            "lesson": 2,
+            "title": "Geometry"
+          },
+          {
+            "id": "U04L03",
+            "unit": 4,
+            "lesson": 3,
+            "title": "2D Measurement"
+          },
+          {
+            "id": "U04L04",
+            "unit": 4,
+            "lesson": 4,
+            "title": "3D Measurement"
+          },
+          {
+            "id": "U04L05",
+            "unit": 4,
+            "lesson": 5,
+            "title": "Optimization"
+          },
+          {
+            "id": "U04L06",
+            "unit": 4,
+            "lesson": 6,
+            "title": "PPT Lessons"
+          },
+          {
+            "id": "U05L01",
+            "unit": 5,
+            "lesson": 1,
+            "title": "Python Introduction"
+          },
+          {
+            "id": "U05L02",
+            "unit": 5,
+            "lesson": 2,
+            "title": "Python Problem 1"
+          },
+          {
+            "id": "U05L03",
+            "unit": 5,
+            "lesson": 3,
+            "title": "Python Problem 2"
+          },
+          {
+            "id": "U05L04",
+            "unit": 5,
+            "lesson": 4,
+            "title": "Python Problem 3"
+          },
+          {
+            "id": "U05L05",
+            "unit": 5,
+            "lesson": 5,
+            "title": "Python Problem 4"
+          },
+          {
+            "id": "U05L06",
+            "unit": 5,
+            "lesson": 6,
+            "title": "Python Problem 5"
+          },
+          {
+            "id": "U05L07",
+            "unit": 5,
+            "lesson": 7,
+            "title": "Python Final Notes"
+          },
+          {
+            "id": "U06L01",
+            "unit": 6,
+            "lesson": 1,
+            "title": "Financial Literacy"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 28,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.639Z",
+      "course": {
+        "code": "OLC4O",
+        "title": "Ontario Secondary School Literacy Course, Grade 12, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\OLC4O\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 4,
+        "unitPlans": 0,
+        "lessonPlanExpected": 4,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 10,
+        "textMaterials": 1
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Reading and Writing for Personal Success"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Community Voices Through Reading and Writing"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Reading and Writing as Community Action"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Culminating Project - Demonstrating Success in Reading and Writing"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Moodle Activity Index"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [
+          {
+            "id": "lather-and-nothing-else",
+            "title": "Lather and Nothing Else",
+            "author": "Hernando Tellez",
+            "notes": "Detected from OLC4O Unit 1 Lesson 3 resource title."
+          },
+          {
+            "id": "all-i-really-need-kindergarten",
+            "title": "All I Really Need To Know I Learned in Kindergarten",
+            "author": "Robert Fulghum",
+            "notes": "Detected from OLC4O Unit 1 Lesson 8 resource title."
+          },
+          {
+            "id": "night-of-the-mustang",
+            "title": "Night of the Mustang",
+            "author": "Unknown",
+            "notes": "Detected from OLC4O Unit 2 Lesson 4 resource title."
+          },
+          {
+            "id": "barney",
+            "title": "Barney",
+            "author": "Will Stanton",
+            "notes": "Detected from OLC4O Unit 2 Lesson 5 resource title."
+          },
+          {
+            "id": "urban-legends-how-they-start",
+            "title": "Urban Legends - How They Start and Why They Persist",
+            "author": "Heather Whipps",
+            "notes": "Detected from OLC4O Unit 2 Lesson 6 resource title."
+          },
+          {
+            "id": "do-we-really-see-4000-ads",
+            "title": "Do we really see 4000 ads a day?",
+            "author": "Bryce Sanders",
+            "notes": "Detected from OLC4O Unit 2 Lesson 7 resource title."
+          },
+          {
+            "id": "buddy-can-you-spare-a-home",
+            "title": "Buddy can you spare a home?",
+            "author": "Unknown",
+            "notes": "Detected from OLC4O Unit 2 Lesson 9 resource title."
+          },
+          {
+            "id": "i-have-a-dream",
+            "title": "I Have a Dream",
+            "author": "Martin Luther King Jr.",
+            "notes": "Detected from OLC4O Unit 3 Lesson 1 resource title."
+          },
+          {
+            "id": "global-warming-charles-f-keller",
+            "title": "Global Warming",
+            "author": "Charles F. Keller",
+            "notes": "Detected from OLC4O Unit 3 Lesson 9 resource title."
+          }
+        ],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 4,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.640Z",
+      "course": {
+        "code": "PPL1O",
+        "title": "Healthy Active Living Education, Grade 9, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\PPL1O\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 12,
+        "unitPlans": 0,
+        "lessonPlanExpected": 12,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Active Living"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Safety, Substance Abuse and Bullying"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Healthy Living and Sexual Health"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Movement Competence"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Health and Nutrition"
+          },
+          {
+            "id": "U01L02",
+            "unit": 1,
+            "lesson": 2,
+            "title": "Physical Activity"
+          },
+          {
+            "id": "U01L03",
+            "unit": 1,
+            "lesson": 3,
+            "title": "Unit 1 Culminating"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Abuse and Trauma"
+          },
+          {
+            "id": "U02L02",
+            "unit": 2,
+            "lesson": 2,
+            "title": "Bullying and Cyberbullying"
+          },
+          {
+            "id": "U02L03",
+            "unit": 2,
+            "lesson": 3,
+            "title": "Cyberbullying Culminating"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Sexual Health"
+          },
+          {
+            "id": "U03L02",
+            "unit": 3,
+            "lesson": 2,
+            "title": "Mental Health"
+          },
+          {
+            "id": "U03L03",
+            "unit": 3,
+            "lesson": 3,
+            "title": "Unit 3 Culminating"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Fundamental Movement"
+          },
+          {
+            "id": "U04L02",
+            "unit": 4,
+            "lesson": 2,
+            "title": "Movement Development and Safety"
+          },
+          {
+            "id": "U04L03",
+            "unit": 4,
+            "lesson": 3,
+            "title": "Movement Culminating"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 12,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    },
+    {
+      "generatedAt": "2026-07-23T09:38:40.641Z",
+      "course": {
+        "code": "PPL3O",
+        "title": "Healthy Active Living Education, Grade 11, Open",
+        "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\PPL3O\\"
+      },
+      "counts": {
+        "courseDocuments": 0,
+        "courseOutlines": 0,
+        "introductions": 0,
+        "units": 4,
+        "lessons": 16,
+        "unitPlans": 0,
+        "lessonPlanExpected": 16,
+        "lessonPlans": 0,
+        "ispringEntries": 0,
+        "lessonDownloads": 0,
+        "textEntries": 0,
+        "textMaterials": 0
+      },
+      "gaps": {
+        "missingCourseOutline": true,
+        "missingIntroduction": true,
+        "missingUnitPlans": [
+          {
+            "unit": 1,
+            "title": "Unit 1: Introduction to Health and Healthy Active Living"
+          },
+          {
+            "unit": 2,
+            "title": "Unit 2: Introduction to Health Growth and Sexuality"
+          },
+          {
+            "unit": 3,
+            "title": "Unit 3: Mental Health and Stress Management"
+          },
+          {
+            "unit": 4,
+            "title": "Unit 4: Safety and Decision Making"
+          }
+        ],
+        "missingLessonPlans": [
+          {
+            "id": "U01L01",
+            "unit": 1,
+            "lesson": 1,
+            "title": "Introduction to Health"
+          },
+          {
+            "id": "U01L02",
+            "unit": 1,
+            "lesson": 2,
+            "title": "Why Exercise?"
+          },
+          {
+            "id": "U01L03",
+            "unit": 1,
+            "lesson": 3,
+            "title": "Injury Prevention"
+          },
+          {
+            "id": "U01L04",
+            "unit": 1,
+            "lesson": 4,
+            "title": "Types of Exercise"
+          },
+          {
+            "id": "U01L05",
+            "unit": 1,
+            "lesson": 5,
+            "title": "Transferable Movement"
+          },
+          {
+            "id": "U02L01",
+            "unit": 2,
+            "lesson": 1,
+            "title": "Infertility in Men"
+          },
+          {
+            "id": "U02L02",
+            "unit": 2,
+            "lesson": 2,
+            "title": "Infertility in Women"
+          },
+          {
+            "id": "U02L03",
+            "unit": 2,
+            "lesson": 3,
+            "title": "The Female Athlete"
+          },
+          {
+            "id": "U02L04",
+            "unit": 2,
+            "lesson": 4,
+            "title": "Healthy Relationships"
+          },
+          {
+            "id": "U03L01",
+            "unit": 3,
+            "lesson": 1,
+            "title": "Mental Health and Stress"
+          },
+          {
+            "id": "U03L02",
+            "unit": 3,
+            "lesson": 2,
+            "title": "Defence Mechanisms and Positive Strategies"
+          },
+          {
+            "id": "U03L03",
+            "unit": 3,
+            "lesson": 3,
+            "title": "Types of Mental Illnesses"
+          },
+          {
+            "id": "U03L04",
+            "unit": 3,
+            "lesson": 4,
+            "title": "Seeking Help"
+          },
+          {
+            "id": "U03L05",
+            "unit": 3,
+            "lesson": 5,
+            "title": "Managing Stress for Life"
+          },
+          {
+            "id": "U04L01",
+            "unit": 4,
+            "lesson": 1,
+            "title": "Accidents and Risks"
+          },
+          {
+            "id": "U04L02",
+            "unit": 4,
+            "lesson": 2,
+            "title": "Drug Use and Risks"
+          }
+        ],
+        "textsNeedingReview": [],
+        "textsMissingDownload": [],
+        "linkOnlyTexts": [],
+        "publicDomainTextsMissingFiles": []
+      },
+      "sourceAudit": {
+        "lessonCount": 16,
+        "ispringExpected": 0,
+        "ispringComplete": 0
+      }
+    }
+  ]
+}

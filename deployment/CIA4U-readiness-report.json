@@ -1,0 +1,119 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.626Z",
+  "course": {
+    "code": "CIA4U",
+    "title": "Analysing Current Economic Issues, Grade 12, University",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\CIA4U\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 8,
+    "lessons": 8,
+    "unitPlans": 0,
+    "lessonPlanExpected": 8,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Basic Economic Ideas"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Productive Resources and Economic Systems"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Demand and Supply"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Demand and Supply: The Canadian Perspective"
+      },
+      {
+        "unit": 5,
+        "title": "Unit 5: Application of Demand and Supply"
+      },
+      {
+        "unit": 6,
+        "title": "Unit 6: Real Estate Market and Contract Law"
+      },
+      {
+        "unit": 7,
+        "title": "Unit 7: Big and Small Businesses"
+      },
+      {
+        "unit": 8,
+        "title": "Unit 8: Revision and Summative Assessment"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U05L01",
+        "unit": 5,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U06L01",
+        "unit": 6,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U07L01",
+        "unit": 7,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U08L01",
+        "unit": 8,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 8,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

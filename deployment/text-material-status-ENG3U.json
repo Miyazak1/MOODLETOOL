@@ -1,0 +1,181 @@
+{
+  "generatedAt": "2026-07-24T03:33:23.212Z",
+  "totals": {
+    "courses": 1,
+    "coursesWithTexts": 1,
+    "textEntries": 7,
+    "downloadableTexts": 4,
+    "missingDownloadableTexts": 0
+  },
+  "courses": [
+    {
+      "course": "ENG3U",
+      "title": "English, Grade 11, University",
+      "textEntries": 7,
+      "downloadableTexts": 4,
+      "missingDownloadableTexts": 0,
+      "localMaterialFiles": 4,
+      "moodleLinkedTexts": 0,
+      "texts": [
+        {
+          "id": "macbeth",
+          "title": "Macbeth",
+          "author": "William Shakespeare",
+          "units": [
+            1
+          ],
+          "lessons": [],
+          "copyrightStatus": "public_domain",
+          "sourceStatus": "downloadable",
+          "notes": "Core text for Unit 1.",
+          "materials": [
+            {
+              "label": "Macbeth_Project_Gutenberg_1533.txt",
+              "type": "txt",
+              "path": "texts/macbeth/Macbeth_Project_Gutenberg_1533.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 130331
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "frankenstein",
+          "title": "Frankenstein",
+          "author": "Mary Shelley",
+          "units": [
+            2
+          ],
+          "lessons": [],
+          "copyrightStatus": "public_domain",
+          "sourceStatus": "downloadable",
+          "notes": "Core text for Unit 2.",
+          "materials": [
+            {
+              "label": "Frankenstein_Project_Gutenberg_84.txt",
+              "type": "txt",
+              "path": "texts/frankenstein/Frankenstein_Project_Gutenberg_84.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 448885
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "the-birthmark",
+          "title": "The Birthmark",
+          "author": "Nathaniel Hawthorne",
+          "units": [
+            5
+          ],
+          "lessons": [
+            "U5L1"
+          ],
+          "copyrightStatus": "public_domain",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from Unit 5 resource filename The_Birthmark-2.pdf.",
+          "materials": [
+            {
+              "label": "The_Birthmark-2.pdf",
+              "type": "pdf",
+              "path": "Unit 5/Lesson 1 - Introduction to Short Stories/downloaded_resources_from_direct_index/homework/pdf/The_Birthmark-2.pdf",
+              "url": null,
+              "exists": true,
+              "bytes": 44285
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "sunday-park",
+          "title": "Sunday in the Park",
+          "author": "Bel Kaufman",
+          "units": [
+            5
+          ],
+          "lessons": [
+            "U5L3"
+          ],
+          "copyrightStatus": "copyrighted",
+          "sourceStatus": "unavailable",
+          "notes": "No source-text file found in Moodle/local resources; Moodle only contains response questions for Unit 5 Lesson 3.",
+          "materials": [],
+          "externalLinks": [],
+          "downloadable": false,
+          "missingDownload": false
+        },
+        {
+          "id": "borders",
+          "title": "Borders",
+          "author": "Thomas King",
+          "units": [
+            5
+          ],
+          "lessons": [
+            "U5L4"
+          ],
+          "copyrightStatus": "copyrighted",
+          "sourceStatus": "unavailable",
+          "notes": "No source-text file found in Moodle/local resources; Moodle only contains response questions for Unit 5 Lesson 4.",
+          "materials": [],
+          "externalLinks": [],
+          "downloadable": false,
+          "missingDownload": false
+        },
+        {
+          "id": "train-from-rhodesia",
+          "title": "Train from Rhodesia",
+          "author": "Nadine Gordimer",
+          "units": [
+            5
+          ],
+          "lessons": [
+            "U5L5"
+          ],
+          "copyrightStatus": "copyrighted",
+          "sourceStatus": "downloadable",
+          "notes": "Full literary text file required for Unit 5 Lesson 5 download.",
+          "materials": [
+            {
+              "label": "Unit-5-Lesson-5-Train-from-Rhodesia-docxMarxism.docx",
+              "type": "docx",
+              "path": "Unit 5/Lesson 5 - Psychoanalytic Lens/downloaded_resources_from_direct_index/homework/docx/Unit-5-Lesson-5-Train-from-Rhodesia-docxMarxism.docx",
+              "url": null,
+              "exists": true,
+              "bytes": 29272
+            }
+          ],
+          "externalLinks": [],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "indian-education",
+          "title": "Indian Education",
+          "author": "Sherman Alexie",
+          "units": [
+            5
+          ],
+          "lessons": [
+            "U5L6"
+          ],
+          "copyrightStatus": "copyrighted",
+          "sourceStatus": "unavailable",
+          "notes": "No source-text file found in Moodle/local resources; Moodle only contains response questions for Unit 5 Lesson 6.",
+          "materials": [],
+          "externalLinks": [],
+          "downloadable": false,
+          "missingDownload": false
+        }
+      ]
+    }
+  ]
+}

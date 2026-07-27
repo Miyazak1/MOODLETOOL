@@ -1,0 +1,134 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.639Z",
+  "course": {
+    "code": "OLC4O",
+    "title": "Ontario Secondary School Literacy Course, Grade 12, Open",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\OLC4O\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 4,
+    "unitPlans": 0,
+    "lessonPlanExpected": 4,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 10,
+    "textMaterials": 1
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Reading and Writing for Personal Success"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Community Voices Through Reading and Writing"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Reading and Writing as Community Action"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Culminating Project - Demonstrating Success in Reading and Writing"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [
+      {
+        "id": "lather-and-nothing-else",
+        "title": "Lather and Nothing Else",
+        "author": "Hernando Tellez",
+        "notes": "Detected from OLC4O Unit 1 Lesson 3 resource title."
+      },
+      {
+        "id": "all-i-really-need-kindergarten",
+        "title": "All I Really Need To Know I Learned in Kindergarten",
+        "author": "Robert Fulghum",
+        "notes": "Detected from OLC4O Unit 1 Lesson 8 resource title."
+      },
+      {
+        "id": "night-of-the-mustang",
+        "title": "Night of the Mustang",
+        "author": "Unknown",
+        "notes": "Detected from OLC4O Unit 2 Lesson 4 resource title."
+      },
+      {
+        "id": "barney",
+        "title": "Barney",
+        "author": "Will Stanton",
+        "notes": "Detected from OLC4O Unit 2 Lesson 5 resource title."
+      },
+      {
+        "id": "urban-legends-how-they-start",
+        "title": "Urban Legends - How They Start and Why They Persist",
+        "author": "Heather Whipps",
+        "notes": "Detected from OLC4O Unit 2 Lesson 6 resource title."
+      },
+      {
+        "id": "do-we-really-see-4000-ads",
+        "title": "Do we really see 4000 ads a day?",
+        "author": "Bryce Sanders",
+        "notes": "Detected from OLC4O Unit 2 Lesson 7 resource title."
+      },
+      {
+        "id": "buddy-can-you-spare-a-home",
+        "title": "Buddy can you spare a home?",
+        "author": "Unknown",
+        "notes": "Detected from OLC4O Unit 2 Lesson 9 resource title."
+      },
+      {
+        "id": "i-have-a-dream",
+        "title": "I Have a Dream",
+        "author": "Martin Luther King Jr.",
+        "notes": "Detected from OLC4O Unit 3 Lesson 1 resource title."
+      },
+      {
+        "id": "global-warming-charles-f-keller",
+        "title": "Global Warming",
+        "author": "Charles F. Keller",
+        "notes": "Detected from OLC4O Unit 3 Lesson 9 resource title."
+      }
+    ],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 4,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

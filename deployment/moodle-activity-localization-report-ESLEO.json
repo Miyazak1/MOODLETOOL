@@ -1,0 +1,76 @@
+{
+  "generatedAt": "2026-07-24T10:32:10.046Z",
+  "course": "ESLEO",
+  "dryRun": false,
+  "force": false,
+  "rows": 2,
+  "downloads": [
+    {
+      "label": "ESLEO Course Outline",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/course-7888-6e5550d5f1/index.html",
+      "type": "html",
+      "bytes": 1890,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=7888",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/course-7888-6e5550d5f1/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "ESLEO-Course-Oultine.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/course-7888-6e5550d5f1/files/dd6ef3e121-ESLEO-Course-Oultine.docx",
+          "href": "files/dd6ef3e121-ESLEO-Course-Oultine.docx",
+          "bytes": 33843,
+          "source": "https://www.esunnybrook.com/pluginfile.php/8095/mod_assign/introattachment/0/ESLEO-Course-Oultine.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Learning Log",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/course-7889-53775a3663/index.html",
+      "type": "html",
+      "bytes": 1979,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=7889",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/course-7889-53775a3663/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Learning-Log-Sample-v1.0.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/course-7889-53775a3663/files/4fe859bf80-Learning-Log-Sample-v1.0.pdf",
+          "href": "files/4fe859bf80-Learning-Log-Sample-v1.0.pdf",
+          "bytes": 22808,
+          "source": "https://www.esunnybrook.com/pluginfile.php/8096/mod_assign/introattachment/0/Learning-Log-Sample-v1.0.pdf?forcedownload=1"
+        },
+        {
+          "label": "Learning-Log.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/course-7889-53775a3663/files/4d97b7791b-Learning-Log.docx",
+          "href": "files/4d97b7791b-Learning-Log.docx",
+          "bytes": 20709,
+          "source": "https://www.esunnybrook.com/pluginfile.php/8096/mod_assign/introattachment/0/Learning-Log.docx?forcedownload=1"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "auth": {
+    "loggedIn": true,
+    "reason": "credentials"
+  }
+}

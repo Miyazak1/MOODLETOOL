@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.612Z",
+  "course": {
+    "code": "SPH4U",
+    "title": "SPH4U · Physics",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SPH4U\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 5,
+    "lessons": 33,
+    "unitPlans": 5,
+    "lessonPlanExpected": 33,
+    "lessonPlans": 33,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [],
+    "missingLessonPlans": [],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 33,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

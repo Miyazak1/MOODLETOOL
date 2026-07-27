@@ -1,0 +1,415 @@
+{
+  "generatedAt": "2026-07-23T06:18:16.813Z",
+  "courses": [
+    {
+      "course": "ENG3U",
+      "missingTexts": [
+        {
+          "id": "sunday-park",
+          "title": "Sunday in the Park",
+          "author": "Bel Kaufman"
+        },
+        {
+          "id": "borders",
+          "title": "Borders",
+          "author": "Thomas King"
+        },
+        {
+          "id": "indian-education",
+          "title": "Indian Education",
+          "author": "Sherman Alexie"
+        }
+      ],
+      "candidates": []
+    },
+    {
+      "course": "ESLDO",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "ESLEO",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "CHC2D",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "CHV2O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "GLC2O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "MPM2D",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "MAP4C",
+      "missingTexts": [
+        {
+          "id": "foundations-for-college-mathematics-12",
+          "title": "Foundations for College Mathematics 12",
+          "author": "Textbook reference"
+        }
+      ],
+      "candidates": []
+    },
+    {
+      "course": "HFC3M",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "ICS3U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "MCR3U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "SBI3U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "SCH3U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "SPH3U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "BBB4M",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "BOH4M",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "CGW4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "ENG4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "HFA4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "HHS4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "LKBDU",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "MCV4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "MDM4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "MHF4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "SBI4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "SCH4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "SPH4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "SNC1D",
+      "missingTexts": [
+        {
+          "id": "grade-9-on-science-textbook",
+          "title": "Grade 9 ON Science Textbook (McGraw-Hill Ryerson)",
+          "author": "McGraw-Hill Ryerson"
+        }
+      ],
+      "candidates": []
+    },
+    {
+      "course": "SNC2D",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "BBI1O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "ENG2D",
+      "missingTexts": [
+        {
+          "id": "othello",
+          "title": "Othello",
+          "author": "William Shakespeare"
+        },
+        {
+          "id": "lady-or-the-tiger",
+          "title": "The Lady or the Tiger?",
+          "author": "Frank R. Stockton"
+        },
+        {
+          "id": "the-interlopers",
+          "title": "The Interlopers",
+          "author": "Saki"
+        },
+        {
+          "id": "the-rocking-horse-winner",
+          "title": "The Rocking Horse Winner",
+          "author": "D.H. Lawrence"
+        },
+        {
+          "id": "myth-of-prometheus",
+          "title": "The Myth of Prometheus",
+          "author": "Classical myth"
+        },
+        {
+          "id": "daedalus-and-icarus",
+          "title": "The Story of Daedalus and Icarus",
+          "author": "Classical myth"
+        },
+        {
+          "id": "landscape-with-the-fall-of-icarus",
+          "title": "Landscape With The Fall of Icarus",
+          "author": "William Carlos Williams"
+        },
+        {
+          "id": "queen-elizabeth-address-to-the-troops",
+          "title": "Address to the Troops at Tilbury",
+          "author": "Queen Elizabeth I"
+        },
+        {
+          "id": "i-have-a-dream",
+          "title": "I Have a Dream",
+          "author": "Martin Luther King Jr."
+        },
+        {
+          "id": "jfk-inaugural-address",
+          "title": "Inaugural Address",
+          "author": "John F. Kennedy"
+        },
+        {
+          "id": "pearl-harbor-address",
+          "title": "Pearl Harbor Address to the Nation",
+          "author": "Franklin D. Roosevelt"
+        },
+        {
+          "id": "lord-of-the-flies",
+          "title": "Lord of the Flies",
+          "author": "William Golding"
+        }
+      ],
+      "candidates": []
+    },
+    {
+      "course": "OLC4O",
+      "missingTexts": [
+        {
+          "id": "lather-and-nothing-else",
+          "title": "Lather and Nothing Else",
+          "author": "Hernando Tellez"
+        },
+        {
+          "id": "all-i-really-need-kindergarten",
+          "title": "All I Really Need To Know I Learned in Kindergarten",
+          "author": "Robert Fulghum"
+        },
+        {
+          "id": "night-of-the-mustang",
+          "title": "Night of the Mustang",
+          "author": "Unknown"
+        },
+        {
+          "id": "barney",
+          "title": "Barney",
+          "author": "Will Stanton"
+        },
+        {
+          "id": "urban-legends-how-they-start",
+          "title": "Urban Legends - How They Start and Why They Persist",
+          "author": "Heather Whipps"
+        },
+        {
+          "id": "do-we-really-see-4000-ads",
+          "title": "Do we really see 4000 ads a day?",
+          "author": "Bryce Sanders"
+        },
+        {
+          "id": "buddy-can-you-spare-a-home",
+          "title": "Buddy can you spare a home?",
+          "author": "Unknown"
+        },
+        {
+          "id": "i-have-a-dream",
+          "title": "I Have a Dream",
+          "author": "Martin Luther King Jr."
+        },
+        {
+          "id": "the-road-not-taken",
+          "title": "The Road Not Taken",
+          "author": "Robert Frost"
+        },
+        {
+          "id": "global-warming-charles-f-keller",
+          "title": "Global Warming",
+          "author": "Charles F. Keller"
+        }
+      ],
+      "candidates": []
+    },
+    {
+      "course": "ICS4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "ICS2O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "MTH1W",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "PPL3O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "PPL1O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "CGC1D",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "AVI3M",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "EPS3O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "ASM3M",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "AVI1O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "AVI2O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "MPM1D",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "MBF3C",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "BBI2O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "BAF3M",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "BTT1O",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "CIA4U",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "LKBCU",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "ESLCO",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "ESLBO",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "ESLAO",
+      "missingTexts": [],
+      "candidates": []
+    },
+    {
+      "course": "HFN1O",
+      "missingTexts": [],
+      "candidates": []
+    }
+  ]
+}

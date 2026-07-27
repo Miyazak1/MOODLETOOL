@@ -1,0 +1,302 @@
+{
+  "generatedAt": "2026-07-23T07:21:57.104Z",
+  "totals": {
+    "courses": 1,
+    "coursesWithTexts": 1,
+    "textEntries": 10,
+    "downloadableTexts": 1,
+    "missingDownloadableTexts": 9
+  },
+  "courses": [
+    {
+      "course": "OLC4O",
+      "title": "Ontario Secondary School Literacy Course, Grade 12, Open",
+      "textEntries": 10,
+      "downloadableTexts": 1,
+      "missingDownloadableTexts": 9,
+      "localMaterialFiles": 1,
+      "moodleLinkedTexts": 10,
+      "texts": [
+        {
+          "id": "lather-and-nothing-else",
+          "title": "Lather and Nothing Else",
+          "author": "Hernando Tellez",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 1 Lesson 3 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 3 - \"Lather and Nothing Else\" by Hernando Tellez",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=511",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "all-i-really-need-kindergarten",
+          "title": "All I Really Need To Know I Learned in Kindergarten",
+          "author": "Robert Fulghum",
+          "units": [
+            1
+          ],
+          "lessons": [
+            "U01L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 1 Lesson 8 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 8 - \"All I Really Need To Know I Learned in Kindergarten\" by Robert Fulghum",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=520",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "night-of-the-mustang",
+          "title": "Night of the Mustang",
+          "author": "Unknown",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 2 Lesson 4 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 4 - Analyzing Non-Fiction: \"Night of the Mustang\"",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=534",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "barney",
+          "title": "Barney",
+          "author": "Will Stanton",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 2 Lesson 5 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 5 - Short Story: \"Barney\" by Will Stanton",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=536",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "urban-legends-how-they-start",
+          "title": "Urban Legends - How They Start and Why They Persist",
+          "author": "Heather Whipps",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 2 Lesson 6 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 6 - \"Urban Legends -How They Start and Why They Persist\" by Heather Whipps",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=538",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "do-we-really-see-4000-ads",
+          "title": "Do we really see 4000 ads a day?",
+          "author": "Bryce Sanders",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 2 Lesson 7 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 7 - \"Do we really see 4000 ads a day?\" by Bryce Sanders",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=540",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "buddy-can-you-spare-a-home",
+          "title": "Buddy can you spare a home?",
+          "author": "Unknown",
+          "units": [
+            2
+          ],
+          "lessons": [
+            "U02L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 2 Lesson 9 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 9 - Article: \"Buddy can you spare a home?\"",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=547",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "i-have-a-dream",
+          "title": "I Have a Dream",
+          "author": "Martin Luther King Jr.",
+          "units": [
+            3
+          ],
+          "lessons": [
+            "U03L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 3 Lesson 1 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Speech: \"I Have a Dream\" - by Martin Luther King Jr.",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=554",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        },
+        {
+          "id": "the-road-not-taken",
+          "title": "The Road Not Taken",
+          "author": "Robert Frost",
+          "units": [
+            3
+          ],
+          "lessons": [
+            "U03L01"
+          ],
+          "copyrightStatus": "Public domain",
+          "sourceStatus": "downloadable",
+          "notes": "Detected from OLC4O Unit 3 Lesson 6 resource title.",
+          "materials": [
+            {
+              "label": "The_Road_Not_Taken_Wikisource.txt",
+              "type": "txt",
+              "path": "texts/the-road-not-taken/The_Road_Not_Taken_Wikisource.txt",
+              "url": null,
+              "exists": true,
+              "bytes": 1851
+            }
+          ],
+          "externalLinks": [
+            {
+              "label": "Lesson 6 - Poem: \"The Road Not Taken\" by Robert Frost",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=567",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": true,
+          "missingDownload": false
+        },
+        {
+          "id": "global-warming-charles-f-keller",
+          "title": "Global Warming",
+          "author": "Charles F. Keller",
+          "units": [
+            3
+          ],
+          "lessons": [
+            "U03L01"
+          ],
+          "copyrightStatus": "Needs review",
+          "sourceStatus": "Moodle resource link",
+          "notes": "Detected from OLC4O Unit 3 Lesson 9 resource title.",
+          "materials": [],
+          "externalLinks": [
+            {
+              "label": "Lesson 9 - Article: \"Global Warming\" by Charles F. Keller",
+              "type": "html",
+              "path": null,
+              "url": "https://www.esunnybrook.com/mod/resource/view.php?id=576",
+              "exists": true,
+              "bytes": null
+            }
+          ],
+          "downloadable": false,
+          "missingDownload": true
+        }
+      ]
+    }
+  ]
+}

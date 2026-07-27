@@ -1,0 +1,127 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.640Z",
+  "course": {
+    "code": "PPL1O",
+    "title": "Healthy Active Living Education, Grade 9, Open",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\PPL1O\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 12,
+    "unitPlans": 0,
+    "lessonPlanExpected": 12,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Active Living"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Safety, Substance Abuse and Bullying"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Healthy Living and Sexual Health"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Movement Competence"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Health and Nutrition"
+      },
+      {
+        "id": "U01L02",
+        "unit": 1,
+        "lesson": 2,
+        "title": "Physical Activity"
+      },
+      {
+        "id": "U01L03",
+        "unit": 1,
+        "lesson": 3,
+        "title": "Unit 1 Culminating"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Abuse and Trauma"
+      },
+      {
+        "id": "U02L02",
+        "unit": 2,
+        "lesson": 2,
+        "title": "Bullying and Cyberbullying"
+      },
+      {
+        "id": "U02L03",
+        "unit": 2,
+        "lesson": 3,
+        "title": "Cyberbullying Culminating"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Sexual Health"
+      },
+      {
+        "id": "U03L02",
+        "unit": 3,
+        "lesson": 2,
+        "title": "Mental Health"
+      },
+      {
+        "id": "U03L03",
+        "unit": 3,
+        "lesson": 3,
+        "title": "Unit 3 Culminating"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Fundamental Movement"
+      },
+      {
+        "id": "U04L02",
+        "unit": 4,
+        "lesson": 2,
+        "title": "Movement Development and Safety"
+      },
+      {
+        "id": "U04L03",
+        "unit": 4,
+        "lesson": 3,
+        "title": "Movement Culminating"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 12,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

@@ -1,0 +1,1341 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-23T04:30:37.337Z",
+  "source": "Generated from deployment/moodle-course-resource-index.csv and deployment/moodle-lesson-title-summary.csv",
+  "totals": {
+    "courses": 54,
+    "readyOutlines": 51,
+    "needsUrl": 3,
+    "lessonBooks": 91,
+    "numberedLessons": 593
+  },
+  "courses": [
+    {
+      "course": "SBI3U",
+      "moodleCourseId": 89,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=89",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/10065/mod_assign/introattachment/0/SBI3U-Course-Oultine-v3.0.docx?forcedownload=1",
+      "bookCount": 5,
+      "bookIds": [
+        9643,
+        9672,
+        9704,
+        9735,
+        9754
+      ],
+      "books": [
+        {
+          "id": 9643,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9643",
+          "chapterLinkCount": 65,
+          "numberedLessonCount": 13
+        },
+        {
+          "id": 9672,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9672",
+          "chapterLinkCount": 90,
+          "numberedLessonCount": 18
+        },
+        {
+          "id": 9704,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9704",
+          "chapterLinkCount": 80,
+          "numberedLessonCount": 16
+        },
+        {
+          "id": 9735,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9735",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 9754,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9754",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        }
+      ],
+      "numberedLessonCount": 61,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "SCH4U",
+      "moodleCourseId": 82,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=82",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8956/mod_assign/introattachment/0/SCH4U-Course-Oultine.docx?forcedownload=1",
+      "bookCount": 5,
+      "bookIds": [
+        8738,
+        8780,
+        8820,
+        8860,
+        8891
+      ],
+      "books": [
+        {
+          "id": 8738,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8738",
+          "chapterLinkCount": 55,
+          "numberedLessonCount": 11
+        },
+        {
+          "id": 8780,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8780",
+          "chapterLinkCount": 50,
+          "numberedLessonCount": 10
+        },
+        {
+          "id": 8820,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8820",
+          "chapterLinkCount": 50,
+          "numberedLessonCount": 10
+        },
+        {
+          "id": 8860,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8860",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 8891,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8891",
+          "chapterLinkCount": 40,
+          "numberedLessonCount": 8
+        }
+      ],
+      "numberedLessonCount": 46,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "SCH3U",
+      "moodleCourseId": 81,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=81",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8818/mod_assign/introattachment/0/SCH3U-Course-Outline-v2.0.docx?forcedownload=1",
+      "bookCount": 5,
+      "bookIds": [
+        8602,
+        8630,
+        8649,
+        8678,
+        8705
+      ],
+      "books": [
+        {
+          "id": 8602,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8602",
+          "chapterLinkCount": 45,
+          "numberedLessonCount": 9
+        },
+        {
+          "id": 8630,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8630",
+          "chapterLinkCount": 25,
+          "numberedLessonCount": 5
+        },
+        {
+          "id": 8649,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8649",
+          "chapterLinkCount": 50,
+          "numberedLessonCount": 10
+        },
+        {
+          "id": 8678,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8678",
+          "chapterLinkCount": 45,
+          "numberedLessonCount": 9
+        },
+        {
+          "id": 8705,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8705",
+          "chapterLinkCount": 40,
+          "numberedLessonCount": 8
+        }
+      ],
+      "numberedLessonCount": 41,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "ESLDO",
+      "moodleCourseId": 74,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=74",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/7957/mod_assign/introattachment/0/ESLDO-Course-Outline-v2.docx?forcedownload=1",
+      "bookCount": 4,
+      "bookIds": [
+        7755,
+        7777,
+        7800,
+        7822
+      ],
+      "books": [
+        {
+          "id": 7755,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7755",
+          "chapterLinkCount": 50,
+          "numberedLessonCount": 10
+        },
+        {
+          "id": 7777,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7777",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 7800,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7800",
+          "chapterLinkCount": 55,
+          "numberedLessonCount": 11
+        },
+        {
+          "id": 7822,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7822",
+          "chapterLinkCount": 55,
+          "numberedLessonCount": 11
+        }
+      ],
+      "numberedLessonCount": 38,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "SPH3U",
+      "moodleCourseId": 83,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=83",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/9151/mod_assign/introattachment/0/SPH3U-Course-Outline.docx?forcedownload=1",
+      "bookCount": 5,
+      "bookIds": [
+        8931,
+        8951,
+        8971,
+        8992,
+        9013
+      ],
+      "books": [
+        {
+          "id": 8931,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8931",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 8951,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8951",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 8971,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8971",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 8992,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8992",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 9013,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9013",
+          "chapterLinkCount": 40,
+          "numberedLessonCount": 8
+        }
+      ],
+      "numberedLessonCount": 36,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "MHF4U",
+      "moodleCourseId": 79,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=79",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8548/mod_assign/introattachment/0/MHF4U-Course-Outline-v2.1%28revised%29.docx?forcedownload=1",
+      "bookCount": 4,
+      "bookIds": [
+        8336,
+        8362,
+        8393,
+        8415
+      ],
+      "books": [
+        {
+          "id": 8336,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8336",
+          "chapterLinkCount": 45,
+          "numberedLessonCount": 9
+        },
+        {
+          "id": 8362,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8362",
+          "chapterLinkCount": 55,
+          "numberedLessonCount": 11
+        },
+        {
+          "id": 8393,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8393",
+          "chapterLinkCount": 40,
+          "numberedLessonCount": 8
+        },
+        {
+          "id": 8415,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8415",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        }
+      ],
+      "numberedLessonCount": 35,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "SPH4U",
+      "moodleCourseId": 84,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=84",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/9263/mod_assign/introattachment/0/SPH4U-Course-Outline.docx?forcedownload=1",
+      "bookCount": 5,
+      "bookIds": [
+        9041,
+        9070,
+        9096,
+        9126,
+        9150
+      ],
+      "books": [
+        {
+          "id": 9041,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9041",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 9070,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9070",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 9096,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9096",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 9126,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9126",
+          "chapterLinkCount": 25,
+          "numberedLessonCount": 5
+        },
+        {
+          "id": 9150,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9150",
+          "chapterLinkCount": 40,
+          "numberedLessonCount": 8
+        }
+      ],
+      "numberedLessonCount": 33,
+      "notes": "Course outline URL was found through the assignment page; no file hint appeared on the course landing page."
+    },
+    {
+      "course": "BOH4M",
+      "moodleCourseId": 71,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=71",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/7576/mod_assign/introattachment/0/BOH4M-Course-Outline.docx?forcedownload=1",
+      "bookCount": 5,
+      "bookIds": [
+        7380,
+        7403,
+        7427,
+        7447,
+        7481
+      ],
+      "books": [
+        {
+          "id": 7380,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7380",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 7403,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7403",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 7427,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7427",
+          "chapterLinkCount": 25,
+          "numberedLessonCount": 5
+        },
+        {
+          "id": 7447,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7447",
+          "chapterLinkCount": 45,
+          "numberedLessonCount": 9
+        },
+        {
+          "id": 7481,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7481",
+          "chapterLinkCount": 20,
+          "numberedLessonCount": 4
+        }
+      ],
+      "numberedLessonCount": 31,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "BBB4M",
+      "moodleCourseId": 70,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=70",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/7438/mod_assign/introattachment/0/BBB4M-Course-Oultine.docx?forcedownload=1",
+      "bookCount": 4,
+      "bookIds": [
+        7244,
+        7265,
+        7289,
+        7314
+      ],
+      "books": [
+        {
+          "id": 7244,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7244",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 7265,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7265",
+          "chapterLinkCount": 40,
+          "numberedLessonCount": 8
+        },
+        {
+          "id": 7289,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7289",
+          "chapterLinkCount": 40,
+          "numberedLessonCount": 8
+        },
+        {
+          "id": 7314,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7314",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        }
+      ],
+      "numberedLessonCount": 30,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "HFA4U",
+      "moodleCourseId": 91,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=91",
+      "outlineStatus": "needs-url",
+      "bookCount": 1,
+      "bookIds": [
+        9805
+      ],
+      "books": [
+        {
+          "id": 9805,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9805",
+          "chapterLinkCount": 50,
+          "numberedLessonCount": 10
+        }
+      ],
+      "numberedLessonCount": 10,
+      "notes": "Visible Moodle shell appears incomplete: only Introduction, Course Overview, Unit One, and 3 lessons/assignments. No visible Course Outline attachment."
+    },
+    {
+      "course": "MPM2D",
+      "moodleCourseId": 80,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=80",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8688/mod_assign/introattachment/0/MPM2D-Course-Outline.docx?forcedownload=1",
+      "bookCount": 4,
+      "bookIds": [
+        8474,
+        8497,
+        8520,
+        8545
+      ],
+      "books": [
+        {
+          "id": 8474,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8474",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 8497,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8497",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 8520,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8520",
+          "chapterLinkCount": 40,
+          "numberedLessonCount": 8
+        },
+        {
+          "id": 8545,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8545",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        }
+      ],
+      "numberedLessonCount": 29,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "ESLEO",
+      "moodleCourseId": 75,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=75",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8095/mod_assign/introattachment/0/ESLEO-Course-Oultine.docx?forcedownload=1",
+      "bookCount": 4,
+      "bookIds": [
+        7891,
+        7914,
+        7938,
+        7960
+      ],
+      "books": [
+        {
+          "id": 7891,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7891",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 7914,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7914",
+          "chapterLinkCount": 40,
+          "numberedLessonCount": 8
+        },
+        {
+          "id": 7938,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7938",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 7960,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7960",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        }
+      ],
+      "numberedLessonCount": 28,
+      "notes": "Course outline URL was found through the assignment page; no file hint appeared on the course landing page."
+    },
+    {
+      "course": "SBI4U",
+      "moodleCourseId": 88,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=88",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/9927/mod_assign/introattachment/0/SBI4U-Course-Oultine-v3.0.docx?forcedownload=1",
+      "bookCount": 5,
+      "bookIds": [
+        9506,
+        9527,
+        9549,
+        9566,
+        9589
+      ],
+      "books": [
+        {
+          "id": 9506,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9506",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 9527,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9527",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 9549,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9549",
+          "chapterLinkCount": 20,
+          "numberedLessonCount": 4
+        },
+        {
+          "id": 9566,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9566",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 9589,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9589",
+          "chapterLinkCount": 20,
+          "numberedLessonCount": 4
+        }
+      ],
+      "numberedLessonCount": 27,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "ICS3U",
+      "moodleCourseId": 87,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=87",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/9676/mod_assign/introattachment/0/ICS3U-Course-Outline.docx?forcedownload=1",
+      "bookCount": 4,
+      "bookIds": [
+        9393,
+        9420,
+        9446,
+        9466
+      ],
+      "books": [
+        {
+          "id": 9393,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9393",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 9420,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9420",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 9446,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9446",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 9466,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9466",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        }
+      ],
+      "numberedLessonCount": 27,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "MCR3U",
+      "moodleCourseId": 76,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=76",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8222/mod_assign/introattachment/0/MCR3U-Course-Outline-2.0.docx?forcedownload=1",
+      "bookCount": 4,
+      "bookIds": [
+        8016,
+        8043,
+        8064,
+        8085
+      ],
+      "books": [
+        {
+          "id": 8016,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8016",
+          "chapterLinkCount": 44,
+          "numberedLessonCount": 9
+        },
+        {
+          "id": 8043,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8043",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 8064,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8064",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 8085,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8085",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        }
+      ],
+      "numberedLessonCount": 27,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "ENG4U",
+      "moodleCourseId": 72,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=72",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/7734/mod_assign/introattachment/0/ENG4U-Course-Oultine-v2.0.docx?forcedownload=1",
+      "bookCount": 4,
+      "bookIds": [
+        7536,
+        7561,
+        7583,
+        7603
+      ],
+      "books": [
+        {
+          "id": 7536,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7536",
+          "chapterLinkCount": 40,
+          "numberedLessonCount": 8
+        },
+        {
+          "id": 7561,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7561",
+          "chapterLinkCount": 31,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 7583,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7583",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 7603,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7603",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        }
+      ],
+      "numberedLessonCount": 26,
+      "notes": "Course outline URL was found through the assignment page; no file hint appeared on the course landing page."
+    },
+    {
+      "course": "CGW4U",
+      "coursePage": "https://www.esunnybrook.com/course/search.php?search=CGW4U",
+      "outlineStatus": "needs-url",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Moodle searches plus category scan across categories 1-13 did not show a visible CGW4U course page."
+    },
+    {
+      "course": "MDM4U",
+      "moodleCourseId": 78,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=78",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8408/mod_assign/introattachment/0/MDM4U-Course-Outline-v1.0.docx?forcedownload=1",
+      "bookCount": 5,
+      "bookIds": [
+        8198,
+        8222,
+        8241,
+        8262,
+        8282
+      ],
+      "books": [
+        {
+          "id": 8198,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8198",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 8222,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8222",
+          "chapterLinkCount": 25,
+          "numberedLessonCount": 5
+        },
+        {
+          "id": 8241,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8241",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 8262,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8262",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 8282,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8282",
+          "chapterLinkCount": 25,
+          "numberedLessonCount": 5
+        }
+      ],
+      "numberedLessonCount": 29,
+      "notes": "Course outline URL was found through the assignment page; no file hint appeared on the course landing page."
+    },
+    {
+      "course": "MCV4U",
+      "moodleCourseId": 77,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=77",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/8319/mod_assign/introattachment/0/MCV4U-Course-Outline.docx?forcedownload=1",
+      "bookCount": 3,
+      "bookIds": [
+        8111,
+        8141,
+        8165
+      ],
+      "books": [
+        {
+          "id": 8111,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8111",
+          "chapterLinkCount": 35,
+          "numberedLessonCount": 7
+        },
+        {
+          "id": 8141,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8141",
+          "chapterLinkCount": 25,
+          "numberedLessonCount": 5
+        },
+        {
+          "id": 8165,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=8165",
+          "chapterLinkCount": 30,
+          "numberedLessonCount": 6
+        }
+      ],
+      "numberedLessonCount": 18,
+      "notes": "Full current course shell visible."
+    },
+    {
+      "course": "ENG3U",
+      "moodleCourseId": 86,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=86",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/9475/mod_assign/introattachment/0/ENG3U-Course-Oultine-v2.0.docx?forcedownload=1",
+      "bookCount": 5,
+      "bookIds": [
+        9244,
+        9267,
+        9292,
+        9317,
+        9340
+      ],
+      "books": [
+        {
+          "id": 9244,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9244",
+          "chapterLinkCount": 2,
+          "numberedLessonCount": 0
+        },
+        {
+          "id": 9267,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9267",
+          "chapterLinkCount": 2,
+          "numberedLessonCount": 0
+        },
+        {
+          "id": 9292,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9292",
+          "chapterLinkCount": 2,
+          "numberedLessonCount": 0
+        },
+        {
+          "id": 9317,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9317",
+          "chapterLinkCount": 2,
+          "numberedLessonCount": 0
+        },
+        {
+          "id": 9340,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=9340",
+          "chapterLinkCount": 2,
+          "numberedLessonCount": 0
+        }
+      ],
+      "numberedLessonCount": 0,
+      "notes": "Current ENG3U shell visible; course outline and Moodle Book containers found, but chapter titles are not standard numbered lesson labels in this crawl."
+    },
+    {
+      "course": "CHC2D",
+      "moodleCourseId": 42,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=42",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=4257",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Visible Moodle shell found, but no standard Course Outline attachment or Moodle Book container was exposed in this scan. Found Course Outline link during authenticated rescan."
+    },
+    {
+      "course": "CHV2O",
+      "moodleCourseId": 41,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=41",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/4292/mod_assign/introattachment/0/CHV20-Curriculum-outline.docx?forcedownload=1",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Visible Moodle shell found; Course Outline and Success Criteria attachment exposed as CHV20-Curriculum-outline.docx."
+    },
+    {
+      "course": "GLC2O",
+      "moodleCourseId": 53,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=53",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/5450/mod_assign/introattachment/0/GLC2-Course-Outline-and-Success-Criteria.docx?forcedownload=1",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Visible Moodle shell found; Course Outline and Success Criteria attachment exposed as GLC2-Course-Outline-and-Success-Criteria.docx."
+    },
+    {
+      "course": "HFC3M",
+      "moodleCourseId": 56,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=56",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5646",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Visible Moodle shell found, but no standard Course Outline attachment or Moodle Book container was exposed in this scan. Found Course Outline link during authenticated rescan."
+    },
+    {
+      "course": "HHS4U",
+      "moodleCourseId": 54,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=54",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5415",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Visible Moodle shell found, but no standard Course Outline attachment or Moodle Book container was exposed in this scan. Found Course Outline link during authenticated rescan."
+    },
+    {
+      "course": "LKBDU",
+      "moodleCourseId": 45,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=45",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=4578",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Visible Moodle shell found, but no standard Course Outline attachment or Moodle Book container was exposed in this scan. Found Course Outline link during authenticated rescan."
+    },
+    {
+      "course": "BBI1O",
+      "moodleCourseId": 30,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=30",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=3284",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Visible Moodle shell found, but no standard Course Outline attachment or Moodle Book container was exposed in this scan. Found Course Outline link during authenticated rescan."
+    },
+    {
+      "course": "SNC2D",
+      "moodleCourseId": 67,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=67",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/pluginfile.php/7171/mod_assign/introattachment/0/SNC2D-COURSE-OUTLINE.docx?forcedownload=1",
+      "bookCount": 4,
+      "bookIds": [
+        6995,
+        7020,
+        7045,
+        7065
+      ],
+      "books": [
+        {
+          "id": 6995,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=6995",
+          "chapterLinkCount": 1,
+          "numberedLessonCount": 0
+        },
+        {
+          "id": 7020,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7020",
+          "chapterLinkCount": 1,
+          "numberedLessonCount": 0
+        },
+        {
+          "id": 7045,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7045",
+          "chapterLinkCount": 1,
+          "numberedLessonCount": 0
+        },
+        {
+          "id": 7065,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7065",
+          "chapterLinkCount": 1,
+          "numberedLessonCount": 0
+        }
+      ],
+      "numberedLessonCount": 0,
+      "notes": "Moodle shell visible; Course Outline attachment and 4 generic Lessons Moodle Book containers found."
+    },
+    {
+      "course": "MAP4C",
+      "moodleCourseId": 17,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=17",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=1450",
+      "bookCount": 1,
+      "bookIds": [
+        1456
+      ],
+      "books": [
+        {
+          "id": 1456,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=1456",
+          "chapterLinkCount": 2,
+          "numberedLessonCount": 0
+        }
+      ],
+      "numberedLessonCount": 0,
+      "notes": "Visible Moodle shell found; textbook Moodle Book container found, but no Course Outline attachment was exposed in this scan. Found Course Outline link during authenticated rescan."
+    },
+    {
+      "course": "SNC1D",
+      "moodleCourseId": 62,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=62",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=6350",
+      "bookCount": 1,
+      "bookIds": [
+        6351
+      ],
+      "books": [
+        {
+          "id": 6351,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=6351",
+          "chapterLinkCount": 2,
+          "numberedLessonCount": 0
+        }
+      ],
+      "numberedLessonCount": 0,
+      "notes": "Visible Moodle shell found; textbook Moodle Book container found, but no Course Outline attachment was exposed in this scan. Found Course Outline link during authenticated rescan."
+    },
+    {
+      "course": "ENG2D",
+      "moodleCourseId": 8,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=8",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=376",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "OLC4O",
+      "moodleCourseId": 9,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=9",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=494",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "ICS4U",
+      "moodleCourseId": 37,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=37",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=3829",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "ICS2O",
+      "moodleCourseId": 36,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=36",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=3753",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "MTH1W",
+      "moodleCourseId": 59,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=59",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5821",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "PPL3O",
+      "moodleCourseId": 58,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=58",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5747",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "PPL1O",
+      "moodleCourseId": 57,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=57",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5704",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "CGC1D",
+      "moodleCourseId": 43,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=43",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=4393",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "AVI3M",
+      "moodleCourseId": 68,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=68",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=7117",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "EPS3O",
+      "moodleCourseId": 10,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=10",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=591",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "ASM3M",
+      "moodleCourseId": 66,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=66",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/assign/view.php?id=6980",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "AVI1O",
+      "moodleCourseId": 5,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=5",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=74",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "AVI2O",
+      "moodleCourseId": 4,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=4",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/url/view.php?id=3",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "MPM1D",
+      "moodleCourseId": 19,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=19",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/url/view.php?id=1686",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "MBF3C",
+      "moodleCourseId": 18,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=18",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/assign/view.php?id=1598",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "BBI2O",
+      "moodleCourseId": 65,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=65",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=6867",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "BAF3M",
+      "moodleCourseId": 32,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=32",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=3372",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "BTT1O",
+      "moodleCourseId": 31,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=31",
+      "outlineStatus": "needs-url",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Course Outline URL exposed; section structure imported."
+    },
+    {
+      "course": "CIA4U",
+      "moodleCourseId": 40,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=40",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=4102",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "LKBCU",
+      "moodleCourseId": 44,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=44",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=4496",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "ESLCO",
+      "moodleCourseId": 73,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=73",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/assign/view.php?id=7650",
+      "bookCount": 4,
+      "bookIds": [
+        7653,
+        7671,
+        7688,
+        7702
+      ],
+      "books": [
+        {
+          "id": 7653,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7653",
+          "chapterLinkCount": 26,
+          "numberedLessonCount": 5
+        },
+        {
+          "id": 7671,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7671",
+          "chapterLinkCount": 31,
+          "numberedLessonCount": 6
+        },
+        {
+          "id": 7688,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7688",
+          "chapterLinkCount": 26,
+          "numberedLessonCount": 5
+        },
+        {
+          "id": 7702,
+          "url": "https://www.esunnybrook.com/mod/book/view.php?id=7702",
+          "chapterLinkCount": 26,
+          "numberedLessonCount": 5
+        }
+      ],
+      "numberedLessonCount": 21,
+      "notes": "Authenticated Moodle shell visible; 4 Moodle Book container(s) found; section structure imported; chapter counts refreshed from authenticated Book TOCs."
+    },
+    {
+      "course": "ESLBO",
+      "moodleCourseId": 49,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=49",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/course/view.php?id=49#collapseSection-537",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "ESLAO",
+      "moodleCourseId": 48,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=48",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/course/view.php?id=48#collapseSection-527",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    },
+    {
+      "course": "HFN1O",
+      "moodleCourseId": 55,
+      "coursePage": "https://www.esunnybrook.com/course/view.php?id=55",
+      "outlineStatus": "ready",
+      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=5570",
+      "bookCount": 0,
+      "bookIds": [],
+      "books": [],
+      "numberedLessonCount": 0,
+      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
+    }
+  ]
+}

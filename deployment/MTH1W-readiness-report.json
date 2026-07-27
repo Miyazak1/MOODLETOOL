@@ -1,0 +1,231 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.638Z",
+  "course": {
+    "code": "MTH1W",
+    "title": "Mathematics, Grade 9, De-Streamed",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\MTH1W\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 6,
+    "lessons": 28,
+    "unitPlans": 0,
+    "lessonPlanExpected": 28,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Number"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Algebra"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Data"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Geometry and Measurement"
+      },
+      {
+        "unit": 5,
+        "title": "Unit 5: Coding"
+      },
+      {
+        "unit": 6,
+        "title": "Unit 6: Financial Literacy"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Setup and Learning Logs"
+      },
+      {
+        "id": "U01L02",
+        "unit": 1,
+        "lesson": 2,
+        "title": "Integers"
+      },
+      {
+        "id": "U01L03",
+        "unit": 1,
+        "lesson": 3,
+        "title": "Fractions"
+      },
+      {
+        "id": "U01L04",
+        "unit": 1,
+        "lesson": 4,
+        "title": "Sets and Subsets"
+      },
+      {
+        "id": "U01L05",
+        "unit": 1,
+        "lesson": 5,
+        "title": "Exponents"
+      },
+      {
+        "id": "U01L06",
+        "unit": 1,
+        "lesson": 6,
+        "title": "Rates, Unit Rate, Ratio, Proportions and Percent"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Learning Logs"
+      },
+      {
+        "id": "U02L02",
+        "unit": 2,
+        "lesson": 2,
+        "title": "Monomials"
+      },
+      {
+        "id": "U02L03",
+        "unit": 2,
+        "lesson": 3,
+        "title": "Polynomials"
+      },
+      {
+        "id": "U02L04",
+        "unit": 2,
+        "lesson": 4,
+        "title": "Solving and Modelling Equations"
+      },
+      {
+        "id": "U02L05",
+        "unit": 2,
+        "lesson": 5,
+        "title": "Linear Relations"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Learning Logs"
+      },
+      {
+        "id": "U03L02",
+        "unit": 3,
+        "lesson": 2,
+        "title": "Basics of Graphing"
+      },
+      {
+        "id": "U03L03",
+        "unit": 3,
+        "lesson": 3,
+        "title": "Distance Time Graphs"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Learning Logs"
+      },
+      {
+        "id": "U04L02",
+        "unit": 4,
+        "lesson": 2,
+        "title": "Geometry"
+      },
+      {
+        "id": "U04L03",
+        "unit": 4,
+        "lesson": 3,
+        "title": "2D Measurement"
+      },
+      {
+        "id": "U04L04",
+        "unit": 4,
+        "lesson": 4,
+        "title": "3D Measurement"
+      },
+      {
+        "id": "U04L05",
+        "unit": 4,
+        "lesson": 5,
+        "title": "Optimization"
+      },
+      {
+        "id": "U04L06",
+        "unit": 4,
+        "lesson": 6,
+        "title": "PPT Lessons"
+      },
+      {
+        "id": "U05L01",
+        "unit": 5,
+        "lesson": 1,
+        "title": "Python Introduction"
+      },
+      {
+        "id": "U05L02",
+        "unit": 5,
+        "lesson": 2,
+        "title": "Python Problem 1"
+      },
+      {
+        "id": "U05L03",
+        "unit": 5,
+        "lesson": 3,
+        "title": "Python Problem 2"
+      },
+      {
+        "id": "U05L04",
+        "unit": 5,
+        "lesson": 4,
+        "title": "Python Problem 3"
+      },
+      {
+        "id": "U05L05",
+        "unit": 5,
+        "lesson": 5,
+        "title": "Python Problem 4"
+      },
+      {
+        "id": "U05L06",
+        "unit": 5,
+        "lesson": 6,
+        "title": "Python Problem 5"
+      },
+      {
+        "id": "U05L07",
+        "unit": 5,
+        "lesson": 7,
+        "title": "Python Final Notes"
+      },
+      {
+        "id": "U06L01",
+        "unit": 6,
+        "lesson": 1,
+        "title": "Financial Literacy"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 28,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

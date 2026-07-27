@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.568Z",
+  "course": {
+    "code": "GLC2O",
+    "title": "GLC2O · Career Studies",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\GLC2O\\"
+  },
+  "counts": {
+    "courseDocuments": 1,
+    "courseOutlines": 1,
+    "introductions": 0,
+    "units": 3,
+    "lessons": 3,
+    "unitPlans": 3,
+    "lessonPlanExpected": 3,
+    "lessonPlans": 3,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": false,
+    "missingIntroduction": true,
+    "missingUnitPlans": [],
+    "missingLessonPlans": [],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 3,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

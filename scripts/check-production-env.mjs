@@ -1,0 +1,194 @@
+import { existsSync, readFileSync } from "node:fs";
+import { isAbsolute, resolve } from "node:path";
+
+const defaultEnvPath = resolve(process.cwd(), ".env.production");
+
+function argValue(name, fallback = null) {
+  const index = process.argv.indexOf(name);
+  if (index === -1) return fallback;
+  return process.argv[index + 1] || fallback;
+}
+
+function hasArg(name) {
+  return process.argv.includes(name);
+}
+
+function stripQuotes(value) {
+  const trimmed = value.trim();
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    return trimmed.slice(1, -1);
+  }
+  return trimmed;
+}
+
+function parseEnv(content) {
+  const values = {};
+  const lines = content.split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const match = trimmed.match(/^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+    if (!match) continue;
+    values[match[1]] = stripQuotes(match[2]);
+  }
+  return values;
+}
+
+const envPath = resolve(argValue("--env", defaultEnvPath));
+const values = existsSync(envPath) ? { ...process.env, ...parseEnv(readFileSync(envPath, "utf8")) } : { ...process.env };
+const errors = [];
+const warnings = [];
+const ok = [];
+
+function placeholder(value) {
+  return !value
+    || /CHANGE_ME/i.test(value)
+    || /replace-with/i.test(value)
+    || /your-/i.test(value)
+    || value === "admin"
+    || value === "password";
+}
+
+function requireValue(name, detail = "") {
+  const value = values[name] || "";
+  if (!value) {
+    errors.push(`${name} is required${detail ? `: ${detail}` : ""}.`);
+    return "";
+  }
+  if (placeholder(value)) {
+    errors.push(`${name} still looks like a placeholder.`);
+    return value;
+  }
+  ok.push(`${name} is set.`);
+  return value;
+}
+
+function requireFlag(name, expected) {
+  const value = values[name] || "";
+  if (value !== expected) errors.push(`${name} must be ${expected} for production.`);
+  else ok.push(`${name}=${expected}.`);
+}
+
+function requireSecret(name) {
+  const value = requireValue(name, "use at least 32 random characters");
+  if (value && value.length < 32) errors.push(`${name} should be at least 32 characters.`);
+  return value;
+}
+
+function requirePassword(name) {
+  const value = requireValue(name, "use a strong password");
+  if (value && value.length < 12) errors.push(`${name} should be at least 12 characters.`);
+  return value;
+}
+
+function requireLinuxPath(name) {
+  const value = requireValue(name);
+  if (!value) return value;
+  if (!value.startsWith("/")) errors.push(`${name} should be an absolute Linux path, got ${value}.`);
+  if (/[A-Za-z]:\\/.test(value)) errors.push(`${name} looks like a Windows path; production Baota needs a Linux path.`);
+  return value;
+}
+
+function checkUsersJson() {
+  const usersJson = values.PORTAL_USERS_JSON || "";
+  const usersFile = values.PORTAL_USERS_FILE || "";
+  if (!usersJson && !usersFile) {
+    errors.push("Either PORTAL_USERS_JSON or PORTAL_USERS_FILE is required for first production login.");
+    return;
+  }
+  if (usersFile) {
+    if (!usersFile.startsWith("/")) errors.push("PORTAL_USERS_FILE should be an absolute Linux path.");
+    ok.push("PORTAL_USERS_FILE is set.");
+  }
+  if (!usersJson) return;
+
+  let users;
+  try {
+    users = JSON.parse(usersJson);
+  } catch (error) {
+    errors.push(`PORTAL_USERS_JSON is not valid JSON: ${error.message}`);
+    return;
+  }
+  if (!Array.isArray(users) || !users.length) {
+    errors.push("PORTAL_USERS_JSON must be a non-empty array.");
+    return;
+  }
+
+  const usernames = new Set();
+  let hasAdmin = false;
+  for (const user of users) {
+    if (!user?.username) errors.push("Each portal user needs a username.");
+    if (user?.username && usernames.has(user.username)) errors.push(`Duplicate portal username: ${user.username}`);
+    if (user?.username) usernames.add(user.username);
+    if (user?.role === "admin" && Array.isArray(user.courses) && user.courses.includes("*")) hasAdmin = true;
+    if (!user?.password && !user?.passwordHash) errors.push(`Portal user ${user?.username || "(unknown)"} needs password or passwordHash.`);
+    if (user?.password && placeholder(user.password)) errors.push(`Portal user ${user.username || "(unknown)"} password still looks like a placeholder.`);
+    if (user?.password && user.password.length < 12) errors.push(`Portal user ${user.username || "(unknown)"} password should be at least 12 characters.`);
+  }
+  if (!hasAdmin) errors.push('PORTAL_USERS_JSON should include at least one admin user with courses ["*"].');
+  ok.push(`PORTAL_USERS_JSON contains ${users.length} user(s).`);
+}
+
+requireFlag("PORTAL_AUTH_ENABLED", "1");
+const portalSecret = requireSecret("PORTAL_SESSION_SECRET");
+requireFlag("PORTAL_COOKIE_SECURE", "1");
+requireLinuxPath("PORTAL_DATA_DIR");
+requireLinuxPath("COURSE_STATUS_FILE");
+const activeRoot = requireLinuxPath("COURSE_ACTIVE_ROOT");
+const archiveRoot = requireLinuxPath("COURSE_ARCHIVE_ROOT");
+const xAccelPrefix = requireValue("X_ACCEL_COURSEWARE_PREFIX");
+requireSecret("EMBED_TOKEN_SECRET");
+const embedOrigin = requireValue("EMBED_PUBLIC_ORIGIN");
+checkUsersJson();
+
+if (activeRoot && archiveRoot && activeRoot === archiveRoot) errors.push("COURSE_ACTIVE_ROOT and COURSE_ARCHIVE_ROOT must be different directories.");
+if (xAccelPrefix && (!xAccelPrefix.startsWith("/") || !xAccelPrefix.endsWith("/"))) {
+  errors.push("X_ACCEL_COURSEWARE_PREFIX should start and end with '/', for example /_protected_courseware/.");
+}
+if (embedOrigin && !/^https:\/\//i.test(embedOrigin)) errors.push("EMBED_PUBLIC_ORIGIN should be the production HTTPS origin, for example https://courses.example.com.");
+
+if ((values.ADMIN_UPLOADS_ENABLED || "") === "1") {
+  requireValue("ADMIN_USERNAME");
+  requirePassword("ADMIN_PASSWORD");
+  const adminSecret = requireSecret("ADMIN_SESSION_SECRET");
+  requireFlag("ADMIN_COOKIE_SECURE", "1");
+  if (adminSecret && portalSecret && adminSecret === portalSecret) warnings.push("ADMIN_SESSION_SECRET and PORTAL_SESSION_SECRET should be different.");
+} else {
+  warnings.push("ADMIN_UPLOADS_ENABLED is not 1; admin uploads will be disabled.");
+}
+
+if (values.ADMIN_TOKEN && placeholder(values.ADMIN_TOKEN)) errors.push("ADMIN_TOKEN still looks like a placeholder.");
+if (values.ADMIN_TOKEN && values.ADMIN_TOKEN.length < 32) warnings.push("ADMIN_TOKEN should be at least 32 characters if direct API token fallback is used.");
+
+for (const name of ["MOODLE_USERNAME", "MOODLE_PASSWORD", "MOODLE_COOKIE"]) {
+  if (values[name]) warnings.push(`${name} is set. Keep Moodle credentials out of long-lived production env unless a batch import is running.`);
+}
+
+if (values.NODE_ENV && values.NODE_ENV !== "production") warnings.push(`NODE_ENV is ${values.NODE_ENV}; production should use NODE_ENV=production.`);
+if (!values.NODE_ENV) warnings.push("NODE_ENV is not set; production should use NODE_ENV=production.");
+
+const report = {
+  envPath: existsSync(envPath) ? envPath : null,
+  status: errors.length ? "blocked" : warnings.length ? "ready-with-warnings" : "ready",
+  totals: {
+    ok: ok.length,
+    warnings: warnings.length,
+    errors: errors.length,
+  },
+  errors,
+  warnings,
+  ok,
+};
+
+if (hasArg("--json")) {
+  console.log(JSON.stringify(report, null, 2));
+} else {
+  console.log(`Production env check: ${report.status}`);
+  if (report.envPath) console.log(`Env file: ${report.envPath}`);
+  else console.log("Env file: not found; checked process environment only.");
+  for (const item of errors) console.log(`BLOCK: ${item}`);
+  for (const item of warnings) console.log(`WARN: ${item}`);
+  console.log(`Summary: ${ok.length} ok, ${warnings.length} warning(s), ${errors.length} blocker(s).`);
+}
+
+if (errors.length) process.exit(1);

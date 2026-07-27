@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 1,
+  "source": "D:\\工作文件\\OSSD\\OSSD 课程教材大纲\\OSSD 课程教材\\Unit Plans and Lesson Plans",
+  "notes": "Textbook folders are intentionally excluded from admin upload categorization.",
+  "defaultCourse": "ENG3U",
+  "courses": [
+    {
+      "code": "BBB4M",
+      "title": "International Business Fundamentals",
+      "grade": "Grade 12",
+      "planningFileCount": 33
+    },
+    {
+      "code": "BBI1O",
+      "title": "Introduction to Business",
+      "grade": "Grade 9/10",
+      "planningFileCount": 5
+    },
+    {
+      "code": "BOH4M",
+      "title": "Business Leadership: Management Fundamentals",
+      "grade": "Grade 12",
+      "planningFileCount": 40
+    },
+    {
+      "code": "CGW4U",
+      "title": "Canadian and World Issues",
+      "grade": "Grade 12",
+      "planningFileCount": 29
+    },
+    {
+      "code": "CHC2D",
+      "title": "Canadian History since World War I",
+      "grade": "Grade 10",
+      "planningFileCount": 5
+    },
+    {
+      "code": "CHV2O",
+      "title": "Civics and Citizenship",
+      "grade": "Grade 10",
+      "planningFileCount": 4
+    },
+    {
+      "code": "ENG3U",
+      "title": "English",
+      "grade": "Grade 11",
+      "planningFileCount": 41
+    },
+    {
+      "code": "ENG4U",
+      "title": "English",
+      "grade": "Grade 12",
+      "planningFileCount": 30
+    },
+    {
+      "code": "ESLDO",
+      "title": "ESL Level 4",
+      "grade": "ESL",
+      "planningFileCount": 42
+    },
+    {
+      "code": "ESLEO",
+      "title": "ESL Level 5",
+      "grade": "ESL",
+      "planningFileCount": 32
+    },
+    {
+      "code": "GLC2O",
+      "title": "Career Studies",
+      "grade": "Grade 10",
+      "planningFileCount": 17
+    },
+    {
+      "code": "HFA4U",
+      "title": "Nutrition and Health",
+      "grade": "Grade 12",
+      "planningFileCount": 33
+    },
+    {
+      "code": "HFC3M",
+      "title": "Food and Culture",
+      "grade": "Grade 11",
+      "planningFileCount": 5
+    },
+    {
+      "code": "HHS4U",
+      "title": "Families in Canada",
+      "grade": "Grade 12",
+      "planningFileCount": 3
+    },
+    {
+      "code": "ICS3U",
+      "title": "Introduction to Computer Studies",
+      "grade": "Grade 11",
+      "planningFileCount": 47
+    },
+    {
+      "code": "LKBDU",
+      "title": "International Languages, Simplified Chinese",
+      "grade": "Grade 12",
+      "planningFileCount": 5
+    },
+    {
+      "code": "MCR3U",
+      "title": "Functions",
+      "grade": "Grade 11",
+      "planningFileCount": 31
+    },
+    {
+      "code": "MCV4U",
+      "title": "Calculus and Vectors",
+      "grade": "Grade 12",
+      "planningFileCount": 22
+    },
+    {
+      "code": "MDM4U",
+      "title": "Mathematics of Data Management",
+      "grade": "Grade 12",
+      "planningFileCount": 28
+    },
+    {
+      "code": "MHF4U",
+      "title": "Advanced Functions",
+      "grade": "Grade 12",
+      "planningFileCount": 39
+    },
+    {
+      "code": "MPM2D",
+      "title": "Principles of Mathematics",
+      "grade": "Grade 10",
+      "planningFileCount": 33
+    },
+    {
+      "code": "SBI3U",
+      "title": "Biology",
+      "grade": "Grade 11",
+      "planningFileCount": 102
+    },
+    {
+      "code": "SBI4U",
+      "title": "Biology",
+      "grade": "Grade 12",
+      "planningFileCount": 32
+    },
+    {
+      "code": "SCH3U",
+      "title": "Chemistry",
+      "grade": "Grade 11",
+      "planningFileCount": 96
+    },
+    {
+      "code": "SCH4U",
+      "title": "Chemistry",
+      "grade": "Grade 12",
+      "planningFileCount": 204
+    },
+    {
+      "code": "SPH3U",
+      "title": "Physics",
+      "grade": "Grade 11",
+      "planningFileCount": 43
+    },
+    {
+      "code": "SPH4U",
+      "title": "Physics",
+      "grade": "Grade 12",
+      "planningFileCount": 39
+    },
+    {
+      "code": "ASM3M",
+      "title": "ASM3M",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "AVI1O",
+      "title": "AVI1O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "AVI2O",
+      "title": "AVI2O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "AVI3M",
+      "title": "AVI3M",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "BAF3M",
+      "title": "BAF3M",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "BBI2O",
+      "title": "BBI2O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "BTT1O",
+      "title": "BTT1O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "CGC1D",
+      "title": "CGC1D",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "CIA4U",
+      "title": "CIA4U",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "ENG2D",
+      "title": "ENG2D",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "EPS3O",
+      "title": "EPS3O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "ESLAO",
+      "title": "ESLAO",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "ESLBO",
+      "title": "ESLBO",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "ESLCO",
+      "title": "ESLCO",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "HFN1O",
+      "title": "HFN1O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "ICS2O",
+      "title": "ICS2O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "ICS4U",
+      "title": "ICS4U",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "LKBCU",
+      "title": "LKBCU",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "MAP4C",
+      "title": "Foundations for College Mathematics",
+      "grade": "Grade 12",
+      "planningFileCount": 0
+    },
+    {
+      "code": "MBF3C",
+      "title": "MBF3C",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "MPM1D",
+      "title": "MPM1D",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "MTH1W",
+      "title": "MTH1W",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "OLC4O",
+      "title": "OLC4O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "PPL1O",
+      "title": "PPL1O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "PPL3O",
+      "title": "PPL3O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "SNC1D",
+      "title": "Science",
+      "grade": "Grade 9",
+      "planningFileCount": 0
+    },
+    {
+      "code": "SNC2D",
+      "title": "Science",
+      "grade": "Grade 10",
+      "planningFileCount": 0
+    }
+  ]
+}

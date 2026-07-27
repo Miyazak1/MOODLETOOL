@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.610Z",
+  "course": {
+    "code": "SCH4U",
+    "title": "SCH4U · Chemistry",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\SCH4U\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 5,
+    "lessons": 46,
+    "unitPlans": 5,
+    "lessonPlanExpected": 46,
+    "lessonPlans": 46,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [],
+    "missingLessonPlans": [],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 46,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

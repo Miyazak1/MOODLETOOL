@@ -1,0 +1,492 @@
+{
+  "schemaVersion": 1,
+  "defaultCourse": "ENG3U",
+  "courses": [
+    {
+      "code": "ENG3U",
+      "title": "ENG3U · English",
+      "level": "Grade 11",
+      "status": "ready",
+      "manifestUrl": "/courseware/ENG3U/course-manifest.json",
+      "baseUrl": "/courseware/ENG3U/",
+      "notes": "iSpring courseware included."
+    },
+    {
+      "code": "ESLDO",
+      "title": "ESLDO · ESL Level 4",
+      "level": "ESL",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ESLDO/course-manifest.json",
+      "baseUrl": "/courseware/ESLDO/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "ESLEO",
+      "title": "ESLEO · ESL Level 5",
+      "level": "ESL",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ESLEO/course-manifest.json",
+      "baseUrl": "/courseware/ESLEO/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "CHC2D",
+      "title": "CHC2D · Canadian History since World War I",
+      "level": "Grade 10",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/CHC2D/course-manifest.json",
+      "baseUrl": "/courseware/CHC2D/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "CHV2O",
+      "title": "CHV2O · Civics and Citizenship",
+      "level": "Grade 10",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/CHV2O/course-manifest.json",
+      "baseUrl": "/courseware/CHV2O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "GLC2O",
+      "title": "GLC2O · Career Studies",
+      "level": "Grade 10",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/GLC2O/course-manifest.json",
+      "baseUrl": "/courseware/GLC2O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "MPM2D",
+      "title": "MPM2D · Principles of Mathematics",
+      "level": "Grade 10",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/MPM2D/course-manifest.json",
+      "baseUrl": "/courseware/MPM2D/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "SNC2D",
+      "title": "SNC2D · Science",
+      "level": "Grade 10",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/SNC2D/course-manifest.json",
+      "baseUrl": "/courseware/SNC2D/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "HFC3M",
+      "title": "HFC3M · Food and Culture",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/HFC3M/course-manifest.json",
+      "baseUrl": "/courseware/HFC3M/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "ICS3U",
+      "title": "ICS3U · Introduction to Computer Studies",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ICS3U/course-manifest.json",
+      "baseUrl": "/courseware/ICS3U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "MCR3U",
+      "title": "MCR3U · Functions",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/MCR3U/course-manifest.json",
+      "baseUrl": "/courseware/MCR3U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "SBI3U",
+      "title": "SBI3U · Biology",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/SBI3U/course-manifest.json",
+      "baseUrl": "/courseware/SBI3U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "SCH3U",
+      "title": "SCH3U · Chemistry",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/SCH3U/course-manifest.json",
+      "baseUrl": "/courseware/SCH3U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "SPH3U",
+      "title": "SPH3U · Physics",
+      "level": "Grade 11",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/SPH3U/course-manifest.json",
+      "baseUrl": "/courseware/SPH3U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "BBB4M",
+      "title": "BBB4M · International Business Fundamentals",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/BBB4M/course-manifest.json",
+      "baseUrl": "/courseware/BBB4M/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "BOH4M",
+      "title": "BOH4M · Business Leadership: Management Fundamentals",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/BOH4M/course-manifest.json",
+      "baseUrl": "/courseware/BOH4M/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "CGW4U",
+      "title": "CGW4U · Canadian and World Issues",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/CGW4U/course-manifest.json",
+      "baseUrl": "/courseware/CGW4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "ENG4U",
+      "title": "ENG4U · English",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ENG4U/course-manifest.json",
+      "baseUrl": "/courseware/ENG4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "HFA4U",
+      "title": "HFA4U · Nutrition and Health",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/HFA4U/course-manifest.json",
+      "baseUrl": "/courseware/HFA4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "HHS4U",
+      "title": "HHS4U · Families in Canada",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/HHS4U/course-manifest.json",
+      "baseUrl": "/courseware/HHS4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "LKBDU",
+      "title": "LKBDU · International Languages, Simplified Chinese",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/LKBDU/course-manifest.json",
+      "baseUrl": "/courseware/LKBDU/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "MAP4C",
+      "title": "MAP4C · Foundations for College Mathematics",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/MAP4C/course-manifest.json",
+      "baseUrl": "/courseware/MAP4C/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "MCV4U",
+      "title": "MCV4U · Calculus and Vectors",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/MCV4U/course-manifest.json",
+      "baseUrl": "/courseware/MCV4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "MDM4U",
+      "title": "MDM4U · Mathematics of Data Management",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/MDM4U/course-manifest.json",
+      "baseUrl": "/courseware/MDM4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "MHF4U",
+      "title": "MHF4U · Advanced Functions",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/MHF4U/course-manifest.json",
+      "baseUrl": "/courseware/MHF4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "SBI4U",
+      "title": "SBI4U · Biology",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/SBI4U/course-manifest.json",
+      "baseUrl": "/courseware/SBI4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "SCH4U",
+      "title": "SCH4U · Chemistry",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/SCH4U/course-manifest.json",
+      "baseUrl": "/courseware/SCH4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "SPH4U",
+      "title": "SPH4U · Physics",
+      "level": "Grade 12",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/SPH4U/course-manifest.json",
+      "baseUrl": "/courseware/SPH4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "SNC1D",
+      "title": "SNC1D · Science",
+      "level": "Grade 9",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/SNC1D/course-manifest.json",
+      "baseUrl": "/courseware/SNC1D/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "BBI1O",
+      "title": "BBI1O · Introduction to Business",
+      "level": "Grade 9/10",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/BBI1O/course-manifest.json",
+      "baseUrl": "/courseware/BBI1O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "ASM3M",
+      "title": "ASM3M · ASM3M",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ASM3M/course-manifest.json",
+      "baseUrl": "/courseware/ASM3M/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "AVI1O",
+      "title": "AVI1O · AVI1O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/AVI1O/course-manifest.json",
+      "baseUrl": "/courseware/AVI1O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "AVI2O",
+      "title": "AVI2O · AVI2O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/AVI2O/course-manifest.json",
+      "baseUrl": "/courseware/AVI2O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "AVI3M",
+      "title": "AVI3M · AVI3M",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/AVI3M/course-manifest.json",
+      "baseUrl": "/courseware/AVI3M/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "BAF3M",
+      "title": "BAF3M · BAF3M",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/BAF3M/course-manifest.json",
+      "baseUrl": "/courseware/BAF3M/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "BBI2O",
+      "title": "BBI2O · BBI2O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/BBI2O/course-manifest.json",
+      "baseUrl": "/courseware/BBI2O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "BTT1O",
+      "title": "BTT1O · BTT1O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/BTT1O/course-manifest.json",
+      "baseUrl": "/courseware/BTT1O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "CGC1D",
+      "title": "CGC1D · CGC1D",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/CGC1D/course-manifest.json",
+      "baseUrl": "/courseware/CGC1D/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "CIA4U",
+      "title": "CIA4U · CIA4U",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/CIA4U/course-manifest.json",
+      "baseUrl": "/courseware/CIA4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "ENG2D",
+      "title": "ENG2D · ENG2D",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ENG2D/course-manifest.json",
+      "baseUrl": "/courseware/ENG2D/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "EPS3O",
+      "title": "EPS3O · EPS3O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/EPS3O/course-manifest.json",
+      "baseUrl": "/courseware/EPS3O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "ESLAO",
+      "title": "ESLAO · ESLAO",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ESLAO/course-manifest.json",
+      "baseUrl": "/courseware/ESLAO/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "ESLBO",
+      "title": "ESLBO · ESLBO",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ESLBO/course-manifest.json",
+      "baseUrl": "/courseware/ESLBO/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "ESLCO",
+      "title": "ESLCO · ESLCO",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ESLCO/course-manifest.json",
+      "baseUrl": "/courseware/ESLCO/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "HFN1O",
+      "title": "HFN1O · HFN1O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/HFN1O/course-manifest.json",
+      "baseUrl": "/courseware/HFN1O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "ICS2O",
+      "title": "ICS2O · ICS2O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ICS2O/course-manifest.json",
+      "baseUrl": "/courseware/ICS2O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "ICS4U",
+      "title": "ICS4U · ICS4U",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/ICS4U/course-manifest.json",
+      "baseUrl": "/courseware/ICS4U/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "LKBCU",
+      "title": "LKBCU · LKBCU",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/LKBCU/course-manifest.json",
+      "baseUrl": "/courseware/LKBCU/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "MBF3C",
+      "title": "MBF3C · MBF3C",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/MBF3C/course-manifest.json",
+      "baseUrl": "/courseware/MBF3C/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "MPM1D",
+      "title": "MPM1D · MPM1D",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/MPM1D/course-manifest.json",
+      "baseUrl": "/courseware/MPM1D/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "MTH1W",
+      "title": "MTH1W · MTH1W",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/MTH1W/course-manifest.json",
+      "baseUrl": "/courseware/MTH1W/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "OLC4O",
+      "title": "OLC4O · OLC4O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/OLC4O/course-manifest.json",
+      "baseUrl": "/courseware/OLC4O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "PPL1O",
+      "title": "PPL1O · PPL1O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/PPL1O/course-manifest.json",
+      "baseUrl": "/courseware/PPL1O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    },
+    {
+      "code": "PPL3O",
+      "title": "PPL3O · PPL3O",
+      "level": "Unknown",
+      "status": "planning-only",
+      "manifestUrl": "/courseware/PPL3O/course-manifest.json",
+      "baseUrl": "/courseware/PPL3O/",
+      "notes": "Planning documents imported; iSpring not yet connected."
+    }
+  ]
+}

@@ -1,0 +1,237 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.632Z",
+  "course": {
+    "code": "ICS2O",
+    "title": "Introduction to Computer Studies, Grade 10, Open",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ICS2O\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 3,
+    "lessons": 31,
+    "unitPlans": 0,
+    "lessonPlanExpected": 31,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Understanding Computers"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Introduction to Programming"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Computers and Societies"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Lesson 1"
+      },
+      {
+        "id": "U01L02",
+        "unit": 1,
+        "lesson": 2,
+        "title": "Lesson 2"
+      },
+      {
+        "id": "U01L03",
+        "unit": 1,
+        "lesson": 3,
+        "title": "Lesson 3"
+      },
+      {
+        "id": "U01L04",
+        "unit": 1,
+        "lesson": 4,
+        "title": "Lesson 4"
+      },
+      {
+        "id": "U01L05",
+        "unit": 1,
+        "lesson": 5,
+        "title": "Lesson 5"
+      },
+      {
+        "id": "U01L06",
+        "unit": 1,
+        "lesson": 6,
+        "title": "Lesson 6"
+      },
+      {
+        "id": "U01L07",
+        "unit": 1,
+        "lesson": 7,
+        "title": "Lesson 7"
+      },
+      {
+        "id": "U01L08",
+        "unit": 1,
+        "lesson": 8,
+        "title": "Lesson 8"
+      },
+      {
+        "id": "U01L09",
+        "unit": 1,
+        "lesson": 9,
+        "title": "Lesson 9"
+      },
+      {
+        "id": "U01L10",
+        "unit": 1,
+        "lesson": 10,
+        "title": "Lesson 10"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Lesson 1"
+      },
+      {
+        "id": "U02L02",
+        "unit": 2,
+        "lesson": 2,
+        "title": "Lesson 2"
+      },
+      {
+        "id": "U02L03",
+        "unit": 2,
+        "lesson": 3,
+        "title": "Lesson 3"
+      },
+      {
+        "id": "U02L04",
+        "unit": 2,
+        "lesson": 4,
+        "title": "Lesson 4"
+      },
+      {
+        "id": "U02L05",
+        "unit": 2,
+        "lesson": 5,
+        "title": "Lesson 5"
+      },
+      {
+        "id": "U02L06",
+        "unit": 2,
+        "lesson": 6,
+        "title": "Lesson 6"
+      },
+      {
+        "id": "U02L07",
+        "unit": 2,
+        "lesson": 7,
+        "title": "Lesson 7"
+      },
+      {
+        "id": "U02L08",
+        "unit": 2,
+        "lesson": 8,
+        "title": "Lesson 8"
+      },
+      {
+        "id": "U02L09",
+        "unit": 2,
+        "lesson": 9,
+        "title": "Lesson 9"
+      },
+      {
+        "id": "U02L10",
+        "unit": 2,
+        "lesson": 10,
+        "title": "Lesson 10"
+      },
+      {
+        "id": "U02L11",
+        "unit": 2,
+        "lesson": 11,
+        "title": "Lesson 11"
+      },
+      {
+        "id": "U02L12",
+        "unit": 2,
+        "lesson": 12,
+        "title": "Lesson 12"
+      },
+      {
+        "id": "U02L13",
+        "unit": 2,
+        "lesson": 13,
+        "title": "Lesson 13"
+      },
+      {
+        "id": "U02L14",
+        "unit": 2,
+        "lesson": 14,
+        "title": "Lesson 14"
+      },
+      {
+        "id": "U02L15",
+        "unit": 2,
+        "lesson": 15,
+        "title": "Lesson 15"
+      },
+      {
+        "id": "U02L16",
+        "unit": 2,
+        "lesson": 16,
+        "title": "Lesson 16"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Lesson 1"
+      },
+      {
+        "id": "U03L02",
+        "unit": 3,
+        "lesson": 2,
+        "title": "Lesson 2"
+      },
+      {
+        "id": "U03L03",
+        "unit": 3,
+        "lesson": 3,
+        "title": "Lesson 3"
+      },
+      {
+        "id": "U03L04",
+        "unit": 3,
+        "lesson": 4,
+        "title": "Computer Society 1"
+      },
+      {
+        "id": "U03L05",
+        "unit": 3,
+        "lesson": 5,
+        "title": "Computer and Society"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 31,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

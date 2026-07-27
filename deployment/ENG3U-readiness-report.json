@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-07-24T03:33:13.361Z",
+  "course": {
+    "code": "ENG3U",
+    "title": "English, Grade 11, University",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG3U\\"
+  },
+  "counts": {
+    "courseDocuments": 1,
+    "courseOutlines": 1,
+    "introductions": 0,
+    "units": 5,
+    "lessons": 36,
+    "unitPlans": 5,
+    "lessonPlanExpected": 36,
+    "lessonPlans": 36,
+    "ispringEntries": 37,
+    "lessonDownloads": 406,
+    "textEntries": 7,
+    "textMaterials": 4
+  },
+  "gaps": {
+    "missingCourseOutline": false,
+    "missingIntroduction": true,
+    "missingUnitPlans": [],
+    "missingLessonPlans": [],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 36,
+    "ispringExpected": 37,
+    "ispringComplete": 37,
+    "resourceUniqueCovered": 165,
+    "resourceUniqueTotal": 165,
+    "validationOk": 165,
+    "validationChecked": 165
+  }
+}

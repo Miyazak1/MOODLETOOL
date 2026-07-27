@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-07-23T06:16:10.267Z",
+  "courses": [
+    {
+      "course": "ENG3U",
+      "missingTexts": [
+        {
+          "id": "sunday-park",
+          "title": "Sunday in the Park",
+          "author": "Bel Kaufman"
+        },
+        {
+          "id": "borders",
+          "title": "Borders",
+          "author": "Thomas King"
+        },
+        {
+          "id": "indian-education",
+          "title": "Indian Education",
+          "author": "Sherman Alexie"
+        }
+      ],
+      "candidates": []
+    }
+  ]
+}

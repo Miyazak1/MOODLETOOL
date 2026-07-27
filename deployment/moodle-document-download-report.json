@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-07-24T03:43:11.759Z",
+  "queue": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\inbox\\moodle-course-document-queue.csv",
+  "dryRun": false,
+  "force": false,
+  "courses": [
+    "SBI3U"
+  ],
+  "moodleCookieConfigured": false,
+  "rows": [
+    {
+      "course": "SBI3U",
+      "role": "course-outline",
+      "targetPath": "D:\\工作文件\\SUNNYBROOK\\courseware\\SBI3U\\plans\\course\\SBI3U_Course_Outline.docx",
+      "url": "https://www.esunnybrook.com/pluginfile.php/10065/mod_assign/introattachment/0/SBI3U-Course-Oultine-v3.0.docx?forcedownload=1",
+      "status": "failed",
+      "notes": [
+        "download returned HTML instead of a document"
+      ],
+      "manifestOutlineMode": "missing"
+    }
+  ]
+}

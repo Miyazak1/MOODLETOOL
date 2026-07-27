@@ -1,0 +1,89 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.623Z",
+  "course": {
+    "code": "BAF3M",
+    "title": "Financial Accounting Fundamentals, Grade 11, University/College",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\BAF3M\\"
+  },
+  "counts": {
+    "courseDocuments": 0,
+    "courseOutlines": 0,
+    "introductions": 0,
+    "units": 5,
+    "lessons": 5,
+    "unitPlans": 0,
+    "lessonPlanExpected": 5,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": true,
+    "missingIntroduction": true,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1: Accounting Basics and Double Entries"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2: Accounting Ethics and T Accounts"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3: Business Entities and Trial Balance"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4: Internal Control and Profit/Loss Account"
+      },
+      {
+        "unit": 5,
+        "title": "Unit 5: Advanced Statements, Depreciation, and Careers"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      },
+      {
+        "id": "U05L01",
+        "unit": 5,
+        "lesson": 1,
+        "title": "Moodle Activity Index"
+      }
+    ],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 5,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

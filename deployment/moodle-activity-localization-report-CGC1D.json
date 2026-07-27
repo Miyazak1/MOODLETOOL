@@ -1,0 +1,2014 @@
+{
+  "generatedAt": "2026-07-24T08:45:17.913Z",
+  "course": "CGC1D",
+  "dryRun": false,
+  "force": true,
+  "rows": 107,
+  "downloads": [
+    {
+      "label": "Announcements",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/course-4388-f67ca726de/index.html",
+      "type": "html",
+      "bytes": 1394,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=4388",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/course-4388-f67ca726de/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Achievement Chart",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/course-4389-75b6f76330/index.html",
+      "type": "html",
+      "bytes": 1318,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4389",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Learning Log",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/course-4392-ba0c8c2a44/ba0c8c2a44-Learning-Log.docx",
+      "type": "docx",
+      "bytes": 63636,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=4392"
+    },
+    {
+      "label": "Course Outline",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/course-4393-9a9bd65dc0/9a9bd65dc0-CGC1D-Course-Outline.pdf",
+      "type": "pdf",
+      "bytes": 753842,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=4393"
+    },
+    {
+      "label": "About Canada - Unit 1",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U01L01-4396-240fb17eff/index.html",
+      "type": "html",
+      "bytes": 1326,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4396",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Ecozones and Maps - Unit 1",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U01L01-4397-5df9bb8943/index.html",
+      "type": "html",
+      "bytes": 1336,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4397",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "GIS - Unit 1",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U01L01-4398-ea1c51bcdd/index.html",
+      "type": "html",
+      "bytes": 1308,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4398",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Latitude and Longitude - Unit 1",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U01L01-4399-b8de3bbbf6/index.html",
+      "type": "html",
+      "bytes": 1346,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4399",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Pangea",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U01L01-4400-c5de80aadf/index.html",
+      "type": "html",
+      "bytes": 1296,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4400",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "GIS at Work",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U01L01-4401-c1286c4288/index.html",
+      "type": "html",
+      "bytes": 1306,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4401",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Weathering and Erosion",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U01L01-4402-66a4dfc0ab/index.html",
+      "type": "html",
+      "bytes": 1328,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4402",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Scales",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U01L01-4403-3ca8389a6c/index.html",
+      "type": "html",
+      "bytes": 1296,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4403",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Map of Canada - AFL (1 hour)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4404-ffb53bbc86/index.html",
+      "type": "html",
+      "bytes": 1709,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4404",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4404-ffb53bbc86/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Map-of-Canada-Capitals-Unit-1-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-4404-ffb53bbc86/files/d05cc8ae38-Map-of-Canada-Capitals-Unit-1-AFL.pdf",
+          "href": "files/d05cc8ae38-Map-of-Canada-Capitals-Unit-1-AFL.pdf",
+          "bytes": 167446,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4473/mod_assign/introattachment/0/Map-of-Canada-Capitals-Unit-1-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Earth Development Questions - AFL (45 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4405-c6e8ba35d2/index.html",
+      "type": "html",
+      "bytes": 1721,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4405",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4405-c6e8ba35d2/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Earths-Development-questions-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-4405-c6e8ba35d2/files/240fcebaa8-Earths-Development-questions-AFL.pdf",
+          "href": "files/240fcebaa8-Earths-Development-questions-AFL.pdf",
+          "bytes": 193614,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4474/mod_assign/introattachment/0/Earths-Development-questions-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Geography Tools Questions - AFL (30 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4406-f1a797bcd1/index.html",
+      "type": "html",
+      "bytes": 1829,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4406",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4406-f1a797bcd1/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Geography-Tools-Unit-1-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-4406-f1a797bcd1/files/ce57302fe1-Geography-Tools-Unit-1-AFL.pdf",
+          "href": "files/ce57302fe1-Geography-Tools-Unit-1-AFL.pdf",
+          "bytes": 278842,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4475/mod_assign/introattachment/0/Geography-Tools-Unit-1-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Graphing Questions - AAL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4407-88cee531f1/index.html",
+      "type": "html",
+      "bytes": 1681,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4407",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4407-88cee531f1/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Graphing-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-4407-88cee531f1/files/094e82ca2f-Graphing-AFL.pdf",
+          "href": "files/094e82ca2f-Graphing-AFL.pdf",
+          "bytes": 7170496,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4476/mod_assign/introattachment/0/Graphing-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Scales - AAL (30 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4408-773f76cf60/index.html",
+      "type": "html",
+      "bytes": 1801,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4408",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4408-773f76cf60/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Scales-Unit-1-AAL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-4408-773f76cf60/files/3f2e24d78f-Scales-Unit-1-AAL.pdf",
+          "href": "files/3f2e24d78f-Scales-Unit-1-AAL.pdf",
+          "bytes": 384197,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4477/mod_assign/introattachment/0/Scales-Unit-1-AAL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Geographical Places Culminating - AFL (1 hour)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4409-be59ca9891/index.html",
+      "type": "html",
+      "bytes": 1729,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4409",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4409-be59ca9891/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Unit-1-Culminating-AOL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-4409-be59ca9891/files/faa7f31951-Unit-1-Culminating-AOL.pdf",
+          "href": "files/faa7f31951-Unit-1-Culminating-AOL.pdf",
+          "bytes": 1146568,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4478/mod_assign/introattachment/0/Unit-1-Culminating-AOL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "World Map Assignment - AOL (2 hrs)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4410-9695835b70/index.html",
+      "type": "html",
+      "bytes": 1814,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4410",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4410-9695835b70/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "WorldMap-Intro-Unit-1-AOL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-4410-9695835b70/files/d76e8d07d9-WorldMap-Intro-Unit-1-AOL.pdf",
+          "href": "files/d76e8d07d9-WorldMap-Intro-Unit-1-AOL.pdf",
+          "bytes": 410830,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4479/mod_assign/introattachment/0/WorldMap-Intro-Unit-1-AOL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Canadian Heritage Assignment - AOL (1 period)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4411-01da80df51/index.html",
+      "type": "html",
+      "bytes": 2021,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4411",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4411-01da80df51/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Unit1-Canadian-Hetitage-Presentation-AOLdocx.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U01L01-4411-01da80df51/files/cb4410ba93-Unit1-Canadian-Hetitage-Presentation-AOLdocx.docx",
+          "href": "files/cb4410ba93-Unit1-Canadian-Hetitage-Presentation-AOLdocx.docx",
+          "bytes": 58689,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4480/mod_assign/introattachment/0/Unit1-Canadian-Hetitage-Presentation-AOLdocx.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Unit 1 Test - AOL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4412-5fcaf6f122/index.html",
+      "type": "html",
+      "bytes": 1644,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4412",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4412-5fcaf6f122/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Learning Log Submission - Unit 1",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4413-497fd9151a/index.html",
+      "type": "html",
+      "bytes": 1679,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4413",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4413-497fd9151a/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Learning-Log.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U01L01-4413-497fd9151a/files/bbbf5e7340-Learning-Log.docx",
+          "href": "files/bbbf5e7340-Learning-Log.docx",
+          "bytes": 13691,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4482/mod_assign/introattachment/0/Learning-Log.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Conversation Checklist - Unit 1",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/feedback/U01L01-4414-faee061f8f/index.html",
+      "type": "html",
+      "bytes": 254321,
+      "source": "https://www.esunnybrook.com/mod/feedback/view.php?id=4414",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/feedback/U01L01-4414-faee061f8f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Observation Checklist - Unit 1",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/feedback/U01L01-4415-d96529e34d/index.html",
+      "type": "html",
+      "bytes": 254314,
+      "source": "https://www.esunnybrook.com/mod/feedback/view.php?id=4415",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/feedback/U01L01-4415-d96529e34d/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Observation and Conversation Checklists - AFL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-4416-01560e9ee6/index.html",
+      "type": "html",
+      "bytes": 2064,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4416",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-4416-01560e9ee6/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Teacher-Conversation-Checklist-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-4416-01560e9ee6/files/06603a331d-Teacher-Conversation-Checklist-AFL.pdf",
+          "href": "files/06603a331d-Teacher-Conversation-Checklist-AFL.pdf",
+          "bytes": 348218,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4485/mod_assign/introattachment/0/Teacher-Conversation-Checklist-AFL.pdf?forcedownload=1"
+        },
+        {
+          "label": "Teachers-Observation-Assessment-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-4416-01560e9ee6/files/d82b80c303-Teachers-Observation-Assessment-AFL.pdf",
+          "href": "files/d82b80c303-Teachers-Observation-Assessment-AFL.pdf",
+          "bytes": 89161,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4485/mod_assign/introattachment/0/Teachers-Observation-Assessment-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Observation/Conversation Checklist Unit 1 Huiling",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U01L01-4417-4fe60f59db/index.html",
+      "type": "html",
+      "bytes": 253280,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=4417",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U01L01-4417-4fe60f59db/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Conversation-Checklist-Unit-1-Huiling.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/U01L01-4417-4fe60f59db/files/38680a53dc-Conversation-Checklist-Unit-1-Huiling.docx",
+          "href": "files/38680a53dc-Conversation-Checklist-Unit-1-Huiling.docx",
+          "bytes": 16758,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4486/mod_folder/content/0/Conversation-Checklist-Unit-1-Huiling.docx?forcedownload=1"
+        },
+        {
+          "label": "Observation-Checklist-Unit1-Huiling.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/U01L01-4417-4fe60f59db/files/f253364e64-Observation-Checklist-Unit1-Huiling.docx",
+          "href": "files/f253364e64-Observation-Checklist-Unit1-Huiling.docx",
+          "bytes": 16293,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4486/mod_folder/content/0/Observation-Checklist-Unit1-Huiling.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Conversation-Checklist-Unit-1-Huiling.docx",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U01L01-38680a53dc-38680a53dc/38680a53dc-Conversation-Checklist-Unit-1-Huiling.docx",
+      "type": "docx",
+      "bytes": 16758,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4486/mod_folder/content/0/Conversation-Checklist-Unit-1-Huiling.docx?forcedownload=1"
+    },
+    {
+      "label": "Observation-Checklist-Unit1-Huiling.docx",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U01L01-f253364e64-f253364e64/f253364e64-Observation-Checklist-Unit1-Huiling.docx",
+      "type": "docx",
+      "bytes": 16293,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4486/mod_folder/content/0/Observation-Checklist-Unit1-Huiling.docx?forcedownload=1"
+    },
+    {
+      "label": "Lessons",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U02L01-4419-a6ea63560f/index.html",
+      "type": "html",
+      "bytes": 2726,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=4419",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U02L01-4419-a6ea63560f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "4cadec2ee81cce61320bc3898299e6d115f73193",
+          "type": "bin",
+          "path": "localized-moodle-activities/folder/U02L01-4419-a6ea63560f/files/9579cc547d-4cadec2ee81cce61320bc3898299e6d115f73193",
+          "href": "files/9579cc547d-4cadec2ee81cce61320bc3898299e6d115f73193",
+          "bytes": 1359,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/2efe45944783b347ca012f3b13c4acbf.jpg?preview=tinyicon&oid=1730728752"
+        },
+        {
+          "label": "2efe45944783b347ca012f3b13c4acbf.jpg",
+          "type": "jpg",
+          "path": "localized-moodle-activities/folder/U02L01-4419-a6ea63560f/files/2d27f5e552-2efe45944783b347ca012f3b13c4acbf.jpg",
+          "href": "files/2d27f5e552-2efe45944783b347ca012f3b13c4acbf.jpg",
+          "bytes": 659585,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/2efe45944783b347ca012f3b13c4acbf.jpg?forcedownload=1"
+        },
+        {
+          "label": "3-Types-of-Plate-Boundaries.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/U02L01-4419-a6ea63560f/files/158cd44529-3-Types-of-Plate-Boundaries.pdf",
+          "href": "files/158cd44529-3-Types-of-Plate-Boundaries.pdf",
+          "bytes": 2126024,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/3-Types-of-Plate-Boundaries.pdf?forcedownload=1"
+        },
+        {
+          "label": "Candas-soil-and-vegetation-Unit2.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/U02L01-4419-a6ea63560f/files/3a02070f98-Candas-soil-and-vegetation-Unit2.pdf",
+          "href": "files/3a02070f98-Candas-soil-and-vegetation-Unit2.pdf",
+          "bytes": 5903073,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/Candas-soil-and-vegetation-Unit2.pdf?forcedownload=1"
+        },
+        {
+          "label": "Creation-of-Canadia-Landform-Regions-Unit2.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/U02L01-4419-a6ea63560f/files/1a54d68434-Creation-of-Canadia-Landform-Regions-Unit2.pdf",
+          "href": "files/1a54d68434-Creation-of-Canadia-Landform-Regions-Unit2.pdf",
+          "bytes": 3287639,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/Creation-of-Canadia-Landform-Regions-Unit2.pdf?forcedownload=1"
+        },
+        {
+          "label": "ecozones.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/U02L01-4419-a6ea63560f/files/d5edf9d7b0-ecozones.pdf",
+          "href": "files/d5edf9d7b0-ecozones.pdf",
+          "bytes": 636179,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/ecozones.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "2efe45944783b347ca012f3b13c4acbf.jpg",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U02L01-2d27f5e552-2d27f5e552/2d27f5e552-2efe45944783b347ca012f3b13c4acbf.jpg",
+      "type": "jpg",
+      "bytes": 659585,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/2efe45944783b347ca012f3b13c4acbf.jpg?forcedownload=1"
+    },
+    {
+      "label": "3-Types-of-Plate-Boundaries.pdf",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U02L01-158cd44529-158cd44529/158cd44529-3-Types-of-Plate-Boundaries.pdf",
+      "type": "pdf",
+      "bytes": 2126024,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/3-Types-of-Plate-Boundaries.pdf?forcedownload=1"
+    },
+    {
+      "label": "Candas-soil-and-vegetation-Unit2.pdf",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U02L01-3a02070f98-3a02070f98/3a02070f98-Candas-soil-and-vegetation-Unit2.pdf",
+      "type": "pdf",
+      "bytes": 5903073,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/Candas-soil-and-vegetation-Unit2.pdf?forcedownload=1"
+    },
+    {
+      "label": "Creation-of-Canadia-Landform-Regions-Unit2.pdf",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U02L01-1a54d68434-1a54d68434/1a54d68434-Creation-of-Canadia-Landform-Regions-Unit2.pdf",
+      "type": "pdf",
+      "bytes": 3287639,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/Creation-of-Canadia-Landform-Regions-Unit2.pdf?forcedownload=1"
+    },
+    {
+      "label": "ecozones.pdf",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U02L01-d5edf9d7b0-d5edf9d7b0/d5edf9d7b0-ecozones.pdf",
+      "type": "pdf",
+      "bytes": 636179,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4488/mod_folder/content/0/ecozones.pdf?forcedownload=1"
+    },
+    {
+      "label": "Geological Time",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U02L01-4420-3aac0c56cf/index.html",
+      "type": "html",
+      "bytes": 1314,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4420",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Climate Activity - AFL (30-45 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-4421-5244738803/index.html",
+      "type": "html",
+      "bytes": 1606,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4421",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-4421-5244738803/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Climate-Unit-2-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-4421-5244738803/files/c19e7ce6a8-Climate-Unit-2-AFL.pdf",
+          "href": "files/c19e7ce6a8-Climate-Unit-2-AFL.pdf",
+          "bytes": 1978684,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4490/mod_assign/introattachment/0/Climate-Unit-2-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Landform Regions - AFL (1.5 hrs)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-4422-f06a2457fb/index.html",
+      "type": "html",
+      "bytes": 1885,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4422",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-4422-f06a2457fb/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Landforms-Activvity-Unit2-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-4422-f06a2457fb/files/704ca60c9d-Landforms-Activvity-Unit2-AFL.pdf",
+          "href": "files/704ca60c9d-Landforms-Activvity-Unit2-AFL.pdf",
+          "bytes": 2023966,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4491/mod_assign/introattachment/0/Landforms-Activvity-Unit2-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Soil Regions - AAL (30 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-4423-1cb81b4ce6/index.html",
+      "type": "html",
+      "bytes": 1612,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4423",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-4423-1cb81b4ce6/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Soils-Unit2-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-4423-1cb81b4ce6/files/ece5693e99-Soils-Unit2-AFL.pdf",
+          "href": "files/ece5693e99-Soils-Unit2-AFL.pdf",
+          "bytes": 1200996,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4492/mod_assign/introattachment/0/Soils-Unit2-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Biosphere - AFL (30 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-4424-0113df3960/index.html",
+      "type": "html",
+      "bytes": 1617,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4424",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-4424-0113df3960/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Biosphere-Unit2-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-4424-0113df3960/files/a80519679e-Biosphere-Unit2-AFL.pdf",
+          "href": "files/a80519679e-Biosphere-Unit2-AFL.pdf",
+          "bytes": 861399,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4493/mod_assign/introattachment/0/Biosphere-Unit2-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Climate Assessment - AAL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-4425-835be7aab9/index.html",
+      "type": "html",
+      "bytes": 1667,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4425",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-4425-835be7aab9/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Climate-activity.doc",
+          "type": "doc",
+          "path": "localized-moodle-activities/assign/U02L01-4425-835be7aab9/files/791c959d15-Climate-activity.doc",
+          "href": "files/791c959d15-Climate-activity.doc",
+          "bytes": 82432,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4494/mod_assign/introattachment/0/Climate-activity.doc?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "The Great Canadian Escape Assignment - AOL (2 periods)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-4426-02879530f4/index.html",
+      "type": "html",
+      "bytes": 1769,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4426",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-4426-02879530f4/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "The-Great-Canadian-Escape-Unit2-AOL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-4426-02879530f4/files/32aecec82d-The-Great-Canadian-Escape-Unit2-AOL.pdf",
+          "href": "files/32aecec82d-The-Great-Canadian-Escape-Unit2-AOL.pdf",
+          "bytes": 713030,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4495/mod_assign/introattachment/0/The-Great-Canadian-Escape-Unit2-AOL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Cultural Connections",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U02L02-4430-dfd0c8462b/index.html",
+      "type": "html",
+      "bytes": 1324,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4430",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Rural Settlements - Unit 2",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U02L02-4431-719d766f06/index.html",
+      "type": "html",
+      "bytes": 1336,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4431",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Study of Population - Unit 2",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U02L02-4432-9aa79d02b7/index.html",
+      "type": "html",
+      "bytes": 1340,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4432",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Population Pyramids - AFL (30 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L02-4433-3492952d3d/index.html",
+      "type": "html",
+      "bytes": 1797,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4433",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L02-4433-3492952d3d/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Population-Pyramids-unit2-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L02-4433-3492952d3d/files/23ad199d0e-Population-Pyramids-unit2-AFL.pdf",
+          "href": "files/23ad199d0e-Population-Pyramids-unit2-AFL.pdf",
+          "bytes": 1410012,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4502/mod_assign/introattachment/0/Population-Pyramids-unit2-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Immigration Points in Canada - AFL (45 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L02-4434-e8b7d1e918/index.html",
+      "type": "html",
+      "bytes": 1782,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4434",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L02-4434-e8b7d1e918/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Immigration-Points-unit2-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L02-4434-e8b7d1e918/files/de23016826-Immigration-Points-unit2-AFL.pdf",
+          "href": "files/de23016826-Immigration-Points-unit2-AFL.pdf",
+          "bytes": 1617910,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4503/mod_assign/introattachment/0/Immigration-Points-unit2-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Ecozones Assignment - AOL (2 periods)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L02-4435-fcb8e88896/index.html",
+      "type": "html",
+      "bytes": 1785,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4435",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L02-4435-fcb8e88896/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Ecozone-worksheet.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L02-4435-fcb8e88896/files/02a0ce7559-Ecozone-worksheet.pdf",
+          "href": "files/02a0ce7559-Ecozone-worksheet.pdf",
+          "bytes": 109342,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4504/mod_assign/introattachment/0/Ecozone-worksheet.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Aboriginal Peoples of Canada - AFL (1 hr)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L02-4437-8d9f0234e6/index.html",
+      "type": "html",
+      "bytes": 1738,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4437",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L02-4437-8d9f0234e6/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Aboriginal-People-Activity-Unit2-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L02-4437-8d9f0234e6/files/4a14c46d38-Aboriginal-People-Activity-Unit2-AFL.pdf",
+          "href": "files/4a14c46d38-Aboriginal-People-Activity-Unit2-AFL.pdf",
+          "bytes": 1221768,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4506/mod_assign/introattachment/0/Aboriginal-People-Activity-Unit2-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Unit Assessment - AAL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L02-4438-9b2fba6543/index.html",
+      "type": "html",
+      "bytes": 1750,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4438",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L02-4438-9b2fba6543/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Unit 2 Test - AOL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L02-4439-670344f80c/index.html",
+      "type": "html",
+      "bytes": 1920,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4439",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L02-4439-670344f80c/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Learning Log - Unit 2",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L02-4440-c24f600f9f/index.html",
+      "type": "html",
+      "bytes": 1646,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4440",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L02-4440-c24f600f9f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Observation and Conversation Checklists - AFL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L02-4441-8e5d442337/index.html",
+      "type": "html",
+      "bytes": 2064,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4441",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L02-4441-8e5d442337/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Teacher-Conversation-Checklist-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L02-4441-8e5d442337/files/8e7aacd01f-Teacher-Conversation-Checklist-AFL.pdf",
+          "href": "files/8e7aacd01f-Teacher-Conversation-Checklist-AFL.pdf",
+          "bytes": 348218,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4510/mod_assign/introattachment/0/Teacher-Conversation-Checklist-AFL.pdf?forcedownload=1"
+        },
+        {
+          "label": "Teachers-Observation-Assessment-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L02-4441-8e5d442337/files/605e50321e-Teachers-Observation-Assessment-AFL.pdf",
+          "href": "files/605e50321e-Teachers-Observation-Assessment-AFL.pdf",
+          "bytes": 89161,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4510/mod_assign/introattachment/0/Teachers-Observation-Assessment-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Observation Checklist - Unit 2",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/feedback/U02L02-4442-31913d3344/index.html",
+      "type": "html",
+      "bytes": 254376,
+      "source": "https://www.esunnybrook.com/mod/feedback/view.php?id=4442",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/feedback/U02L02-4442-31913d3344/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Conversation Checklist - Unit 2",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/feedback/U02L02-4443-48fad36748/index.html",
+      "type": "html",
+      "bytes": 254307,
+      "source": "https://www.esunnybrook.com/mod/feedback/view.php?id=4443",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/feedback/U02L02-4443-48fad36748/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Observation/Conversation Checklist Unit 2 Huiling",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U02L02-4444-cc960aac1f/index.html",
+      "type": "html",
+      "bytes": 253271,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=4444",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U02L02-4444-cc960aac1f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Conversation-Checklist-Unit-2-Huiling.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/U02L02-4444-cc960aac1f/files/bd75177c83-Conversation-Checklist-Unit-2-Huiling.docx",
+          "href": "files/bd75177c83-Conversation-Checklist-Unit-2-Huiling.docx",
+          "bytes": 16714,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4513/mod_folder/content/0/Conversation-Checklist-Unit-2-Huiling.docx?forcedownload=1"
+        },
+        {
+          "label": "Observation-Checklist-Unit-2-Huiling.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/U02L02-4444-cc960aac1f/files/fd239a8610-Observation-Checklist-Unit-2-Huiling.docx",
+          "href": "files/fd239a8610-Observation-Checklist-Unit-2-Huiling.docx",
+          "bytes": 16262,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4513/mod_folder/content/0/Observation-Checklist-Unit-2-Huiling.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Conversation-Checklist-Unit-2-Huiling.docx",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U02L02-bd75177c83-bd75177c83/bd75177c83-Conversation-Checklist-Unit-2-Huiling.docx",
+      "type": "docx",
+      "bytes": 16714,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4513/mod_folder/content/0/Conversation-Checklist-Unit-2-Huiling.docx?forcedownload=1"
+    },
+    {
+      "label": "Observation-Checklist-Unit-2-Huiling.docx",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U02L02-fd239a8610-fd239a8610/fd239a8610-Observation-Checklist-Unit-2-Huiling.docx",
+      "type": "docx",
+      "bytes": 16262,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4513/mod_folder/content/0/Observation-Checklist-Unit-2-Huiling.docx?forcedownload=1"
+    },
+    {
+      "label": "Lessons",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U03L01-4446-151f6f0a8b/index.html",
+      "type": "html",
+      "bytes": 250553,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=4446",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U03L01-4446-151f6f0a8b/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Location Factors",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U03L01-4447-5f5440a73f/index.html",
+      "type": "html",
+      "bytes": 1316,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4447",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Canadian Industries",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U03L01-4448-1a72ef03a4/index.html",
+      "type": "html",
+      "bytes": 1322,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4448",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Urbanization",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U03L01-4449-f221fd88cc/index.html",
+      "type": "html",
+      "bytes": 1308,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4449",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Energy",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U03L01-4450-f7f15e8484/index.html",
+      "type": "html",
+      "bytes": 1296,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4450",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Types of Industries",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U03L01-4451-c2c2e653f8/index.html",
+      "type": "html",
+      "bytes": 1322,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4451",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Urban Land Use",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U03L01-4452-72ab3f0d10/index.html",
+      "type": "html",
+      "bytes": 1312,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4452",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Urban Issues",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U03L01-4454-4ead14a182/index.html",
+      "type": "html",
+      "bytes": 1308,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4454",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Forestry - AFL (30-45 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-4455-71c44ac8ca/index.html",
+      "type": "html",
+      "bytes": 1842,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4455",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-4455-71c44ac8ca/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Fishing Industry - AFL (30 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-4456-5a60fd66e0/index.html",
+      "type": "html",
+      "bytes": 1919,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4456",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-4456-5a60fd66e0/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Cultural Diversity in Canada - AFL (20 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-4457-b1d6b3b170/index.html",
+      "type": "html",
+      "bytes": 1843,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4457",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-4457-b1d6b3b170/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Cultural-Diversity-unit2-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-4457-b1d6b3b170/files/90a9f9f2a8-Cultural-Diversity-unit2-AFL.pdf",
+          "href": "files/90a9f9f2a8-Cultural-Diversity-unit2-AFL.pdf",
+          "bytes": 1968671,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4526/mod_assign/introattachment/0/Cultural-Diversity-unit2-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Unit 3 Summative - AOL (2 periods)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-4458-e7e1bc36f0/index.html",
+      "type": "html",
+      "bytes": 2123,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4458",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-4458-e7e1bc36f0/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Alternative Energy - AFL (1.5 hrs)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L02-4460-0390c9e97a/index.html",
+      "type": "html",
+      "bytes": 2050,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4460",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L02-4460-0390c9e97a/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Land Use Activity (45 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L02-4461-39b79fe6db/index.html",
+      "type": "html",
+      "bytes": 1872,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4461",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L02-4461-39b79fe6db/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Urban Issues Activity - AFL (30-40 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L02-4462-c149c22491/index.html",
+      "type": "html",
+      "bytes": 1908,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4462",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L02-4462-c149c22491/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Locating a Business Assignment - AOL (2 periods)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L02-4463-f990096ca7/index.html",
+      "type": "html",
+      "bytes": 1847,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4463",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L02-4463-f990096ca7/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Locating a Business Self-Assessment - AAL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L02-4464-0fcc81b78a/index.html",
+      "type": "html",
+      "bytes": 1700,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4464",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L02-4464-0fcc81b78a/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Unit 3 Test - AOL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L02-4465-c6e025bb78/index.html",
+      "type": "html",
+      "bytes": 1720,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4465",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L02-4465-c6e025bb78/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Learning Log - Unit 3",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L02-4466-ff2d2168de/index.html",
+      "type": "html",
+      "bytes": 1954,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4466",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L02-4466-ff2d2168de/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Observation and Conversation Checklists - AFL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L02-4467-7762e6e824/index.html",
+      "type": "html",
+      "bytes": 2064,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4467",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L02-4467-7762e6e824/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Teacher-Conversation-Checklist-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L02-4467-7762e6e824/files/00edd21087-Teacher-Conversation-Checklist-AFL.pdf",
+          "href": "files/00edd21087-Teacher-Conversation-Checklist-AFL.pdf",
+          "bytes": 348218,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4536/mod_assign/introattachment/0/Teacher-Conversation-Checklist-AFL.pdf?forcedownload=1"
+        },
+        {
+          "label": "Teachers-Observation-Assessment-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L02-4467-7762e6e824/files/597bbf18e7-Teachers-Observation-Assessment-AFL.pdf",
+          "href": "files/597bbf18e7-Teachers-Observation-Assessment-AFL.pdf",
+          "bytes": 89161,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4536/mod_assign/introattachment/0/Teachers-Observation-Assessment-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Observation Checklist - Unit 3",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/feedback/U03L02-4468-979147282c/index.html",
+      "type": "html",
+      "bytes": 254401,
+      "source": "https://www.esunnybrook.com/mod/feedback/view.php?id=4468",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/feedback/U03L02-4468-979147282c/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Conversation Checklist - Unit 3",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/feedback/U03L02-4469-84131867b9/index.html",
+      "type": "html",
+      "bytes": 254290,
+      "source": "https://www.esunnybrook.com/mod/feedback/view.php?id=4469",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/feedback/U03L02-4469-84131867b9/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Observation/Conversation Checklist Unit 3 Huiling",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U03L02-4470-c6d66d827f/index.html",
+      "type": "html",
+      "bytes": 253253,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=4470",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U03L02-4470-c6d66d827f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Conversation-Checklist-Unit-3-Huiling.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/U03L02-4470-c6d66d827f/files/8fd010531d-Conversation-Checklist-Unit-3-Huiling.docx",
+          "href": "files/8fd010531d-Conversation-Checklist-Unit-3-Huiling.docx",
+          "bytes": 16605,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4539/mod_folder/content/0/Conversation-Checklist-Unit-3-Huiling.docx?forcedownload=1"
+        },
+        {
+          "label": "Observation-Checklist-Unit3-Huiling.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/U03L02-4470-c6d66d827f/files/ab4fbee98a-Observation-Checklist-Unit3-Huiling.docx",
+          "href": "files/ab4fbee98a-Observation-Checklist-Unit3-Huiling.docx",
+          "bytes": 16121,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4539/mod_folder/content/0/Observation-Checklist-Unit3-Huiling.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Conversation-Checklist-Unit-3-Huiling.docx",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U03L02-8fd010531d-8fd010531d/8fd010531d-Conversation-Checklist-Unit-3-Huiling.docx",
+      "type": "docx",
+      "bytes": 16605,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4539/mod_folder/content/0/Conversation-Checklist-Unit-3-Huiling.docx?forcedownload=1"
+    },
+    {
+      "label": "Observation-Checklist-Unit3-Huiling.docx",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U03L02-ab4fbee98a-ab4fbee98a/ab4fbee98a-Observation-Checklist-Unit3-Huiling.docx",
+      "type": "docx",
+      "bytes": 16121,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4539/mod_folder/content/0/Observation-Checklist-Unit3-Huiling.docx?forcedownload=1"
+    },
+    {
+      "label": "Lessons",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U04L01-4472-f3f0560604/index.html",
+      "type": "html",
+      "bytes": 250562,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=4472",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U04L01-4472-f3f0560604/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Canada and the World Community",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L01-4473-5cd38b0744/index.html",
+      "type": "html",
+      "bytes": 1344,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4473",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Canada's International Relationships",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L01-4474-a0ed1b04a3/index.html",
+      "type": "html",
+      "bytes": 1356,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4474",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Canadian Trade - AFL (30 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-4475-c6a53b08f8/index.html",
+      "type": "html",
+      "bytes": 1764,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4475",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-4475-c6a53b08f8/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Beyond Borders Assignment - AOL (1 period)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-4476-629e8c8292/index.html",
+      "type": "html",
+      "bytes": 1833,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4476",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-4476-629e8c8292/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Beyond Borders Self Assessment - AAL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-4477-ac5fe54977/index.html",
+      "type": "html",
+      "bytes": 1825,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4477",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-4477-ac5fe54977/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Lessons",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U04L02-4479-eff8754702/index.html",
+      "type": "html",
+      "bytes": 250595,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=4479",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U04L02-4479-eff8754702/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Canadian Trade",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L02-4480-dce8478611/index.html",
+      "type": "html",
+      "bytes": 1312,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4480",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Canada's Cultural Connections to US",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U04L02-4481-118b27236f/index.html",
+      "type": "html",
+      "bytes": 1354,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4481",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Canadian Culture and Identity - AFL (40 mins)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L02-4482-cf92dd5a00/index.html",
+      "type": "html",
+      "bytes": 1916,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4482",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L02-4482-cf92dd5a00/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Developed Vs. Developing Countries - AOL (1.5 periods)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L02-4483-d56472f808/index.html",
+      "type": "html",
+      "bytes": 2043,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4483",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L02-4483-d56472f808/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Unit 4 Test - AOL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L02-4484-b0eae3762d/index.html",
+      "type": "html",
+      "bytes": 1718,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4484",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L02-4484-b0eae3762d/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Learning Log - Unit 4",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L02-4485-51cb40cfe5/index.html",
+      "type": "html",
+      "bytes": 1954,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4485",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L02-4485-51cb40cfe5/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Observation and Conversation Checklists - AFL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L02-4486-a8a1258f53/index.html",
+      "type": "html",
+      "bytes": 2064,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4486",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L02-4486-a8a1258f53/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Teacher-Conversation-Checklist-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L02-4486-a8a1258f53/files/47fa0f47ce-Teacher-Conversation-Checklist-AFL.pdf",
+          "href": "files/47fa0f47ce-Teacher-Conversation-Checklist-AFL.pdf",
+          "bytes": 348218,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4555/mod_assign/introattachment/0/Teacher-Conversation-Checklist-AFL.pdf?forcedownload=1"
+        },
+        {
+          "label": "Teachers-Observation-Assessment-AFL.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L02-4486-a8a1258f53/files/b7774542fd-Teachers-Observation-Assessment-AFL.pdf",
+          "href": "files/b7774542fd-Teachers-Observation-Assessment-AFL.pdf",
+          "bytes": 89161,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4555/mod_assign/introattachment/0/Teachers-Observation-Assessment-AFL.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Conversation Checklist - Unit 4",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/feedback/U04L02-4487-1b000e0480/index.html",
+      "type": "html",
+      "bytes": 254299,
+      "source": "https://www.esunnybrook.com/mod/feedback/view.php?id=4487",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/feedback/U04L02-4487-1b000e0480/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Observation Checklist - Unit 4",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/feedback/U04L02-4488-dedfaa5f1b/index.html",
+      "type": "html",
+      "bytes": 254276,
+      "source": "https://www.esunnybrook.com/mod/feedback/view.php?id=4488",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/feedback/U04L02-4488-dedfaa5f1b/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Observation/Conversation Checklist Unit 4 Huiling",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U04L02-4489-968e26c9f2/index.html",
+      "type": "html",
+      "bytes": 253257,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=4489",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U04L02-4489-968e26c9f2/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Conversation-Checklist-Unit4-Huiling.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/U04L02-4489-968e26c9f2/files/d824c5b87f-Conversation-Checklist-Unit4-Huiling.docx",
+          "href": "files/d824c5b87f-Conversation-Checklist-Unit4-Huiling.docx",
+          "bytes": 16627,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4558/mod_folder/content/0/Conversation-Checklist-Unit4-Huiling.docx?forcedownload=1"
+        },
+        {
+          "label": "Observation-Checklist-Unit4-Huiling.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/U04L02-4489-968e26c9f2/files/2779396d0e-Observation-Checklist-Unit4-Huiling.docx",
+          "href": "files/2779396d0e-Observation-Checklist-Unit4-Huiling.docx",
+          "bytes": 16141,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4558/mod_folder/content/0/Observation-Checklist-Unit4-Huiling.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Conversation-Checklist-Unit4-Huiling.docx",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U04L02-d824c5b87f-d824c5b87f/d824c5b87f-Conversation-Checklist-Unit4-Huiling.docx",
+      "type": "docx",
+      "bytes": 16627,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4558/mod_folder/content/0/Conversation-Checklist-Unit4-Huiling.docx?forcedownload=1"
+    },
+    {
+      "label": "Observation-Checklist-Unit4-Huiling.docx",
+      "status": "localized",
+      "mode": "direct-file",
+      "path": "localized-moodle-activities/file/U04L02-2779396d0e-2779396d0e/2779396d0e-Observation-Checklist-Unit4-Huiling.docx",
+      "type": "docx",
+      "bytes": 16141,
+      "source": "https://www.esunnybrook.com/pluginfile.php/4558/mod_folder/content/0/Observation-Checklist-Unit4-Huiling.docx?forcedownload=1"
+    },
+    {
+      "label": "Summative",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U05L01-4491-ef266cb6be/index.html",
+      "type": "html",
+      "bytes": 1892,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4491",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U05L01-4491-ef266cb6be/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Infographic Template",
+      "status": "localized",
+      "mode": "external-link-html",
+      "path": "localized-moodle-activities/url/U05L01-4492-33c3fee083/index.html",
+      "type": "html",
+      "bytes": 1324,
+      "source": "https://www.esunnybrook.com/mod/url/view.php?id=4492",
+      "attachments": [],
+      "externalUrl": "https://www.esunnybrook.com/theme/image.php/remui/theme/1778813399/favicon"
+    },
+    {
+      "label": "Final Exam",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U05L01-4493-9e82c36224/index.html",
+      "type": "html",
+      "bytes": 1781,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4493",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U05L01-4493-9e82c36224/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "CGCID-Final-Exam.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U05L01-4493-9e82c36224/files/cba8162b35-CGCID-Final-Exam.docx",
+          "href": "files/cba8162b35-CGCID-Final-Exam.docx",
+          "bytes": 206511,
+          "source": "https://www.esunnybrook.com/pluginfile.php/4562/mod_assign/introattachment/0/CGCID-Final-Exam.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Final Exam Submission",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U05L01-4494-7af33aa4ce/index.html",
+      "type": "html",
+      "bytes": 1403,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=4494",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U05L01-4494-7af33aa4ce/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "label": "Learning Skills and Work Habits",
+      "url": "https://www.esunnybrook.com/mod/url/view.php?id=4390",
+      "error": "fetch failed"
+    },
+    {
+      "label": "Online Attendance Policy",
+      "url": "https://www.esunnybrook.com/mod/url/view.php?id=4391",
+      "error": "HTTP 403"
+    }
+  ],
+  "auth": {
+    "loggedIn": true,
+    "reason": "credentials"
+  }
+}

@@ -1,0 +1,23 @@
+[Unit]
+Description=OSSD Course Portal
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/www/wwwroot/ossd-course-portal
+ExecStart=/usr/bin/node scripts/start-production.mjs --env .env.production --root dist --port 8891
+Restart=always
+RestartSec=5
+
+# Production environment is loaded from .env.production by scripts/start-production.mjs.
+# Verify it before starting:
+# npm run check:production-env -- --env .env.production
+# Generate PDF previews for Office files after document uploads.
+# Requires LibreOffice/soffice on the server.
+# Environment=GENERATE_PREVIEWS_AFTER_UPLOADS=1
+# Environment=LIBREOFFICE_BIN=/usr/bin/soffice
+
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

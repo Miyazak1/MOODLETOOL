@@ -1,0 +1,263 @@
+{
+  "generatedAt": "2026-07-24T09:32:27.431Z",
+  "course": "ENG2D",
+  "dryRun": false,
+  "applyManifest": true,
+  "rows": [
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "1",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Myth: \"The Myth of Prometheus\"",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=395",
+      "textId": "myth-of-prometheus",
+      "targetHint": "texts/myth-of-prometheus/myth-the-myth-of-prometheus.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "1",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Myth: \"The Story of Daedalus and Icarus\"",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=398",
+      "textId": "daedalus-and-icarus",
+      "targetHint": "texts/daedalus-and-icarus/myth-the-story-of-daedalus-and-icarus.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "1",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Poem: \"Landscape With The Fall of Icarus\" by William Carlos Williams",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=402",
+      "textId": "landscape-with-the-fall-of-icarus",
+      "targetHint": "texts/landscape-with-the-fall-of-icarus/poem-landscape-with-the-fall-of-icarus-by-william-carlos-williams.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "1",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Short Story + Activity: \"The Interlopers\" by Saki",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=390",
+      "textId": "the-interlopers",
+      "targetHint": "texts/the-interlopers/short-story-activity-the-interlopers-by-saki.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "1",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Short Story + Activity: \"The Rocking Horse Winner\" by D.H. Lawrence",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=392",
+      "textId": "the-rocking-horse-winner",
+      "targetHint": "texts/the-rocking-horse-winner/short-story-activity-the-rocking-horse-winner-by-d-h-lawrence.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "1",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Short Story: \"The Lady or the Tiger?\" by Frank R. Stockton",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=387",
+      "textId": "lady-or-the-tiger",
+      "targetHint": "texts/lady-or-the-tiger/short-story-the-lady-or-the-tiger-by-frank-r-stockton.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "2",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Speech: \"I Have a Dream\" by Martin Luther King Jr.",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=413",
+      "textId": "i-have-a-dream",
+      "targetHint": "texts/i-have-a-dream/speech-i-have-a-dream-by-martin-luther-king-jr.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "2",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Speech: Inaugural Address by President John F. Kennedy",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=414",
+      "textId": "jfk-inaugural-address",
+      "targetHint": "texts/jfk-inaugural-address/speech-inaugural-address-by-president-john-f-kennedy.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "2",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Speech: Pearl Harbor Address to the Nation by Franklin D. Roosevelt",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=415",
+      "textId": "pearl-harbor-address",
+      "targetHint": "texts/pearl-harbor-address/speech-pearl-harbor-address-to-the-nation-by-franklin-d-roosevelt.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "2",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Speech: Queen Elizabeth I Address to the Troops",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=410",
+      "textId": "queen-elizabeth-address-to-the-troops",
+      "targetHint": "texts/queen-elizabeth-address-to-the-troops/speech-queen-elizabeth-i-address-to-the-troops.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "3",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "Novel: \"Lord of the Flies\" by William Golding",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=432",
+      "textId": "lord-of-the-flies",
+      "targetHint": "texts/lord-of-the-flies/novel-lord-of-the-flies-by-william-golding.html"
+    },
+    {
+      "course": "ENG2D",
+      "scope": "text-source",
+      "unit": "4",
+      "lessonId": "",
+      "lessonTitle": "",
+      "label": "The Play: \"Othello\" by William Shakespeare",
+      "role": "source_text",
+      "category": "moodle_resource",
+      "type": "html",
+      "source": "authenticated Moodle crawl",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=466",
+      "textId": "othello",
+      "targetHint": "texts/othello/the-play-othello-by-william-shakespeare.html"
+    }
+  ],
+  "downloads": [],
+  "failures": [
+    {
+      "course": "ENG2D",
+      "textId": "myth-of-prometheus",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=395",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "daedalus-and-icarus",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=398",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "landscape-with-the-fall-of-icarus",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=402",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "the-interlopers",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=390",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "the-rocking-horse-winner",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=392",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "lady-or-the-tiger",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=387",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "i-have-a-dream",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=413",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "jfk-inaugural-address",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=414",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "pearl-harbor-address",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=415",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "queen-elizabeth-address-to-the-troops",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=410",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "lord-of-the-flies",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=432",
+      "error": "fetch failed"
+    },
+    {
+      "course": "ENG2D",
+      "textId": "othello",
+      "sourceUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=466",
+      "error": "fetch failed"
+    }
+  ]
+}

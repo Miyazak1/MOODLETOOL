@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.578Z",
+  "course": {
+    "code": "HFC3M",
+    "title": "HFC3M · Food and Culture",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\"
+  },
+  "counts": {
+    "courseDocuments": 1,
+    "courseOutlines": 1,
+    "introductions": 0,
+    "units": 4,
+    "lessons": 4,
+    "unitPlans": 4,
+    "lessonPlanExpected": 0,
+    "lessonPlans": 0,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": false,
+    "missingIntroduction": true,
+    "missingUnitPlans": [],
+    "missingLessonPlans": [],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 4,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

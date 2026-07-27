@@ -1,0 +1,2470 @@
+{
+  "generatedAt": "2026-07-24T09:27:24.653Z",
+  "course": "ENG2D",
+  "dryRun": false,
+  "force": true,
+  "rows": 118,
+  "downloads": [
+    {
+      "label": "Announcements",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/course-374-e606815f46/index.html",
+      "type": "html",
+      "bytes": 1394,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=374",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/course-374-e606815f46/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "VIP: Please Read and Respond BEFORE beginning the course!",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/course-375-3b73df3e9d/index.html",
+      "type": "html",
+      "bytes": 3181,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=375",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/course-375-3b73df3e9d/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "ENG2D Course Outline",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/course-376-9978758c6a/9978758c6a-ENG2D-Course-Outline.docx",
+      "type": "docx",
+      "bytes": 715490,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=376"
+    },
+    {
+      "label": "ENG2D Online Course Planning",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/course-377-df59a960d3/df59a960d3-ENG2D-Online-Course-Planning.doc",
+      "type": "doc",
+      "bytes": 49664,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=377"
+    },
+    {
+      "label": "ENG2D- Learning Goals and Success Criteria",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/course-378-1e935a6c68/1e935a6c68-ENG2D-Learning-Goals-and-Success-Criteria.docx",
+      "type": "docx",
+      "bytes": 24143,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=378"
+    },
+    {
+      "label": "English 9 and 10, Ontario Curriculum",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/course-379-4cdcceef6c/4cdcceef6c-English-9-and-10-Ontario-Curriculum.pdf",
+      "type": "pdf",
+      "bytes": 780196,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=379"
+    },
+    {
+      "label": "ENG2D Lesson Plans",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/course-380-5c6c166a4b/index.html",
+      "type": "html",
+      "bytes": 283587,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=380",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/course-380-5c6c166a4b/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "ENG2D-Unit-1-Lesson-Plans.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/course-380-5c6c166a4b/files/dde773968a-ENG2D-Unit-1-Lesson-Plans.docx",
+          "href": "files/dde773968a-ENG2D-Unit-1-Lesson-Plans.docx",
+          "bytes": 24812,
+          "source": "https://www.esunnybrook.com/pluginfile.php/414/mod_folder/content/0/ENG2D-Unit-1-Lesson-Plans.docx?forcedownload=1"
+        },
+        {
+          "label": "ENG2D-Unit-2-Lesson-Plans.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/course-380-5c6c166a4b/files/b2fca0b154-ENG2D-Unit-2-Lesson-Plans.docx",
+          "href": "files/b2fca0b154-ENG2D-Unit-2-Lesson-Plans.docx",
+          "bytes": 25412,
+          "source": "https://www.esunnybrook.com/pluginfile.php/414/mod_folder/content/0/ENG2D-Unit-2-Lesson-Plans.docx?forcedownload=1"
+        },
+        {
+          "label": "ENG2D-Unit-3-Lesson-Plans.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/course-380-5c6c166a4b/files/3444c3f0c3-ENG2D-Unit-3-Lesson-Plans.docx",
+          "href": "files/3444c3f0c3-ENG2D-Unit-3-Lesson-Plans.docx",
+          "bytes": 29850,
+          "source": "https://www.esunnybrook.com/pluginfile.php/414/mod_folder/content/0/ENG2D-Unit-3-Lesson-Plans.docx?forcedownload=1"
+        },
+        {
+          "label": "ENG2D-Unit-4-Lesson-Plans.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/course-380-5c6c166a4b/files/09c5cdc1dd-ENG2D-Unit-4-Lesson-Plans.docx",
+          "href": "files/09c5cdc1dd-ENG2D-Unit-4-Lesson-Plans.docx",
+          "bytes": 27640,
+          "source": "https://www.esunnybrook.com/pluginfile.php/414/mod_folder/content/0/ENG2D-Unit-4-Lesson-Plans.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Essay Writing Resources",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/course-381-852361d50b/index.html",
+      "type": "html",
+      "bytes": 290790,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=381",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Developing-Your-Thesis.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/c63e6e3903-Developing-Your-Thesis.pdf",
+          "href": "files/c63e6e3903-Developing-Your-Thesis.pdf",
+          "bytes": 176427,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/Developing-Your-Thesis.pdf?forcedownload=1"
+        },
+        {
+          "label": "Editing-Checklist-for-Free-Write-self-and-peer.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/913ebce0b5-Editing-Checklist-for-Free-Write-self-and-peer.pdf",
+          "href": "files/913ebce0b5-Editing-Checklist-for-Free-Write-self-and-peer.pdf",
+          "bytes": 93551,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/Editing-Checklist-for-Free-Write-self-and-peer.pdf?forcedownload=1"
+        },
+        {
+          "label": "Essay-Writing-Checklist.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/2c3ea2d144-Essay-Writing-Checklist.pdf",
+          "href": "files/2c3ea2d144-Essay-Writing-Checklist.pdf",
+          "bytes": 52392,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/Essay-Writing-Checklist.pdf?forcedownload=1"
+        },
+        {
+          "label": "Four-Major-Types-of-Essays.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/99e712d12d-Four-Major-Types-of-Essays.pdf",
+          "href": "files/99e712d12d-Four-Major-Types-of-Essays.pdf",
+          "bytes": 802899,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/Four-Major-Types-of-Essays.pdf?forcedownload=1"
+        },
+        {
+          "label": "Integrating-Quotations-into-Our-Writing.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/40c049ce82-Integrating-Quotations-into-Our-Writing.pdf",
+          "href": "files/40c049ce82-Integrating-Quotations-into-Our-Writing.pdf",
+          "bytes": 193158,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/Integrating-Quotations-into-Our-Writing.pdf?forcedownload=1"
+        },
+        {
+          "label": "MLA-Citation-Quick-Guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/4984d1d3c4-MLA-Citation-Quick-Guide.pdf",
+          "href": "files/4984d1d3c4-MLA-Citation-Quick-Guide.pdf",
+          "bytes": 552444,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/MLA-Citation-Quick-Guide.pdf?forcedownload=1"
+        },
+        {
+          "label": "Peer-Editing-Form.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/152729e251-Peer-Editing-Form.pdf",
+          "href": "files/152729e251-Peer-Editing-Form.pdf",
+          "bytes": 25081,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/Peer-Editing-Form.pdf?forcedownload=1"
+        },
+        {
+          "label": "Plagiarism-Fact-Sheet.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/660ab13871-Plagiarism-Fact-Sheet.pdf",
+          "href": "files/660ab13871-Plagiarism-Fact-Sheet.pdf",
+          "bytes": 127227,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/Plagiarism-Fact-Sheet.pdf?forcedownload=1"
+        },
+        {
+          "label": "Sample-MLA-Formatted-Paper.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/a8d13af130-Sample-MLA-Formatted-Paper.pdf",
+          "href": "files/a8d13af130-Sample-MLA-Formatted-Paper.pdf",
+          "bytes": 1111632,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/Sample-MLA-Formatted-Paper.pdf?forcedownload=1"
+        },
+        {
+          "label": "Steps-to-Writing-a-Basic-Essay.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/4024607354-Steps-to-Writing-a-Basic-Essay.pdf",
+          "href": "files/4024607354-Steps-to-Writing-a-Basic-Essay.pdf",
+          "bytes": 146857,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/Steps-to-Writing-a-Basic-Essay.pdf?forcedownload=1"
+        },
+        {
+          "label": "TIPAS-Paragraph-Outline.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/f57925da10-TIPAS-Paragraph-Outline.pdf",
+          "href": "files/f57925da10-TIPAS-Paragraph-Outline.pdf",
+          "bytes": 94526,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/TIPAS-Paragraph-Outline.pdf?forcedownload=1"
+        },
+        {
+          "label": "Writing-Strong-Body-Paragraphs.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/course-381-852361d50b/files/54ec1dea07-Writing-Strong-Body-Paragraphs.pdf",
+          "href": "files/54ec1dea07-Writing-Strong-Body-Paragraphs.pdf",
+          "bytes": 125631,
+          "source": "https://www.esunnybrook.com/pluginfile.php/415/mod_folder/content/0/Writing-Strong-Body-Paragraphs.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Distinguishing Between Assessments As, For, and Of",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/course-382-abc1abdc9c/abc1abdc9c-Distinguishing-Between-Assessments-As-For-and-Of.docx",
+      "type": "docx",
+      "bytes": 14952,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=382"
+    },
+    {
+      "label": "Triangulation Diagram",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/course-383-79d718582e/79d718582e-Triangulation-Diagram.pdf",
+      "type": "pdf",
+      "bytes": 157561,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=383"
+    },
+    {
+      "label": "Rubric: Unit Discussions",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/course-384-0331272e5f/0331272e5f-Group-Discussion-Assessment-Rubric.pdf",
+      "type": "pdf",
+      "bytes": 76587,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=384"
+    },
+    {
+      "label": "Glossary of Literary Terms",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-385-8131333538/8131333538-Glossary-Literary-Terms.pdf",
+      "type": "pdf",
+      "bytes": 25305,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=385"
+    },
+    {
+      "label": "What is a Short Story?",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-386-1fe9690c51/1fe9690c51-What-is-a-Short-Story.pdf",
+      "type": "pdf",
+      "bytes": 103530,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=386"
+    },
+    {
+      "label": "Short Story: \"The Lady or the Tiger?\" by Frank R. Stockton",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-387-fdec11f698/fdec11f698-The-Lady-or-the-Tiger-Frank-R-Stockton.pdf",
+      "type": "pdf",
+      "bytes": 86288,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=387"
+    },
+    {
+      "label": "Activity: Reviewing Conflict with \"The Lady or the Tiger?\" (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-388-d6ef818d38/index.html",
+      "type": "html",
+      "bytes": 2007,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=388",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-388-d6ef818d38/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "The-Lady-or-the-Tiger-Types-of-Conflict.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-388-d6ef818d38/files/9fbc45726f-The-Lady-or-the-Tiger-Types-of-Conflict.pdf",
+          "href": "files/9fbc45726f-The-Lady-or-the-Tiger-Types-of-Conflict.pdf",
+          "bytes": 59819,
+          "source": "https://www.esunnybrook.com/pluginfile.php/422/mod_assign/introattachment/0/The-Lady-or-the-Tiger-Types-of-Conflict.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Discussion: Making Difficult Choices (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/U01L01-389-905650a62c/index.html",
+      "type": "html",
+      "bytes": 1773,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=389",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/U01L01-389-905650a62c/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Short Story + Activity: \"The Interlopers\" by Saki",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-390-e54b328a9c/e54b328a9c-The-Interlopers-Short-Story-and-Activity-by-Saki.pdf",
+      "type": "pdf",
+      "bytes": 4914633,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=390"
+    },
+    {
+      "label": "Activity: Active Reading and Interpreting in \"The Interlopers\" by Saki (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-391-f6eb9cd61a/index.html",
+      "type": "html",
+      "bytes": 2076,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=391",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-391-f6eb9cd61a/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "The-Interlopers-Short-Story-and-Activity-by-Saki.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-391-f6eb9cd61a/files/8891af7373-The-Interlopers-Short-Story-and-Activity-by-Saki.pdf",
+          "href": "files/8891af7373-The-Interlopers-Short-Story-and-Activity-by-Saki.pdf",
+          "bytes": 4914633,
+          "source": "https://www.esunnybrook.com/pluginfile.php/425/mod_assign/introattachment/0/The-Interlopers-Short-Story-and-Activity-by-Saki.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Short Story + Activity: \"The Rocking Horse Winner\" by D.H. Lawrence",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-392-eb47d84f70/eb47d84f70-The-Rocking-Horse-Winner-Activity.pdf",
+      "type": "pdf",
+      "bytes": 1293010,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=392"
+    },
+    {
+      "label": "Activity: Analyzing and Interpreting \"The Rocking Horse Winner\" (A for/as L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-393-3dcb42bd03/index.html",
+      "type": "html",
+      "bytes": 1869,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=393",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-393-3dcb42bd03/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "The-Rocking-Horse-Winner-Activity.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-393-3dcb42bd03/files/3b0a39fec9-The-Rocking-Horse-Winner-Activity.pdf",
+          "href": "files/3b0a39fec9-The-Rocking-Horse-Winner-Activity.pdf",
+          "bytes": 1293010,
+          "source": "https://www.esunnybrook.com/pluginfile.php/427/mod_assign/introattachment/0/The-Rocking-Horse-Winner-Activity.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "A Lesson on Greek Mythology",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-394-f4e7ef3b91/f4e7ef3b91-Greek-Mythology-Lesson.pptx",
+      "type": "pptx",
+      "bytes": 1533092,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=394"
+    },
+    {
+      "label": "Myth: \"The Myth of Prometheus\"",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-395-654d47f21e/654d47f21e-The-Myth-of-Prometheus.pdf",
+      "type": "pdf",
+      "bytes": 128125,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=395"
+    },
+    {
+      "label": "Activity: Reflecting on \"The Myth of Prometheus\" (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-396-7e29a91a2a/index.html",
+      "type": "html",
+      "bytes": 2107,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=396",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-396-7e29a91a2a/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Reflecting-on-The-Myth-of-Prometheus.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U01L01-396-7e29a91a2a/files/2af5f395e1-Reflecting-on-The-Myth-of-Prometheus.docx",
+          "href": "files/2af5f395e1-Reflecting-on-The-Myth-of-Prometheus.docx",
+          "bytes": 15370,
+          "source": "https://www.esunnybrook.com/pluginfile.php/430/mod_assign/introattachment/0/Reflecting-on-The-Myth-of-Prometheus.docx?forcedownload=1"
+        },
+        {
+          "label": "Reflecting-on-The-Myth-of-Prometheus.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-396-7e29a91a2a/files/3360c303ca-Reflecting-on-The-Myth-of-Prometheus.pdf",
+          "href": "files/3360c303ca-Reflecting-on-The-Myth-of-Prometheus.pdf",
+          "bytes": 22530,
+          "source": "https://www.esunnybrook.com/pluginfile.php/430/mod_assign/introattachment/0/Reflecting-on-The-Myth-of-Prometheus.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Assignment: Perspective Letter Writing (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-397-40ee8c5f28/index.html",
+      "type": "html",
+      "bytes": 2221,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=397",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-397-40ee8c5f28/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Unit-1-Perspective-Letter-Writing-Assignment-alternative.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U01L01-397-40ee8c5f28/files/268b826cbe-Unit-1-Perspective-Letter-Writing-Assignment-alternative.docx",
+          "href": "files/268b826cbe-Unit-1-Perspective-Letter-Writing-Assignment-alternative.docx",
+          "bytes": 23498,
+          "source": "https://www.esunnybrook.com/pluginfile.php/431/mod_assign/introattachment/0/Unit-1-Perspective-Letter-Writing-Assignment-alternative.docx?forcedownload=1"
+        },
+        {
+          "label": "Unit-1-Perspective-Letter-Writing-Assignment-Rubric.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-397-40ee8c5f28/files/82686e5a7f-Unit-1-Perspective-Letter-Writing-Assignment-Rubric.pdf",
+          "href": "files/82686e5a7f-Unit-1-Perspective-Letter-Writing-Assignment-Rubric.pdf",
+          "bytes": 121053,
+          "source": "https://www.esunnybrook.com/pluginfile.php/431/mod_assign/introattachment/0/Unit-1-Perspective-Letter-Writing-Assignment-Rubric.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Myth: \"The Story of Daedalus and Icarus\"",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-398-a6e11f45b7/a6e11f45b7-The-Story-of-Daedalus-and-Icarus.pdf",
+      "type": "pdf",
+      "bytes": 25591,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=398"
+    },
+    {
+      "label": "Activity: Reviewing the Plot Graph with \"The Story of Daedalus and Icarus\" (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-399-98a05cc7f8/index.html",
+      "type": "html",
+      "bytes": 1766,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=399",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-399-98a05cc7f8/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Reviewing-the-Plot-Graph.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-399-98a05cc7f8/files/95e6e0df77-Reviewing-the-Plot-Graph.pdf",
+          "href": "files/95e6e0df77-Reviewing-the-Plot-Graph.pdf",
+          "bytes": 55970,
+          "source": "https://www.esunnybrook.com/pluginfile.php/433/mod_assign/introattachment/0/Reviewing-the-Plot-Graph.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Discussion: My father was right....ambition and ego (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/U01L01-400-c6000ba495/index.html",
+      "type": "html",
+      "bytes": 1854,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=400",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/U01L01-400-c6000ba495/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Elements of Poetry",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-401-d8fdf0a2c1/d8fdf0a2c1-Elements-of-Poetry.pdf",
+      "type": "pdf",
+      "bytes": 1897586,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=401"
+    },
+    {
+      "label": "Poem: \"Landscape With The Fall of Icarus\" by William Carlos Williams",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-402-a4a4e06570/a4a4e06570-Landscape-With-The-Fall-of-Icarus-by-William-Carlos-Williams.pdf",
+      "type": "pdf",
+      "bytes": 109380,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=402"
+    },
+    {
+      "label": "Landscape with the Fall of Icarus - Painting by Bruegel",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-403-ecb753fea5/ecb753fea5-Landscape-with-the-Fall-of-Icarus-Painting-by-Bruegel.pdf",
+      "type": "pdf",
+      "bytes": 178304,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=403"
+    },
+    {
+      "label": "Background, Analysis and Themes in Bruegel's Painting",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U01L01-404-ab2fa75616/ab2fa75616-Background-Analysis-and-Themes-in-Bruegels-Painting.pdf",
+      "type": "pdf",
+      "bytes": 28916,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=404"
+    },
+    {
+      "label": "Activity: Analyzing Art, Poetry and Short Stories (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-405-ac85231222/index.html",
+      "type": "html",
+      "bytes": 2123,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=405",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-405-ac85231222/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Analyzing-Art-Poetry-and-Short-Stories.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U01L01-405-ac85231222/files/944b204d11-Analyzing-Art-Poetry-and-Short-Stories.docx",
+          "href": "files/944b204d11-Analyzing-Art-Poetry-and-Short-Stories.docx",
+          "bytes": 24334,
+          "source": "https://www.esunnybrook.com/pluginfile.php/439/mod_assign/introattachment/0/Analyzing-Art-Poetry-and-Short-Stories.docx?forcedownload=1"
+        },
+        {
+          "label": "Analyzing-Art-Poetry-and-Short-Stories.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-405-ac85231222/files/2a41c7a5ba-Analyzing-Art-Poetry-and-Short-Stories.pdf",
+          "href": "files/2a41c7a5ba-Analyzing-Art-Poetry-and-Short-Stories.pdf",
+          "bytes": 19619,
+          "source": "https://www.esunnybrook.com/pluginfile.php/439/mod_assign/introattachment/0/Analyzing-Art-Poetry-and-Short-Stories.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Assignment: Journal Response (A of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-406-5113177007/index.html",
+      "type": "html",
+      "bytes": 2043,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=406",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-406-5113177007/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Unit-1-Journal-Response-Assignment.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U01L01-406-5113177007/files/874f871dc7-Unit-1-Journal-Response-Assignment.docx",
+          "href": "files/874f871dc7-Unit-1-Journal-Response-Assignment.docx",
+          "bytes": 40997,
+          "source": "https://www.esunnybrook.com/pluginfile.php/440/mod_assign/introattachment/0/Unit-1-Journal-Response-Assignment.docx?forcedownload=1"
+        },
+        {
+          "label": "Unit-1-Journal-Response-Rubric.doc",
+          "type": "doc",
+          "path": "localized-moodle-activities/assign/U01L01-406-5113177007/files/0faba62ad0-Unit-1-Journal-Response-Rubric.doc",
+          "href": "files/0faba62ad0-Unit-1-Journal-Response-Rubric.doc",
+          "bytes": 36864,
+          "source": "https://www.esunnybrook.com/pluginfile.php/440/mod_assign/introattachment/0/Unit-1-Journal-Response-Rubric.doc?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Metacognitive Activity: Role Play Assessment (A as L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U01L01-407-b60c84415c/index.html",
+      "type": "html",
+      "bytes": 2006,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=407",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U01L01-407-b60c84415c/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Metacognition-Role-Play.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U01L01-407-b60c84415c/files/44075dc3b3-Metacognition-Role-Play.docx",
+          "href": "files/44075dc3b3-Metacognition-Role-Play.docx",
+          "bytes": 24968,
+          "source": "https://www.esunnybrook.com/pluginfile.php/441/mod_assign/introattachment/0/Metacognition-Role-Play.docx?forcedownload=1"
+        },
+        {
+          "label": "Metacognition-Role-Play.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U01L01-407-b60c84415c/files/06925be01c-Metacognition-Role-Play.pdf",
+          "href": "files/06925be01c-Metacognition-Role-Play.pdf",
+          "bytes": 22569,
+          "source": "https://www.esunnybrook.com/pluginfile.php/441/mod_assign/introattachment/0/Metacognition-Role-Play.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "The Basic Elements of Public Speaking",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-408-8c9b96fe46/8c9b96fe46-Basic-Elements-of-Public-Speaking.pdf",
+      "type": "pdf",
+      "bytes": 169856,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=408"
+    },
+    {
+      "label": "Elements of Speech Writing: Argument, Evidence and Significance",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-409-25eb524f25/25eb524f25-Elements-of-Speechwriting.pdf",
+      "type": "pdf",
+      "bytes": 344600,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=409"
+    },
+    {
+      "label": "Speech: Queen Elizabeth I Address to the Troops",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-410-c3d9da6610/c3d9da6610-Queen-Elizabeth-I-Speech-and-Questions.pdf",
+      "type": "pdf",
+      "bytes": 94399,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=410"
+    },
+    {
+      "label": "Activity: Assessing our Understanding of Queen Elizabeth's Speech (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-411-dcf426749c/index.html",
+      "type": "html",
+      "bytes": 2016,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=411",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-411-dcf426749c/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Queen-Elizabeth-I-Speech-and-Questions.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-411-dcf426749c/files/ffbe0fe667-Queen-Elizabeth-I-Speech-and-Questions.pdf",
+          "href": "files/ffbe0fe667-Queen-Elizabeth-I-Speech-and-Questions.pdf",
+          "bytes": 94399,
+          "source": "https://www.esunnybrook.com/pluginfile.php/445/mod_assign/introattachment/0/Queen-Elizabeth-I-Speech-and-Questions.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Discussion: Assessing Famous Speakers (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/U02L01-412-e31ba3b61d/index.html",
+      "type": "html",
+      "bytes": 2685,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=412",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/U02L01-412-e31ba3b61d/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Speech: \"I Have a Dream\" by Martin Luther King Jr.",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-413-89cec9ae3f/89cec9ae3f-I-Have-a-Dream-by-Martin-Luther-King-Jr.pdf",
+      "type": "pdf",
+      "bytes": 1553041,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=413"
+    },
+    {
+      "label": "Speech: Inaugural Address by President John F. Kennedy",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-414-6e4f1c9873/6e4f1c9873-Inaugural-Address-by-President-John-F-Kennedy.pdf",
+      "type": "pdf",
+      "bytes": 30849,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=414"
+    },
+    {
+      "label": "Speech: Pearl Harbor Address to the Nation by Franklin D. Roosevelt",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-415-0004899e88/0004899e88-Pearl-Harbor-Address-to-the-Nation-by-Franklin-D-Roosevelt.pdf",
+      "type": "pdf",
+      "bytes": 87547,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=415"
+    },
+    {
+      "label": "Activity: Analyzing Speeches Through Substance, Style, Impact (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-416-676de42128/index.html",
+      "type": "html",
+      "bytes": 2098,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=416",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-416-676de42128/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Reading-for-Meaning-in-Speeches.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U02L01-416-676de42128/files/277e2708c8-Reading-for-Meaning-in-Speeches.docx",
+          "href": "files/277e2708c8-Reading-for-Meaning-in-Speeches.docx",
+          "bytes": 24226,
+          "source": "https://www.esunnybrook.com/pluginfile.php/450/mod_assign/introattachment/0/Reading-for-Meaning-in-Speeches.docx?forcedownload=1"
+        },
+        {
+          "label": "Reading-for-Meaning-in-Speeches.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-416-676de42128/files/38f75607fa-Reading-for-Meaning-in-Speeches.pdf",
+          "href": "files/38f75607fa-Reading-for-Meaning-in-Speeches.pdf",
+          "bytes": 19393,
+          "source": "https://www.esunnybrook.com/pluginfile.php/450/mod_assign/introattachment/0/Reading-for-Meaning-in-Speeches.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Case Study - Emotions, Attitude, Communication, and Style in Song Lyrics",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-417-8da4a4df72/8da4a4df72-Case-Study-Emotions-Attitude-Communication-and-Style-in-Song-Lyrics.pdf",
+      "type": "pdf",
+      "bytes": 333609,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=417"
+    },
+    {
+      "label": "Activity: Finding Meaning Through Music (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-418-42d8f36f21/index.html",
+      "type": "html",
+      "bytes": 2016,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=418",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-418-42d8f36f21/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Finding-Meaning-Through-Music.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U02L01-418-42d8f36f21/files/928f8d46f8-Finding-Meaning-Through-Music.docx",
+          "href": "files/928f8d46f8-Finding-Meaning-Through-Music.docx",
+          "bytes": 23869,
+          "source": "https://www.esunnybrook.com/pluginfile.php/452/mod_assign/introattachment/0/Finding-Meaning-Through-Music.docx?forcedownload=1"
+        },
+        {
+          "label": "Finding-Meaning-Through-Music.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-418-42d8f36f21/files/6a93de0eb5-Finding-Meaning-Through-Music.pdf",
+          "href": "files/6a93de0eb5-Finding-Meaning-Through-Music.pdf",
+          "bytes": 127039,
+          "source": "https://www.esunnybrook.com/pluginfile.php/452/mod_assign/introattachment/0/Finding-Meaning-Through-Music.pdf?forcedownload=1"
+        },
+        {
+          "label": "Sample-Analysis-of-Katy-Perrys-Firework.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-418-42d8f36f21/files/b41275dd65-Sample-Analysis-of-Katy-Perrys-Firework.pdf",
+          "href": "files/b41275dd65-Sample-Analysis-of-Katy-Perrys-Firework.pdf",
+          "bytes": 179341,
+          "source": "https://www.esunnybrook.com/pluginfile.php/452/mod_assign/introattachment/0/Sample-Analysis-of-Katy-Perrys-Firework.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Elements of a Movie Review",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-419-a95995f61d/a95995f61d-Elements-of-a-Movie-Review.pdf",
+      "type": "pdf",
+      "bytes": 43921,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=419"
+    },
+    {
+      "label": "Writing a Film Review",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-420-0b8a1ad2f0/0b8a1ad2f0-Writing-a-Film-Review.pdf",
+      "type": "pdf",
+      "bytes": 265757,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=420"
+    },
+    {
+      "label": "Sample Movie Reviews",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-421-4e8ff0831f/4e8ff0831f-Sample-Movie-Reviews.pdf",
+      "type": "pdf",
+      "bytes": 194021,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=421"
+    },
+    {
+      "label": "Activity: Writing A Movie Review (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-422-4f07140235/index.html",
+      "type": "html",
+      "bytes": 1770,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=422",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-422-4f07140235/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Movie-Review-Worksheet.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-422-4f07140235/files/dc35fe4664-Movie-Review-Worksheet.pdf",
+          "href": "files/dc35fe4664-Movie-Review-Worksheet.pdf",
+          "bytes": 90899,
+          "source": "https://www.esunnybrook.com/pluginfile.php/456/mod_assign/introattachment/0/Movie-Review-Worksheet.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Discussion: Sharing Your Movie Review (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/U02L01-423-ffbd2d111c/index.html",
+      "type": "html",
+      "bytes": 1968,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=423",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/U02L01-423-ffbd2d111c/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Analyzing the Effectiveness of Print Ads (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-424-80dff432e2/index.html",
+      "type": "html",
+      "bytes": 1946,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=424",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-424-80dff432e2/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Analyzing-Print-Advertisements.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-424-80dff432e2/files/8b90d71867-Analyzing-Print-Advertisements.pdf",
+          "href": "files/8b90d71867-Analyzing-Print-Advertisements.pdf",
+          "bytes": 378969,
+          "source": "https://www.esunnybrook.com/pluginfile.php/458/mod_assign/introattachment/0/Analyzing-Print-Advertisements.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Analyzing Political Cartoons Lesson + Worksheet",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-425-44d4a16811/44d4a16811-Analyzing-Political-Cartoons-Lesson-Worksheet.pdf",
+      "type": "pdf",
+      "bytes": 356613,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=425"
+    },
+    {
+      "label": "Activity: Assessing and Creating Political Cartoons (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-426-b47d19c2fd/index.html",
+      "type": "html",
+      "bytes": 2234,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=426",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-426-b47d19c2fd/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Analyzing-Political-Cartoons-Lesson-Worksheet.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-426-b47d19c2fd/files/c7c97537b3-Analyzing-Political-Cartoons-Lesson-Worksheet.pdf",
+          "href": "files/c7c97537b3-Analyzing-Political-Cartoons-Lesson-Worksheet.pdf",
+          "bytes": 356613,
+          "source": "https://www.esunnybrook.com/pluginfile.php/460/mod_assign/introattachment/0/Analyzing-Political-Cartoons-Lesson-Worksheet.pdf?forcedownload=1"
+        },
+        {
+          "label": "Analyzing-Political-Cartoons.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U02L01-426-b47d19c2fd/files/475167dddb-Analyzing-Political-Cartoons.docx",
+          "href": "files/475167dddb-Analyzing-Political-Cartoons.docx",
+          "bytes": 565383,
+          "source": "https://www.esunnybrook.com/pluginfile.php/460/mod_assign/introattachment/0/Analyzing-Political-Cartoons.docx?forcedownload=1"
+        },
+        {
+          "label": "Analyzing-Political-Cartoons.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-426-b47d19c2fd/files/8a56ad6965-Analyzing-Political-Cartoons.pdf",
+          "href": "files/8a56ad6965-Analyzing-Political-Cartoons.pdf",
+          "bytes": 577618,
+          "source": "https://www.esunnybrook.com/pluginfile.php/460/mod_assign/introattachment/0/Analyzing-Political-Cartoons.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Assignment: Political Cartoon (A of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-427-82caf183b6/index.html",
+      "type": "html",
+      "bytes": 2090,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=427",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-427-82caf183b6/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Unit-2-Political-Cartoon-Assignment-Rubric.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-427-82caf183b6/files/785406cc84-Unit-2-Political-Cartoon-Assignment-Rubric.pdf",
+          "href": "files/785406cc84-Unit-2-Political-Cartoon-Assignment-Rubric.pdf",
+          "bytes": 90632,
+          "source": "https://www.esunnybrook.com/pluginfile.php/461/mod_assign/introattachment/0/Unit-2-Political-Cartoon-Assignment-Rubric.pdf?forcedownload=1"
+        },
+        {
+          "label": "Unit-2-Political-Cartoon-Assignment.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-427-82caf183b6/files/bc0a7c8c5e-Unit-2-Political-Cartoon-Assignment.pdf",
+          "href": "files/bc0a7c8c5e-Unit-2-Political-Cartoon-Assignment.pdf",
+          "bytes": 138491,
+          "source": "https://www.esunnybrook.com/pluginfile.php/461/mod_assign/introattachment/0/Unit-2-Political-Cartoon-Assignment.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Writing the Persuasive Essay",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U02L01-428-76c5f7466b/76c5f7466b-Writing-the-Persuasive-Essay-Handout.pdf",
+      "type": "pdf",
+      "bytes": 121960,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=428"
+    },
+    {
+      "label": "Assignment: Persuasive Essay (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-429-f0703dcc7f/index.html",
+      "type": "html",
+      "bytes": 2293,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=429",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-429-f0703dcc7f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Peer-Editing-Form.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-429-f0703dcc7f/files/126ac8ebf7-Peer-Editing-Form.pdf",
+          "href": "files/126ac8ebf7-Peer-Editing-Form.pdf",
+          "bytes": 25081,
+          "source": "https://www.esunnybrook.com/pluginfile.php/463/mod_assign/introattachment/0/Peer-Editing-Form.pdf?forcedownload=1"
+        },
+        {
+          "label": "Persuasive-Writing-Graphic-Organizers.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-429-f0703dcc7f/files/c7e4a50422-Persuasive-Writing-Graphic-Organizers.pdf",
+          "href": "files/c7e4a50422-Persuasive-Writing-Graphic-Organizers.pdf",
+          "bytes": 657238,
+          "source": "https://www.esunnybrook.com/pluginfile.php/463/mod_assign/introattachment/0/Persuasive-Writing-Graphic-Organizers.pdf?forcedownload=1"
+        },
+        {
+          "label": "Unit-2-Persuasive-Essay-Assignment.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-429-f0703dcc7f/files/a940688644-Unit-2-Persuasive-Essay-Assignment.pdf",
+          "href": "files/a940688644-Unit-2-Persuasive-Essay-Assignment.pdf",
+          "bytes": 109864,
+          "source": "https://www.esunnybrook.com/pluginfile.php/463/mod_assign/introattachment/0/Unit-2-Persuasive-Essay-Assignment.pdf?forcedownload=1"
+        },
+        {
+          "label": "Unit-2-Persuasive-Essay-Rubric.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-429-f0703dcc7f/files/3c7dd4ca4d-Unit-2-Persuasive-Essay-Rubric.pdf",
+          "href": "files/3c7dd4ca4d-Unit-2-Persuasive-Essay-Rubric.pdf",
+          "bytes": 104320,
+          "source": "https://www.esunnybrook.com/pluginfile.php/463/mod_assign/introattachment/0/Unit-2-Persuasive-Essay-Rubric.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Self-Assessment: Learning Skills and Work Habits (A as L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U02L01-430-fc0a7df32b/index.html",
+      "type": "html",
+      "bytes": 2073,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=430",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U02L01-430-fc0a7df32b/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Learning-Skills-Rubric.jpeg",
+          "type": "jpeg",
+          "path": "localized-moodle-activities/assign/U02L01-430-fc0a7df32b/files/f7bbfd7c02-Learning-Skills-Rubric.jpeg",
+          "href": "files/f7bbfd7c02-Learning-Skills-Rubric.jpeg",
+          "bytes": 649818,
+          "source": "https://www.esunnybrook.com/pluginfile.php/464/mod_assign/introattachment/0/Learning-Skills-Rubric.jpeg?forcedownload=1"
+        },
+        {
+          "label": "Midterm-Learning-Skills-and-Work-Habits-Self-Assessment.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U02L01-430-fc0a7df32b/files/a27e165024-Midterm-Learning-Skills-and-Work-Habits-Self-Assessment.pdf",
+          "href": "files/a27e165024-Midterm-Learning-Skills-and-Work-Habits-Self-Assessment.pdf",
+          "bytes": 238098,
+          "source": "https://www.esunnybrook.com/pluginfile.php/464/mod_assign/introattachment/0/Midterm-Learning-Skills-and-Work-Habits-Self-Assessment.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Anticipation Guide - \"The Lord of the Flies\" (A for/as L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-431-a9accd76e1/index.html",
+      "type": "html",
+      "bytes": 1970,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=431",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-431-a9accd76e1/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "lord-of-flies-anticipation-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-431-a9accd76e1/files/f51c16666d-lord-of-flies-anticipation-guide.pdf",
+          "href": "files/f51c16666d-lord-of-flies-anticipation-guide.pdf",
+          "bytes": 198433,
+          "source": "https://www.esunnybrook.com/pluginfile.php/465/mod_assign/introattachment/0/lord-of-flies-anticipation-guide.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Novel: \"Lord of the Flies\" by William Golding",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-432-62dcd6d6de/62dcd6d6de-Lord-of-the-Flies-Text.pdf",
+      "type": "pdf",
+      "bytes": 238216,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=432"
+    },
+    {
+      "label": "Introduction to \"Lord of the Flies\"",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-433-a028760b05/a028760b05-Introduction-to-Lord-of-the-Flies.pdf",
+      "type": "pdf",
+      "bytes": 329526,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=433"
+    },
+    {
+      "label": "Chapter 1 - The Sound of the Shell",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-434-ece7cc0f50/ece7cc0f50-L1-Chapter-1-The-Sound-of-the-Shell.pdf",
+      "type": "pdf",
+      "bytes": 238596,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=434"
+    },
+    {
+      "label": "Discussion: A New Government (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/U03L01-435-54ac99eba2/index.html",
+      "type": "html",
+      "bytes": 1605,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=435",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/U03L01-435-54ac99eba2/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 2 - Fire on the Mountain",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-436-bae276c3f9/bae276c3f9-L2-Chapter-2-Fire-on-the-Mountain.pdf",
+      "type": "pdf",
+      "bytes": 248552,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=436"
+    },
+    {
+      "label": "Activity: Monitoring Comprehension in Chapter 2 (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-437-46e40aa995/index.html",
+      "type": "html",
+      "bytes": 1699,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=437",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-437-46e40aa995/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "L2-Chapter-2-Fire-on-the-Mountain.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-437-46e40aa995/files/09ee536f32-L2-Chapter-2-Fire-on-the-Mountain.pdf",
+          "href": "files/09ee536f32-L2-Chapter-2-Fire-on-the-Mountain.pdf",
+          "bytes": 248552,
+          "source": "https://www.esunnybrook.com/pluginfile.php/471/mod_assign/introattachment/0/L2-Chapter-2-Fire-on-the-Mountain.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 3 - Huts on the Beach",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-438-c5df2168a7/c5df2168a7-L3-Chapter-3-Huts-on-the-Beach.pdf",
+      "type": "pdf",
+      "bytes": 239238,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=438"
+    },
+    {
+      "label": "Activity: Assessing Key Quotes in Chapter 3 (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-439-7f183b0914/index.html",
+      "type": "html",
+      "bytes": 1685,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=439",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-439-7f183b0914/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "L3-Chapter-3-Huts-on-the-Beach.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-439-7f183b0914/files/86f316e1df-L3-Chapter-3-Huts-on-the-Beach.pdf",
+          "href": "files/86f316e1df-L3-Chapter-3-Huts-on-the-Beach.pdf",
+          "bytes": 239238,
+          "source": "https://www.esunnybrook.com/pluginfile.php/473/mod_assign/introattachment/0/L3-Chapter-3-Huts-on-the-Beach.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 4 - Painted Faces and Long Hair",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-440-dbe47673e6/dbe47673e6-L4-Chapter-4-Painted-Faces-and-Long-Hair.pdf",
+      "type": "pdf",
+      "bytes": 297763,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=440"
+    },
+    {
+      "label": "Activity: Making Historical Connections in Chapter 4 (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-441-0a8e8a428f/index.html",
+      "type": "html",
+      "bytes": 1721,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=441",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-441-0a8e8a428f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "L4-Chapter4-Painted-Faces-and-Long-Hair.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-441-0a8e8a428f/files/ea1fa951bc-L4-Chapter4-Painted-Faces-and-Long-Hair.pdf",
+          "href": "files/ea1fa951bc-L4-Chapter4-Painted-Faces-and-Long-Hair.pdf",
+          "bytes": 297763,
+          "source": "https://www.esunnybrook.com/pluginfile.php/475/mod_assign/introattachment/0/L4-Chapter4-Painted-Faces-and-Long-Hair.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 5 - Beast From Water",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-442-a2e92c0815/a2e92c0815-L5-Chapter-5-Beast-From-Water.pdf",
+      "type": "pdf",
+      "bytes": 298813,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=442"
+    },
+    {
+      "label": "Discussion: Debating Who is the Better Chief (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/U03L01-443-70d48feb57/index.html",
+      "type": "html",
+      "bytes": 1789,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=443",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/U03L01-443-70d48feb57/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 6 - Beast From Air",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-444-201f98a22f/201f98a22f-L6-Chapter-6-Beast-From-Air.pdf",
+      "type": "pdf",
+      "bytes": 211970,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=444"
+    },
+    {
+      "label": "Activity: Ralph's First Hunt (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-445-20b9e1d75f/index.html",
+      "type": "html",
+      "bytes": 1662,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=445",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-445-20b9e1d75f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "L6-Chapter-6-Beast-From-Air.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-445-20b9e1d75f/files/2eda7dea0d-L6-Chapter-6-Beast-From-Air.pdf",
+          "href": "files/2eda7dea0d-L6-Chapter-6-Beast-From-Air.pdf",
+          "bytes": 211970,
+          "source": "https://www.esunnybrook.com/pluginfile.php/479/mod_assign/introattachment/0/L6-Chapter-6-Beast-From-Air.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 7 - Shadows and Tall Trees",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-446-e91fbddc1c/e91fbddc1c-L7-Chapter-7-Shadows-and-Tall-Trees.pdf",
+      "type": "pdf",
+      "bytes": 204050,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=446"
+    },
+    {
+      "label": "Activity: Beast or No Beast? (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-447-377a5c23a0/index.html",
+      "type": "html",
+      "bytes": 1704,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=447",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-447-377a5c23a0/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 8 - Gift For The Darkness",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-448-794f95c70e/794f95c70e-L8-Chapter8-Gift-For-The-Darkness.pdf",
+      "type": "pdf",
+      "bytes": 290885,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=448"
+    },
+    {
+      "label": "Activity: The Gift in Chapter 8 (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-449-d05265008c/index.html",
+      "type": "html",
+      "bytes": 1682,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=449",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-449-d05265008c/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "L8-Chapter-8-Gift-For-The-Darkness.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-449-d05265008c/files/af56e6f276-L8-Chapter-8-Gift-For-The-Darkness.pdf",
+          "href": "files/af56e6f276-L8-Chapter-8-Gift-For-The-Darkness.pdf",
+          "bytes": 290885,
+          "source": "https://www.esunnybrook.com/pluginfile.php/483/mod_assign/introattachment/0/L8-Chapter-8-Gift-For-The-Darkness.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 9 - A View To Death",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-450-430ab89e9f/430ab89e9f-L9-Chapter-9-A-View-To-Death.pdf",
+      "type": "pdf",
+      "bytes": 269929,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=450"
+    },
+    {
+      "label": "Activity: Death and Darkness in Chapter 9 (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-451-9d883398b1/index.html",
+      "type": "html",
+      "bytes": 1734,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=451",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-451-9d883398b1/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "L9-Chapter-9-A-View-To-Death.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-451-9d883398b1/files/9632af9dd1-L9-Chapter-9-A-View-To-Death.pdf",
+          "href": "files/9632af9dd1-L9-Chapter-9-A-View-To-Death.pdf",
+          "bytes": 269929,
+          "source": "https://www.esunnybrook.com/pluginfile.php/485/mod_assign/introattachment/0/L9-Chapter-9-A-View-To-Death.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 10 - The Shell and The Glasses",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-452-306ddedd6a/306ddedd6a-L10-Chapter-10-The-Shell-and-The-Glasses.pdf",
+      "type": "pdf",
+      "bytes": 222810,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=452"
+    },
+    {
+      "label": "Activity: The Symbolism of the Shell and the Glasses in Chapter 10 (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-453-26d651eeea/index.html",
+      "type": "html",
+      "bytes": 1928,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=453",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-453-26d651eeea/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "L10-Chapter-10-The-Shell-and-The-Glasses.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-453-26d651eeea/files/3e455feb0f-L10-Chapter-10-The-Shell-and-The-Glasses.pdf",
+          "href": "files/3e455feb0f-L10-Chapter-10-The-Shell-and-The-Glasses.pdf",
+          "bytes": 222810,
+          "source": "https://www.esunnybrook.com/pluginfile.php/487/mod_assign/introattachment/0/L10-Chapter-10-The-Shell-and-The-Glasses.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Symbolic Associations in the Novel (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-454-a016a66dd0/index.html",
+      "type": "html",
+      "bytes": 1934,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=454",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-454-a016a66dd0/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Reflecting-on-Symbols-Activity.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-454-a016a66dd0/files/62561fc75e-Reflecting-on-Symbols-Activity.pdf",
+          "href": "files/62561fc75e-Reflecting-on-Symbols-Activity.pdf",
+          "bytes": 666297,
+          "source": "https://www.esunnybrook.com/pluginfile.php/488/mod_assign/introattachment/0/Reflecting-on-Symbols-Activity.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 11 - Castle Rock",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-455-8ea71ba8ed/8ea71ba8ed-L11-Chapter-11-Castle-Rock.pdf",
+      "type": "pdf",
+      "bytes": 302593,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=455"
+    },
+    {
+      "label": "Discussion: Fighting for Democracy in Chapter 11 (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/U03L01-456-09d3782c04/index.html",
+      "type": "html",
+      "bytes": 1813,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=456",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/U03L01-456-09d3782c04/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Chapter 12 - Cry of the Hunters",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U03L01-457-277c0e6754/277c0e6754-L12-Chapter-12-Cry-of-the-Hunters.pdf",
+      "type": "pdf",
+      "bytes": 266593,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=457"
+    },
+    {
+      "label": "Activity: A Final Reflection - Rousseau's Noble Savage Theory (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-458-8d830fa222/index.html",
+      "type": "html",
+      "bytes": 2028,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=458",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-458-8d830fa222/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Conclusion-Reflecting-on-Lord-of-the-Flies.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-458-8d830fa222/files/d85e818fa4-Conclusion-Reflecting-on-Lord-of-the-Flies.pdf",
+          "href": "files/d85e818fa4-Conclusion-Reflecting-on-Lord-of-the-Flies.pdf",
+          "bytes": 840834,
+          "source": "https://www.esunnybrook.com/pluginfile.php/492/mod_assign/introattachment/0/Conclusion-Reflecting-on-Lord-of-the-Flies.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Analysis of Themes in the Novel (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-459-c414c29acd/index.html",
+      "type": "html",
+      "bytes": 1983,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=459",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-459-c414c29acd/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Theme-Analysis-Part-1.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-459-c414c29acd/files/1df59090fb-Theme-Analysis-Part-1.pdf",
+          "href": "files/1df59090fb-Theme-Analysis-Part-1.pdf",
+          "bytes": 390376,
+          "source": "https://www.esunnybrook.com/pluginfile.php/493/mod_assign/introattachment/0/Theme-Analysis-Part-1.pdf?forcedownload=1"
+        },
+        {
+          "label": "Theme-Analysis-Part-2.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-459-c414c29acd/files/78b7b84f3c-Theme-Analysis-Part-2.pdf",
+          "href": "files/78b7b84f3c-Theme-Analysis-Part-2.pdf",
+          "bytes": 320575,
+          "source": "https://www.esunnybrook.com/pluginfile.php/493/mod_assign/introattachment/0/Theme-Analysis-Part-2.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Irony at its Finest in Chapter 12 (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-460-dbcd5535cd/index.html",
+      "type": "html",
+      "bytes": 1790,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=460",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-460-dbcd5535cd/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "L12-Chapter-12-Cry-of-the-Hunters.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-460-dbcd5535cd/files/c8d4667c81-L12-Chapter-12-Cry-of-the-Hunters.pdf",
+          "href": "files/c8d4667c81-L12-Chapter-12-Cry-of-the-Hunters.pdf",
+          "bytes": 266593,
+          "source": "https://www.esunnybrook.com/pluginfile.php/494/mod_assign/introattachment/0/L12-Chapter-12-Cry-of-the-Hunters.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Assignment: Mind Map (A of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-461-fb3be48f59/index.html",
+      "type": "html",
+      "bytes": 2007,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=461",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-461-fb3be48f59/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Unit-3-Mind-Map-Assignment-Rubric.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-461-fb3be48f59/files/04677f989d-Unit-3-Mind-Map-Assignment-Rubric.pdf",
+          "href": "files/04677f989d-Unit-3-Mind-Map-Assignment-Rubric.pdf",
+          "bytes": 578043,
+          "source": "https://www.esunnybrook.com/pluginfile.php/495/mod_assign/introattachment/0/Unit-3-Mind-Map-Assignment-Rubric.pdf?forcedownload=1"
+        },
+        {
+          "label": "Unit3-Mind-Map-Assignment.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-461-fb3be48f59/files/280a15701c-Unit3-Mind-Map-Assignment.pdf",
+          "href": "files/280a15701c-Unit3-Mind-Map-Assignment.pdf",
+          "bytes": 373246,
+          "source": "https://www.esunnybrook.com/pluginfile.php/495/mod_assign/introattachment/0/Unit3-Mind-Map-Assignment.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Assignment: Unit #3 Test (A of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U03L01-462-cabac38cc2/index.html",
+      "type": "html",
+      "bytes": 1709,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=462",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U03L01-462-cabac38cc2/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Unit-3-Lord-of-the-Flies-Unit-Test.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U03L01-462-cabac38cc2/files/fc27b74b53-Unit-3-Lord-of-the-Flies-Unit-Test.pdf",
+          "href": "files/fc27b74b53-Unit-3-Lord-of-the-Flies-Unit-Test.pdf",
+          "bytes": 375825,
+          "source": "https://www.esunnybrook.com/pluginfile.php/496/mod_assign/introattachment/0/Unit-3-Lord-of-the-Flies-Unit-Test.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "ENG2D Unit #3 Test (FOR TEACHER USE ONLY)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U03L01-463-afcc0fbee9/index.html",
+      "type": "html",
+      "bytes": 283012,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=463",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U03L01-463-afcc0fbee9/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Unit-3-Lord-of-the-Flies-Unit-Test.doc",
+          "type": "doc",
+          "path": "localized-moodle-activities/folder/U03L01-463-afcc0fbee9/files/8286373910-Unit-3-Lord-of-the-Flies-Unit-Test.doc",
+          "href": "files/8286373910-Unit-3-Lord-of-the-Flies-Unit-Test.doc",
+          "bytes": 52736,
+          "source": "https://www.esunnybrook.com/pluginfile.php/497/mod_folder/content/0/Unit-3-Lord-of-the-Flies-Unit-Test.doc?forcedownload=1"
+        },
+        {
+          "label": "Unit-3-Lord-of-the-Flies-Unit-Test.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/U03L01-463-afcc0fbee9/files/32c169600e-Unit-3-Lord-of-the-Flies-Unit-Test.pdf",
+          "href": "files/32c169600e-Unit-3-Lord-of-the-Flies-Unit-Test.pdf",
+          "bytes": 375825,
+          "source": "https://www.esunnybrook.com/pluginfile.php/497/mod_folder/content/0/Unit-3-Lord-of-the-Flies-Unit-Test.pdf?forcedownload=1"
+        },
+        {
+          "label": "Unit3-Lord-of-the-Flies-Unit-Test-ANSWER-KEY.doc",
+          "type": "doc",
+          "path": "localized-moodle-activities/folder/U03L01-463-afcc0fbee9/files/d5898dcc4d-Unit3-Lord-of-the-Flies-Unit-Test-ANSWER-KEY.doc",
+          "href": "files/d5898dcc4d-Unit3-Lord-of-the-Flies-Unit-Test-ANSWER-KEY.doc",
+          "bytes": 58368,
+          "source": "https://www.esunnybrook.com/pluginfile.php/497/mod_folder/content/0/Unit3-Lord-of-the-Flies-Unit-Test-ANSWER-KEY.doc?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Anticipation Guide for \"Othello\" (A as L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-464-5cc4061e45/index.html",
+      "type": "html",
+      "bytes": 1998,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=464",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-464-5cc4061e45/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Anticipation-Guide-for-Shakespeare-s-Othello.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-464-5cc4061e45/files/ea21847ee0-Anticipation-Guide-for-Shakespeare-s-Othello.pdf",
+          "href": "files/ea21847ee0-Anticipation-Guide-for-Shakespeare-s-Othello.pdf",
+          "bytes": 353705,
+          "source": "https://www.esunnybrook.com/pluginfile.php/498/mod_assign/introattachment/0/Anticipation-Guide-for-Shakespeare-s-Othello.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "A Glossary: Shakespeare's Common Tongue",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U04L01-465-a1ef06e5ce/a1ef06e5ce-Shakespeare-s-Common-Tongue-Glossary.pdf",
+      "type": "pdf",
+      "bytes": 19739,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=465"
+    },
+    {
+      "label": "The Play: \"Othello\" by William Shakespeare",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U04L01-466-c53b5227e5/c53b5227e5-Othello-Text.pdf",
+      "type": "pdf",
+      "bytes": 2111416,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=466"
+    },
+    {
+      "label": "An Overview: Shakespeare's \"Othello\"",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U04L01-467-0e37cf1f53/0e37cf1f53-Overview-of-Shakepeare-s-Othello.pdf",
+      "type": "pdf",
+      "bytes": 121288,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=467"
+    },
+    {
+      "label": "An Introduction to the Characters in Shakespeare's \"Othello\"",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U04L01-468-37f92a1735/37f92a1735-Introducing-Characters-in-Othello.pdf",
+      "type": "pdf",
+      "bytes": 23545,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=468"
+    },
+    {
+      "label": "Act I - Active Reading and Reflecting",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U04L01-469-2dc4650490/2dc4650490-ActI-Active-Reading-and-Reflecting.pdf",
+      "type": "pdf",
+      "bytes": 25607,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=469"
+    },
+    {
+      "label": "Activity: Act I - Study Guide Questions (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-470-d024129f49/index.html",
+      "type": "html",
+      "bytes": 1904,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=470",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-470-d024129f49/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "ActI-Study-Guide-Questions.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-470-d024129f49/files/6c544b6f24-ActI-Study-Guide-Questions.pdf",
+          "href": "files/6c544b6f24-ActI-Study-Guide-Questions.pdf",
+          "bytes": 25076,
+          "source": "https://www.esunnybrook.com/pluginfile.php/504/mod_assign/introattachment/0/ActI-Study-Guide-Questions.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Act II - Active Reading and Reflecting",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U04L01-471-d08c50e421/d08c50e421-ActII-Active-Reading-and-Reflecting.pdf",
+      "type": "pdf",
+      "bytes": 26076,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=471"
+    },
+    {
+      "label": "Activity: Act II - Study Guide Questions (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-472-aa676a9a46/index.html",
+      "type": "html",
+      "bytes": 1911,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=472",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-472-aa676a9a46/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "ActII-Study-Guide-Questions.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-472-aa676a9a46/files/7ffa7b959f-ActII-Study-Guide-Questions.pdf",
+          "href": "files/7ffa7b959f-ActII-Study-Guide-Questions.pdf",
+          "bytes": 25457,
+          "source": "https://www.esunnybrook.com/pluginfile.php/506/mod_assign/introattachment/0/ActII-Study-Guide-Questions.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Act III - Active Reading and Reflecting",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U04L01-473-6681f7a692/6681f7a692-ActIII-Active-Reading-and-Reflecting.pdf",
+      "type": "pdf",
+      "bytes": 31654,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=473"
+    },
+    {
+      "label": "Discussion: Observations and Notes in Acts I and II (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/U04L01-474-08b6882b0a/index.html",
+      "type": "html",
+      "bytes": 1941,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=474",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/U04L01-474-08b6882b0a/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Act III - Study Guide Questions (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-475-8bee07b31b/index.html",
+      "type": "html",
+      "bytes": 1918,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=475",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-475-8bee07b31b/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "ActIII-Study-Guide-Questions.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-475-8bee07b31b/files/dd8ab73342-ActIII-Study-Guide-Questions.pdf",
+          "href": "files/dd8ab73342-ActIII-Study-Guide-Questions.pdf",
+          "bytes": 27940,
+          "source": "https://www.esunnybrook.com/pluginfile.php/509/mod_assign/introattachment/0/ActIII-Study-Guide-Questions.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Act IV - Active Reading and Reflecting",
+      "status": "localized",
+      "mode": "file",
+      "path": "localized-moodle-activities/resource/U04L01-476-80901144f2/80901144f2-Act-IV-Active-Reading-and-Reflecting.pdf",
+      "type": "pdf",
+      "bytes": 27699,
+      "source": "https://www.esunnybrook.com/mod/resource/view.php?id=476"
+    },
+    {
+      "label": "Activity: Act IV - Study Guide Questions (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-477-78af32b44b/index.html",
+      "type": "html",
+      "bytes": 1911,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=477",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-477-78af32b44b/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "ActIV-Study-Guide-Questions.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-477-78af32b44b/files/c027ec0a7a-ActIV-Study-Guide-Questions.pdf",
+          "href": "files/c027ec0a7a-ActIV-Study-Guide-Questions.pdf",
+          "bytes": 25810,
+          "source": "https://www.esunnybrook.com/pluginfile.php/511/mod_assign/introattachment/0/ActIV-Study-Guide-Questions.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Discussion: Symbolism in \"Othello\" (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/U04L01-478-f3d1192a8f/index.html",
+      "type": "html",
+      "bytes": 1888,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=478",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/U04L01-478-f3d1192a8f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Act V - Study Guide Questions (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-479-b89acb0534/index.html",
+      "type": "html",
+      "bytes": 1904,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=479",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-479-b89acb0534/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "ActV-Study-Guide-Questions.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-479-b89acb0534/files/06619672c4-ActV-Study-Guide-Questions.pdf",
+          "href": "files/06619672c4-ActV-Study-Guide-Questions.pdf",
+          "bytes": 26054,
+          "source": "https://www.esunnybrook.com/pluginfile.php/513/mod_assign/introattachment/0/ActV-Study-Guide-Questions.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Discussion: Betrayal in \"Othello\" (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/forum/U04L01-480-cf10803b9a/index.html",
+      "type": "html",
+      "bytes": 1699,
+      "source": "https://www.esunnybrook.com/mod/forum/view.php?id=480",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/forum/U04L01-480-cf10803b9a/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Discussing the Big Ideas in the Play (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-481-d720b4af48/index.html",
+      "type": "html",
+      "bytes": 1963,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=481",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-481-d720b4af48/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Discussing-the-Big-Ideas-in-Othello.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-481-d720b4af48/files/0f47e17554-Discussing-the-Big-Ideas-in-Othello.pdf",
+          "href": "files/0f47e17554-Discussing-the-Big-Ideas-in-Othello.pdf",
+          "bytes": 115590,
+          "source": "https://www.esunnybrook.com/pluginfile.php/515/mod_assign/introattachment/0/Discussing-the-Big-Ideas-in-Othello.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Testing Your Quote Knowledge (A for/as L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-482-5d21a2d82f/index.html",
+      "type": "html",
+      "bytes": 1918,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=482",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-482-5d21a2d82f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Testing-Your-Quote-Knowledge.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-482-5d21a2d82f/files/a8cd8fe897-Testing-Your-Quote-Knowledge.pdf",
+          "href": "files/a8cd8fe897-Testing-Your-Quote-Knowledge.pdf",
+          "bytes": 22968,
+          "source": "https://www.esunnybrook.com/pluginfile.php/516/mod_assign/introattachment/0/Testing-Your-Quote-Knowledge.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Activity: Analyzing Key Quotes in \"Othello\" (A for L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-483-aa59071a05/index.html",
+      "type": "html",
+      "bytes": 1987,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=483",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-483-aa59071a05/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Analyzing-Quotes-in-Shakespeare-s-Othello.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-483-aa59071a05/files/f17b626f90-Analyzing-Quotes-in-Shakespeare-s-Othello.pdf",
+          "href": "files/f17b626f90-Analyzing-Quotes-in-Shakespeare-s-Othello.pdf",
+          "bytes": 285605,
+          "source": "https://www.esunnybrook.com/pluginfile.php/517/mod_assign/introattachment/0/Analyzing-Quotes-in-Shakespeare-s-Othello.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Assignment: Literary Essay (A as/of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-484-e23f8e81e2/index.html",
+      "type": "html",
+      "bytes": 2241,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=484",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-484-e23f8e81e2/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Essay-Outline.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-484-e23f8e81e2/files/f02e6cb896-Essay-Outline.pdf",
+          "href": "files/f02e6cb896-Essay-Outline.pdf",
+          "bytes": 53695,
+          "source": "https://www.esunnybrook.com/pluginfile.php/518/mod_assign/introattachment/0/Essay-Outline.pdf?forcedownload=1"
+        },
+        {
+          "label": "Essay-Writing-Checklist.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-484-e23f8e81e2/files/ea173aa891-Essay-Writing-Checklist.pdf",
+          "href": "files/ea173aa891-Essay-Writing-Checklist.pdf",
+          "bytes": 52392,
+          "source": "https://www.esunnybrook.com/pluginfile.php/518/mod_assign/introattachment/0/Essay-Writing-Checklist.pdf?forcedownload=1"
+        },
+        {
+          "label": "Express-Essay-Peer-Editing.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-484-e23f8e81e2/files/4009ea6b69-Express-Essay-Peer-Editing.pdf",
+          "href": "files/4009ea6b69-Express-Essay-Peer-Editing.pdf",
+          "bytes": 131867,
+          "source": "https://www.esunnybrook.com/pluginfile.php/518/mod_assign/introattachment/0/Express-Essay-Peer-Editing.pdf?forcedownload=1"
+        },
+        {
+          "label": "Unit4-Literary-Essay-Rubric.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-484-e23f8e81e2/files/9c110877c0-Unit4-Literary-Essay-Rubric.pdf",
+          "href": "files/9c110877c0-Unit4-Literary-Essay-Rubric.pdf",
+          "bytes": 104283,
+          "source": "https://www.esunnybrook.com/pluginfile.php/518/mod_assign/introattachment/0/Unit4-Literary-Essay-Rubric.pdf?forcedownload=1"
+        },
+        {
+          "label": "Unit4-Literary-Essay.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-484-e23f8e81e2/files/04aa37f37d-Unit4-Literary-Essay.pdf",
+          "href": "files/04aa37f37d-Unit4-Literary-Essay.pdf",
+          "bytes": 103122,
+          "source": "https://www.esunnybrook.com/pluginfile.php/518/mod_assign/introattachment/0/Unit4-Literary-Essay.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Assignment: Movie Trailer (A of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-485-59259a30fa/index.html",
+      "type": "html",
+      "bytes": 2004,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=485",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-485-59259a30fa/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Unit4-Movie-Trailer-Assignment.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-485-59259a30fa/files/abfdac8be1-Unit4-Movie-Trailer-Assignment.pdf",
+          "href": "files/abfdac8be1-Unit4-Movie-Trailer-Assignment.pdf",
+          "bytes": 172874,
+          "source": "https://www.esunnybrook.com/pluginfile.php/519/mod_assign/introattachment/0/Unit4-Movie-Trailer-Assignment.pdf?forcedownload=1"
+        },
+        {
+          "label": "Unit4-Movie-Trailer-Rubric.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-485-59259a30fa/files/8fe442347e-Unit4-Movie-Trailer-Rubric.pdf",
+          "href": "files/8fe442347e-Unit4-Movie-Trailer-Rubric.pdf",
+          "bytes": 88274,
+          "source": "https://www.esunnybrook.com/pluginfile.php/519/mod_assign/introattachment/0/Unit4-Movie-Trailer-Rubric.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Self-Assessment: Learning Skills and Work Habits (A as L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-486-76c3dcb38f/index.html",
+      "type": "html",
+      "bytes": 2189,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=486",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-486-76c3dcb38f/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "End-of-Term-Learning-Skills-and-Work-Habits-Self-Assessment.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L01-486-76c3dcb38f/files/2fce3cc4be-End-of-Term-Learning-Skills-and-Work-Habits-Self-Assessment.pdf",
+          "href": "files/2fce3cc4be-End-of-Term-Learning-Skills-and-Work-Habits-Self-Assessment.pdf",
+          "bytes": 79509,
+          "source": "https://www.esunnybrook.com/pluginfile.php/520/mod_assign/introattachment/0/End-of-Term-Learning-Skills-and-Work-Habits-Self-Assessment.pdf?forcedownload=1"
+        },
+        {
+          "label": "Learning-Skills-Rubric.jpeg",
+          "type": "jpeg",
+          "path": "localized-moodle-activities/assign/U04L01-486-76c3dcb38f/files/1df0a2d1d1-Learning-Skills-Rubric.jpeg",
+          "href": "files/1df0a2d1d1-Learning-Skills-Rubric.jpeg",
+          "bytes": 649818,
+          "source": "https://www.esunnybrook.com/pluginfile.php/520/mod_assign/introattachment/0/Learning-Skills-Rubric.jpeg?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Culminating Assignment: ISP - Steps 1-5 (A of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U05L01-487-c90c37fdeb/index.html",
+      "type": "html",
+      "bytes": 1845,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=487",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U05L01-487-c90c37fdeb/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "Independent-Study-Project-Rubric.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U05L01-487-c90c37fdeb/files/6b112976bc-Independent-Study-Project-Rubric.pdf",
+          "href": "files/6b112976bc-Independent-Study-Project-Rubric.pdf",
+          "bytes": 394892,
+          "source": "https://www.esunnybrook.com/pluginfile.php/521/mod_assign/introattachment/0/Independent-Study-Project-Rubric.pdf?forcedownload=1"
+        },
+        {
+          "label": "Independent-Study-Project.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U05L01-487-c90c37fdeb/files/227863ff9a-Independent-Study-Project.pdf",
+          "href": "files/227863ff9a-Independent-Study-Project.pdf",
+          "bytes": 45480,
+          "source": "https://www.esunnybrook.com/pluginfile.php/521/mod_assign/introattachment/0/Independent-Study-Project.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Culminating Assignment: ISP Oral/Visual Presentation (A of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U05L01-488-c17204be5c/index.html",
+      "type": "html",
+      "bytes": 2066,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=488",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U05L01-488-c17204be5c/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "ENG2D-ISP-Presentation-Rubric.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U05L01-488-c17204be5c/files/6f33fafcce-ENG2D-ISP-Presentation-Rubric.docx",
+          "href": "files/6f33fafcce-ENG2D-ISP-Presentation-Rubric.docx",
+          "bytes": 22721,
+          "source": "https://www.esunnybrook.com/pluginfile.php/522/mod_assign/introattachment/0/ENG2D-ISP-Presentation-Rubric.docx?forcedownload=1"
+        },
+        {
+          "label": "Independent-Study-Project.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U05L01-488-c17204be5c/files/828f4c63c6-Independent-Study-Project.pdf",
+          "href": "files/828f4c63c6-Independent-Study-Project.pdf",
+          "bytes": 45480,
+          "source": "https://www.esunnybrook.com/pluginfile.php/522/mod_assign/introattachment/0/Independent-Study-Project.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Metacognitive Activity: Reflection (A as L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U05L01-489-0f2eb14a72/index.html",
+      "type": "html",
+      "bytes": 1683,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=489",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U05L01-489-0f2eb14a72/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "40-Reflection-Questions.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U05L01-489-0f2eb14a72/files/ccf7551a5a-40-Reflection-Questions.pdf",
+          "href": "files/ccf7551a5a-40-Reflection-Questions.pdf",
+          "bytes": 94919,
+          "source": "https://www.esunnybrook.com/pluginfile.php/523/mod_assign/introattachment/0/40-Reflection-Questions.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Culminating Assignment: Final Exam (A of L)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U06L01-490-21e84eeced/index.html",
+      "type": "html",
+      "bytes": 1761,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=490",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U06L01-490-21e84eeced/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "ENG2D Final Exam (FOR TEACHER USE ONLY)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/folder/U06L01-491-adf3de6912/index.html",
+      "type": "html",
+      "bytes": 281852,
+      "source": "https://www.esunnybrook.com/mod/folder/view.php?id=491",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/folder/U06L01-491-adf3de6912/files/580c955bb4-20260514205240_755_110.png",
+          "href": "files/580c955bb4-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1778813399/20260514205240_755_110.png"
+        },
+        {
+          "label": "ENG2D-Online-FINAL-EXAM-ALTERNATIVE.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/folder/U06L01-491-adf3de6912/files/923aa01793-ENG2D-Online-FINAL-EXAM-ALTERNATIVE.docx",
+          "href": "files/923aa01793-ENG2D-Online-FINAL-EXAM-ALTERNATIVE.docx",
+          "bytes": 26551,
+          "source": "https://www.esunnybrook.com/pluginfile.php/525/mod_folder/content/0/ENG2D-Online-FINAL-EXAM-ALTERNATIVE.docx?forcedownload=1"
+        },
+        {
+          "label": "ENG2D-Online-FINAL-EXAM-ALTERNATIVE.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/folder/U06L01-491-adf3de6912/files/d1868d36ce-ENG2D-Online-FINAL-EXAM-ALTERNATIVE.pdf",
+          "href": "files/d1868d36ce-ENG2D-Online-FINAL-EXAM-ALTERNATIVE.pdf",
+          "bytes": 202236,
+          "source": "https://www.esunnybrook.com/pluginfile.php/525/mod_folder/content/0/ENG2D-Online-FINAL-EXAM-ALTERNATIVE.pdf?forcedownload=1"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "auth": {
+    "loggedIn": true,
+    "reason": "credentials"
+  }
+}

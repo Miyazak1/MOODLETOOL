@@ -1,0 +1,1665 @@
+{
+  "generatedAt": "2026-07-27T08:16:22.746Z",
+  "status": "ready-with-warnings",
+  "projectRoot": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal",
+  "coursewareRoot": "D:\\工作文件\\SUNNYBROOK\\courseware",
+  "courseArchiveRoot": "D:\\工作文件\\SUNNYBROOK\\courseware-archive",
+  "totals": {
+    "checks": 108,
+    "ok": 70,
+    "warnings": 38,
+    "blockers": 0
+  },
+  "blockers": [],
+  "warnings": [
+    {
+      "label": "SNC2D resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "HFA4U resources pending local files",
+      "detail": "10 item(s), first: U1L1 download has no local path yet."
+    },
+    {
+      "label": "MAP4C resources pending local files",
+      "detail": "2 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "SNC1D resources pending local files",
+      "detail": "2 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "ASM3M resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "AVI1O resources pending local files",
+      "detail": "6 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "AVI2O resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "AVI3M resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "BAF3M resources pending local files",
+      "detail": "6 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "BBI2O resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "BTT1O resources pending local files",
+      "detail": "35 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "CGC1D resources pending local files",
+      "detail": "2 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "CIA4U resources pending local files",
+      "detail": "9 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "EPS3O resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "ESLAO resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "ESLBO resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "ESLCO resources pending local files",
+      "detail": "22 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "HFN1O resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "ICS2O resources pending local files",
+      "detail": "75 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "ICS4U resources pending local files",
+      "detail": "57 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "LKBCU resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "MBF3C resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "MPM1D resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "MTH1W resources pending local files",
+      "detail": "2 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "OLC4O resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "PPL1O resources pending local files",
+      "detail": "42 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "PPL3O resources pending local files",
+      "detail": "73 item(s), first: course download has no local path yet."
+    },
+    {
+      "label": "course outlines still missing",
+      "detail": "46: ESLDO, ESLEO, MPM2D, SNC2D, ICS3U, MCR3U, SBI3U, SCH3U, SPH3U, BBB4M, BOH4M, CGW4U, ENG4U, HFA4U, MAP4C, MCV4U, MDM4U, MHF4U, SBI4U, SCH4U, SPH4U, SNC1D, ASM3M, AVI1O, AVI2O, AVI3M, BAF3M, BBI2O, BTT1O, CGC1D, CIA4U, ENG2D, EPS3O, ESLAO, ESLBO, ESLCO, HFN1O, ICS2O, ICS4U, LKBCU, MBF3C, MPM1D, MTH1W, OLC4O, PPL1O, PPL3O"
+    },
+    {
+      "label": "unit plans still missing",
+      "detail": "111: SNC2D U1 (Unit 1), SNC2D U2 (Unit 2), SNC2D U3 (Unit 3), SNC2D U4 (Unit 4), MAP4C U1 (Textbook Reference), SNC1D U1 (Textbook Reference), ASM3M U1 (Unit 1: Design), ASM3M U2 (Unit 2: Character Design), ASM3M U3 (Unit 3: Video Art and Animation), ASM3M U4 (Unit 4: Video Game), AVI1O U1 (Unit 1: Elements and Principles of Design), AVI1O U2 (Unit 2: Shading and Portraiture Details), AVI1O U3 (Unit 3: Color Theory), AVI1O U4 (Unit 4: Printmaking), AVI1O U5 (Unit 5: Sculpting), AVI2O U1 (Unit 1: Drawing), AVI2O U2 (Unit 2: Painting), AVI2O U3 (Unit 3: Printmaking), AVI2O U4 (Unit 4: Sculpture), AVI3M U1 (Unit 1: Elements and Principle of Art), AVI3M U2 (Unit 2: Art Criticism), AVI3M U3 (Unit 3: Studio Practice), AVI3M U4 (Unit 4: Portfolio Development), BAF3M U1 (Unit 1: Accounting Basics and Double Entries), BAF3M U2 (Unit 2: Accounting Ethics and T Accounts), BAF3M U3 (Unit 3: Business Entities and Trial Balance), BAF3M U4 (Unit 4: Internal Control and Profit/Loss Account), BAF3M U5 (Unit 5: Advanced Statements, Depreciation, and Careers), BBI2O U1 (Unit 1: Business Fundamentals), BBI2O U2 (Unit 2: Functions of a Business), BBI2O U3 (Unit 3: Finance), BBI2O U4 (Unit 4: Entrepreneurship), BTT1O U1 (Unit 1: Building a Webpage), BTT1O U2 (Unit 2: Using Microsoft Word in Communication), BTT1O U3 (Unit 3: Using Microsoft Excel in Business), BTT1O U4 (Unit 4: Making Creative Presentations Using Microsoft PowerPoint), BTT1O U5 (Culminating Final Assessment), CGC1D U1 (Unit 1: Canadian Connections and Methods of Geographical Inquiry), CGC1D U2 (Unit 2: Canada's Ecozones and Cultural Connections), CGC1D U3 (Unit 3: Canada's Economic Connections), CGC1D U4 (Unit 4: Canada's Global and Future Connections), CGC1D U5 (Final Summative Project), CIA4U U1 (Unit 1: Basic Economic Ideas), CIA4U U2 (Unit 2: Productive Resources and Economic Systems), CIA4U U3 (Unit 3: Demand and Supply), CIA4U U4 (Unit 4: Demand and Supply: The Canadian Perspective), CIA4U U5 (Unit 5: Application of Demand and Supply), CIA4U U6 (Unit 6: Real Estate Market and Contract Law), CIA4U U7 (Unit 7: Big and Small Businesses), CIA4U U8 (Unit 8: Revision and Summative Assessment), ENG2D U1 (Unit 1: Short Stories & Poetry), ENG2D U2 (Unit 2: Persuasive Texts & Media), ENG2D U3 (Unit 3: Novel Study - Lord of the Flies), ENG2D U4 (Unit 4: Drama - Othello), EPS3O U1 (Unit 1: Understanding Presentations - Speaking for Yourself), EPS3O U2 (Unit 2: Understanding Presentations - Speaking for the Classroom), EPS3O U3 (Unit 3: Making Presentations - Speaking for the Workplace), EPS3O U4 (Unit 4: Making Presentations - Speaking for the Community), ESLAO U1 (Unit 1: Writing), ESLAO U2 (Unit 2: Canada and Me), ESLAO U3 (Unit 3: Short Stories - Fiction and Non-Fiction), ESLAO U4 (Unit 4: Media Introduction and Course Review), ESLBO U1 (Unit 1: Unit 1), ESLBO U2 (Unit 2: Unit 2), ESLBO U3 (Unit 3: Unit 3), ESLBO U4 (Unit 4: Unit 4), ESLCO U1 (Unit 1: Unit 1), ESLCO U2 (Unit 2: Unit 2), ESLCO U3 (Unit 3: Unit 3), ESLCO U4 (Unit 4: Unit 4), HFN1O U1 (Unit 1: Nutrition and Health), HFN1O U2 (Unit 2: Food Choices), HFN1O U3 (Unit 3: Local and Global Foods), HFN1O U4 (Unit 4: Food Preparation Skills), ICS2O U1 (Unit 1: Understanding Computers), ICS2O U2 (Unit 2: Introduction to Programming), ICS2O U3 (Unit 3: Computers and Societies), ICS4U U1 (Unit 1: Programming Concepts and Skills Review), ICS4U U2 (Unit 2: Object-Oriented Programming), ICS4U U3 (Unit 3: Design and Analysis of Algorithms), ICS4U U4 (Unit 4: Software Development Life Cycle), LKBCU U1 (Unit 1: Unit 1), LKBCU U2 (Unit 2: Unit 2), LKBCU U3 (Unit 3: Unit 3), LKBCU U4 (Unit 4: Unit 4), MBF3C U1 (Unit 1: Trigonometry and Geometry), MBF3C U2 (Unit 2: Mathematical Models), MBF3C U3 (Unit 3: Personal Finance and Exponential Relations), MBF3C U4 (Unit 4: Data Management), MPM1D U1 (Unit 1: Number Sense and Algebra), MPM1D U2 (Unit 2: Linear Relations and Linear Equations), MPM1D U3 (Unit 3: Analytic Geometry), MPM1D U4 (Unit 4: Measurement and Geometry), MTH1W U1 (Unit 1: Number), MTH1W U2 (Unit 2: Algebra), MTH1W U3 (Unit 3: Data), MTH1W U4 (Unit 4: Geometry and Measurement), MTH1W U5 (Unit 5: Coding), MTH1W U6 (Unit 6: Financial Literacy), OLC4O U1 (Unit 1: Reading and Writing for Personal Success), OLC4O U2 (Unit 2: Community Voices Through Reading and Writing), OLC4O U3 (Unit 3: Reading and Writing as Community Action), OLC4O U4 (Unit 4: Culminating Project - Demonstrating Success in Reading and Writing), PPL1O U1 (Unit 1: Active Living), PPL1O U2 (Unit 2: Safety, Substance Abuse and Bullying), PPL1O U3 (Unit 3: Healthy Living and Sexual Health), PPL1O U4 (Unit 4: Movement Competence), PPL3O U1 (Unit 1: Introduction to Health and Healthy Active Living), PPL3O U2 (Unit 2: Introduction to Health Growth and Sexuality), PPL3O U3 (Unit 3: Mental Health and Stress Management), PPL3O U4 (Unit 4: Safety and Decision Making)"
+    },
+    {
+      "label": "lesson plans still missing",
+      "detail": "223: SNC2D U1L1 (Moodle Lessons Book), SNC2D U2L1 (Moodle Lessons Book), SNC2D U3L1 (Moodle Lessons Book), SNC2D U4L1 (Moodle Lessons Book), MAP4C U1L1 (Textbook Reference), SNC1D U1L1 (Textbook Reference), ASM3M U1L1 (Moodle Activity Index), ASM3M U2L1 (Moodle Activity Index), ASM3M U3L1 (Moodle Activity Index), ASM3M U4L1 (Moodle Activity Index), AVI1O U1L1 (Moodle Activity Index), AVI1O U2L1 (Moodle Activity Index)"
+    },
+    {
+      "label": "text copyright/title review",
+      "detail": "2: MAP4C Foundations for College Mathematics 12; SNC1D Grade 9 ON Science Textbook (McGraw-Hill Ryerson)"
+    },
+    {
+      "label": "iSpring not connected",
+      "detail": "53: ESLDO, ESLEO, CHC2D, CHV2O, GLC2O, MPM2D, SNC2D, HFC3M, ICS3U, MCR3U, SBI3U, SCH3U, SPH3U, BBB4M, BOH4M, CGW4U, ENG4U, HFA4U, HHS4U, LKBDU, MAP4C, MCV4U, MDM4U, MHF4U, SBI4U, SCH4U, SPH4U, SNC1D, BBI1O, ASM3M, AVI1O, AVI2O, AVI3M, BAF3M, BBI2O, BTT1O, CGC1D, CIA4U, ENG2D, EPS3O, ESLAO, ESLBO, ESLCO, HFN1O, ICS2O, ICS4U, LKBCU, MBF3C, MPM1D, MTH1W, OLC4O, PPL1O, PPL3O"
+    },
+    {
+      "label": "online file preview/download gaps",
+      "detail": "478 resource entry issue(s), 478 unique file target(s), 70 Office preview(s). See deployment/online-resource-readiness.md."
+    },
+    {
+      "label": "online resource review notes",
+      "detail": "416 resource(s) have informational notes. See deployment/online-resource-readiness.md."
+    },
+    {
+      "label": "content workbench course outlines",
+      "detail": "46 course outline task(s) remain. See deployment/course-content-workbench.md."
+    },
+    {
+      "label": "content workbench iSpring",
+      "detail": "53 course(s) still need iSpring decisions. See deployment/course-content-workbench.md."
+    },
+    {
+      "label": "iSpring package queue",
+      "detail": "746 lesson ZIP task(s), 0 course(s) need lesson structure first. See deployment/ispring-package-queue.md."
+    },
+    {
+      "label": "course archive root",
+      "detail": "Archive root does not exist yet: D:\\工作文件\\SUNNYBROOK\\courseware-archive"
+    }
+  ],
+  "manifestSummaries": [
+    {
+      "course": "ENG3U",
+      "units": 5,
+      "lessons": 36,
+      "courseDownloads": 1,
+      "unitPlans": 5,
+      "lessonPlans": 36,
+      "ispringEntries": 37,
+      "texts": 7,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "ESLDO",
+      "units": 4,
+      "lessons": 38,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 38,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "ESLEO",
+      "units": 4,
+      "lessons": 28,
+      "courseDownloads": 2,
+      "unitPlans": 4,
+      "lessonPlans": 27,
+      "ispringEntries": 28,
+      "texts": 2,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "CHC2D",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 4,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "CHV2O",
+      "units": 1,
+      "lessons": 3,
+      "courseDownloads": 1,
+      "unitPlans": 1,
+      "lessonPlans": 3,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "GLC2O",
+      "units": 3,
+      "lessons": 3,
+      "courseDownloads": 1,
+      "unitPlans": 3,
+      "lessonPlans": 3,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "MPM2D",
+      "units": 4,
+      "lessons": 29,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 29,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "SNC2D",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U1L1 download has no local path yet.",
+        "U2L1 download has no local path yet.",
+        "U3L1 download has no local path yet.",
+        "U4L1 download has no local path yet."
+      ]
+    },
+    {
+      "course": "HFC3M",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 4,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "ICS3U",
+      "units": 4,
+      "lessons": 27,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 27,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "MCR3U",
+      "units": 4,
+      "lessons": 27,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 27,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "SBI3U",
+      "units": 5,
+      "lessons": 61,
+      "courseDownloads": 0,
+      "unitPlans": 5,
+      "lessonPlans": 61,
+      "ispringEntries": 61,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "SCH3U",
+      "units": 5,
+      "lessons": 42,
+      "courseDownloads": 0,
+      "unitPlans": 5,
+      "lessonPlans": 42,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "SPH3U",
+      "units": 5,
+      "lessons": 36,
+      "courseDownloads": 0,
+      "unitPlans": 5,
+      "lessonPlans": 36,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "BBB4M",
+      "units": 4,
+      "lessons": 29,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 29,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "BOH4M",
+      "units": 5,
+      "lessons": 32,
+      "courseDownloads": 0,
+      "unitPlans": 5,
+      "lessonPlans": 32,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "CGW4U",
+      "units": 4,
+      "lessons": 25,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 25,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "ENG4U",
+      "units": 4,
+      "lessons": 26,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 26,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "HFA4U",
+      "units": 4,
+      "lessons": 29,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 29,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "U1L1 download has no local path yet.",
+        "U1L2 download has no local path yet.",
+        "U1L3 download has no local path yet.",
+        "U1L4 download has no local path yet.",
+        "U1L5 download has no local path yet.",
+        "U1L6 download has no local path yet.",
+        "U1L7 download has no local path yet.",
+        "U1L8 download has no local path yet.",
+        "U1L9 download has no local path yet.",
+        "U1L10 download has no local path yet."
+      ]
+    },
+    {
+      "course": "HHS4U",
+      "units": 1,
+      "lessons": 1,
+      "courseDownloads": 1,
+      "unitPlans": 1,
+      "lessonPlans": 1,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "LKBDU",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 4,
+      "lessonPlans": 4,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "MAP4C",
+      "units": 1,
+      "lessons": 1,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 1,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U1L1 download has no local path yet."
+      ]
+    },
+    {
+      "course": "MCV4U",
+      "units": 4,
+      "lessons": 18,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 18,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "MDM4U",
+      "units": 4,
+      "lessons": 24,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 24,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "MHF4U",
+      "units": 4,
+      "lessons": 35,
+      "courseDownloads": 0,
+      "unitPlans": 4,
+      "lessonPlans": 35,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "SBI4U",
+      "units": 5,
+      "lessons": 27,
+      "courseDownloads": 0,
+      "unitPlans": 5,
+      "lessonPlans": 27,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "SCH4U",
+      "units": 5,
+      "lessons": 46,
+      "courseDownloads": 0,
+      "unitPlans": 5,
+      "lessonPlans": 46,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "SPH4U",
+      "units": 5,
+      "lessons": 33,
+      "courseDownloads": 0,
+      "unitPlans": 5,
+      "lessonPlans": 33,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "SNC1D",
+      "units": 1,
+      "lessons": 1,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 1,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U1L1 download has no local path yet."
+      ]
+    },
+    {
+      "course": "BBI1O",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 4,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "ASM3M",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "AVI1O",
+      "units": 5,
+      "lessons": 5,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet.",
+        "U05L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "AVI2O",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "AVI3M",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "BAF3M",
+      "units": 5,
+      "lessons": 5,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet.",
+        "U05L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "BBI2O",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "BTT1O",
+      "units": 5,
+      "lessons": 5,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U03L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "CGC1D",
+      "units": 5,
+      "lessons": 8,
+      "courseDownloads": 6,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "course download has no local path yet."
+      ]
+    },
+    {
+      "course": "CIA4U",
+      "units": 8,
+      "lessons": 8,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet.",
+        "U05L01 download has no local path yet.",
+        "U06L01 download has no local path yet.",
+        "U07L01 download has no local path yet.",
+        "U08L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "ENG2D",
+      "units": 6,
+      "lessons": 6,
+      "courseDownloads": 11,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 12,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": []
+    },
+    {
+      "course": "EPS3O",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "ESLAO",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "ESLBO",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "ESLCO",
+      "units": 4,
+      "lessons": 21,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L04 download has no local path yet.",
+        "U01L05 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L02 download has no local path yet.",
+        "U02L03 download has no local path yet.",
+        "U02L04 download has no local path yet.",
+        "U02L05 download has no local path yet.",
+        "U02L06 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U03L02 download has no local path yet.",
+        "U03L03 download has no local path yet.",
+        "U03L04 download has no local path yet.",
+        "U03L05 download has no local path yet.",
+        "U04L01 download has no local path yet.",
+        "U04L02 download has no local path yet.",
+        "U04L03 download has no local path yet."
+      ]
+    },
+    {
+      "course": "HFN1O",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "ICS2O",
+      "units": 3,
+      "lessons": 31,
+      "courseDownloads": 3,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "course download has no local path yet.",
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L04 download has no local path yet.",
+        "U01L04 download has no local path yet.",
+        "U01L04 download has no local path yet.",
+        "U01L05 download has no local path yet.",
+        "U01L05 download has no local path yet.",
+        "U01L06 download has no local path yet.",
+        "U01L07 download has no local path yet.",
+        "U01L08 download has no local path yet."
+      ]
+    },
+    {
+      "course": "ICS4U",
+      "units": 4,
+      "lessons": 26,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L04 download has no local path yet.",
+        "U01L04 download has no local path yet.",
+        "U01L05 download has no local path yet.",
+        "U01L05 download has no local path yet.",
+        "U01L06 download has no local path yet.",
+        "U01L06 download has no local path yet.",
+        "U01L07 download has no local path yet.",
+        "U01L07 download has no local path yet.",
+        "U01L07 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L02 download has no local path yet.",
+        "U02L02 download has no local path yet."
+      ]
+    },
+    {
+      "course": "LKBCU",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "MBF3C",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "MPM1D",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "MTH1W",
+      "units": 6,
+      "lessons": 28,
+      "courseDownloads": 32,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "course download has no local path yet."
+      ]
+    },
+    {
+      "course": "OLC4O",
+      "units": 4,
+      "lessons": 4,
+      "courseDownloads": 1,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 10,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U03L01 download has no local path yet.",
+        "U04L01 download has no local path yet."
+      ]
+    },
+    {
+      "course": "PPL1O",
+      "units": 4,
+      "lessons": 12,
+      "courseDownloads": 2,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L01 download has no local path yet.",
+        "U02L02 download has no local path yet.",
+        "U02L02 download has no local path yet.",
+        "U02L02 download has no local path yet.",
+        "U02L03 download has no local path yet.",
+        "U02L03 download has no local path yet."
+      ]
+    },
+    {
+      "course": "PPL3O",
+      "units": 4,
+      "lessons": 16,
+      "courseDownloads": 6,
+      "unitPlans": 0,
+      "lessonPlans": 0,
+      "ispringEntries": 0,
+      "texts": 0,
+      "missingPaths": [],
+      "structureErrors": [],
+      "localPathWarnings": [
+        "course download has no local path yet.",
+        "course download has no local path yet.",
+        "course download has no local path yet.",
+        "course download has no local path yet.",
+        "course download has no local path yet.",
+        "course download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L01 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L02 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L03 download has no local path yet.",
+        "U01L04 download has no local path yet.",
+        "U01L04 download has no local path yet."
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "status": "ok",
+      "label": "package.json",
+      "detail": "package.json"
+    },
+    {
+      "status": "ok",
+      "label": "npm script build",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script start",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script start:production",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script verify:release",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script validate:manifest",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script audit:readiness",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script audit:online-resources",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script audit:content-workbench",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script export:preview-queue",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script export:ispring-queue",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script export:gap-checklist",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script prepare:launch-transfer",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script prepare:launch-status",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script preflight:baota",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script archive:course",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script activate:course",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script smoke:course-lifecycle",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script backup:courseware",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script verify:backup",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script restore:backup",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script smoke:restore-backup",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script package:baota",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script check:production-env",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script generate:production-env",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script check:launch-courses",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script smoke:package-baota",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script smoke:production-env",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script smoke:generate-production-env",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script smoke:start-production",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script smoke:deployed-site",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script smoke:login-rate-limit",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "npm script smoke:prepare-launch-status",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "production build output",
+      "detail": "dist/index.html"
+    },
+    {
+      "status": "ok",
+      "label": "production asset files",
+      "detail": "2 referenced asset(s) exist."
+    },
+    {
+      "status": "ok",
+      "label": "course catalog",
+      "detail": "public/course-catalog.json"
+    },
+    {
+      "status": "ok",
+      "label": "courseware root",
+      "detail": "D:\\工作文件\\SUNNYBROOK\\courseware"
+    },
+    {
+      "status": "ok",
+      "label": "catalog course count",
+      "detail": "54 course(s) listed."
+    },
+    {
+      "status": "ok",
+      "label": "default course",
+      "detail": "ENG3U"
+    },
+    {
+      "status": "warning",
+      "label": "SNC2D resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "HFA4U resources pending local files",
+      "detail": "10 item(s), first: U1L1 download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "MAP4C resources pending local files",
+      "detail": "2 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "SNC1D resources pending local files",
+      "detail": "2 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "ASM3M resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "AVI1O resources pending local files",
+      "detail": "6 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "AVI2O resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "AVI3M resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "BAF3M resources pending local files",
+      "detail": "6 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "BBI2O resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "BTT1O resources pending local files",
+      "detail": "35 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "CGC1D resources pending local files",
+      "detail": "2 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "CIA4U resources pending local files",
+      "detail": "9 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "EPS3O resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "ESLAO resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "ESLBO resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "ESLCO resources pending local files",
+      "detail": "22 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "HFN1O resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "ICS2O resources pending local files",
+      "detail": "75 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "ICS4U resources pending local files",
+      "detail": "57 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "LKBCU resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "MBF3C resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "MPM1D resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "MTH1W resources pending local files",
+      "detail": "2 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "OLC4O resources pending local files",
+      "detail": "5 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "PPL1O resources pending local files",
+      "detail": "42 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "warning",
+      "label": "PPL3O resources pending local files",
+      "detail": "73 item(s), first: course download has no local path yet."
+    },
+    {
+      "status": "ok",
+      "label": "course manifests",
+      "detail": "54 local manifest(s) are valid and all referenced files exist."
+    },
+    {
+      "status": "ok",
+      "label": "readiness summary",
+      "detail": "deployment/course-readiness-summary.json"
+    },
+    {
+      "status": "ok",
+      "label": "upload gap checklist",
+      "detail": "deployment/upload-gap-checklist.json"
+    },
+    {
+      "status": "warning",
+      "label": "course outlines still missing",
+      "detail": "46: ESLDO, ESLEO, MPM2D, SNC2D, ICS3U, MCR3U, SBI3U, SCH3U, SPH3U, BBB4M, BOH4M, CGW4U, ENG4U, HFA4U, MAP4C, MCV4U, MDM4U, MHF4U, SBI4U, SCH4U, SPH4U, SNC1D, ASM3M, AVI1O, AVI2O, AVI3M, BAF3M, BBI2O, BTT1O, CGC1D, CIA4U, ENG2D, EPS3O, ESLAO, ESLBO, ESLCO, HFN1O, ICS2O, ICS4U, LKBCU, MBF3C, MPM1D, MTH1W, OLC4O, PPL1O, PPL3O"
+    },
+    {
+      "status": "warning",
+      "label": "unit plans still missing",
+      "detail": "111: SNC2D U1 (Unit 1), SNC2D U2 (Unit 2), SNC2D U3 (Unit 3), SNC2D U4 (Unit 4), MAP4C U1 (Textbook Reference), SNC1D U1 (Textbook Reference), ASM3M U1 (Unit 1: Design), ASM3M U2 (Unit 2: Character Design), ASM3M U3 (Unit 3: Video Art and Animation), ASM3M U4 (Unit 4: Video Game), AVI1O U1 (Unit 1: Elements and Principles of Design), AVI1O U2 (Unit 2: Shading and Portraiture Details), AVI1O U3 (Unit 3: Color Theory), AVI1O U4 (Unit 4: Printmaking), AVI1O U5 (Unit 5: Sculpting), AVI2O U1 (Unit 1: Drawing), AVI2O U2 (Unit 2: Painting), AVI2O U3 (Unit 3: Printmaking), AVI2O U4 (Unit 4: Sculpture), AVI3M U1 (Unit 1: Elements and Principle of Art), AVI3M U2 (Unit 2: Art Criticism), AVI3M U3 (Unit 3: Studio Practice), AVI3M U4 (Unit 4: Portfolio Development), BAF3M U1 (Unit 1: Accounting Basics and Double Entries), BAF3M U2 (Unit 2: Accounting Ethics and T Accounts), BAF3M U3 (Unit 3: Business Entities and Trial Balance), BAF3M U4 (Unit 4: Internal Control and Profit/Loss Account), BAF3M U5 (Unit 5: Advanced Statements, Depreciation, and Careers), BBI2O U1 (Unit 1: Business Fundamentals), BBI2O U2 (Unit 2: Functions of a Business), BBI2O U3 (Unit 3: Finance), BBI2O U4 (Unit 4: Entrepreneurship), BTT1O U1 (Unit 1: Building a Webpage), BTT1O U2 (Unit 2: Using Microsoft Word in Communication), BTT1O U3 (Unit 3: Using Microsoft Excel in Business), BTT1O U4 (Unit 4: Making Creative Presentations Using Microsoft PowerPoint), BTT1O U5 (Culminating Final Assessment), CGC1D U1 (Unit 1: Canadian Connections and Methods of Geographical Inquiry), CGC1D U2 (Unit 2: Canada's Ecozones and Cultural Connections), CGC1D U3 (Unit 3: Canada's Economic Connections), CGC1D U4 (Unit 4: Canada's Global and Future Connections), CGC1D U5 (Final Summative Project), CIA4U U1 (Unit 1: Basic Economic Ideas), CIA4U U2 (Unit 2: Productive Resources and Economic Systems), CIA4U U3 (Unit 3: Demand and Supply), CIA4U U4 (Unit 4: Demand and Supply: The Canadian Perspective), CIA4U U5 (Unit 5: Application of Demand and Supply), CIA4U U6 (Unit 6: Real Estate Market and Contract Law), CIA4U U7 (Unit 7: Big and Small Businesses), CIA4U U8 (Unit 8: Revision and Summative Assessment), ENG2D U1 (Unit 1: Short Stories & Poetry), ENG2D U2 (Unit 2: Persuasive Texts & Media), ENG2D U3 (Unit 3: Novel Study - Lord of the Flies), ENG2D U4 (Unit 4: Drama - Othello), EPS3O U1 (Unit 1: Understanding Presentations - Speaking for Yourself), EPS3O U2 (Unit 2: Understanding Presentations - Speaking for the Classroom), EPS3O U3 (Unit 3: Making Presentations - Speaking for the Workplace), EPS3O U4 (Unit 4: Making Presentations - Speaking for the Community), ESLAO U1 (Unit 1: Writing), ESLAO U2 (Unit 2: Canada and Me), ESLAO U3 (Unit 3: Short Stories - Fiction and Non-Fiction), ESLAO U4 (Unit 4: Media Introduction and Course Review), ESLBO U1 (Unit 1: Unit 1), ESLBO U2 (Unit 2: Unit 2), ESLBO U3 (Unit 3: Unit 3), ESLBO U4 (Unit 4: Unit 4), ESLCO U1 (Unit 1: Unit 1), ESLCO U2 (Unit 2: Unit 2), ESLCO U3 (Unit 3: Unit 3), ESLCO U4 (Unit 4: Unit 4), HFN1O U1 (Unit 1: Nutrition and Health), HFN1O U2 (Unit 2: Food Choices), HFN1O U3 (Unit 3: Local and Global Foods), HFN1O U4 (Unit 4: Food Preparation Skills), ICS2O U1 (Unit 1: Understanding Computers), ICS2O U2 (Unit 2: Introduction to Programming), ICS2O U3 (Unit 3: Computers and Societies), ICS4U U1 (Unit 1: Programming Concepts and Skills Review), ICS4U U2 (Unit 2: Object-Oriented Programming), ICS4U U3 (Unit 3: Design and Analysis of Algorithms), ICS4U U4 (Unit 4: Software Development Life Cycle), LKBCU U1 (Unit 1: Unit 1), LKBCU U2 (Unit 2: Unit 2), LKBCU U3 (Unit 3: Unit 3), LKBCU U4 (Unit 4: Unit 4), MBF3C U1 (Unit 1: Trigonometry and Geometry), MBF3C U2 (Unit 2: Mathematical Models), MBF3C U3 (Unit 3: Personal Finance and Exponential Relations), MBF3C U4 (Unit 4: Data Management), MPM1D U1 (Unit 1: Number Sense and Algebra), MPM1D U2 (Unit 2: Linear Relations and Linear Equations), MPM1D U3 (Unit 3: Analytic Geometry), MPM1D U4 (Unit 4: Measurement and Geometry), MTH1W U1 (Unit 1: Number), MTH1W U2 (Unit 2: Algebra), MTH1W U3 (Unit 3: Data), MTH1W U4 (Unit 4: Geometry and Measurement), MTH1W U5 (Unit 5: Coding), MTH1W U6 (Unit 6: Financial Literacy), OLC4O U1 (Unit 1: Reading and Writing for Personal Success), OLC4O U2 (Unit 2: Community Voices Through Reading and Writing), OLC4O U3 (Unit 3: Reading and Writing as Community Action), OLC4O U4 (Unit 4: Culminating Project - Demonstrating Success in Reading and Writing), PPL1O U1 (Unit 1: Active Living), PPL1O U2 (Unit 2: Safety, Substance Abuse and Bullying), PPL1O U3 (Unit 3: Healthy Living and Sexual Health), PPL1O U4 (Unit 4: Movement Competence), PPL3O U1 (Unit 1: Introduction to Health and Healthy Active Living), PPL3O U2 (Unit 2: Introduction to Health Growth and Sexuality), PPL3O U3 (Unit 3: Mental Health and Stress Management), PPL3O U4 (Unit 4: Safety and Decision Making)"
+    },
+    {
+      "status": "warning",
+      "label": "lesson plans still missing",
+      "detail": "223: SNC2D U1L1 (Moodle Lessons Book), SNC2D U2L1 (Moodle Lessons Book), SNC2D U3L1 (Moodle Lessons Book), SNC2D U4L1 (Moodle Lessons Book), MAP4C U1L1 (Textbook Reference), SNC1D U1L1 (Textbook Reference), ASM3M U1L1 (Moodle Activity Index), ASM3M U2L1 (Moodle Activity Index), ASM3M U3L1 (Moodle Activity Index), ASM3M U4L1 (Moodle Activity Index), AVI1O U1L1 (Moodle Activity Index), AVI1O U2L1 (Moodle Activity Index)"
+    },
+    {
+      "status": "warning",
+      "label": "text copyright/title review",
+      "detail": "2: MAP4C Foundations for College Mathematics 12; SNC1D Grade 9 ON Science Textbook (McGraw-Hill Ryerson)"
+    },
+    {
+      "status": "warning",
+      "label": "iSpring not connected",
+      "detail": "53: ESLDO, ESLEO, CHC2D, CHV2O, GLC2O, MPM2D, SNC2D, HFC3M, ICS3U, MCR3U, SBI3U, SCH3U, SPH3U, BBB4M, BOH4M, CGW4U, ENG4U, HFA4U, HHS4U, LKBDU, MAP4C, MCV4U, MDM4U, MHF4U, SBI4U, SCH4U, SPH4U, SNC1D, BBI1O, ASM3M, AVI1O, AVI2O, AVI3M, BAF3M, BBI2O, BTT1O, CGC1D, CIA4U, ENG2D, EPS3O, ESLAO, ESLBO, ESLCO, HFN1O, ICS2O, ICS4U, LKBCU, MBF3C, MPM1D, MTH1W, OLC4O, PPL1O, PPL3O"
+    },
+    {
+      "status": "ok",
+      "label": "online resource readiness",
+      "detail": "deployment/online-resource-readiness.json"
+    },
+    {
+      "status": "warning",
+      "label": "online file preview/download gaps",
+      "detail": "478 resource entry issue(s), 478 unique file target(s), 70 Office preview(s). See deployment/online-resource-readiness.md."
+    },
+    {
+      "status": "ok",
+      "label": "iSpring play/download readiness",
+      "detail": "98 iSpring resource(s) checked."
+    },
+    {
+      "status": "warning",
+      "label": "online resource review notes",
+      "detail": "416 resource(s) have informational notes. See deployment/online-resource-readiness.md."
+    },
+    {
+      "status": "ok",
+      "label": "course content workbench",
+      "detail": "deployment/course-content-workbench.json"
+    },
+    {
+      "status": "warning",
+      "label": "content workbench course outlines",
+      "detail": "46 course outline task(s) remain. See deployment/course-content-workbench.md."
+    },
+    {
+      "status": "warning",
+      "label": "content workbench iSpring",
+      "detail": "53 course(s) still need iSpring decisions. See deployment/course-content-workbench.md."
+    },
+    {
+      "status": "ok",
+      "label": "Office preview queue",
+      "detail": "deployment/office-preview-queue.json"
+    },
+    {
+      "status": "ok",
+      "label": "Office preview queue",
+      "detail": "No Office preview tasks."
+    },
+    {
+      "status": "ok",
+      "label": "iSpring package queue",
+      "detail": "deployment/ispring-package-queue.json"
+    },
+    {
+      "status": "warning",
+      "label": "iSpring package queue",
+      "detail": "746 lesson ZIP task(s), 0 course(s) need lesson structure first. See deployment/ispring-package-queue.md."
+    },
+    {
+      "status": "ok",
+      "label": "nginx template",
+      "detail": "deployment/nginx-ossd-course-portal.conf"
+    },
+    {
+      "status": "ok",
+      "label": "systemd service template",
+      "detail": "deployment/ossd-course-portal.service"
+    },
+    {
+      "status": "ok",
+      "label": "Baota deployment guide",
+      "detail": "deployment/BAOTA_DEPLOYMENT.md"
+    },
+    {
+      "status": "ok",
+      "label": "admin guide",
+      "detail": "ADMIN.md"
+    },
+    {
+      "status": "ok",
+      "label": "README",
+      "detail": "README.md"
+    },
+    {
+      "status": "ok",
+      "label": "production env example",
+      "detail": ".env.production.example"
+    },
+    {
+      "status": "ok",
+      "label": "env portal data root",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "env course status file",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "env active course root",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "env archive course root",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "env x-accel courseware prefix",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "nginx upload size",
+      "detail": "client_max_body_size is configured for large uploads."
+    },
+    {
+      "status": "ok",
+      "label": "nginx internal courseware location",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "nginx internal courseware alias",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "nginx proxies public courseware URLs",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "nginx proxies Node app",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "nginx disables autoindex",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "service working directory",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "service start command",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "service production env check note",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "service production mode",
+      "detail": ""
+    },
+    {
+      "status": "ok",
+      "label": "local courseware size",
+      "detail": "16219.3 MB currently in D:\\工作文件\\SUNNYBROOK\\courseware."
+    },
+    {
+      "status": "warning",
+      "label": "course archive root",
+      "detail": "Archive root does not exist yet: D:\\工作文件\\SUNNYBROOK\\courseware-archive"
+    }
+  ]
+}

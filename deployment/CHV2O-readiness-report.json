@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-07-23T09:38:40.566Z",
+  "course": {
+    "code": "CHV2O",
+    "title": "CHV2O · Civics and Citizenship",
+    "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\CHV2O\\"
+  },
+  "counts": {
+    "courseDocuments": 1,
+    "courseOutlines": 1,
+    "introductions": 0,
+    "units": 1,
+    "lessons": 3,
+    "unitPlans": 1,
+    "lessonPlanExpected": 3,
+    "lessonPlans": 3,
+    "ispringEntries": 0,
+    "lessonDownloads": 0,
+    "textEntries": 0,
+    "textMaterials": 0
+  },
+  "gaps": {
+    "missingCourseOutline": false,
+    "missingIntroduction": true,
+    "missingUnitPlans": [],
+    "missingLessonPlans": [],
+    "textsNeedingReview": [],
+    "textsMissingDownload": [],
+    "linkOnlyTexts": [],
+    "publicDomainTextsMissingFiles": []
+  },
+  "sourceAudit": {
+    "lessonCount": 3,
+    "ispringExpected": 0,
+    "ispringComplete": 0
+  }
+}

@@ -1,0 +1,339 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-07-27T07:41:40.148Z",
+  "generatedAt": "2026-07-27T07:41:40.148Z",
+  "mode": "launch-course-allowlist",
+  "launchCourses": [
+    "ENG3U",
+    "ESLEO"
+  ],
+  "catalogCourseCount": 54,
+  "activeCourseCount": 2,
+  "archivedCourseCount": 52,
+  "courses": {
+    "ENG3U": {
+      "status": "active",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Initial launch course; visible to assigned teachers."
+    },
+    "ESLDO": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "ESLEO": {
+      "status": "active",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Initial launch course; visible to assigned teachers."
+    },
+    "CHC2D": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "CHV2O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "GLC2O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "MPM2D": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "SNC2D": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "HFC3M": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "ICS3U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "MCR3U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "SBI3U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "SCH3U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "SPH3U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "BBB4M": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "BOH4M": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "CGW4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "ENG4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "HFA4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "HHS4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "LKBDU": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "MAP4C": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "MCV4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "MDM4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "MHF4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "SBI4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "SCH4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "SPH4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "SNC1D": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "BBI1O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "ASM3M": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "AVI1O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "AVI2O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "AVI3M": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "BAF3M": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "BBI2O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "BTT1O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "CGC1D": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "CIA4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "ENG2D": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "EPS3O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "ESLAO": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "ESLBO": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "ESLCO": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "HFN1O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "ICS2O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "ICS4U": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "LKBCU": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "MBF3C": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "MPM1D": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "MTH1W": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "OLC4O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "PPL1O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    },
+    "PPL3O": {
+      "status": "archived",
+      "updatedAt": "2026-07-27T07:41:40.148Z",
+      "updatedBy": "prepare-launch-course-status",
+      "note": "Hidden from the first deployment until this course is completed and activated."
+    }
+  }
+}
