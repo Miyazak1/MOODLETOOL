@@ -1078,13 +1078,19 @@ function setSessionCookie(res, username) {
   const secure = adminCookieSecure ? "; Secure" : "";
   res.setHeader(
     "Set-Cookie",
-    `${adminSessionCookie}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${adminSessionMaxAgeSeconds}${secure}`,
+    [
+      `${adminSessionCookie}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${adminSessionMaxAgeSeconds}${secure}`,
+      `${adminSessionCookie}=; Path=/api/admin; HttpOnly; SameSite=Strict; Max-Age=0${secure}`,
+    ],
   );
 }
 
 function clearSessionCookie(res) {
   const secure = adminCookieSecure ? "; Secure" : "";
-  res.setHeader("Set-Cookie", `${adminSessionCookie}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${secure}`);
+  res.setHeader("Set-Cookie", [
+    `${adminSessionCookie}=; Path=/api/admin; HttpOnly; SameSite=Strict; Max-Age=0${secure}`,
+    `${adminSessionCookie}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${secure}`,
+  ]);
 }
 
 function loginConfigured() {
