@@ -3,7 +3,7 @@ import { appendFile, cp, mkdir, readdir, readFile, rename, rm, stat, statfs } fr
 import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, normalize, relative, resolve } from "node:path";
 import { spawn } from "node:child_process";
-import { pipeline } from "node:stream/promises";
+import { finished, pipeline } from "node:stream/promises";
 import { Transform } from "node:stream";
 import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 
@@ -2100,6 +2100,102 @@ async function writeRequestToFileWithProgress(req, targetPath, { course, importI
   });
 }
 
+function coursePackageChunkDir(course, importId) {
+  return ensureInside(coursePackageDir(course, importId), join(coursePackageDir(course, importId), "chunks"));
+}
+
+function coursePackageChunkPath(course, importId, index) {
+  return ensureInside(coursePackageChunkDir(course, importId), join(coursePackageChunkDir(course, importId), `part-${String(index).padStart(6, "0")}`));
+}
+
+async function coursePackageChunkProgress(course, importId, chunkTotal) {
+  let chunksReceived = 0;
+  let bytesReceived = 0;
+  for (let index = 0; index < chunkTotal; index += 1) {
+    const path = coursePackageChunkPath(course, importId, index);
+    if (!existsSync(path)) continue;
+    const info = await stat(path);
+    chunksReceived += 1;
+    bytesReceived += info.size;
+  }
+  return { chunksReceived, bytesReceived, complete: chunksReceived === chunkTotal };
+}
+
+function pipeFileIntoWriter(filePath, writer) {
+  return new Promise((resolvePromise, rejectPromise) => {
+    const reader = createReadStream(filePath);
+    const onDrain = () => reader.resume();
+    const cleanup = () => {
+      reader.removeAllListeners();
+      writer.removeListener("drain", onDrain);
+      writer.removeListener("error", rejectPromise);
+    };
+    reader.on("data", (chunk) => {
+      if (!writer.write(chunk)) reader.pause();
+    });
+    writer.on("drain", onDrain);
+    reader.on("end", () => {
+      cleanup();
+      resolvePromise();
+    });
+    reader.on("error", (error) => {
+      cleanup();
+      rejectPromise(error);
+    });
+    writer.on("error", rejectPromise);
+  });
+}
+
+async function mergeCoursePackageChunks({ course, importId, originalFilename, chunkTotal, totalBytes, actor }) {
+  const packageDir = coursePackageDir(course, importId);
+  const sourceZip = ensureInside(packageDir, join(packageDir, safeSegment(originalFilename)));
+  await mkdir(dirname(sourceZip), { recursive: true });
+  const writer = createWriteStream(sourceZip);
+  for (let index = 0; index < chunkTotal; index += 1) {
+    await pipeFileIntoWriter(coursePackageChunkPath(course, importId, index), writer);
+    writeCoursePackageTask(course, importId, {
+      status: "processing",
+      phase: "merging",
+      mergeIndex: index + 1,
+      chunkTotal,
+      percent: Math.round(((index + 1) / chunkTotal) * 100),
+    });
+  }
+  writer.end();
+  await finished(writer);
+
+  const merged = await stat(sourceZip);
+  if (totalBytes && merged.size !== totalBytes) {
+    throw new Error(`Merged ZIP size mismatch. Expected ${totalBytes} bytes, got ${merged.size} bytes.`);
+  }
+
+  writeCoursePackageTask(course, importId, {
+    status: "processing",
+    phase: "extracting",
+    bytesReceived: merged.size,
+    totalBytes,
+    percent: 100,
+  });
+  const review = await createCoursePackageReview({ course, sourceZip, originalFilename, importId });
+  writeCoursePackageTask(course, importId, {
+    status: "complete",
+    phase: "ready",
+    percent: 100,
+    summary: review.summary,
+    review,
+  });
+  await rm(coursePackageChunkDir(course, importId), { recursive: true, force: true });
+  await appendAdminHistory(course, {
+    actor,
+    action: "course-package-chunk-upload-preview",
+    importId: review.importId,
+    filename: originalFilename,
+    bytes: merged.size,
+    summary: review.summary,
+  });
+  return review;
+}
+
 async function packageContentRoot(extractRoot) {
   const entries = await readdir(extractRoot, { withFileTypes: true });
   const visible = entries.filter((entry) => !entry.name.startsWith("."));
@@ -2977,6 +3073,80 @@ async function handleAdminApi(req, res) {
           summary: review.summary,
         });
         sendJson(res, 200, review);
+      } catch (error) {
+        writeCoursePackageTask(course, importId, {
+          status: "failed",
+          phase: "failed",
+          error: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
+      }
+      return true;
+    }
+
+    if (requestUrl.pathname === "/api/admin/course-package/chunk" && req.method === "POST") {
+      const contentLength = Number(req.headers["content-length"] || 0);
+      if (!contentLength) throw new Error("Missing Content-Length header.");
+      const originalFilename = requestUrl.searchParams.get("filename") || "course-package.zip";
+      if (extname(originalFilename).toLowerCase() !== ".zip") throw new Error("Course package upload must be a .zip file.");
+      const importId = safeSegment(requestUrl.searchParams.get("importId") || "");
+      if (!importId) throw new Error("Missing importId.");
+      const chunkIndex = Number(requestUrl.searchParams.get("chunkIndex"));
+      const chunkTotal = Number(requestUrl.searchParams.get("chunkTotal"));
+      const totalBytes = Number(requestUrl.searchParams.get("totalBytes") || 0);
+      if (!Number.isInteger(chunkIndex) || !Number.isInteger(chunkTotal) || chunkIndex < 0 || chunkTotal < 1 || chunkIndex >= chunkTotal) {
+        throw new Error("Invalid chunk index.");
+      }
+      if (totalBytes > maxCoursePackageUploadBytes) {
+        throw new Error(`Course package is too large. Max is ${Math.round(maxCoursePackageUploadBytes / 1024 / 1024)} MB.`);
+      }
+
+      await mkdir(coursePackageChunkDir(course, importId), { recursive: true });
+      writeCoursePackageTask(course, importId, {
+        status: "uploading",
+        phase: "chunk-uploading",
+        filename: originalFilename,
+        totalBytes,
+        chunkTotal,
+        startedAt: readCoursePackageTask(course, importId)?.startedAt || new Date().toISOString(),
+      });
+      const chunkPath = coursePackageChunkPath(course, importId, chunkIndex);
+      try {
+        await pipeline(req, createWriteStream(chunkPath));
+        const progress = await coursePackageChunkProgress(course, importId, chunkTotal);
+        writeCoursePackageTask(course, importId, {
+          status: progress.complete ? "processing" : "uploading",
+          phase: progress.complete ? "merging" : "chunk-uploading",
+          filename: originalFilename,
+          totalBytes,
+          bytesReceived: progress.bytesReceived,
+          chunkTotal,
+          chunksReceived: progress.chunksReceived,
+          percent: totalBytes ? Math.min(99, Math.round((progress.bytesReceived / totalBytes) * 100)) : null,
+        });
+        if (!progress.complete) {
+          sendJson(res, 200, {
+            ok: true,
+            complete: false,
+            course,
+            importId,
+            filename: originalFilename,
+            ...progress,
+            totalBytes,
+            percent: totalBytes ? Math.min(99, Math.round((progress.bytesReceived / totalBytes) * 100)) : null,
+          });
+          return true;
+        }
+
+        const review = await mergeCoursePackageChunks({
+          course,
+          importId,
+          originalFilename,
+          chunkTotal,
+          totalBytes,
+          actor: adminActor(req),
+        });
+        sendJson(res, 200, { ...review, complete: true });
       } catch (error) {
         writeCoursePackageTask(course, importId, {
           status: "failed",

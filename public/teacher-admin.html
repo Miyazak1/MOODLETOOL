@@ -757,6 +757,8 @@
       let selectedLifecycleCourse = "";
       let adminAuthenticated = false;
       let activeAdminPanel = "login";
+      const coursePackageChunkBytes = 64 * 1024 * 1024;
+      const coursePackageChunkMaxRetries = 5;
 
       if (isLocalAccess) {
         document.querySelector("#localTokenHint").hidden = false;
@@ -1535,6 +1537,9 @@
             course: task.course,
             importId: task.importId,
             filename: task.filename || "",
+            totalBytes: task.totalBytes || 0,
+            chunkTotal: task.chunkTotal || 0,
+            chunksReceived: task.chunksReceived || 0,
             status: task.status || "",
             updatedAt: task.updatedAt || new Date().toISOString(),
           }),
@@ -1656,6 +1661,38 @@
           xhr.addEventListener("abort", () => reject(new Error("上传已取消。")));
           xhr.send(file);
         });
+      }
+
+      function sleep(ms) {
+        return new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
+      }
+
+      async function uploadCoursePackageChunkWithRetry({ url, blob, onProgress, onRetry }) {
+        let lastError = null;
+        for (let attempt = 1; attempt <= coursePackageChunkMaxRetries; attempt += 1) {
+          try {
+            return await uploadBinaryWithProgress(url, blob, onProgress);
+          } catch (error) {
+            lastError = error;
+            if (attempt >= coursePackageChunkMaxRetries) break;
+            onRetry?.(attempt, error);
+            await sleep(Math.min(30000, 2000 * attempt));
+          }
+        }
+        throw lastError || new Error("分片上传失败。");
+      }
+
+      function reusableCoursePackageImportId(file) {
+        const remembered = readRememberedCoursePackageTask();
+        if (
+          remembered?.importId &&
+          remembered.filename === file.name &&
+          Number(remembered.totalBytes || 0) === file.size &&
+          remembered.status !== "complete"
+        ) {
+          return remembered.importId;
+        }
+        return createCoursePackageTaskId();
       }
 
       function renderContentWorkbench(data) {
@@ -2156,65 +2193,127 @@
         coursePackageCommitButton.disabled = true;
         coursePackageUploadButton.disabled = true;
         coursePackagePanel.hidden = true;
-        const importId = createCoursePackageTaskId();
-        const params = new URLSearchParams({
-          course: fields.course.value,
-          filename: file.name,
-          importId,
-        });
+        const importId = reusableCoursePackageImportId(file);
+        const chunkTotal = Math.ceil(file.size / coursePackageChunkBytes);
+        const restoredTask = await restoreCoursePackageTask({ writeOutput: false });
+        let startChunk = 0;
+        if (restoredTask?.importId === importId && restoredTask.filename === file.name && Number(restoredTask.totalBytes || 0) === file.size) {
+          startChunk = Math.max(0, Math.min(chunkTotal - 1, Number(restoredTask.chunksReceived || 0)));
+        }
         rememberCoursePackageTask({
           course: fields.course.value,
           importId,
           filename: file.name,
+          totalBytes: file.size,
+          chunkTotal,
+          chunksReceived: startChunk,
           status: "uploading",
         });
         setCoursePackageStatus({
-          title: `正在上传 ${file.name}`,
-          detail: `已上传 0 B / ${formatBytes(file.size)}。上传时刷新页面会中断浏览器正在发送的数据。`,
-          percent: 0,
+          title: startChunk ? `继续上传 ${file.name}` : `正在上传 ${file.name}`,
+          detail: startChunk
+            ? `已恢复 ${startChunk}/${chunkTotal} 个分片，约 ${Math.round((startChunk / chunkTotal) * 100)}%。系统会自动续传和重试。`
+            : `准备分片上传：${chunkTotal} 个分片，每片约 ${formatBytes(coursePackageChunkBytes)}。系统会自动续传和重试。`,
+          percent: Math.round((startChunk / chunkTotal) * 100),
           showProgress: true,
         });
-        write(`正在上传并扫描整课包：${file.name}...`);
+        write(`正在分片上传整课包：${file.name}，共 ${chunkTotal} 个分片...`);
         try {
-          const data = await uploadBinaryWithProgress(`/api/admin/course-package/upload?${params.toString()}`, file, (loaded, total) => {
-            const percent = total ? Math.round((loaded / total) * 100) : 0;
+          let finalData = null;
+          for (let index = startChunk; index < chunkTotal; index += 1) {
+            const start = index * coursePackageChunkBytes;
+            const end = Math.min(file.size, start + coursePackageChunkBytes);
+            const blob = file.slice(start, end);
+            const params = new URLSearchParams({
+              course: fields.course.value,
+              filename: file.name,
+              importId,
+              chunkIndex: String(index),
+              chunkTotal: String(chunkTotal),
+              totalBytes: String(file.size),
+            });
+            const data = await uploadCoursePackageChunkWithRetry({
+              url: `/api/admin/course-package/chunk?${params.toString()}`,
+              blob,
+              onProgress: (loaded) => {
+                const totalLoaded = Math.min(file.size, start + loaded);
+                const percent = Math.round((totalLoaded / file.size) * 100);
+                setCoursePackageStatus({
+                  title: `正在上传 ${file.name}`,
+                  detail: `分片 ${index + 1}/${chunkTotal}，已上传 ${formatBytes(totalLoaded)} / ${formatBytes(file.size)} (${percent}%)。断线会自动重试。`,
+                  percent,
+                  showProgress: true,
+                });
+              },
+              onRetry: (attempt, error) => {
+                setCoursePackageStatus({
+                  title: `网络中断，正在自动重试`,
+                  detail: `分片 ${index + 1}/${chunkTotal} 第 ${attempt + 1}/${coursePackageChunkMaxRetries} 次尝试。${error instanceof Error ? error.message : String(error)}`,
+                  percent: Math.round((start / file.size) * 100),
+                  showProgress: true,
+                  error: true,
+                });
+              },
+            });
+            const chunksReceived = data.chunksReceived || index + 1;
             rememberCoursePackageTask({
               course: fields.course.value,
               importId,
               filename: file.name,
+              totalBytes: file.size,
+              chunkTotal,
+              chunksReceived,
               status: "uploading",
             });
             setCoursePackageStatus({
               title: `正在上传 ${file.name}`,
-              detail: `已上传 ${formatBytes(loaded)} / ${formatBytes(total)} (${percent}%)。上传完成后服务器会继续解压和扫描。`,
-              percent,
+              detail: data.complete
+                ? "所有分片已上传，服务器正在合并、解压并生成预览。"
+                : `已完成 ${chunksReceived}/${chunkTotal} 个分片，服务器已收到 ${formatBytes(data.bytesReceived || end)} / ${formatBytes(file.size)}。`,
+              percent: data.percent ?? Math.round((Math.min(file.size, end) / file.size) * 100),
               showProgress: true,
             });
-          });
+            if (data.complete) {
+              finalData = data;
+              break;
+            }
+          }
+          if (!finalData) {
+            const task = await restoreCoursePackageTask({ writeOutput: false });
+            finalData = task?.review || currentCoursePackageImport;
+          }
+          if (!finalData?.ok) throw new Error("所有分片已上传，但服务器没有返回导入预览。请刷新任务状态。");
           setCoursePackageStatus({
             title: "上传完成，服务器已生成预览",
-            detail: `已扫描 ${data.operations?.length || 0} 个导入项。确认无误后点击“确认导入到当前课程”。`,
+            detail: `已扫描 ${finalData.operations?.length || 0} 个导入项。确认无误后点击“确认导入到当前课程”。`,
             percent: 100,
             showProgress: true,
           });
           rememberCoursePackageTask({
             course: fields.course.value,
-            importId: data.importId || importId,
+            importId: finalData.importId || importId,
             filename: file.name,
+            totalBytes: file.size,
+            chunkTotal,
+            chunksReceived: chunkTotal,
             status: "complete",
           });
-          write(data);
-          if (data.ok) renderCoursePackagePreview(data);
+          write(finalData);
+          renderCoursePackagePreview(finalData);
         } catch (error) {
+          const latest = await restoreCoursePackageTask({ writeOutput: false }).catch(() => null);
           rememberCoursePackageTask({
             course: fields.course.value,
             importId,
             filename: file.name,
+            totalBytes: file.size,
+            chunkTotal,
+            chunksReceived: latest?.chunksReceived || startChunk,
             status: "failed",
           });
           setCoursePackageStatus({
             title: "上传失败",
-            detail: error instanceof Error ? error.message : String(error),
+            detail: `${error instanceof Error ? error.message : String(error)}。重新点“上传并生成预览”会从服务器已有分片继续。`,
             percent: null,
             showProgress: false,
             error: true,
