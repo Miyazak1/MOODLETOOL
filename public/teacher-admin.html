@@ -35,12 +35,58 @@
         margin: 0;
         font-size: 26px;
       }
+      .admin-shell {
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 18px;
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 22px;
+      }
+      .admin-sidebar {
+        position: sticky;
+        top: 16px;
+        align-self: start;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: var(--surface);
+      }
+      .admin-sidebar-title {
+        padding: 8px 10px 10px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+      .admin-nav {
+        display: grid;
+        gap: 6px;
+      }
+      .admin-nav button {
+        justify-content: flex-start;
+        width: 100%;
+        border-color: transparent;
+        text-align: left;
+        color: var(--ink);
+        background: transparent;
+      }
+      .admin-nav button:hover:not(:disabled),
+      .admin-nav button.active {
+        border-color: #bfd2e8;
+        color: #123d67;
+        background: #eef5fb;
+      }
+      .admin-nav button:disabled {
+        color: #98a2b3;
+        cursor: not-allowed;
+        background: transparent;
+      }
       main {
         display: grid;
         gap: 16px;
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 22px;
+        min-width: 0;
+        padding: 0;
       }
       section {
         border: 1px solid var(--line);
@@ -382,6 +428,18 @@
       tr.selected-row td:first-child {
         border-left: 4px solid var(--teal);
       }
+      @media (max-width: 860px) {
+        .admin-shell {
+          grid-template-columns: 1fr;
+          padding: 14px;
+        }
+        .admin-sidebar {
+          position: static;
+        }
+        .admin-nav {
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        }
+      }
       [hidden] {
         display: none !important;
       }
@@ -391,8 +449,23 @@
     <header>
       <h1>OSSD Teacher Admin</h1>
     </header>
-    <main>
-      <section>
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <div class="admin-sidebar-title">后台导航</div>
+        <nav class="admin-nav" aria-label="Admin sections">
+          <button class="active" type="button" data-admin-nav="login">登录</button>
+          <button type="button" data-admin-nav="course" data-auth-required="1" disabled>连接 / 状态</button>
+          <button type="button" data-admin-nav="upload" data-auth-required="1" disabled>单文件上传</button>
+          <button type="button" data-admin-nav="package" data-auth-required="1" disabled>整课 ZIP 导入</button>
+          <button type="button" data-admin-nav="lifecycle" data-auth-required="1" disabled>启用 / 归档</button>
+          <button type="button" data-admin-nav="overview" data-auth-required="1" disabled>全课程概览</button>
+          <button type="button" data-admin-nav="users" data-auth-required="1" disabled>用户权限</button>
+          <button type="button" data-admin-nav="maintenance" data-auth-required="1" disabled>维护</button>
+          <button type="button" data-admin-nav="output">结果日志</button>
+        </nav>
+      </aside>
+      <main>
+      <section class="admin-panel" data-admin-panel="login">
         <h2>管理员登录</h2>
         <div class="grid">
           <div>
@@ -415,7 +488,7 @@
         </div>
       </section>
 
-      <section class="auth-required" hidden>
+      <section class="admin-panel auth-required" data-admin-panel="course" hidden>
         <h2>连接</h2>
         <div class="grid">
           <div>
@@ -433,7 +506,7 @@
         <div class="readiness" id="readinessPanel" hidden></div>
       </section>
 
-      <section class="auth-required" hidden>
+      <section class="admin-panel auth-required" data-admin-panel="lifecycle" hidden>
         <h2>课程启用 / 归档</h2>
         <p class="meta-line">状态按钮只控制前台可见性；归档任务会调用服务器脚本生成课程压缩包。只有选择“并删除 active”才会在归档校验通过后删除解压目录。</p>
         <div>
@@ -478,7 +551,7 @@
         <div id="courseLifecycleJobs" hidden></div>
       </section>
 
-      <section class="auth-required" hidden>
+      <section class="admin-panel auth-required" data-admin-panel="upload" hidden>
         <h2>上传</h2>
         <div id="courseUploadTasks" hidden></div>
         <div class="grid compact">
@@ -529,7 +602,7 @@
         </div>
       </section>
 
-      <section class="auth-required" hidden>
+      <section class="admin-panel auth-required" data-admin-panel="package" hidden>
         <h2>整课 ZIP 导入</h2>
         <p class="meta-line">上传一门课的完整压缩包后，系统会先解压到临时区并自动识别 Course Outline、Unit Plan、Lesson Plan、lesson book、iSpring、视频和资源文件。确认导入前不会覆盖正式课程。</p>
         <div>
@@ -550,7 +623,7 @@
         <div id="coursePackagePanel" hidden></div>
       </section>
 
-      <section class="auth-required" hidden>
+      <section class="admin-panel auth-required" data-admin-panel="overview" hidden>
         <h2>全课程概览</h2>
         <div class="actions">
           <button id="readinessButton" type="button">读取全课程缺口</button>
@@ -563,7 +636,7 @@
         <div id="contentWorkbenchTable" hidden></div>
       </section>
 
-      <section class="auth-required" hidden>
+      <section class="admin-panel auth-required" data-admin-panel="users" hidden>
         <h2>用户与课程权限</h2>
         <p class="meta-line">这里管理老师登录门户后的可见课程。保存后立即写入服务器用户文件；用户下次登录会使用新的权限。</p>
         <div class="grid compact">
@@ -603,7 +676,7 @@
         <div id="userTable" hidden></div>
       </section>
 
-      <section class="auth-required" hidden>
+      <section class="admin-panel auth-required" data-admin-panel="maintenance" hidden>
         <h2>维护</h2>
         <p class="meta-line">清理只针对后台上传产生的临时上传/解压目录，不会删除正式课程文件。iSpring ZIP 原包默认保留，除非选择清理 ZIP。</p>
         <div class="actions">
@@ -616,13 +689,16 @@
         <div id="backupList" hidden></div>
       </section>
 
-      <section>
+      <section class="admin-panel" data-admin-panel="output" hidden>
         <h2>结果</h2>
         <pre id="output">Ready.</pre>
       </section>
-    </main>
+      </main>
+    </div>
     <script>
       const output = document.querySelector("#output");
+      const adminPanels = Array.from(document.querySelectorAll("[data-admin-panel]"));
+      const adminNavButtons = Array.from(document.querySelectorAll("[data-admin-nav]"));
       const fields = {
         course: document.querySelector("#course"),
         username: document.querySelector("#username"),
@@ -679,6 +755,8 @@
       let courseLifecycleData = { courses: [] };
       let courseLifecycleJobsData = { jobs: [] };
       let selectedLifecycleCourse = "";
+      let adminAuthenticated = false;
+      let activeAdminPanel = "login";
 
       if (isLocalAccess) {
         document.querySelector("#localTokenHint").hidden = false;
@@ -688,6 +766,29 @@
 
       function write(value) {
         output.textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+      }
+
+      function renderAdminPanels() {
+        adminPanels.forEach((panel) => {
+          const requiresAuth = panel.classList.contains("auth-required");
+          panel.hidden = panel.dataset.adminPanel !== activeAdminPanel || (requiresAuth && !adminAuthenticated);
+        });
+        adminNavButtons.forEach((button) => {
+          const requiresAuth = button.dataset.authRequired === "1";
+          button.disabled = requiresAuth && !adminAuthenticated;
+          button.classList.toggle("active", button.dataset.adminNav === activeAdminPanel);
+        });
+      }
+
+      function switchAdminPanel(panelName) {
+        const target = adminPanels.find((panel) => panel.dataset.adminPanel === panelName);
+        if (!target) return;
+        if (target.classList.contains("auth-required") && !adminAuthenticated) {
+          activeAdminPanel = "login";
+        } else {
+          activeAdminPanel = panelName;
+        }
+        renderAdminPanels();
       }
 
       function formatBytes(bytes) {
@@ -1583,11 +1684,12 @@
       }
 
       function setAuthenticated(isAuthenticated) {
-        document.querySelectorAll(".auth-required").forEach((item) => {
-          item.hidden = !isAuthenticated;
-        });
+        adminAuthenticated = isAuthenticated;
+        if (!adminAuthenticated && activeAdminPanel !== "output") activeAdminPanel = "login";
+        if (adminAuthenticated && activeAdminPanel === "login") activeAdminPanel = "course";
         document.querySelector("#logoutButton").hidden = !isAuthenticated;
         document.querySelector("#loginButton").hidden = isAuthenticated;
+        renderAdminPanels();
       }
 
       async function checkSession() {
@@ -2121,6 +2223,9 @@
       document.querySelector("#deleteUserButton").addEventListener("click", () => {
         deleteUser().catch((error) => write(`Error: ${error.message}`));
       });
+      adminNavButtons.forEach((button) => {
+        button.addEventListener("click", () => switchAdminPanel(button.dataset.adminNav));
+      });
       document.querySelector("#cleanupTempButton").addEventListener("click", () => {
         cleanup("temp").catch((error) => write(`Error: ${error.message}`));
       });
@@ -2161,6 +2266,7 @@
       });
       loadCourses().catch((error) => write(`Error: ${error.message}`));
       updateTypeFields();
+      renderAdminPanels();
       checkSession().catch((error) => write(`Error: ${error.message}`));
     </script>
   </body>
