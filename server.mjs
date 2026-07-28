@@ -929,6 +929,54 @@ function shouldUseCoursewareViewerStyle(filePath) {
   return relativePath.includes("/book_sections/") || relativePath.includes("/downloaded_resources/imported/");
 }
 
+function shouldUseCoursewareTextViewer(filePath) {
+  if (![".md", ".txt"].includes(extname(filePath).toLowerCase())) return false;
+  const relativePath = toPosixPath(relative(courseActiveRoot, filePath)).toLowerCase();
+  if (relativePath.startsWith("../") || relativePath === "..") return false;
+  return relativePath.includes("/book_sections/") || relativePath.includes("/downloaded_resources/imported/");
+}
+
+function renderCoursewareTextViewer(filePath, text) {
+  const title = basename(filePath);
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${htmlEscape(title)}</title>
+  ${coursewareViewerStyle}
+  <style>
+    .ossd-text-document {
+      max-width: 1080px;
+      margin: 18px auto 64px;
+      padding: 28px 32px;
+      border: 1px solid #d4e1f0;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 14px 36px rgba(14, 44, 74, 0.08);
+    }
+    .ossd-text-document h1 {
+      margin: 0 0 18px;
+      font-size: 24px;
+    }
+    .ossd-text-document pre {
+      margin: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font: inherit;
+    }
+  </style>
+</head>
+<body>
+  <div class="ossd-viewer-note">本页为本地化课程文本预览，下载按钮可获取原始文件。</div>
+  <article class="ossd-text-document">
+    <h1>${htmlEscape(title)}</h1>
+    <pre>${htmlEscape(text)}</pre>
+  </article>
+</body>
+</html>`;
+}
+
 function isEmbedPathAllowed(payload, course, requestedPath) {
   if (!payload || safeSegment(payload.course).toUpperCase() !== safeSegment(course).toUpperCase()) return false;
   const normalizedPath = toPosixPath(requestedPath);
@@ -2557,6 +2605,19 @@ async function listPackageFiles(rootDir) {
   return files.sort();
 }
 
+function packageManifestFile(contentRoot, files) {
+  const direct = join(contentRoot, "course-manifest.json");
+  if (existsSync(direct)) return direct;
+  return files.find((file) => normalizeImportPath(relative(contentRoot, file)).toLowerCase().endsWith("/course-manifest.json")) || null;
+}
+
+async function readPackageManifest(contentRoot, files) {
+  const manifestPath = packageManifestFile(contentRoot, files);
+  if (!manifestPath) return null;
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  return { manifestPath, manifest };
+}
+
 function isInsideDirectory(filePath, dirPath) {
   const file = resolve(filePath);
   const dir = resolve(dirPath);
@@ -2644,6 +2705,42 @@ function ensureManifestLesson(manifest, unitNumber, lessonNumber, title) {
   unit.lessons.push(lesson);
   unit.lessons.sort((left, right) => Number(left.lesson) - Number(right.lesson));
   return lesson;
+}
+
+function normalizeManifestCourse(manifest, course) {
+  const code = safeSegment(course).toUpperCase();
+  return {
+    ...manifest,
+    course: {
+      ...(manifest.course || {}),
+      code,
+      title: manifest.course?.title || code,
+    },
+    courseDownloads: manifest.courseDownloads || [],
+    units: manifest.units || [],
+    texts: manifest.texts || manifest.textMaterials || [],
+    textMaterials: manifest.textMaterials || manifest.texts || [],
+    sourceAudit: manifest.sourceAudit || {},
+  };
+}
+
+function manifestCoursePackageSummary(manifest, fileCount) {
+  const units = manifest.units || [];
+  const lessons = units.flatMap((unit) => unit.lessons || []);
+  const downloads = lessons.reduce((sum, lesson) => sum + (lesson.downloads || []).length + (lesson.textExports || []).length + (lesson.bookSections || []).length, 0);
+  const ispring = lessons.reduce((sum, lesson) => sum + (lesson.ispring || []).length, 0);
+  return {
+    total: 1,
+    ready: 1,
+    needsReview: 0,
+    skipped: 0,
+    byKind: { "manifest-course-package": 1 },
+    units: units.length,
+    lessons: lessons.length,
+    ispring,
+    downloads,
+    files: fileCount,
+  };
 }
 
 function recomputeManifestSummaries(manifest) {
@@ -2844,6 +2941,29 @@ async function pruneGeneratedLocalPackageNotes(course, manifest) {
   return removed;
 }
 
+async function clearCourseRootForManifestPackage(course) {
+  const root = courseRoot(course);
+  await mkdir(root, { recursive: true });
+  const entries = await readdir(root, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.name === "_admin_uploads") continue;
+    await rm(join(root, entry.name), { recursive: true, force: true });
+  }
+}
+
+async function copyManifestPackageContent(contentRoot, targetRoot) {
+  const entries = await readdir(contentRoot, { withFileTypes: true });
+  let copied = 0;
+  for (const entry of entries) {
+    if (entry.name === "_admin_uploads") continue;
+    const source = join(contentRoot, entry.name);
+    const target = ensureInside(targetRoot, join(targetRoot, entry.name));
+    await cp(source, target, { recursive: true });
+    copied += 1;
+  }
+  return copied;
+}
+
 function bookSectionImportFilename(section, file) {
   const name = safeSegment(basename(file));
   if (/^\d{2}-/.test(name)) return name;
@@ -2856,8 +2976,39 @@ async function createCoursePackageReview({ course, sourceZip, originalFilename, 
   await rm(extractRoot, { recursive: true, force: true });
   await extractZip(sourceZip, extractRoot);
   const contentRoot = await packageContentRoot(extractRoot);
-  const manifest = await readManifestOrEmpty(course);
   const files = (await listPackageFiles(contentRoot)).filter((file) => !shouldIgnoreCoursePackagePath(relative(contentRoot, file)));
+  const packageManifest = await readPackageManifest(contentRoot, files);
+  if (packageManifest) {
+    const manifest = normalizeManifestCourse(packageManifest.manifest, course);
+    const operations = [
+      {
+        kind: "manifest-course-package",
+        sourcePath: normalizeImportPath(relative(contentRoot, packageManifest.manifestPath)),
+        sourceAbs: packageManifest.manifestPath,
+        status: "ready",
+        targetPath: ".",
+        label: `${safeSegment(course).toUpperCase()} complete course package`,
+        reason: "Package contains course-manifest.json; importing exact course structure.",
+      },
+    ];
+    const review = {
+      ok: true,
+      mode: "manifest-course-package",
+      importId,
+      course,
+      originalFilename,
+      uploadedZip: sourceZip,
+      packageDir,
+      extractRoot,
+      contentRoot,
+      packageManifestPath: packageManifest.manifestPath,
+      generatedAt: new Date().toISOString(),
+      operations,
+      summary: manifestCoursePackageSummary(manifest, files.length),
+    };
+    return review;
+  }
+  const manifest = await readManifestOrEmpty(course);
   const expandedIspringDirs = await findExpandedIspringDirs(files);
   const operations = [];
   const ispringDirOps = [];
@@ -2949,8 +3100,63 @@ function readdirSyncSafe(path) {
   }
 }
 
+async function commitManifestCoursePackageImport({ course, importId, actor, review }) {
+  if (!review.contentRoot || !existsSync(review.contentRoot)) {
+    throw new Error("Package content root is missing. Re-upload the course ZIP and generate preview again.");
+  }
+  const packageManifest = await readPackageManifest(review.contentRoot, await listPackageFiles(review.contentRoot));
+  if (!packageManifest) {
+    throw new Error("Package course-manifest.json is missing. Re-upload the course ZIP and generate preview again.");
+  }
+
+  const root = courseRoot(course);
+  const manifest = normalizeManifestCourse(packageManifest.manifest, course);
+  await clearCourseRootForManifestPackage(course);
+  const copiedTopLevelEntries = await copyManifestPackageContent(review.contentRoot, root);
+  const removedGeneratedLocalPackageNotes = await pruneGeneratedLocalPackageNotes(course, manifest);
+  recomputeManifestSummaries(manifest);
+  writeJsonFile(join(root, "course-manifest.json"), manifest);
+  const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
+  const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after whole-course ZIP import.");
+  await appendAdminHistory(course, {
+    actor,
+    action: "course-package-import",
+    mode: "manifest-course-package",
+    importId,
+    originalFilename: review.originalFilename,
+    copiedTopLevelEntries,
+    removedGeneratedLocalPackageNotes,
+    lifecycleStatus: lifecycle.status,
+  });
+
+  let cleanup = { removed: false };
+  try {
+    await rm(coursePackageDir(course, importId), { recursive: true, force: true });
+    cleanup = { removed: true };
+  } catch (error) {
+    cleanup = { removed: false, error: error instanceof Error ? error.message : String(error) };
+  }
+
+  return {
+    ok: true,
+    course,
+    importId,
+    mode: "manifest-course-package",
+    installed: review.operations || [],
+    copiedTopLevelEntries,
+    removedGeneratedLocalPackageNotes,
+    cleanup,
+    catalogEntry,
+    lifecycle,
+    manifest: "manifest restored from course package",
+  };
+}
+
 async function commitCoursePackageImport({ course, importId, actor }) {
   const review = JSON.parse(await readFile(coursePackageReviewPath(course, importId), "utf8"));
+  if (review.mode === "manifest-course-package") {
+    return commitManifestCoursePackageImport({ course, importId, actor, review });
+  }
   const manifest = await readManifestOrEmpty(course);
   const backups = [];
   const installed = [];
@@ -3865,6 +4071,11 @@ async function sendFile(req, res, filePath) {
   if (shouldUseCoursewareViewerStyle(filePath)) {
     const html = await readFile(filePath, "utf8");
     sendHtml(res, 200, injectCoursewareViewerStyle(html));
+    return;
+  }
+  if (shouldUseCoursewareTextViewer(filePath)) {
+    const text = await readFile(filePath, "utf8");
+    sendHtml(res, 200, renderCoursewareTextViewer(filePath, text));
     return;
   }
   const xAccelRedirect = xAccelRedirectForCourseware(filePath);
