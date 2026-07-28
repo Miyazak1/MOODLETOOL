@@ -196,13 +196,15 @@ function sanitizePublicSourceAudit(sourceAudit = {}) {
   );
 }
 
-function sanitizePublicLesson(lesson) {
+function sanitizePublicLesson(lesson, course) {
+  const bookSections = (lesson.bookSections || []).filter((item) => !isGeneratedLocalPackageNoteResource(course, item));
   return {
     ...lesson,
     title: lesson.title === "Moodle Activity Index" ? "Resource Index" : lesson.title,
     lessonPlan: sanitizePublicResource(lesson.lessonPlan),
     downloads: sanitizePublicResourceList(lesson.downloads || []),
     textExports: sanitizePublicResourceList(lesson.textExports || []),
+    bookSections: sanitizePublicResourceList(bookSections),
     ispring: sanitizePublicResourceList(lesson.ispring || []),
   };
 }
@@ -222,7 +224,7 @@ function sanitizePublicManifest(manifest) {
     units: (manifest.units || []).map((unit) => ({
       ...unit,
       unitPlan: sanitizePublicResource(unit.unitPlan),
-      lessons: (unit.lessons || []).map(sanitizePublicLesson),
+      lessons: (unit.lessons || []).map((lesson) => sanitizePublicLesson(lesson, manifest.course?.code)),
     })),
   };
 }
@@ -860,6 +862,71 @@ function injectEmbedBase(html, baseHref) {
   const base = `<base href="${htmlEscape(baseHref)}">`;
   if (/<head\b[^>]*>/i.test(html)) return html.replace(/<head\b([^>]*)>/i, `<head$1>${base}`);
   return `${base}\n${html}`;
+}
+
+const coursewareViewerStyle = `
+<style>
+  :root { color-scheme: light; }
+  body {
+    margin: 0;
+    background: #f3f7fb;
+    color: #001f3f;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  body > * {
+    max-width: 1080px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  body > :first-child {
+    margin-top: 28px;
+  }
+  h1, h2, h3, h4 {
+    color: #001f3f;
+    line-height: 1.2;
+  }
+  a { color: #064f9e; font-weight: 700; }
+  img, video, iframe {
+    max-width: 100%;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid #d4e1f0;
+    padding: 8px 10px;
+  }
+  .ossd-viewer-note {
+    max-width: 1080px;
+    margin: 18px auto;
+    padding: 10px 14px;
+    border: 1px solid #c7daf0;
+    border-radius: 8px;
+    background: #eef6ff;
+    color: #35506e;
+    font-size: 13px;
+  }
+</style>`;
+
+function injectCoursewareViewerStyle(html) {
+  const note = `<div class="ossd-viewer-note">本页为本地化课程资源预览，原 Moodle 页面已用本站阅读样式打开。下载按钮可获取原始文件。</div>`;
+  const injected = /<\/head>/i.test(html)
+    ? html.replace(/<\/head>/i, `${coursewareViewerStyle}</head>`)
+    : `${coursewareViewerStyle}\n${html}`;
+  if (/<body\b[^>]*>/i.test(injected)) return injected.replace(/<body\b([^>]*)>/i, `<body$1>${note}`);
+  return `${note}\n${injected}`;
+}
+
+function shouldUseCoursewareViewerStyle(filePath) {
+  if (extname(filePath).toLowerCase() !== ".html") return false;
+  const relativePath = toPosixPath(relative(courseActiveRoot, filePath)).toLowerCase();
+  if (relativePath.startsWith("../") || relativePath === "..") return false;
+  if (basename(filePath).toLowerCase() === "presentation.html") return false;
+  if (relativePath.includes("/html5-package") || relativePath.includes("/html5-package-admin")) return false;
+  return relativePath.includes("/book_sections/") || relativePath.includes("/downloaded_resources/imported/");
 }
 
 function isEmbedPathAllowed(payload, course, requestedPath) {
@@ -2640,6 +2707,9 @@ function classifyCoursePackageFile({ course, manifest, contentRoot, file, isprin
   if (!supported.has(ext)) {
     return { kind: "skip", sourcePath, status: "skipped", reason: `Unsupported extension ${ext || "(none)"}.` };
   }
+  if (isGeneratedLocalPackageNoteFile(file, ext)) {
+    return { kind: "skip", sourcePath, status: "skipped", reason: "Generated local playback note, not Moodle lesson content." };
+  }
   if (ext === ".zip") {
     const parsed = parseIspringPackageName(basename(file), course) || detected;
     const lesson = lessonForImport(manifest, parsed.unit, parsed.lesson);
@@ -2717,6 +2787,61 @@ function classifyCoursePackageFile({ course, manifest, contentRoot, file, isprin
 function shouldIgnoreCoursePackagePath(sourcePath) {
   const normalized = normalizeImportPath(sourcePath).toLowerCase();
   return normalized.startsWith("previews-html/") || normalized.includes("/previews-html/");
+}
+
+function isGeneratedLocalPackageNoteText(text) {
+  const value = String(text || "").slice(0, 4096);
+  return (
+    /local package/i.test(value) &&
+    /local playback url tested/i.test(value) &&
+    /current status:/i.test(value) &&
+    (/presentation\.html/i.test(value) || /ispring package/i.test(value) || /启动本地播放服务/.test(value))
+  );
+}
+
+function isGeneratedLocalPackageNoteFile(file, ext = extname(file).toLowerCase()) {
+  if (![".md", ".txt"].includes(ext)) return false;
+  try {
+    return isGeneratedLocalPackageNoteText(readFileSync(file, "utf8"));
+  } catch {
+    return false;
+  }
+}
+
+function isGeneratedLocalPackageNoteResource(course, item) {
+  if (!course || !item?.path) return false;
+  try {
+    const root = courseRoot(course);
+    const file = ensureInside(root, join(root, toPosixPath(item.path)));
+    return isGeneratedLocalPackageNoteFile(file);
+  } catch {
+    return false;
+  }
+}
+
+async function pruneGeneratedLocalPackageNotes(course, manifest) {
+  let removed = 0;
+  for (const unit of manifest.units || []) {
+    for (const lesson of unit.lessons || []) {
+      const nextSections = [];
+      for (const item of lesson.bookSections || []) {
+        if (isGeneratedLocalPackageNoteResource(course, item)) {
+          removed += 1;
+          try {
+            const root = courseRoot(course);
+            const file = ensureInside(root, join(root, toPosixPath(item.path)));
+            await rm(file, { force: true });
+          } catch {
+            // Best effort cleanup; the manifest filter still hides stale entries.
+          }
+          continue;
+        }
+        nextSections.push(item);
+      }
+      lesson.bookSections = nextSections;
+    }
+  }
+  return removed;
 }
 
 function bookSectionImportFilename(section, file) {
@@ -2909,6 +3034,7 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     }
     installed.push({ ...op, installedPath: op.targetPath });
   }
+  const removedGeneratedLocalPackageNotes = await pruneGeneratedLocalPackageNotes(course, manifest);
   recomputeManifestSummaries(manifest);
   writeJsonFile(join(courseRoot(course), "course-manifest.json"), manifest);
   const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
@@ -2919,6 +3045,7 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     importId,
     originalFilename: review.originalFilename,
     installedCount: installed.length,
+    removedGeneratedLocalPackageNotes,
     backups,
     lifecycleStatus: lifecycle.status,
   });
@@ -2938,6 +3065,7 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     cleanup,
     catalogEntry,
     lifecycle,
+    removedGeneratedLocalPackageNotes,
     manifest: "manifest updated directly from course package import",
   };
 }
@@ -3734,6 +3862,11 @@ async function sendFile(req, res, filePath) {
 
   const ext = extname(filePath).toLowerCase();
   const contentType = mimeTypes[ext] || "application/octet-stream";
+  if (shouldUseCoursewareViewerStyle(filePath)) {
+    const html = await readFile(filePath, "utf8");
+    sendHtml(res, 200, injectCoursewareViewerStyle(html));
+    return;
+  }
   const xAccelRedirect = xAccelRedirectForCourseware(filePath);
   if (xAccelRedirect) {
     res.writeHead(200, {
