@@ -197,6 +197,35 @@
         background: linear-gradient(90deg, #2876bd, #16736a);
         transition: width 0.2s ease;
       }
+      .meter {
+        display: grid;
+        gap: 6px;
+      }
+      .meter-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .meter-track {
+        height: 10px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #e8eef6;
+      }
+      .meter-fill {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #0f766e, #2876bd);
+      }
+      .meter-fill.warn-fill {
+        background: linear-gradient(90deg, #b46b00, #d9921e);
+      }
+      .meter-fill.danger-fill {
+        background: linear-gradient(90deg, #b42318, #d92d20);
+      }
       .stats {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -328,6 +357,9 @@
         border-radius: 8px;
         background: #fff;
       }
+      .storage-mini {
+        margin-top: 12px;
+      }
       .checkbox-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -457,6 +489,7 @@
           <button type="button" data-admin-nav="course" data-auth-required="1" disabled>连接 / 状态</button>
           <button type="button" data-admin-nav="upload" data-auth-required="1" disabled>单文件上传</button>
           <button type="button" data-admin-nav="package" data-auth-required="1" disabled>整课 ZIP 导入</button>
+          <button type="button" data-admin-nav="storage" data-auth-required="1" disabled>存储空间</button>
           <button type="button" data-admin-nav="lifecycle" data-auth-required="1" disabled>启用 / 归档</button>
           <button type="button" data-admin-nav="overview" data-auth-required="1" disabled>全课程概览</button>
           <button type="button" data-admin-nav="users" data-auth-required="1" disabled>用户权限</button>
@@ -553,6 +586,7 @@
 
       <section class="admin-panel auth-required" data-admin-panel="upload" hidden>
         <h2>上传</h2>
+        <div class="storage-mini" id="uploadStorageMini" hidden></div>
         <div id="courseUploadTasks" hidden></div>
         <div class="grid compact">
           <div>
@@ -605,6 +639,7 @@
       <section class="admin-panel auth-required" data-admin-panel="package" hidden>
         <h2>整课 ZIP 导入</h2>
         <p class="meta-line">上传一门课的完整压缩包后，系统会先解压到临时区并自动识别 Course Outline、Unit Plan、Lesson Plan、lesson book、iSpring、视频和资源文件。确认导入前不会覆盖正式课程。</p>
+        <div class="storage-mini" id="packageStorageMini" hidden></div>
         <div>
           <label for="coursePackageFile">课程压缩包</label>
           <input id="coursePackageFile" type="file" accept=".zip" />
@@ -621,6 +656,16 @@
           <div class="meta-line" id="coursePackageStatusDetail"></div>
         </div>
         <div id="coursePackagePanel" hidden></div>
+      </section>
+
+      <section class="admin-panel auth-required" data-admin-panel="storage" hidden>
+        <h2>存储空间</h2>
+        <p class="meta-line">容量统计会扫描课程目录，课程多或文件大时可能需要几秒。上传大课包前先确认数据盘剩余空间。</p>
+        <div class="actions">
+          <button id="storageButton" type="button">刷新存储容量</button>
+        </div>
+        <div id="storageSummary" hidden></div>
+        <div id="storageCourseTable" hidden></div>
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="overview" hidden>
@@ -724,6 +769,10 @@
       const typeHelp = document.querySelector("#typeHelp");
       const courseMeta = document.querySelector("#courseMeta");
       const statusStats = document.querySelector("#statusStats");
+      const uploadStorageMini = document.querySelector("#uploadStorageMini");
+      const packageStorageMini = document.querySelector("#packageStorageMini");
+      const storageSummary = document.querySelector("#storageSummary");
+      const storageCourseTable = document.querySelector("#storageCourseTable");
       const readinessPanel = document.querySelector("#readinessPanel");
       const readinessSummaryStats = document.querySelector("#readinessSummaryStats");
       const courseReadinessTable = document.querySelector("#courseReadinessTable");
@@ -754,6 +803,7 @@
       let portalUsersData = { users: [], courses: [] };
       let courseLifecycleData = { courses: [] };
       let courseLifecycleJobsData = { jobs: [] };
+      let storageData = null;
       let selectedLifecycleCourse = "";
       let adminAuthenticated = false;
       let activeAdminPanel = "login";
@@ -791,6 +841,9 @@
           activeAdminPanel = panelName;
         }
         renderAdminPanels();
+        if (activeAdminPanel === "storage" && adminAuthenticated) {
+          readStorage({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+        }
       }
 
       function formatBytes(bytes) {
@@ -842,6 +895,7 @@
           ["Admin uploads", formatBytes(data.storage?.adminUploadBytes || 0)],
         ];
         if (disk) {
+          stats.push(["Disk used", `${formatBytes(disk.usedBytes || 0)} (${percentUsed(disk.usedBytes || 0, disk.totalBytes || 0)}%)`]);
           stats.push(["Disk free", formatBytes(disk.freeBytes)]);
           stats.push(["Disk total", formatBytes(disk.totalBytes)]);
         }
@@ -1519,6 +1573,89 @@
         return `${(value / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
       }
 
+      function percentUsed(used, total) {
+        if (!total) return 0;
+        return Math.max(0, Math.min(100, Math.round((Number(used || 0) / Number(total || 1)) * 100)));
+      }
+
+      function meterHtml(label, used, total) {
+        const percent = percentUsed(used, total);
+        const fillClass = percent >= 90 ? "danger-fill" : percent >= 75 ? "warn-fill" : "";
+        return `
+          <div class="meter">
+            <div class="meter-head">
+              <span>${escapeHtml(label)}</span>
+              <span>${formatBytes(used)} / ${formatBytes(total)} · ${percent}%</span>
+            </div>
+            <div class="meter-track"><div class="meter-fill ${fillClass}" style="width:${percent}%"></div></div>
+          </div>
+        `;
+      }
+
+      function renderStorageMini(target, data, label = "数据盘") {
+        if (!target || !data?.disk) return;
+        target.innerHTML = `
+          <div class="stat">
+            ${meterHtml(label, data.disk.usedBytes || 0, data.disk.totalBytes || 0)}
+            <p class="meta-line">可用 ${formatBytes(data.disk.freeBytes || 0)} · 课程目录 ${formatBytes(data.summary?.activeRootBytes || 0)} · 后台临时 ${formatBytes(data.summary?.adminUploadBytes || 0)}</p>
+          </div>
+        `;
+        target.hidden = false;
+      }
+
+      function renderStorageOverview(data) {
+        storageData = data;
+        const disk = data.disk || {};
+        storageSummary.innerHTML = `
+          <div class="stats">
+            <div class="stat">${meterHtml("数据盘", disk.usedBytes || 0, disk.totalBytes || 0)}</div>
+            <div class="stat"><span>剩余空间</span><strong>${formatBytes(disk.freeBytes || 0)}</strong></div>
+            <div class="stat"><span>Active 课程目录</span><strong>${formatBytes(data.summary?.activeRootBytes || 0)}</strong></div>
+            <div class="stat"><span>后台临时文件</span><strong>${formatBytes(data.summary?.adminUploadBytes || 0)}</strong></div>
+            <div class="stat"><span>Archive 目录</span><strong>${formatBytes(data.summary?.archiveRootBytes || 0)}</strong></div>
+          </div>
+          <p class="meta-line">Active root: ${escapeHtml(data.activeRoot || "")}<br />Archive root: ${escapeHtml(data.archiveRoot || "")}<br />Updated: ${escapeHtml(data.generatedAt || "")}</p>
+        `;
+        storageSummary.hidden = false;
+        renderStorageMini(uploadStorageMini, data);
+        renderStorageMini(packageStorageMini, data, "导入可用空间");
+
+        const rows = (data.courses || [])
+          .map(
+            (course) => `
+              <tr>
+                <td><strong>${escapeHtml(course.course)}</strong></td>
+                <td>${escapeHtml(course.title || "")}</td>
+                <td>${escapeHtml(course.status || "")}</td>
+                <td class="nowrap">${formatBytes(course.activeBytes || 0)}</td>
+                <td class="nowrap">${formatBytes(course.adminUploadBytes || 0)}</td>
+                <td class="nowrap">${formatBytes(course.archiveBytes || 0)}</td>
+                <td class="nowrap"><strong>${formatBytes(course.totalBytes || 0)}</strong></td>
+              </tr>
+            `,
+          )
+          .join("");
+        storageCourseTable.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Active</th>
+                  <th>Admin temp</th>
+                  <th>Archive</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>${rows || '<tr><td colspan="7">No course storage found.</td></tr>'}</tbody>
+            </table>
+          </div>
+        `;
+        storageCourseTable.hidden = false;
+      }
+
       function coursePackageTaskKey(course = fields.course.value) {
         return `ossd-course-package-task:${String(course || "").toUpperCase()}`;
       }
@@ -1572,12 +1709,14 @@
         rememberCoursePackageTask(task);
         const total = task.totalBytes || 0;
         const loaded = task.bytesReceived || 0;
+        const tempText = task.packageBytes ? ` 临时目录 ${formatBytes(task.packageBytes)}。` : "";
         if (task.status === "uploading") {
+          const chunkText = task.chunkTotal ? ` 分片 ${task.chunksReceived || 0}/${task.chunkTotal}。` : "";
           setCoursePackageStatus({
             title: `正在上传 ${task.filename || "整课 ZIP"}`,
             detail: total
-              ? `服务器已收到 ${formatBytes(loaded)} / ${formatBytes(total)} (${task.percent || 0}%)。刷新页面会中断浏览器正在发送的上传。`
-              : `服务器已收到 ${formatBytes(loaded)}。刷新页面会中断浏览器正在发送的上传。`,
+              ? `服务器已收到 ${formatBytes(loaded)} / ${formatBytes(total)} (${task.percent || 0}%)。${chunkText}${tempText}刷新页面会中断浏览器正在发送的上传。`
+              : `服务器已收到 ${formatBytes(loaded)}。${chunkText}${tempText}刷新页面会中断浏览器正在发送的上传。`,
             percent: task.percent || 0,
             showProgress: true,
           });
@@ -1585,9 +1724,11 @@
         }
         if (task.status === "processing") {
           const phase = task.phase === "merging" ? "合并分片" : task.phase === "extracting" ? "解压和扫描" : "处理";
+          const mergeText = task.mergeIndex && task.chunkTotal ? ` 合并 ${task.mergeIndex}/${task.chunkTotal}。` : "";
+          const chunkText = task.chunkTotal ? ` 分片 ${task.chunksReceived || task.chunkTotal}/${task.chunkTotal}。` : "";
           setCoursePackageStatus({
             title: `服务器正在处理 ${task.filename || "整课 ZIP"}`,
-            detail: `上传已到服务器，正在${phase}。大课包可能需要几分钟，请保持服务运行。`,
+            detail: `上传已到服务器，正在${phase}。${mergeText || chunkText}${tempText}大课包可能需要几分钟，请保持服务运行。`,
             percent: 100,
             showProgress: true,
           });
@@ -1854,6 +1995,7 @@
           await readUsers({ writeOutput: false });
           await readCourseLifecycle({ writeOutput: false });
           await readCourseLifecycleJobs({ writeOutput: false });
+          await readStorage({ writeOutput: false });
           await restoreCoursePackageTask({ writeOutput: false });
           write(`已登录：${data.username}`);
         }
@@ -1876,6 +2018,7 @@
           await readUsers({ writeOutput: false });
           await readCourseLifecycle({ writeOutput: false });
           await readCourseLifecycleJobs({ writeOutput: false });
+          await readStorage({ writeOutput: false });
           await restoreCoursePackageTask({ writeOutput: false });
         }
         write(data);
@@ -1899,6 +2042,14 @@
           renderStatusStats(data);
           renderReadiness(data);
         }
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function readStorage({ writeOutput = true } = {}) {
+        const response = await fetch("/api/admin/storage", { credentials: "same-origin" });
+        const data = await response.json();
+        if (data.ok) renderStorageOverview(data);
         if (writeOutput) write(data);
         return data;
       }
@@ -2188,6 +2339,7 @@
           fields.file.value = "";
           await loadSelectedCourseManifest();
           await readStatus({ writeOutput: false });
+          await readStorage({ writeOutput: false });
           await readAllCourseReadiness({ writeOutput: false });
           await readUploadGaps({ writeOutput: false });
           if (data.backups?.length) {
@@ -2322,6 +2474,7 @@
           });
           write(finalData);
           renderCoursePackagePreview(finalData);
+          await readStorage({ writeOutput: false });
         } catch (error) {
           const latest = await restoreCoursePackageTask({ writeOutput: false }).catch(() => null);
           rememberCoursePackageTask({
@@ -2372,6 +2525,7 @@
           coursePackageCommitButton.disabled = true;
           await loadSelectedCourseManifest();
           await readStatus({ writeOutput: false });
+          await readStorage({ writeOutput: false });
           await readAllCourseReadiness({ writeOutput: false });
           await readUploadGaps({ writeOutput: false });
           if (data.backups?.length) await readBackups({ writeOutput: false });
@@ -2380,6 +2534,9 @@
 
       document.querySelector("#statusButton").addEventListener("click", () => {
         readStatus().catch((error) => write(`Error: ${error.message}`));
+      });
+      document.querySelector("#storageButton").addEventListener("click", () => {
+        readStorage().catch((error) => write(`Error: ${error.message}`));
       });
       document.querySelector("#fillLocalLogin").addEventListener("click", () => {
         fields.username.value = "admin";
@@ -2512,6 +2669,12 @@
         if (!button) return;
         selectLifecycleCourse(button.dataset.course).catch((error) => write(`Error: ${error.message}`));
       });
+      window.setInterval(() => {
+        if (!adminAuthenticated) return;
+        readStorage({ writeOutput: false }).catch(() => {
+          // Keep the admin page quiet if a background capacity refresh fails.
+        });
+      }, 60000);
       loadCourses().catch((error) => write(`Error: ${error.message}`));
       updateTypeFields();
       renderAdminPanels();

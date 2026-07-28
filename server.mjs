@@ -1561,13 +1561,85 @@ async function directorySize(root) {
 async function diskInfoFor(path) {
   try {
     const info = await statfs(path);
+    const totalBytes = Number(info.blocks) * Number(info.bsize);
+    const freeBytes = Number(info.bavail) * Number(info.bsize);
     return {
-      totalBytes: Number(info.blocks) * Number(info.bsize),
-      freeBytes: Number(info.bavail) * Number(info.bsize),
+      totalBytes,
+      freeBytes,
+      usedBytes: totalBytes - freeBytes,
     };
   } catch {
     return null;
   }
+}
+
+async function listDirectoryNames(root) {
+  try {
+    return (await readdir(root, { withFileTypes: true }))
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith("."))
+      .map((entry) => entry.name)
+      .sort((a, b) => a.localeCompare(b));
+  } catch {
+    return [];
+  }
+}
+
+async function courseStorageRecord(courseCode, catalogEntry = null) {
+  const course = safeSegment(courseCode).toUpperCase();
+  const root = courseRoot(course);
+  const adminRoot = join(root, "_admin_uploads");
+  const archivePath = join(courseArchiveRoot, `${course}.tar.gz`);
+  const archiveZipPath = join(courseArchiveRoot, `${course}.zip`);
+  const archiveDir = join(courseArchiveRoot, course);
+  const [activeBytes, adminUploadBytes, archiveFileBytes, archiveZipBytes, archiveDirBytes] = await Promise.all([
+    directorySize(root),
+    directorySize(adminRoot),
+    directorySize(archivePath),
+    directorySize(archiveZipPath),
+    directorySize(archiveDir),
+  ]);
+  return {
+    course,
+    title: catalogEntry?.title || "",
+    status: courseLifecycleRecord(course).status,
+    activeBytes,
+    adminUploadBytes,
+    archiveBytes: archiveFileBytes + archiveZipBytes + archiveDirBytes,
+    totalBytes: activeBytes + archiveFileBytes + archiveZipBytes + archiveDirBytes,
+  };
+}
+
+async function storageOverview() {
+  const catalog = await readCourseCatalog();
+  const catalogMap = new Map((catalog.courses || []).map((course) => [String(course.code || "").toUpperCase(), course]));
+  const activeDirs = await listDirectoryNames(courseActiveRoot);
+  const archiveDirs = await listDirectoryNames(courseArchiveRoot);
+  const courseCodes = new Set([
+    ...(catalog.courses || []).map((course) => String(course.code || "").toUpperCase()).filter(Boolean),
+    ...activeDirs.map((name) => String(name || "").toUpperCase()).filter(Boolean),
+    ...archiveDirs.map((name) => String(name || "").replace(/\.(tar\.gz|zip)$/i, "").toUpperCase()).filter(Boolean),
+  ]);
+  const courses = (await Promise.all([...courseCodes].map((course) => courseStorageRecord(course, catalogMap.get(course)))))
+    .sort((a, b) => b.totalBytes - a.totalBytes || a.course.localeCompare(b.course));
+  const disk = await diskInfoFor(courseActiveRoot);
+  const activeRootBytes = await directorySize(courseActiveRoot);
+  const archiveRootBytes = await directorySize(courseArchiveRoot);
+  const adminUploadBytes = courses.reduce((sum, course) => sum + course.adminUploadBytes, 0);
+  return {
+    ok: true,
+    generatedAt: new Date().toISOString(),
+    activeRoot: courseActiveRoot,
+    archiveRoot: courseArchiveRoot,
+    disk,
+    summary: {
+      courseCount: courses.length,
+      activeRootBytes,
+      archiveRootBytes,
+      adminUploadBytes,
+      courseTotalBytes: courses.reduce((sum, course) => sum + course.totalBytes, 0),
+    },
+    courses,
+  };
 }
 
 async function appendAdminHistory(course, entry) {
@@ -2782,6 +2854,11 @@ async function handleAdminApi(req, res) {
       return true;
     }
 
+    if (requestUrl.pathname === "/api/admin/storage" && req.method === "GET") {
+      sendJson(res, 200, await storageOverview());
+      return true;
+    }
+
     if (requestUrl.pathname === "/api/admin/upload-gaps" && req.method === "GET") {
       const catalog = await readCourseCatalog();
       const courses = await Promise.all((catalog.courses || []).map((courseEntry) => courseUploadGapRecord(courseEntry)));
@@ -3245,6 +3322,13 @@ async function handleAdminApi(req, res) {
             importId,
             actor: adminActor(req),
           });
+        }
+        if (task) {
+          task = {
+            ...task,
+            packageBytes: await directorySize(coursePackageDir(requestedCourse, importId)),
+            chunkBytes: await directorySize(coursePackageChunkDir(requestedCourse, importId)),
+          };
         }
         sendJson(res, task ? 200 : 404, task ? { ok: true, task } : { ok: false, error: "Course package task not found." });
         return true;
