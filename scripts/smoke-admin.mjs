@@ -10,7 +10,9 @@ const token = readArg("--token") || "admin-smoke-token";
 const username = readArg("--username") || "admin-smoke";
 const password = readArg("--password") || "admin-smoke-password";
 const smokeCourse = "ZZZSMOKE";
+const emptyImportCourse = "ZZZEMPTY";
 const smokeCourseRoot = resolve(process.cwd(), "..", "courseware", smokeCourse);
+const emptyImportCourseRoot = resolve(process.cwd(), "..", "courseware", emptyImportCourse);
 const smokeArchiveRoot = resolve(process.cwd(), "..", "courseware-archive-smoke");
 const smokeCourseStatusFile = resolve(process.cwd(), "deployment", ".admin-smoke-course-status.json");
 
@@ -416,6 +418,40 @@ try {
     process.exitCode = 1;
   }
 
+  await rm(emptyImportCourseRoot, { recursive: true, force: true });
+  await mkdir(emptyImportCourseRoot, { recursive: true });
+  const emptyCoursePreviewResponse = await check(
+    `${enabledUrl}/api/admin/course-package/upload?course=${emptyImportCourse}&filename=empty-course-package.zip`,
+    "admin previews whole-course package without existing manifest",
+    200,
+    {
+      method: "POST",
+      headers: { Cookie: cookie, "Content-Type": "application/octet-stream", "Content-Length": String(smokeCoursePackage.length) },
+      body: smokeCoursePackage,
+    },
+  );
+  const emptyCoursePreview = await emptyCoursePreviewResponse.json();
+  if (!emptyCoursePreview.ok || !emptyCoursePreview.importId || emptyCoursePreview.summary?.ready < 6) {
+    console.error(`Unexpected empty course package preview payload: ${JSON.stringify(emptyCoursePreview)}`);
+    process.exitCode = 1;
+  }
+  const emptyCourseCommitResponse = await check(`${enabledUrl}/api/admin/course-package/commit`, "admin commits whole-course package without existing manifest", 200, {
+    method: "POST",
+    headers: { Cookie: cookie, "Content-Type": "application/json" },
+    body: JSON.stringify({ course: emptyImportCourse, importId: emptyCoursePreview.importId }),
+  });
+  const emptyCourseCommit = await emptyCourseCommitResponse.json();
+  if (!emptyCourseCommit.ok || emptyCourseCommit.installed?.length < 6) {
+    console.error(`Unexpected empty course package commit payload: ${JSON.stringify(emptyCourseCommit)}`);
+    process.exitCode = 1;
+  }
+  const emptyImportedManifestResponse = await check(`${enabledUrl}/courseware/${emptyImportCourse}/course-manifest.json`, "empty course package writes new manifest", 200);
+  const emptyImportedManifest = await emptyImportedManifestResponse.json();
+  if (emptyImportedManifest.course?.code !== emptyImportCourse || !emptyImportedManifest.units?.[0]?.lessons?.[0]?.downloads?.length) {
+    console.error(`Unexpected empty imported course manifest: ${JSON.stringify(emptyImportedManifest, null, 2)}`);
+    process.exitCode = 1;
+  }
+
   const moodleEmbedsResponse = await check(`${enabledUrl}/api/admin/moodle-embeds?course=${smokeCourse}`, "admin generates Moodle embed codes", 200, {
     headers: { Cookie: cookie },
   });
@@ -553,6 +589,7 @@ try {
 } finally {
   enabled.kill();
   await rm(smokeCourseRoot, { recursive: true, force: true });
+  await rm(emptyImportCourseRoot, { recursive: true, force: true });
   await rm(smokeArchiveRoot, { recursive: true, force: true });
   await rm(smokeCourseStatusFile, { force: true });
   baseServer?.kill();

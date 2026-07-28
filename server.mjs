@@ -1260,6 +1260,37 @@ async function readManifest(course) {
   return JSON.parse(await readFile(join(root, "course-manifest.json"), "utf8"));
 }
 
+function emptyCourseManifest(course) {
+  const code = safeSegment(course).toUpperCase();
+  return {
+    schemaVersion: 1,
+    course: {
+      code,
+      title: code,
+      grade: "",
+      description: "",
+    },
+    courseDownloads: [],
+    units: [],
+    textMaterials: [],
+    sourceAudit: {
+      generatedFrom: "empty-admin-import",
+      lessonCount: 0,
+      ispringComplete: 0,
+    },
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+async function readManifestOrEmpty(course) {
+  try {
+    return await readManifest(course);
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+    return emptyCourseManifest(course);
+  }
+}
+
 async function readCourseCatalog() {
   return JSON.parse(await readFile(courseCatalogPath, "utf8"));
 }
@@ -2292,24 +2323,36 @@ async function mergeCoursePackageChunks({ course, importId, originalFilename, ch
   const packageDir = coursePackageDir(course, importId);
   const sourceZip = ensureInside(packageDir, join(packageDir, safeSegment(originalFilename)));
   await mkdir(dirname(sourceZip), { recursive: true });
-  const writer = createWriteStream(sourceZip);
-  for (let index = 0; index < chunkTotal; index += 1) {
-    await pipeFileIntoWriter(coursePackageChunkPath(course, importId, index), writer);
+  let merged = existsSync(sourceZip) ? await stat(sourceZip) : null;
+  if (!merged || (totalBytes && merged.size !== totalBytes)) {
+    const writer = createWriteStream(sourceZip);
+    for (let index = 0; index < chunkTotal; index += 1) {
+      await pipeFileIntoWriter(coursePackageChunkPath(course, importId, index), writer);
+      writeCoursePackageTask(course, importId, {
+        status: "processing",
+        phase: "merging",
+        mergeIndex: index + 1,
+        chunkTotal,
+        percent: Math.round(((index + 1) / chunkTotal) * 100),
+      });
+    }
+    writer.end();
+    await finished(writer);
+    merged = await stat(sourceZip);
+  } else {
     writeCoursePackageTask(course, importId, {
       status: "processing",
       phase: "merging",
-      mergeIndex: index + 1,
+      mergeIndex: chunkTotal,
       chunkTotal,
-      percent: Math.round(((index + 1) / chunkTotal) * 100),
+      percent: 100,
     });
   }
-  writer.end();
-  await finished(writer);
 
-  const merged = await stat(sourceZip);
   if (totalBytes && merged.size !== totalBytes) {
     throw new Error(`Merged ZIP size mismatch. Expected ${totalBytes} bytes, got ${merged.size} bytes.`);
   }
+  await rm(coursePackageChunkDir(course, importId), { recursive: true, force: true });
 
   writeCoursePackageTask(course, importId, {
     status: "processing",
@@ -2330,7 +2373,6 @@ async function mergeCoursePackageChunks({ course, importId, originalFilename, ch
     summary: review.summary,
     review,
   });
-  await rm(coursePackageChunkDir(course, importId), { recursive: true, force: true });
   await appendAdminHistory(course, {
     actor,
     action: "course-package-chunk-upload-preview",
@@ -2640,9 +2682,10 @@ function classifyCoursePackageFile({ course, manifest, contentRoot, file, isprin
 async function createCoursePackageReview({ course, sourceZip, originalFilename, importId = coursePackageId() }) {
   const packageDir = coursePackageDir(course, importId);
   const extractRoot = ensureInside(packageDir, join(packageDir, "extract"));
+  await rm(extractRoot, { recursive: true, force: true });
   await extractZip(sourceZip, extractRoot);
   const contentRoot = await packageContentRoot(extractRoot);
-  const manifest = await readManifest(course);
+  const manifest = await readManifestOrEmpty(course);
   const files = await listPackageFiles(contentRoot);
   const expandedIspringDirs = await findExpandedIspringDirs(files);
   const operations = [];
@@ -2737,9 +2780,10 @@ function readdirSyncSafe(path) {
 
 async function commitCoursePackageImport({ course, importId, actor }) {
   const review = JSON.parse(await readFile(coursePackageReviewPath(course, importId), "utf8"));
-  const manifest = await readManifest(course);
+  const manifest = await readManifestOrEmpty(course);
   const backups = [];
   const installed = [];
+  await mkdir(courseRoot(course), { recursive: true });
   for (const op of review.operations || []) {
     if (op.status !== "ready") continue;
     const root = courseRoot(course);
@@ -3403,7 +3447,11 @@ async function handleAdminApi(req, res) {
       const importId = safeSegment(requestUrl.searchParams.get("importId") || "");
       if (importId) {
         let task = readCoursePackageTask(requestedCourse, importId);
-        if (task && task.status !== "complete" && task.status !== "failed" && Number(task.chunksReceived || 0) >= Number(task.chunkTotal || Infinity)) {
+        const failedManifestOnly = task?.status === "failed" && /course-manifest\.json|ENOENT/i.test(String(task.error || ""));
+        const hasCompleteChunks = task && Number(task.chunksReceived || 0) >= Number(task.chunkTotal || Infinity);
+        const mergedZipPath = task?.filename ? ensureInside(coursePackageDir(requestedCourse, importId), join(coursePackageDir(requestedCourse, importId), safeSegment(task.filename))) : "";
+        const hasMergedZip = Boolean(mergedZipPath && existsSync(mergedZipPath));
+        if (task && task.status !== "complete" && (task.status !== "failed" || failedManifestOnly) && (hasCompleteChunks || hasMergedZip)) {
           task = startCoursePackageFinalize({
             course: requestedCourse,
             importId,
