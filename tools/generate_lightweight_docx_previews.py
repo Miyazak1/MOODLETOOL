@@ -4,6 +4,7 @@ import argparse
 import html
 import json
 import re
+import shutil
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,39 @@ from xml.etree import ElementTree
 
 NAMESPACES = {
     "w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+}
+
+SECTION_LABELS = {
+    "assessment plan",
+    "delivering the lesson",
+    "materials and resources",
+    "unit author",
+    "unit details",
+    "unit foundation",
+    "unit overview",
+}
+
+FIELD_LABELS = {
+    "accommodations",
+    "approximate time needed",
+    "curriculum expectations",
+    "learning goals",
+    "lesson and assessment outlines",
+    "lesson name",
+    "materials/resources",
+    "other resources",
+    "printed",
+    "prior knowledge",
+    "school city, province",
+    "school district",
+    "school name",
+    "success criteria(s)",
+    "targeted curriculum expectations",
+    "technology",
+    "unit of study",
+    "unit summary",
+    "unit title name",
+    "year level",
 }
 
 
@@ -61,7 +95,16 @@ def paragraph_text(paragraph: ElementTree.Element) -> str:
     return "".join(parts).strip()
 
 
-def extract_docx_blocks(path: Path) -> list[tuple[str, list[str] | str]]:
+def cell_text(cell: ElementTree.Element) -> str:
+    paragraphs = [
+        paragraph_text(paragraph)
+        for paragraph in cell.findall(".//w:p", NAMESPACES)
+        if paragraph_text(paragraph)
+    ]
+    return "\n".join(paragraphs).strip()
+
+
+def extract_docx_blocks(path: Path) -> list[tuple[str, Any]]:
     with zipfile.ZipFile(path) as package:
         document_xml = package.read("word/document.xml")
 
@@ -70,25 +113,18 @@ def extract_docx_blocks(path: Path) -> list[tuple[str, list[str] | str]]:
     if body is None:
         return [("paragraph", "No document body was found.")]
 
-    blocks: list[tuple[str, list[str] | str]] = []
+    blocks: list[tuple[str, Any]] = []
     for child in list(body):
         if child.tag == f"{{{NAMESPACES['w']}}}p":
             text = paragraph_text(child)
             if text:
                 blocks.append(("paragraph", text))
         elif child.tag == f"{{{NAMESPACES['w']}}}tbl":
-            rows: list[str] = []
+            rows: list[list[str]] = []
             for row in child.findall("w:tr", NAMESPACES):
-                cells: list[str] = []
-                for cell in row.findall("w:tc", NAMESPACES):
-                    cell_text = " ".join(
-                        paragraph_text(p)
-                        for p in cell.findall(".//w:p", NAMESPACES)
-                        if paragraph_text(p)
-                    )
-                    cells.append(cell_text)
+                cells = [cell_text(cell) for cell in row.findall("w:tc", NAMESPACES)]
                 if any(cells):
-                    rows.append(" | ".join(cells))
+                    rows.append(cells)
             if rows:
                 blocks.append(("table", rows))
 
@@ -117,7 +153,7 @@ def collect_h5p_strings(value: Any, results: list[str]) -> None:
             collect_h5p_strings(item, results)
 
 
-def extract_h5p_blocks(path: Path) -> tuple[str, list[tuple[str, list[str] | str]]]:
+def extract_h5p_blocks(path: Path) -> tuple[str, list[tuple[str, Any]]]:
     with zipfile.ZipFile(path) as package:
         package_meta = json.loads(package.read("h5p.json").decode("utf-8"))
         content_json = {}
@@ -129,7 +165,7 @@ def extract_h5p_blocks(path: Path) -> tuple[str, list[tuple[str, list[str] | str
     strings: list[str] = []
     collect_h5p_strings(content_json, strings)
 
-    blocks: list[tuple[str, list[str] | str]] = []
+    blocks: list[tuple[str, Any]] = []
     if library:
         blocks.append(("paragraph", f"H5P content type: {library}"))
     if strings:
@@ -139,20 +175,207 @@ def extract_h5p_blocks(path: Path) -> tuple[str, list[tuple[str, list[str] | str
     return str(title), blocks
 
 
-def render_preview_html(
-    title: str,
-    source_rel: str,
-    blocks: list[tuple[str, list[str] | str]],
-    notice: str,
-) -> str:
-    body_parts: list[str] = []
-    for kind, content in blocks:
-        if kind == "table" and isinstance(content, list):
-            rows = "\n".join(f"<li>{html.escape(row)}</li>" for row in content)
-            body_parts.append(f"<section class=\"doc-table\"><ul>{rows}</ul></section>")
-        else:
-            text = html.escape(str(content)).replace("\n", "<br>")
-            body_parts.append(f"<p>{text}</p>")
+def clean_h5p_fragment(value: str) -> str:
+    value = re.sub(r"<script\b[\s\S]*?</script>", "", value, flags=re.IGNORECASE)
+    value = re.sub(r"\s(?:href|src)\s*=\s*['\"]https?://[^'\"]+['\"]", "", value, flags=re.IGNORECASE)
+    return value
+
+
+def read_h5p_content(path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    with zipfile.ZipFile(path) as package:
+        meta = json.loads(package.read("h5p.json").decode("utf-8-sig"))
+        content = json.loads(package.read("content/content.json").decode("utf-8-sig"))
+    return content, meta
+
+
+def safe_extract_h5p_package(path: Path, target_dir: Path) -> None:
+    target_root = target_dir.resolve()
+    target_root.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(path) as package:
+        for member in package.infolist():
+            member_name = to_posix(member.filename).strip("/")
+            if not member_name or member_name.startswith(".") or ".." in Path(member_name).parts:
+                raise ValueError(f"Unsafe H5P archive path: {member.filename}")
+            destination = (target_root / member_name).resolve()
+            if not str(destination).startswith(str(target_root)):
+                raise ValueError(f"Unsafe H5P archive path: {member.filename}")
+            if member.is_dir():
+                destination.mkdir(parents=True, exist_ok=True)
+                continue
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with package.open(member) as source, destination.open("wb") as output:
+                shutil.copyfileobj(source, output)
+
+
+def render_h5p_standalone_player(meta: dict[str, Any], source_rel: str, download_name: str) -> str:
+    title = str(meta.get("title") or Path(download_name).stem or "H5P Activity")
+    library = str(meta.get("mainLibrary") or "")
+    download_url = f"../{download_name}"
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{html.escape(title)}</title>
+  <link rel="stylesheet" href="/vendor/h5p-standalone/styles/h5p.css">
+  <style>
+    :root {{
+      color: #10233f;
+      background: #f3f6fa;
+      font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }}
+    body {{
+      margin: 0;
+      padding: 28px 18px 42px;
+    }}
+    main {{
+      max-width: 1120px;
+      margin: 0 auto;
+    }}
+    header {{
+      background: #fff;
+      border: 1px solid #d8e2ef;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      padding: 18px 22px;
+    }}
+    h1 {{
+      font-size: 24px;
+      line-height: 1.25;
+      margin: 0 0 6px;
+    }}
+    .meta {{
+      color: #526681;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }}
+    .player-shell {{
+      background: #fff;
+      border: 1px solid #d8e2ef;
+      border-radius: 8px;
+      min-height: 360px;
+      overflow: hidden;
+    }}
+    #h5p-container {{
+      min-height: 360px;
+    }}
+    .fallback {{
+      background: #fff3f3;
+      border: 1px solid #f0bbbb;
+      border-radius: 8px;
+      color: #7f1d1d;
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+    }}
+    .fallback a {{
+      color: #0b4f71;
+      font-weight: 700;
+    }}
+    @media (max-width: 720px) {{
+      body {{
+        padding: 0;
+      }}
+      header,
+      .player-shell,
+      .fallback {{
+        border-left: 0;
+        border-radius: 0;
+        border-right: 0;
+      }}
+      h1 {{
+        font-size: 20px;
+      }}
+    }}
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>{html.escape(title)}</h1>
+      <div class="meta">{html.escape(source_rel)}</div>
+      <div class="meta">H5P content type: {html.escape(library or "unknown")}</div>
+    </header>
+    <div class="player-shell">
+      <div id="h5p-container"></div>
+    </div>
+    <div class="fallback" id="h5p-fallback">
+      H5P playback failed. The package may be missing a required H5P library. You can still download the original file:
+      <a href="{html.escape(download_url, quote=True)}">{html.escape(download_name)}</a>
+    </div>
+  </main>
+  <script src="/vendor/h5p-standalone/main.bundle.js" charset="UTF-8"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {{
+      const el = document.getElementById("h5p-container");
+      const fallback = document.getElementById("h5p-fallback");
+      const options = {{
+        h5pJsonPath: ".",
+        librariesPath: ".",
+        contentJsonPath: "./content",
+        frameJs: "/vendor/h5p-standalone/frame.bundle.js",
+        frameCss: "/vendor/h5p-standalone/styles/h5p.css",
+        frame: true,
+        export: true,
+        downloadUrl: "{html.escape(download_url, quote=True)}",
+        fullScreen: true
+      }};
+      try {{
+        const player = new H5PStandalone.H5P(el, options);
+        if (player && typeof player.catch === "function") {{
+          player.catch(function (error) {{
+            console.error(error);
+            fallback.style.display = "block";
+          }});
+        }}
+      }} catch (error) {{
+        console.error(error);
+        fallback.style.display = "block";
+      }}
+    }});
+  </script>
+</body>
+</html>
+"""
+
+
+def render_h5p_documentation_tool(content: dict[str, Any], meta: dict[str, Any], source_rel: str, download_name: str) -> str:
+    title = str(meta.get("title") or "H5P Activity")
+    intro = clean_h5p_fragment(str(content.get("taskDescription") or ""))
+    fields: list[dict[str, str]] = []
+
+    for page in content.get("pagesList") or []:
+        params = page.get("params") or {}
+        for element in params.get("elementList") or []:
+            library = str(element.get("library") or "")
+            if not library.startswith("H5P.TextInputField"):
+                continue
+            element_params = element.get("params") or {}
+            prompt_html = clean_h5p_fragment(str(element_params.get("taskDescription") or "Response"))
+            prompt_text = re.sub(r"<[^>]+>", " ", prompt_html)
+            prompt_text = re.sub(r"\s+", " ", prompt_text).strip() or "Response"
+            fields.append({"promptHtml": prompt_html, "promptText": prompt_text})
+
+    export_description = ""
+    for page in content.get("pagesList") or []:
+        if str(page.get("library") or "").startswith("H5P.DocumentExportPage"):
+            export_description = clean_h5p_fragment(str((page.get("params") or {}).get("description") or ""))
+            break
+
+    field_html = "\n".join(
+        f"""
+        <label class="field">
+          <span>{field["promptHtml"]}</span>
+          <textarea data-prompt="{html.escape(field["promptText"], quote=True)}" required></textarea>
+        </label>
+        """
+        for field in fields
+    )
+
+    prompts = json.dumps([field["promptText"] for field in fields], ensure_ascii=False)
+    filename = html.escape(download_name.replace(".h5p", "-responses.txt"), quote=True)
 
     return f"""<!doctype html>
 <html lang="en">
@@ -163,21 +386,22 @@ def render_preview_html(
   <style>
     :root {{
       color: #10233f;
-      background: #f5f7fb;
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.55;
+      background: #f3f6fa;
+      font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
     }}
     body {{
       margin: 0;
-      padding: 28px;
+      padding: 32px 20px;
     }}
     main {{
-      max-width: 980px;
+      max-width: 960px;
       margin: 0 auto;
       background: #fff;
       border: 1px solid #d8e2ef;
       border-radius: 8px;
-      padding: 28px 34px;
+      padding: 30px 38px 42px;
       box-shadow: 0 10px 26px rgba(16, 35, 63, 0.08);
     }}
     header {{
@@ -186,8 +410,351 @@ def render_preview_html(
       padding-bottom: 14px;
     }}
     h1 {{
-      font-size: 24px;
+      font-size: 28px;
+      line-height: 1.25;
       margin: 0 0 8px;
+    }}
+    .meta {{
+      color: #526681;
+      font-size: 13px;
+      word-break: break-word;
+    }}
+    .notice {{
+      background: #eef8f4;
+      border: 1px solid #bfe2d5;
+      border-radius: 6px;
+      color: #075f46;
+      font-size: 13px;
+      margin: 0 0 22px;
+      padding: 10px 12px;
+    }}
+    .intro {{
+      color: #40536d;
+      margin: 0 0 22px;
+      max-width: 82ch;
+    }}
+    .field {{
+      display: block;
+      margin: 18px 0;
+    }}
+    .field span {{
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }}
+    textarea {{
+      border: 1px solid #b7cbe5;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font: inherit;
+      min-height: 108px;
+      padding: 10px 12px;
+      resize: vertical;
+      width: 100%;
+    }}
+    .actions {{
+      border-top: 1px solid #d9e2ef;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+      padding-top: 18px;
+    }}
+    button {{
+      background: #0b4f71;
+      border: 1px solid #0b4f71;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      padding: 9px 13px;
+    }}
+    .hint {{
+      color: #586b85;
+      flex-basis: 100%;
+      font-size: 13px;
+    }}
+    @media (max-width: 720px) {{
+      body {{
+        padding: 0;
+      }}
+      main {{
+        border-left: 0;
+        border-radius: 0;
+        border-right: 0;
+        padding: 22px 18px 34px;
+      }}
+      h1 {{
+        font-size: 23px;
+      }}
+    }}
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>{html.escape(title)}</h1>
+      <div class="meta">{html.escape(source_rel)}</div>
+    </header>
+    <div class="notice">Local H5P activity page generated from the downloaded package. Use the download button in the portal for the original H5P file.</div>
+    <div class="intro">{intro}</div>
+    <form id="activity-form">
+      {field_html}
+      <div class="intro">{export_description}</div>
+      <div class="actions">
+        <button type="button" id="download-responses">Download responses</button>
+        <span class="hint">Responses stay in this browser page until downloaded.</span>
+      </div>
+    </form>
+  </main>
+  <script>
+    const prompts = {prompts};
+    document.getElementById("download-responses").addEventListener("click", () => {{
+      const answers = [...document.querySelectorAll("textarea")].map((field, index) => {{
+        const prompt = prompts[index] || field.dataset.prompt || `Response ${{index + 1}}`;
+        return `${{prompt}}\\n${{field.value.trim()}}`;
+      }});
+      const blob = new Blob([answers.join("\\n\\n") + "\\n"], {{ type: "text/plain;charset=utf-8" }});
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "{filename}";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }});
+  </script>
+</body>
+</html>
+"""
+
+
+def normalize_label(value: str) -> str:
+    return re.sub(r"\s+", " ", value).strip(" :").lower()
+
+
+def non_empty_cells(row: list[str]) -> list[str]:
+    return [cell.strip() for cell in row if cell.strip()]
+
+
+def is_section_row(row: list[str]) -> bool:
+    cells = non_empty_cells(row)
+    return len(cells) == 1 and normalize_label(cells[0]) in SECTION_LABELS
+
+
+def is_field_label(value: str) -> bool:
+    return normalize_label(value) in FIELD_LABELS
+
+
+def is_short_label(value: str) -> bool:
+    text = re.sub(r"\s+", " ", value).strip()
+    if not text:
+        return False
+    if len(text) > 86:
+        return False
+    if text.endswith(":") and len(text) <= 50:
+        return True
+    if normalize_label(text) in SECTION_LABELS | FIELD_LABELS:
+        return True
+    return text.isupper() and not re.search(r"[.!?]\s", text)
+
+
+def is_table_heading(value: str) -> bool:
+    text = re.sub(r"\s+", " ", value).strip()
+    return bool(text) and len(text) <= 92 and not re.search(r"[.!?]\s", text)
+
+
+def improve_text_flow(value: str) -> str:
+    text = html.unescape(value)
+    text = re.sub(r"[ \t]*\n[ \t]*", "\n", text)
+    text = re.sub(r"\t+", "\n", text)
+    text = re.sub(r"[ ]{2,}", " ", text)
+    if len(text) > 180:
+        text = re.sub(r"\s+(?=☑|☐|❐)", "\n", text)
+        text = re.sub(r"\s+(?=\d+\.\d\s+[A-Za-z])", "\n", text)
+        text = re.sub(
+            r"\s+(?=(?:Overall|Specific|Reading And Literature Studies|Reading and Literature Studies|Writing|Oral Communication|Media Studies)\b)",
+            "\n",
+            text,
+        )
+        text = re.sub(r"\s+(?=Assessment:)", "\n", text)
+        text = re.sub(r"\s+(?=ENG3U - Unit)", "\n", text)
+        text = re.sub(
+            r"\s+(?=Lesson (?:One|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)\b)",
+            "\n",
+            text,
+        )
+        text = re.sub(
+            r"\s+(?=(?:Understand|Reflect|Be familiar|Name|Analyse|Analyze|Explain|Review|Learn about)\b)",
+            "\n",
+            text,
+        )
+    return text.strip()
+
+
+def render_text(value: str, class_name: str = "text") -> str:
+    lines = [line.strip() for line in improve_text_flow(value).splitlines() if line.strip()]
+    if not lines:
+        return ""
+    if len(lines) == 1:
+        return f"<p class=\"{class_name}\">{html.escape(lines[0])}</p>"
+    if len(lines) <= 3:
+        body = "<br>".join(html.escape(line) for line in lines)
+        return f"<p class=\"{class_name}\">{body}</p>"
+    items = "".join(f"<li>{html.escape(line)}</li>" for line in lines)
+    return f"<ul class=\"text-lines {class_name}\">{items}</ul>"
+
+
+def render_field(label: str, value: str = "") -> str:
+    label_html = html.escape(label.strip().rstrip(":"))
+    value_html = render_text(value, "field-value") if value.strip() else ""
+    empty_class = " empty" if not value_html else ""
+    return f"<section class=\"doc-field{empty_class}\"><h3>{label_html}</h3>{value_html}</section>"
+
+
+def render_generic_table(rows: list[list[str]]) -> str:
+    if not rows:
+        return ""
+    first_row = non_empty_cells(rows[0])
+    has_header = bool(first_row) and all(is_table_heading(cell) for cell in first_row)
+    rendered_rows: list[str] = []
+    for index, row in enumerate(rows):
+        tag = "th" if index == 0 and has_header else "td"
+        cells = "".join(f"<{tag}>{render_text(cell, 'table-text')}</{tag}>" for cell in row)
+        rendered_rows.append(f"<tr>{cells}</tr>")
+    return f"<div class=\"table-scroll\"><table>{''.join(rendered_rows)}</table></div>"
+
+
+def render_docx_table(rows: list[list[str]]) -> str:
+    parts: list[str] = []
+    index = 0
+    while index < len(rows):
+        row = rows[index]
+        cells = non_empty_cells(row)
+        if not cells:
+            index += 1
+            continue
+
+        if is_section_row(row):
+            parts.append(f"<h2>{html.escape(cells[0])}</h2>")
+            index += 1
+            continue
+
+        if len(cells) == 1:
+            text = cells[0]
+            next_cells = non_empty_cells(rows[index + 1]) if index + 1 < len(rows) else []
+            if ":" in text and not text.endswith(":"):
+                label, value = text.split(":", 1)
+                if len(label.strip()) <= 60 and value.strip():
+                    parts.append(render_field(label, value))
+                    index += 1
+                    continue
+            if is_field_label(text) and len(next_cells) == 1 and not is_section_row(rows[index + 1]) and not is_short_label(next_cells[0]):
+                parts.append(render_field(text, next_cells[0]))
+                index += 2
+            elif is_short_label(text) and len(next_cells) == 1 and not is_section_row(rows[index + 1]) and not is_short_label(next_cells[0]):
+                parts.append(render_field(text, next_cells[0]))
+                index += 2
+            elif is_short_label(text):
+                parts.append(render_field(text))
+                index += 1
+            else:
+                parts.append(render_text(text, "body-text"))
+                index += 1
+            continue
+
+        if len(cells) == 2 and is_short_label(cells[0]):
+            parts.append(render_field(cells[0], cells[1]))
+            index += 1
+            continue
+
+        table_rows = [row]
+        index += 1
+        while index < len(rows):
+            next_row = rows[index]
+            next_cells = non_empty_cells(next_row)
+            if not next_cells or is_section_row(next_row) or len(next_cells) == 1:
+                break
+            table_rows.append(next_row)
+            index += 1
+        parts.append(render_generic_table(table_rows))
+
+    return f"<section class=\"doc-table structured\">{''.join(parts)}</section>"
+
+
+def render_preview_html(
+    title: str,
+    source_rel: str,
+    blocks: list[tuple[str, Any]],
+    notice: str,
+) -> str:
+    body_parts: list[str] = []
+    for kind, content in blocks:
+        if kind == "table" and isinstance(content, list):
+            if content and all(isinstance(row, list) for row in content):
+                body_parts.append(render_docx_table(content))
+            else:
+                rows = "\n".join(f"<li>{html.escape(str(row))}</li>" for row in content)
+                body_parts.append(f"<section class=\"doc-table\"><ul>{rows}</ul></section>")
+        else:
+            body_parts.append(render_text(str(content), "body-text"))
+
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{html.escape(title)}</title>
+  <style>
+    :root {{
+      color: #10233f;
+      background: #f3f6fa;
+      font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+    }}
+    body {{
+      margin: 0;
+      padding: 32px 20px;
+    }}
+    main {{
+      max-width: 1040px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #d8e2ef;
+      border-radius: 8px;
+      padding: 30px 38px 42px;
+      box-shadow: 0 10px 26px rgba(16, 35, 63, 0.08);
+    }}
+    header {{
+      border-bottom: 1px solid #d8e2ef;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+    }}
+    h1 {{
+      font-size: 25px;
+      line-height: 1.25;
+      margin: 0 0 8px;
+    }}
+    h2 {{
+      border-top: 1px solid #dbe5f0;
+      color: #0f3764;
+      font-size: 18px;
+      line-height: 1.35;
+      margin: 26px 0 14px;
+      padding-top: 18px;
+    }}
+    h2:first-child {{
+      border-top: 0;
+      margin-top: 0;
+      padding-top: 0;
+    }}
+    h3 {{
+      color: #526681;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      line-height: 1.35;
+      margin: 0 0 6px;
+      text-transform: uppercase;
     }}
     .meta {{
       color: #526681;
@@ -200,23 +767,88 @@ def render_preview_html(
       border-radius: 6px;
       color: #174a7c;
       font-size: 13px;
-      margin: 0 0 18px;
+      margin: 0 0 22px;
       padding: 10px 12px;
     }}
     p {{
-      margin: 0 0 12px;
-      white-space: normal;
+      margin: 0;
     }}
     .doc-table {{
-      background: #f8fafc;
-      border: 1px solid #d8e2ef;
-      border-radius: 6px;
-      margin: 12px 0;
-      padding: 12px 16px;
+      margin: 0;
     }}
     .doc-table ul {{
       margin: 0;
       padding-left: 20px;
+    }}
+    .doc-field {{
+      background: #fbfcfe;
+      border: 1px solid #e1e8f1;
+      border-radius: 6px;
+      margin: 10px 0;
+      padding: 12px 14px;
+    }}
+    .doc-field.empty {{
+      background: transparent;
+      border-style: dashed;
+      color: #526681;
+    }}
+    .field-value,
+    .body-text {{
+      max-width: 76ch;
+    }}
+    .text-lines {{
+      margin: 0;
+      max-width: 82ch;
+      padding-left: 20px;
+    }}
+    .text-lines li {{
+      margin: 4px 0;
+      padding-left: 2px;
+    }}
+    .table-scroll {{
+      margin: 12px 0;
+      overflow-x: auto;
+    }}
+    table {{
+      border-collapse: collapse;
+      min-width: 100%;
+      table-layout: fixed;
+    }}
+    th,
+    td {{
+      border: 1px solid #d8e2ef;
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }}
+    th {{
+      background: #eef3f8;
+      color: #243b57;
+      font-weight: 700;
+    }}
+    td {{
+      background: #fff;
+    }}
+    th p,
+    td p {{
+      max-width: none;
+    }}
+    @media (max-width: 720px) {{
+      body {{
+        padding: 0;
+      }}
+      main {{
+        border-left: 0;
+        border-radius: 0;
+        border-right: 0;
+        padding: 22px 18px 34px;
+      }}
+      h1 {{
+        font-size: 21px;
+      }}
+      .doc-field {{
+        padding: 11px 12px;
+      }}
     }}
   </style>
 </head>
@@ -238,10 +870,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Generate lightweight in-site HTML previews for DOCX and H5P resources.")
     parser.add_argument("--course", required=True, help="Course code, for example ENG3U.")
     parser.add_argument("--workspace-root", default=str(Path(__file__).resolve().parents[2]))
+    parser.add_argument("--course-root", default="", help="Optional absolute course directory. Defaults to <workspace-root>/courseware/<COURSE>.")
     args = parser.parse_args()
 
     workspace_root = Path(args.workspace_root).resolve()
-    course_root = workspace_root / "courseware" / args.course
+    course_root = Path(args.course_root).resolve() if args.course_root else workspace_root / "courseware" / args.course
     manifest_path = course_root / "course-manifest.json"
     report_path = workspace_root / "ossd-course-portal" / "deployment" / f"{args.course}-lightweight-preview-report.json"
 
@@ -258,26 +891,39 @@ def main() -> int:
             continue
 
         source_path = course_root / source_rel
-        preview_rel = f"previews-html/{sanitize_segment(source_rel)}.html"
-        preview_path = course_root / preview_rel
-
         if not source_path.exists():
             skipped.append({"path": source_rel, "reason": "missing-source"})
             continue
 
         if source_rel not in generated:
             if ext == ".docx":
+                preview_rel = f"previews-html/{sanitize_segment(source_rel)}.html"
+                preview_path = course_root / preview_rel
                 blocks = extract_docx_blocks(source_path)
                 title = item.get("label") or Path(source_rel).stem
                 notice = "Lightweight in-site preview generated from DOCX text. Use the download button for the original layout."
+                preview_path.parent.mkdir(parents=True, exist_ok=True)
+                preview_path.write_text(render_preview_html(title, source_rel, blocks, notice), encoding="utf-8")
                 generated_by_type["docx"] += 1
             else:
-                h5p_title, blocks = extract_h5p_blocks(source_path)
-                title = item.get("label") or h5p_title
-                notice = "Readable in-site preview generated from the H5P package. Use the download button for the original interactive package."
+                try:
+                    _content, meta = read_h5p_content(source_path)
+                    preview_rel = f"{source_rel[:-4]}/index.html"
+                    preview_path = course_root / preview_rel
+                    safe_extract_h5p_package(source_path, preview_path.parent)
+                    preview_path.write_text(
+                        render_h5p_standalone_player(meta, source_rel, source_path.name),
+                        encoding="utf-8",
+                    )
+                except Exception as exc:
+                    preview_rel = f"previews-html/{sanitize_segment(source_rel)}.html"
+                    preview_path = course_root / preview_rel
+                    h5p_title, blocks = extract_h5p_blocks(source_path)
+                    title = item.get("label") or h5p_title
+                    notice = f"H5P standalone player generation failed: {exc}. Readable fallback generated from package text."
+                    preview_path.parent.mkdir(parents=True, exist_ok=True)
+                    preview_path.write_text(render_preview_html(title, source_rel, blocks, notice), encoding="utf-8")
                 generated_by_type["h5p"] += 1
-            preview_path.parent.mkdir(parents=True, exist_ok=True)
-            preview_path.write_text(render_preview_html(title, source_rel, blocks, notice), encoding="utf-8")
             generated[source_rel] = preview_rel
 
         if item.get("previewPath") != generated[source_rel]:

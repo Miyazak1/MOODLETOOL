@@ -899,25 +899,12 @@ const coursewareViewerStyle = `
     border: 1px solid #d4e1f0;
     padding: 8px 10px;
   }
-  .ossd-viewer-note {
-    max-width: 1080px;
-    margin: 18px auto;
-    padding: 10px 14px;
-    border: 1px solid #c7daf0;
-    border-radius: 8px;
-    background: #eef6ff;
-    color: #35506e;
-    font-size: 13px;
-  }
 </style>`;
 
 function injectCoursewareViewerStyle(html) {
-  const note = `<div class="ossd-viewer-note">本页为本地化课程资源预览，原 Moodle 页面已用本站阅读样式打开。下载按钮可获取原始文件。</div>`;
-  const injected = /<\/head>/i.test(html)
+  return /<\/head>/i.test(html)
     ? html.replace(/<\/head>/i, `${coursewareViewerStyle}</head>`)
     : `${coursewareViewerStyle}\n${html}`;
-  if (/<body\b[^>]*>/i.test(injected)) return injected.replace(/<body\b([^>]*)>/i, `<body$1>${note}`);
-  return `${note}\n${injected}`;
 }
 
 function shouldUseCoursewareViewerStyle(filePath) {
@@ -968,7 +955,6 @@ function renderCoursewareTextViewer(filePath, text) {
   </style>
 </head>
 <body>
-  <div class="ossd-viewer-note">本页为本地化课程文本预览，下载按钮可获取原始文件。</div>
   <article class="ossd-text-document">
     <h1>${htmlEscape(title)}</h1>
     <pre>${htmlEscape(text)}</pre>
@@ -1735,7 +1721,7 @@ async function generateDocumentPreviews(course) {
 
 async function generateLightweightPreviews(course) {
   const scriptPath = join(projectRoot, "tools", "generate_lightweight_docx_previews.py");
-  return runCommand("python", [scriptPath, "--course", course], projectRoot);
+  return runCommand("python", [scriptPath, "--course", course, "--workspace-root", workspaceRoot, "--course-root", courseRoot(course)], projectRoot);
 }
 
 async function generateContentWorkbench() {
@@ -3118,6 +3104,13 @@ async function commitManifestCoursePackageImport({ course, importId, actor, revi
   writeJsonFile(join(root, "course-manifest.json"), manifest);
   const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
   const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after whole-course ZIP import.");
+  let lightweightPreview = null;
+  let lightweightPreviewWarning = null;
+  try {
+    lightweightPreview = await generateLightweightPreviews(course);
+  } catch (error) {
+    lightweightPreviewWarning = error instanceof Error ? error.message : String(error);
+  }
   await appendAdminHistory(course, {
     actor,
     action: "course-package-import",
@@ -3127,6 +3120,8 @@ async function commitManifestCoursePackageImport({ course, importId, actor, revi
     copiedTopLevelEntries,
     removedGeneratedLocalPackageNotes,
     lifecycleStatus: lifecycle.status,
+    lightweightPreview: lightweightPreview?.stdout?.trim() || null,
+    lightweightPreviewWarning,
   });
 
   let cleanup = { removed: false };
@@ -3148,6 +3143,8 @@ async function commitManifestCoursePackageImport({ course, importId, actor, revi
     cleanup,
     catalogEntry,
     lifecycle,
+    lightweightPreview: lightweightPreview?.stdout?.trim() || null,
+    lightweightPreviewWarning,
     manifest: "manifest restored from course package",
   };
 }
@@ -3245,6 +3242,13 @@ async function commitCoursePackageImport({ course, importId, actor }) {
   writeJsonFile(join(courseRoot(course), "course-manifest.json"), manifest);
   const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
   const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after whole-course ZIP import.");
+  let lightweightPreview = null;
+  let lightweightPreviewWarning = null;
+  try {
+    lightweightPreview = await generateLightweightPreviews(course);
+  } catch (error) {
+    lightweightPreviewWarning = error instanceof Error ? error.message : String(error);
+  }
   await appendAdminHistory(course, {
     actor,
     action: "course-package-import",
@@ -3254,6 +3258,8 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     removedGeneratedLocalPackageNotes,
     backups,
     lifecycleStatus: lifecycle.status,
+    lightweightPreview: lightweightPreview?.stdout?.trim() || null,
+    lightweightPreviewWarning,
   });
   let cleanup = { removed: false };
   try {
@@ -3272,6 +3278,8 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     catalogEntry,
     lifecycle,
     removedGeneratedLocalPackageNotes,
+    lightweightPreview: lightweightPreview?.stdout?.trim() || null,
+    lightweightPreviewWarning,
     manifest: "manifest updated directly from course package import",
   };
 }
