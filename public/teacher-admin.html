@@ -22,6 +22,9 @@
       }
       body {
         margin: 0;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
         font-family: Arial, "Microsoft YaHei", sans-serif;
         color: var(--ink);
         background: var(--page);
@@ -57,6 +60,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-end;
+        min-width: 0;
         gap: 10px;
       }
       .auth-chip {
@@ -79,11 +83,13 @@
         display: grid;
         grid-template-columns: 260px minmax(0, 1fr);
         gap: 20px;
+        width: 100%;
         max-width: 1440px;
         margin: 0 auto;
         padding: 24px;
       }
       .admin-sidebar {
+        min-width: 0;
         position: sticky;
         top: 18px;
         align-self: start;
@@ -131,6 +137,7 @@
         padding: 0;
       }
       section {
+        min-width: 0;
         border: 1px solid var(--line);
         border-radius: 8px;
         padding: 18px;
@@ -143,6 +150,7 @@
       }
       .panel-heading {
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
         gap: 12px;
         align-items: flex-start;
@@ -174,19 +182,22 @@
       }
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
         gap: 12px;
+        min-width: 0;
       }
       .grid.compact {
-        grid-template-columns: minmax(260px, 1.3fr) repeat(3, minmax(140px, 0.7fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
       }
       .actions {
         display: flex;
         flex-wrap: wrap;
+        min-width: 0;
         gap: 8px;
         margin-top: 14px;
       }
       button {
+        max-width: 100%;
         min-height: 38px;
         border: 1px solid #93abc6;
         border-radius: 6px;
@@ -195,6 +206,8 @@
         font-weight: 700;
         background: #f7fbff;
         cursor: pointer;
+        overflow-wrap: anywhere;
+        white-space: normal;
       }
       button:hover:not(:disabled),
       .button-link:hover {
@@ -219,6 +232,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        max-width: 100%;
         min-height: 38px;
         border: 1px solid #93abc6;
         border-radius: 6px;
@@ -228,6 +242,8 @@
         text-decoration: none;
         background: #f7fbff;
         transition: transform 0.15s ease, box-shadow 0.15s ease;
+        overflow-wrap: anywhere;
+        white-space: normal;
       }
       .button-link.primary {
         border-color: rgba(255, 255, 255, 0.42);
@@ -321,6 +337,7 @@
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 14px;
         align-items: center;
+        min-width: 0;
         border: 1px solid #94c9bd;
         border-radius: 8px;
         padding: 14px 16px;
@@ -357,6 +374,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-end;
+        min-width: 0;
         gap: 8px;
       }
       .workflow-steps {
@@ -584,6 +602,7 @@
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 10px;
         align-items: center;
+        min-width: 0;
         border: 1px solid var(--line);
         border-radius: 8px;
         padding: 10px;
@@ -618,7 +637,9 @@
       }
       .table-wrap {
         margin-top: 12px;
+        max-width: 100%;
         overflow-x: auto;
+        overflow-y: hidden;
         border: 1px solid var(--line);
         border-radius: 8px;
         background: #fff;
@@ -651,7 +672,7 @@
       table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 780px;
+        min-width: min(780px, 100%);
       }
       th,
       td {
@@ -659,6 +680,7 @@
         padding: 9px 10px;
         text-align: left;
         font-size: 13px;
+        overflow-wrap: anywhere;
       }
       th {
         color: var(--muted);
@@ -745,6 +767,15 @@
         }
         .admin-nav {
           grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        }
+        .course-context-bar {
+          grid-template-columns: 1fr;
+        }
+        .context-actions {
+          justify-content: flex-start;
+        }
+        .task-card {
+          grid-template-columns: 1fr;
         }
       }
       [hidden] {
