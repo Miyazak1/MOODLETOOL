@@ -916,10 +916,31 @@ function injectCoursewareViewerStyle(html) {
     : `${coursewareViewerStyle}\n${html}`;
 }
 
+const localCoursewareRoots = [
+  courseActiveRoot,
+  join(workspaceRoot, "courseware"),
+  join(projectRoot, "courseware"),
+].map((root) => resolve(root));
+
+function relativeInsideRoot(root, filePath) {
+  const relativePath = toPosixPath(relative(root, filePath));
+  if (!relativePath || relativePath.startsWith("../") || relativePath === "..") return "";
+  return relativePath;
+}
+
+function coursewareRelativePath(filePath) {
+  const resolvedFilePath = resolve(filePath);
+  for (const root of localCoursewareRoots) {
+    const relativePath = relativeInsideRoot(root, resolvedFilePath);
+    if (relativePath) return relativePath;
+  }
+  return "";
+}
+
 function shouldUseCoursewareViewerStyle(filePath) {
   if (extname(filePath).toLowerCase() !== ".html") return false;
-  const relativePath = toPosixPath(relative(courseActiveRoot, filePath)).toLowerCase();
-  if (relativePath.startsWith("../") || relativePath === "..") return false;
+  const relativePath = coursewareRelativePath(filePath).toLowerCase();
+  if (!relativePath) return false;
   if (basename(filePath).toLowerCase() === "presentation.html") return false;
   if (relativePath.includes("/html5-package") || relativePath.includes("/html5-package-admin")) return false;
   return relativePath.includes("/book_sections/") || relativePath.includes("/downloaded_resources/imported/");
@@ -927,9 +948,7 @@ function shouldUseCoursewareViewerStyle(filePath) {
 
 function shouldUseCoursewareTextViewer(filePath) {
   if (![".md", ".txt"].includes(extname(filePath).toLowerCase())) return false;
-  const relativePath = toPosixPath(relative(courseActiveRoot, filePath)).toLowerCase();
-  if (relativePath.startsWith("../") || relativePath === "..") return false;
-  return true;
+  return Boolean(coursewareRelativePath(filePath));
 }
 
 function titleFromText(filePath, text) {
@@ -991,7 +1010,7 @@ function renderTextLines(lines, toc) {
 function renderCoursewareTextViewer(filePath, text, rawHref = "") {
   const title = titleFromText(filePath, text);
   const author = authorFromText(text);
-  const relativePath = toPosixPath(relative(courseActiveRoot, filePath));
+  const relativePath = coursewareRelativePath(filePath) || basename(filePath);
   const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
   const toc = buildTextToc(lines);
   const downloadHref = rawHref ? `${rawHref}${rawHref.includes("?") ? "&" : "?"}download=1` : "";
