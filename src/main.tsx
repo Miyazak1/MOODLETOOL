@@ -180,7 +180,7 @@ function MoodleEmbedButton({ row }: { row?: MoodleEmbedRow }) {
 
   return (
     <button className="button-link moodle-copy" onClick={copy} title="复制可粘贴到 Moodle HTML/source 编辑器的代码" type="button">
-      {copied ? "已复制 Moodle" : "复制 Moodle"}
+      {copied ? "已复制" : "代码"}
     </button>
   );
 }
@@ -211,16 +211,22 @@ function ResourceActions({
       : item.label;
 
   return (
-    <span className="resource-actions">
-      <a className={`button-link ${variant || ""}`} {...localOpenProps(item, courseBaseUrl)}>
-        在线查看 · {title}
-      </a>
-      {showDownload && (
-        <a className="button-link download" {...localDownloadProps(item, courseBaseUrl)}>
-          下载
+    <span className={`resource-actions resource-card ${variant || ""}`}>
+      <span className="resource-card-main">
+        <span className="resource-card-label">{title}</span>
+        {item.type ? <span className="resource-card-meta">{item.type.toUpperCase()}</span> : null}
+      </span>
+      <span className="resource-card-actions">
+        <a className="button-link view" {...localOpenProps(item, courseBaseUrl)}>
+          查看
         </a>
-      )}
-      <MoodleEmbedButton row={moodleEmbed} />
+        {showDownload && (
+          <a className="button-link download" {...localDownloadProps(item, courseBaseUrl)}>
+            下载
+          </a>
+        )}
+        <MoodleEmbedButton row={moodleEmbed} />
+      </span>
     </span>
   );
 }
@@ -246,14 +252,39 @@ function ISpringActions({
       }
     : null;
 
-  if (!downloadItem) return null;
+  const playItem = item.path || item.url
+    ? {
+        label,
+        path: item.path,
+        url: item.url,
+      }
+    : null;
+
+  if (!playItem && !downloadItem) return null;
 
   return (
-    <span className="resource-actions">
-      <a className="button-link download" {...localDownloadProps(downloadItem, courseBaseUrl)}>
-        下载 iSpring
-      </a>
+    <span className="resource-actions resource-card featured ispring-card">
+      <span className="resource-card-main">
+        <span className="resource-card-label">
+          {label}
+          {item.slideCount ? ` · ${item.slideCount} slides` : ""}
+          {item.videoSegmentCount ? ` · ${item.videoSegmentCount} videos` : ""}
+        </span>
+        <span className="resource-card-meta">iSpring</span>
+      </span>
+      <span className="resource-card-actions">
+      {playItem ? (
+        <a className="button-link ispring" {...localOpenProps(playItem, courseBaseUrl)}>
+          播放课件
+        </a>
+      ) : null}
+      {downloadItem ? (
+        <a className="button-link download" {...localDownloadProps(downloadItem, courseBaseUrl)}>
+          下载包
+        </a>
+      ) : null}
       <MoodleEmbedButton row={moodleEmbed} />
+      </span>
     </span>
   );
 }
@@ -393,6 +424,18 @@ function flowLabelForKey(key: string): string {
   return LESSON_FLOW.find((section) => section.key === key)?.label || roleLabel(key);
 }
 
+function flowGuideForKey(key: string): string {
+  const guides: Record<string, string> = {
+    expectations: "先看本节学习目标和成功标准，确认老师备课时要覆盖的重点。",
+    lesson: "课堂主体内容。这里通常包含 Moodle lesson 说明、iSpring 课件和直接配套文件。",
+    resources: "本节配套文件、活动表、外部资源本地化副本等，适合课前整理。",
+    handsOn: "练习、测验或课堂活动。能在线播放的活动会放在这里，文件可下载备用。",
+    consolidation: "巩固环节、总结视频、H5P 或 exit activity，适合课尾复盘。",
+    homework: "课后作业、提交说明和学生需要完成的材料。",
+  };
+  return guides[key] || "本节其他可用资源。";
+}
+
 function ispringFlowKey(item: Lesson["ispring"][number]): string {
   const value = `${item.label || ""} ${item.path || ""}`.toLowerCase();
   if (value.includes("consolidation")) return "consolidation";
@@ -489,7 +532,10 @@ function LessonFlowPanel({
         return (
           <section className="lesson-flow-section" key={key}>
             <header>
-              <span>{flowLabelForKey(key)}</span>
+              <div>
+                <span>{flowLabelForKey(key)}</span>
+                <p>{flowGuideForKey(key)}</p>
+              </div>
               <strong>
                 {sectionBookPages.length + sectionDownloads.length + sectionISpring.length} item
                 {sectionBookPages.length + sectionDownloads.length + sectionISpring.length === 1 ? "" : "s"}
@@ -561,6 +607,10 @@ function countLessonPlans(units: Unit[]): number {
 
 function countIspringEntries(units: Unit[]): number {
   return units.reduce((sum, unit) => sum + unit.lessons.reduce((lessonSum, lesson) => lessonSum + lesson.ispring.length, 0), 0);
+}
+
+function countLocalResources(units: Unit[]): number {
+  return units.reduce((sum, unit) => sum + unitLocalDownloadCount(unit), 0);
 }
 
 function needsLessonPlan(lesson: Lesson): boolean {
@@ -665,6 +715,26 @@ function CourseRoadmapPanel({ item }: { item?: CourseRoadmapEntry }) {
   );
 }
 
+function PrepFlowGuide() {
+  const steps = [
+    ["1", "Course", "先看大纲、整体说明和课程级文件。"],
+    ["2", "Unit", "进入单元，确认 Unit Plan、核心文本和本单元课程序列。"],
+    ["3", "Lesson", "按 Lesson Expectations、Lesson、Hands On、Consolidation、Homework 备课。"],
+    ["4", "Use", "课件可在线播放，文件可在线查看或下载，管理员可复制 Moodle 嵌入代码。"],
+  ];
+  return (
+    <div className="prep-flow-guide" aria-label="Teacher preparation flow">
+      {steps.map(([number, title, detail]) => (
+        <div className="prep-step" key={number}>
+          <span>{number}</span>
+          <strong>{title}</strong>
+          <p>{detail}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Overview({
   course,
   manifest,
@@ -732,10 +802,11 @@ function Overview({
           </div>
         ))}
       </div>
+      <PrepFlowGuide />
       <CourseRoadmapPanel item={roadmapItem} />
       {visibleCourseDownloads.length ? (
         <div className="course-downloads">
-          <h3>Course Documents</h3>
+          <h3>课程级文件</h3>
           <div className="lesson-tools">
             {visibleCourseDownloads.map((item) => (
               <ResourceActions courseBaseUrl={courseBaseUrl} item={item} key={resourceKey(item)} labelPrefix={roleLabel(item.role)} />
@@ -766,6 +837,68 @@ function CourseSelector({
           </option>
         ))}
       </select>
+    </section>
+  );
+}
+
+function CurrentCourseCard({ course, manifest }: { course: CourseCatalogEntry; manifest?: CourseManifest | null }) {
+  return (
+    <section className="current-course-card">
+      <span>当前课程</span>
+      <strong>{course.code}</strong>
+      <p>{course.title}</p>
+      {manifest ? (
+        <div className="current-course-stats">
+          <span>{manifest.units.length} Units</span>
+          <span>{countLessons(manifest.units)} Lessons</span>
+          <span>{countIspringEntries(manifest.units)} iSpring</span>
+          <span>{countLocalResources(manifest.units)} Files</span>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function UnitRoadmap({
+  units,
+  selectedUnit,
+  query,
+  onSelect,
+}: {
+  units: Unit[];
+  selectedUnit: number;
+  query: string;
+  onSelect: (unit: number) => void;
+}) {
+  return (
+    <section className="unit-roadmap panel" aria-label="Course unit roadmap">
+      <div className="unit-roadmap-header">
+        <div>
+          <p className="eyebrow dark">Unit Roadmap</p>
+          <h2>课程备课路径</h2>
+          <p>先选 Unit，再展开 Lesson。每个 Lesson 按 Moodle book 的教学环节组织。</p>
+        </div>
+        <span>{units.length} units</span>
+      </div>
+      <div className="unit-roadmap-grid">
+        {units.map((unit) => {
+          const visibleCount = unit.lessons.filter((lesson) => lessonMatches(lesson, query)).length;
+          return (
+            <button
+              className={`unit-roadmap-card ${unit.unit === selectedUnit ? "active" : ""}`}
+              key={unit.unit}
+              onClick={() => onSelect(unit.unit)}
+              type="button"
+            >
+              <span>U{unit.unit}</span>
+              <strong>{unit.title}</strong>
+              <p>
+                {visibleCount}/{unit.lessons.length} lessons · {unit.summary.ispring} iSpring · {unitLocalDownloadCount(unit)} files
+              </p>
+            </button>
+          );
+        })}
+      </div>
     </section>
   );
 }
@@ -1153,6 +1286,7 @@ function App() {
               selectedCourseCode={selectedCourse.code}
             />
           ) : null}
+          <CurrentCourseCard course={selectedCourse} manifest={manifest} />
           <div className="search-box">
             <label htmlFor="searchInput">搜索课程资源</label>
             <input
@@ -1183,6 +1317,12 @@ function App() {
                 courseBaseUrl={selectedCourse.baseUrl}
                 manifest={manifest}
                 roadmapItem={selectedRoadmapItem}
+              />
+              <UnitRoadmap
+                onSelect={setSelectedUnit}
+                query={normalizedQuery}
+                selectedUnit={selectedUnit}
+                units={manifest.units}
               />
               <UnitDetail
                 courseBaseUrl={selectedCourse.baseUrl}

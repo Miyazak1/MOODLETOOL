@@ -25,7 +25,9 @@ body {
   margin: 0;
   min-width: 320px;
   color: var(--ink);
-  background: var(--page);
+  background:
+    linear-gradient(180deg, #eef4f8 0, #f6f8fb 260px),
+    var(--page);
 }
 
 a {
@@ -141,6 +143,7 @@ input {
 
 .content {
   min-width: 0;
+  max-width: 1480px;
   padding: 22px 28px 42px;
 }
 
@@ -150,6 +153,51 @@ input {
 
 .course-selector {
   margin-bottom: 16px;
+}
+
+.current-course-card {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 16px;
+  border: 1px solid #b9c9dc;
+  border-radius: 8px;
+  padding: 14px;
+  background: #f6fbff;
+}
+
+.current-course-card > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.current-course-card strong {
+  color: var(--navy);
+  font-size: 24px;
+  line-height: 1.05;
+}
+
+.current-course-card p {
+  margin: 0;
+  color: #42526b;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.current-course-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.current-course-stats span {
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: #123d67;
+  background: #e7eff8;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .course-selector label {
@@ -243,10 +291,15 @@ input {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
+  box-shadow: 0 10px 28px rgba(21, 54, 93, 0.06);
 }
 
 .course-overview {
   margin-bottom: 18px;
+}
+
+.eyebrow.dark {
+  color: #55708d;
 }
 
 .overview-header {
@@ -355,6 +408,47 @@ input {
   color: var(--muted);
 }
 
+.prep-flow-guide {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  border-top: 1px solid var(--soft-line);
+  background: var(--soft-line);
+}
+
+.prep-step {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 7px 10px;
+  padding: 14px;
+  background: #fbfdff;
+}
+
+.prep-step span {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 900;
+  background: var(--navy);
+}
+
+.prep-step strong {
+  color: var(--navy);
+  line-height: 1.15;
+}
+
+.prep-step p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .course-roadmap {
   border-top: 1px solid var(--soft-line);
   padding: 14px 20px 16px;
@@ -431,6 +525,94 @@ input {
 .course-downloads h3 {
   margin: 0 0 10px;
   font-size: 14px;
+}
+
+.unit-roadmap {
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.unit-roadmap-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--soft-line);
+}
+
+.unit-roadmap-header h2 {
+  margin: 4px 0 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.unit-roadmap-header p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.unit-roadmap-header > span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--teal);
+  background: var(--green-soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.unit-roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  padding: 14px;
+}
+
+.unit-roadmap-card {
+  min-width: 0;
+  min-height: 116px;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  border: 1px solid var(--soft-line);
+  border-radius: 8px;
+  padding: 13px;
+  text-align: left;
+  color: var(--ink);
+  background: #fff;
+  cursor: pointer;
+}
+
+.unit-roadmap-card:hover,
+.unit-roadmap-card.active {
+  border-color: #77a0cf;
+  background: #f2f8ff;
+  box-shadow: inset 0 3px 0 var(--navy);
+}
+
+.unit-roadmap-card span {
+  width: max-content;
+  border-radius: 6px;
+  padding: 5px 8px;
+  color: #fff;
+  background: var(--navy);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.unit-roadmap-card strong {
+  overflow-wrap: anywhere;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.unit-roadmap-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .unit-heading {
@@ -572,6 +754,17 @@ input {
   margin: 2px 0 14px;
 }
 
+.lesson-tools .resource-card,
+.unit-actions .resource-card,
+.text-materials .resource-card {
+  flex: 1 1 280px;
+  width: auto;
+}
+
+.unit-actions .resource-card {
+  max-width: 420px;
+}
+
 .button-link {
   display: inline-flex;
   align-items: center;
@@ -594,33 +787,93 @@ input {
 }
 
 .resource-actions {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
   min-width: 0;
   max-width: 100%;
+}
+
+.resource-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+  min-height: 88px;
+  border: 1px solid #d5dfeb;
+  border-radius: 8px;
+  padding: 11px;
+  background: #fff;
+}
+
+.resource-card.plan {
+  border-color: #d8b36f;
+  background: #fffaf0;
+}
+
+.resource-card.ispring-card {
+  border-color: #94c9bd;
+  background: #f4fbf8;
+}
+
+.resource-card-main {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.resource-card-label {
+  color: #123d67;
+  font-weight: 800;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.resource-card-meta {
+  width: max-content;
+  max-width: 100%;
+  border-radius: 999px;
+  padding: 3px 8px;
+  color: #667085;
+  background: #eef2f6;
+  font-size: 11px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.resource-card-actions {
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
+  align-items: center;
 }
 
-.resource-actions .button-link {
-  flex: 1 1 auto;
-}
-
-.resource-actions .button-link.download {
+.resource-card-actions .button-link {
   flex: 0 0 auto;
-  min-width: 54px;
+  min-height: 32px;
+  padding: 6px 10px;
+  justify-content: center;
+  text-align: center;
+}
+
+.resource-card-actions .button-link.view {
+  border-color: #93abc6;
+  color: #123d67;
+  background: #f7fbff;
+}
+
+.resource-card-actions .button-link.download {
+  min-width: 50px;
   justify-content: center;
   border-color: #bcc9d8;
   color: #42526b;
   background: #fff;
 }
 
-.resource-actions .button-link.moodle-copy {
-  flex: 0 0 auto;
+.resource-card-actions .button-link.moodle-copy {
+  min-width: 48px;
   justify-content: center;
   border-color: #94c9bd;
   color: #0f5b54;
   background: #f0faf6;
+  font-size: 12px;
 }
 
 .button-link.ispring {
@@ -663,7 +916,7 @@ input {
 .lesson-flow-section {
   border: 1px solid var(--soft-line);
   border-radius: 8px;
-  background: #fbfcfe;
+  background: #fff;
   overflow: hidden;
 }
 
@@ -672,9 +925,9 @@ input {
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--soft-line);
-  background: #f4f7fb;
+  background: #f6f9fd;
 }
 
 .lesson-flow-section > header span {
@@ -682,16 +935,24 @@ input {
   font-weight: 800;
 }
 
+.lesson-flow-section > header p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .lesson-flow-section > header strong {
+  flex: 0 0 auto;
   color: var(--muted);
   font-size: 12px;
 }
 
 .lesson-flow-items {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-  gap: 8px;
-  padding: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 10px;
+  padding: 12px;
 }
 
 .lesson-flow-items .resource-actions {
@@ -891,6 +1152,10 @@ input {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .prep-flow-guide {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .lesson-summary {
     grid-template-columns: 58px minmax(0, 1fr) 24px;
   }
@@ -921,6 +1186,14 @@ input {
     grid-template-columns: 1fr;
   }
 
+  .prep-flow-guide {
+    grid-template-columns: 1fr;
+  }
+
+  .unit-roadmap-header {
+    flex-direction: column;
+  }
+
   .stat {
     border-right: 0;
     border-bottom: 1px solid var(--soft-line);
@@ -932,5 +1205,10 @@ input {
 
   .lesson-code {
     display: none;
+  }
+
+  .resource-card-actions .button-link {
+    flex: 1 1 auto;
+    justify-content: center;
   }
 }
