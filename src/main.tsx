@@ -126,16 +126,8 @@ function localDownloadCount(items: LinkableResource[] = []): number {
   return items.filter(isTeacherVisibleResource).length;
 }
 
-function isEmbeddedActivityResource(item: LinkableResource): boolean {
-  const role = (item.role || "").toLowerCase();
-  const type = (item.type || "").toLowerCase();
-  if (type === "h5p" && (role === "handson" || role === "hands_on" || role === "consolidation")) return true;
-  if (type === "mp4" && role === "consolidation") return true;
-  return false;
-}
-
 function lessonLocalDownloadCount(lesson: Lesson): number {
-  const downloads = dedupeResources(lesson.downloads || []).filter((item) => !isEmbeddedActivityResource(item));
+  const downloads = dedupeResources(lesson.downloads || []);
   return localDownloadCount([...downloads, ...visibleBookSectionsForLesson(lesson)]);
 }
 
@@ -500,11 +492,9 @@ function LessonFlowPanel({
   visibleISpring: Lesson["ispring"];
 }) {
   const bookSections = visibleBookSectionsForLesson(lesson);
-  const embeddedSectionKeys = new Set(bookSections.map(bookSectionFlowKey));
   const regularDownloads = dedupeResources(
     visibleDownloads.filter((item) => {
       if (item.role === "lesson_book" || item.role === "lesson_book_section") return false;
-      if (isEmbeddedActivityResource(item) && embeddedSectionKeys.has(downloadFlowKey(item))) return false;
       return true;
     }),
   );
@@ -545,7 +535,7 @@ function LessonFlowPanel({
               {sectionBookPages.map((item) => (
                 <ResourceActions
                   courseBaseUrl={courseBaseUrl}
-                  displayLabel={bookSectionFlowKey(item) === "expectations" ? "Lesson Expectations" : item.sectionLabel || "Book Section"}
+                  displayLabel={item.label || item.sectionLabel || flowLabelForKey(bookSectionFlowKey(item))}
                   item={item}
                   key={resourceKey(item)}
                   moodleEmbed={item.path ? moodleEmbedByPath?.get(item.path) : undefined}
