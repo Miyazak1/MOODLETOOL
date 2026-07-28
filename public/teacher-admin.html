@@ -206,6 +206,10 @@
         transform: none;
         box-shadow: none;
       }
+      button.is-busy {
+        opacity: 0.72;
+        cursor: progress;
+      }
       button.primary {
         border-color: #6ca39b;
         color: #0f5b54;
@@ -411,6 +415,39 @@
       }
       .upload-status strong {
         color: #123d67;
+      }
+      .feedback-bar {
+        display: grid;
+        gap: 6px;
+        border: 1px solid #bfd2e8;
+        border-radius: 8px;
+        padding: 12px 14px;
+        color: #123d67;
+        background: #f7fbff;
+        box-shadow: 0 10px 24px rgba(21, 54, 93, 0.05);
+      }
+      .feedback-bar.success {
+        border-color: #94c9bd;
+        color: #0f5b54;
+        background: #f0faf6;
+      }
+      .feedback-bar.warn {
+        border-color: #e4c687;
+        color: #735014;
+        background: #fff8eb;
+      }
+      .feedback-bar.error {
+        border-color: #efb4b4;
+        color: #8b2f2f;
+        background: #fff1f1;
+      }
+      .feedback-bar strong {
+        color: inherit;
+      }
+      .feedback-detail {
+        color: var(--muted);
+        font-size: 13px;
+        overflow-wrap: anywhere;
       }
       .progress {
         width: 100%;
@@ -773,6 +810,10 @@
           <a class="button-link subtle" id="contextCourseLink" href="/?course=ENG3U">前台查看</a>
         </div>
       </div>
+      <div class="feedback-bar" id="adminFeedback" hidden>
+        <strong id="adminFeedbackTitle">Ready</strong>
+        <span class="feedback-detail" id="adminFeedbackDetail"></span>
+      </div>
       <section class="admin-panel" data-admin-panel="login">
         <div class="panel-heading">
           <div>
@@ -946,6 +987,10 @@
         <div class="actions">
           <button class="primary" id="uploadButton" type="button">上传并刷新 manifest</button>
         </div>
+        <div class="upload-status" id="singleUploadStatus" hidden>
+          <strong id="singleUploadStatusTitle">等待上传</strong>
+          <div class="meta-line" id="singleUploadStatusDetail"></div>
+        </div>
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="package" hidden>
@@ -1099,6 +1144,12 @@
       const coursePackageUploadButton = document.querySelector("#coursePackageUploadButton");
       const coursePackageCommitButton = document.querySelector("#coursePackageCommitButton");
       const courseUploadTasks = document.querySelector("#courseUploadTasks");
+      const adminFeedback = document.querySelector("#adminFeedback");
+      const adminFeedbackTitle = document.querySelector("#adminFeedbackTitle");
+      const adminFeedbackDetail = document.querySelector("#adminFeedbackDetail");
+      const singleUploadStatus = document.querySelector("#singleUploadStatus");
+      const singleUploadStatusTitle = document.querySelector("#singleUploadStatusTitle");
+      const singleUploadStatusDetail = document.querySelector("#singleUploadStatusDetail");
       const backupList = document.querySelector("#backupList");
       const userCourseCheckboxes = document.querySelector("#userCourseCheckboxes");
       const userTable = document.querySelector("#userTable");
@@ -1147,6 +1198,74 @@
 
       function write(value) {
         output.textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+      }
+
+      function errorMessage(error) {
+        return error instanceof Error ? error.message : String(error || "未知错误");
+      }
+
+      function responseMessage(data, fallback = "") {
+        if (!data || typeof data !== "object") return fallback;
+        return data.message || data.error || data.warning || data.previewWarning || fallback;
+      }
+
+      function showFeedback(title, type = "info", detail = "") {
+        if (!adminFeedback) return;
+        adminFeedback.hidden = false;
+        adminFeedback.className = `feedback-bar ${type}`;
+        adminFeedbackTitle.textContent = title;
+        adminFeedbackDetail.textContent = detail || "";
+        adminFeedbackDetail.hidden = !detail;
+      }
+
+      function setSingleUploadStatus(title, detail = "", type = "info") {
+        if (!singleUploadStatus) return;
+        singleUploadStatus.hidden = false;
+        singleUploadStatus.classList.toggle("error", type === "error");
+        singleUploadStatusTitle.textContent = title;
+        singleUploadStatusTitle.className = type === "error" ? "error" : "";
+        singleUploadStatusDetail.textContent = detail;
+      }
+
+      function setButtonBusy(button, busy, busyText = "处理中...") {
+        if (!button) return;
+        if (busy) {
+          button.dataset.originalText = button.textContent;
+          button.textContent = busyText;
+          button.disabled = true;
+          button.classList.add("is-busy");
+        } else {
+          if (button.dataset.originalText) button.textContent = button.dataset.originalText;
+          button.disabled = false;
+          button.classList.remove("is-busy");
+          delete button.dataset.originalText;
+        }
+      }
+
+      async function runButtonAction(buttonOrSelector, pendingTitle, action, successTitle = "操作完成") {
+        const button = typeof buttonOrSelector === "string" ? document.querySelector(buttonOrSelector) : buttonOrSelector;
+        setButtonBusy(button, true);
+        showFeedback(pendingTitle, "info");
+        try {
+          const data = await action();
+          if (data?.canceled) {
+            showFeedback(data.message || "已取消操作", "warn");
+            return data;
+          }
+          if (data?.ok === false) {
+            throw new Error(responseMessage(data, "服务器返回失败。"));
+          }
+          const detail = responseMessage(data, "");
+          showFeedback(successTitle, "success", detail);
+          return data;
+        } catch (error) {
+          const message = errorMessage(error);
+          showFeedback("操作失败", "error", message);
+          write(`Error: ${message}`);
+          return null;
+        } finally {
+          setButtonBusy(button, false);
+        }
       }
 
       function portalCourseUrl(courseCode = fields.course.value || "ENG3U") {
@@ -1223,6 +1342,7 @@
         if (!target) return;
         if (target.classList.contains("auth-required") && !adminAuthenticated) {
           activeAdminPanel = "login";
+          showFeedback("请先登录管理员账号", "warn", "登录后才能使用后台管理功能。");
         } else {
           activeAdminPanel = panelName;
         }
@@ -2318,6 +2438,8 @@
 
         renderCurrentCourseUploadTasks();
         fields.file.focus();
+        switchAdminPanel("upload");
+        showFeedback("已填入上传表单", "success", `${item.course} · ${uploadTypeLabel(item.uploadType)} · ${unitLessonText(item)}。请选择对应文件后上传。`);
         write(`已填入：${item.course} · ${uploadTypeLabel(item.uploadType)} · ${unitLessonText(item)}。请选择文件：${item.suggestedFilename || "对应资料"}`);
       }
 
@@ -2404,6 +2526,7 @@
           }),
         });
         const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(responseMessage(data, `登录失败：HTTP ${response.status}`));
         setAuthenticated(Boolean(data.ok), data);
         if (data.ok) {
           await readUsers({ writeOutput: false });
@@ -2413,6 +2536,7 @@
           await restoreCoursePackageTask({ writeOutput: false });
         }
         write(data);
+        return data;
       }
 
       async function logout() {
@@ -2424,6 +2548,7 @@
         setAuthenticated(false);
         fields.password.value = "";
         write(data);
+        return data;
       }
 
       async function readStatus({ writeOutput = true } = {}) {
@@ -2449,7 +2574,9 @@
       async function readHistory() {
         const url = `/api/admin/history?course=${encodeURIComponent(fields.course.value)}&limit=30`;
         const response = await fetch(url, { credentials: "same-origin" });
-        write(await response.json());
+        const data = await response.json();
+        write(data);
+        return data;
       }
 
       async function readBackups({ writeOutput = true } = {}) {
@@ -2521,6 +2648,7 @@
           message: `${code} 已选中。启用、归档、上传和状态读取都会作用于这门课程。`,
           readiness: status?.readiness || null,
         });
+        showFeedback("当前课程已切换", "success", `${code} 已选中。上传、归档和维护都会作用于这门课程。`);
       }
 
       async function setSelectedCourseLifecycle(status) {
@@ -2544,6 +2672,7 @@
             await loadSelectedCourseManifest();
           }
         }
+        return data;
       }
 
       async function applyLaunchCourseAllowlist() {
@@ -2552,11 +2681,10 @@
           .map((course) => course.trim().toUpperCase())
           .filter(Boolean);
         if (!courses.length) {
-          write("请填写首批上线课程，例如 ENG3U,ESLEO。");
-          return;
+          throw new Error("请填写首批上线课程，例如 ENG3U,ESLEO。");
         }
         const message = `确认只开放 ${courses.join(", ")}？其他 catalog 课程会设为 archived，在前台隐藏并拦截直链。`;
-        if (!confirm(message)) return;
+        if (!confirm(message)) return { canceled: true, message: "已取消应用首批上线状态。" };
         const response = await fetch("/api/admin/course-status/launch-allowlist", {
           method: "POST",
           credentials: "same-origin",
@@ -2573,6 +2701,7 @@
           await readCourseLifecycle({ writeOutput: false });
           await readUsers({ writeOutput: false });
         }
+        return data;
       }
 
       async function readCourseLifecycleJobs({ writeOutput = true } = {}) {
@@ -2608,6 +2737,7 @@
           }
           await readCourseLifecycle({ writeOutput: false });
         }
+        return data;
       }
 
       async function saveUser() {
@@ -2620,12 +2750,10 @@
           courses: selectedUserCourses(),
         };
         if (!payload.username) {
-          write("请填写 Username。");
-          return;
+          throw new Error("请填写 Username。");
         }
         if (!payload.courses.length) {
-          write("请至少选择一门课程，或选择全部课程。");
-          return;
+          throw new Error("请至少选择一门课程，或选择全部课程。");
         }
         const response = await fetch("/api/admin/users", {
           method: "POST",
@@ -2639,15 +2767,15 @@
           renderUsers(data);
         }
         write(data);
+        return data;
       }
 
       async function deleteUser() {
         const username = fields.portalUsername.value.trim();
         if (!username) {
-          write("请先选择或填写要删除的用户。");
-          return;
+          throw new Error("请先选择或填写要删除的用户。");
         }
-        if (!confirm(`确认删除用户 ${username}？`)) return;
+        if (!confirm(`确认删除用户 ${username}？`)) return { canceled: true, message: `已取消删除用户 ${username}。` };
         const params = new URLSearchParams({
           username,
           course: fields.course.value,
@@ -2662,6 +2790,7 @@
           renderUsers(data);
         }
         write(data);
+        return data;
       }
 
       async function cleanup(mode) {
@@ -2675,6 +2804,7 @@
         if (data.ok) {
           readStatus().catch((error) => write(`Error: ${error.message}`));
         }
+        return data;
       }
 
       async function generatePreviews() {
@@ -2693,21 +2823,22 @@
           await loadSelectedCourseManifest();
           await readStatus({ writeOutput: false });
         }
+        return data;
       }
 
       async function upload() {
         const file = fields.file.files[0];
         if (!file) {
-          write("请选择文件。");
-          return;
+          setSingleUploadStatus("请选择文件", "", "error");
+          throw new Error("请选择文件。");
         }
         if (fields.type.value === "ispring-zip" && fields.lesson.disabled) {
-          write("当前 Unit 没有可绑定的 Lesson，不能上传 iSpring。请先上传或生成对应 Lesson Plan。");
-          return;
+          setSingleUploadStatus("当前 Unit 没有可绑定的 Lesson", "不能上传 iSpring。请先上传或生成对应 Lesson Plan。", "error");
+          throw new Error("当前 Unit 没有可绑定的 Lesson，不能上传 iSpring。请先上传或生成对应 Lesson Plan。");
         }
         if (fields.type.value === "text-material" && !fields.textId.value.trim()) {
-          write("请填写 Text ID，例如 sunday-park。");
-          return;
+          setSingleUploadStatus("请填写 Text ID", "例如 sunday-park。", "error");
+          throw new Error("请填写 Text ID，例如 sunday-park。");
         }
         const params = new URLSearchParams({
           course: fields.course.value,
@@ -2718,6 +2849,7 @@
           textId: fields.textId.value.trim(),
         });
         write(`Uploading ${file.name}...`);
+        setSingleUploadStatus(`正在上传 ${file.name}`, `${uploadTypeLabel(fields.type.value)} · ${unitLessonText({ unit: fields.unit.value, lesson: fields.lesson.value })}`);
         const response = await fetch(`/api/admin/upload?${params.toString()}`, {
           method: "POST",
           credentials: "same-origin",
@@ -2728,8 +2860,13 @@
         });
         const data = await response.json();
         write(data);
+        if (!response.ok || !data.ok) {
+          setSingleUploadStatus("上传失败", responseMessage(data, `HTTP ${response.status}`), "error");
+          throw new Error(responseMessage(data, `上传失败：HTTP ${response.status}`));
+        }
         if (data.ok) {
           fields.file.value = "";
+          setSingleUploadStatus("上传完成", `${file.name} 已进入 ${fields.course.value}，manifest 和容量信息已刷新。`);
           await loadSelectedCourseManifest();
           await readStatus({ writeOutput: false });
           await readStorage({ writeOutput: false });
@@ -2739,6 +2876,7 @@
             await readBackups({ writeOutput: false });
           }
         }
+        return data;
       }
 
       async function uploadCoursePackage() {
@@ -2926,54 +3064,57 @@
       }
 
       document.querySelector("#statusButton").addEventListener("click", () => {
-        readStatus().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#statusButton", "正在读取当前课程状态...", () => readStatus(), "课程状态已更新");
       });
       document.querySelector("#storageButton").addEventListener("click", () => {
-        readStorage().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#storageButton", "正在刷新存储容量...", () => readStorage(), "存储容量已更新");
       });
       document.querySelector("#fillLocalLogin").addEventListener("click", () => {
         fields.username.value = "admin";
         fields.password.value = "local-admin-password";
+        showFeedback("已填入本地默认账号密码", "success");
         write("已填入本地默认账号密码。");
       });
       document.querySelector("#loginButton").addEventListener("click", () => {
-        login().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#loginButton", "正在登录...", () => login(), "登录成功");
       });
       document.querySelector("#logoutButton").addEventListener("click", () => {
-        logout().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#logoutButton", "正在退出登录...", () => logout(), "已退出登录");
       });
       document.querySelector("#uploadButton").addEventListener("click", () => {
-        upload().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#uploadButton", "正在上传文件...", () => upload(), "文件上传完成");
       });
       coursePackageUploadButton.addEventListener("click", () => {
         uploadCoursePackage().catch((error) => write(`Error: ${error.message}`));
       });
       document.querySelector("#coursePackageCommitButton").addEventListener("click", () => {
-        commitCoursePackage().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#coursePackageCommitButton", "正在导入整课 ZIP...", () => commitCoursePackage(), "整课导入完成").then(() => {
+          if (!currentCoursePackageImport) coursePackageCommitButton.disabled = true;
+        });
       });
       document.querySelector("#historyButton").addEventListener("click", () => {
-        readHistory().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#historyButton", "正在读取上传历史...", () => readHistory(), "上传历史已更新");
       });
       document.querySelector("#backupsButton").addEventListener("click", () => {
-        readBackups().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#backupsButton", "正在读取备份列表...", () => readBackups(), "备份列表已更新");
       });
       document.querySelector("#generatePreviewsButton").addEventListener("click", () => {
-        generatePreviews().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#generatePreviewsButton", "正在生成当前课程预览...", () => generatePreviews(), "预览生成任务已完成");
       });
       document.querySelector("#readinessButton").addEventListener("click", () => {
-        readAllCourseReadiness().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#readinessButton", "正在读取全课程缺口...", () => readAllCourseReadiness(), "全课程缺口已更新");
       });
       document.querySelector("#uploadGapsButton").addEventListener("click", () => {
-        readUploadGaps().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#uploadGapsButton", "正在读取上传清单...", () => readUploadGaps(), "上传清单已更新");
       });
       document.querySelector("#contentWorkbenchButton").addEventListener("click", () => {
-        readContentWorkbench().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#contentWorkbenchButton", "正在读取内容工作台...", () => readContentWorkbench(), "内容工作台已更新");
       });
       document.querySelector("#refreshCourseStatusButton").addEventListener("click", () => {
-        readCourseLifecycle().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#refreshCourseStatusButton", "正在读取课程状态表...", () => readCourseLifecycle(), "课程状态表已更新");
       });
       document.querySelector("#applyLaunchCoursesButton").addEventListener("click", () => {
-        applyLaunchCourseAllowlist().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#applyLaunchCoursesButton", "正在应用首批上线状态...", () => applyLaunchCourseAllowlist(), "首批上线状态已应用");
       });
       fields.lifecycleFilter.addEventListener("change", () => {
         renderCourseLifecycle(courseLifecycleData);
@@ -2982,53 +3123,64 @@
         renderCourseLifecycle(courseLifecycleData);
       });
       document.querySelector("#activateCourseButton").addEventListener("click", () => {
-        setSelectedCourseLifecycle("active").catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#activateCourseButton", `正在启用 ${fields.course.value}...`, () => setSelectedCourseLifecycle("active"), "课程已启用");
       });
       document.querySelector("#archiveCourseButton").addEventListener("click", () => {
         if (confirm(`确认将 ${fields.course.value} 设为 archived？前台将隐藏该课程，直链也会被拦截。`)) {
-          setSelectedCourseLifecycle("archived").catch((error) => write(`Error: ${error.message}`));
+          runButtonAction("#archiveCourseButton", `正在归档 ${fields.course.value}...`, () => setSelectedCourseLifecycle("archived"), "课程已归档");
+        } else {
+          showFeedback("已取消归档当前课程", "warn");
         }
       });
       document.querySelector("#archivePackageButton").addEventListener("click", () => {
         if (confirm(`确认为 ${fields.course.value} 生成归档包？课程仍保持 active。`)) {
-          startCourseLifecycleJob("archive", { setArchived: false }).catch((error) => write(`Error: ${error.message}`));
+          runButtonAction("#archivePackageButton", `正在生成 ${fields.course.value} 归档包...`, () => startCourseLifecycleJob("archive", { setArchived: false }), "归档包任务已完成");
+        } else {
+          showFeedback("已取消生成归档包", "warn");
         }
       });
       document.querySelector("#archiveAndDeleteButton").addEventListener("click", () => {
         if (confirm(`确认归档 ${fields.course.value} 并在校验通过后删除 active 目录？这个操作会释放空间，但课程需重新解压后才能在线播放。`)) {
-          startCourseLifecycleJob("archive", { deleteActive: true, setArchived: true }).catch((error) => write(`Error: ${error.message}`));
+          runButtonAction("#archiveAndDeleteButton", `正在归档并删除 ${fields.course.value} active...`, () => startCourseLifecycleJob("archive", { deleteActive: true, setArchived: true }), "归档并删除任务已完成");
+        } else {
+          showFeedback("已取消归档并删除 active", "warn");
         }
       });
       document.querySelector("#restoreArchiveButton").addEventListener("click", () => {
         if (confirm(`确认从最新归档包解压启用 ${fields.course.value}？如果 active 目录已存在，任务会拒绝覆盖。`)) {
-          startCourseLifecycleJob("activate").catch((error) => write(`Error: ${error.message}`));
+          runButtonAction("#restoreArchiveButton", `正在从归档包解压启用 ${fields.course.value}...`, () => startCourseLifecycleJob("activate"), "课程解压启用任务已完成");
+        } else {
+          showFeedback("已取消从归档包解压启用", "warn");
         }
       });
       document.querySelector("#refreshLifecycleJobsButton").addEventListener("click", () => {
-        readCourseLifecycleJobs().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#refreshLifecycleJobsButton", "正在刷新任务列表...", () => readCourseLifecycleJobs(), "任务列表已更新");
       });
       document.querySelector("#refreshUsersButton").addEventListener("click", () => {
-        readUsers().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#refreshUsersButton", "正在刷新用户列表...", () => readUsers(), "用户列表已更新");
       });
       document.querySelector("#saveUserButton").addEventListener("click", () => {
-        saveUser().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#saveUserButton", "正在保存用户权限...", () => saveUser(), "用户权限已保存");
       });
       document.querySelector("#clearUserFormButton").addEventListener("click", () => {
         clearUserForm();
+        showFeedback("用户表单已清空", "success");
         write("已清空用户表单。");
       });
       document.querySelector("#deleteUserButton").addEventListener("click", () => {
-        deleteUser().catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#deleteUserButton", "正在删除用户...", () => deleteUser(), "用户已删除");
       });
       adminNavButtons.forEach((button) => {
         button.addEventListener("click", () => switchAdminPanel(button.dataset.adminNav));
       });
       document.querySelector("#cleanupTempButton").addEventListener("click", () => {
-        cleanup("temp").catch((error) => write(`Error: ${error.message}`));
+        runButtonAction("#cleanupTempButton", "正在清理临时上传/解压目录...", () => cleanup("temp"), "临时目录已清理");
       });
       document.querySelector("#cleanupZipButton").addEventListener("click", () => {
         if (confirm("确认清理当前课程后台上传保存的 iSpring ZIP 原包？正式 iSpring 页面不会被删除。")) {
-          cleanup("zips").catch((error) => write(`Error: ${error.message}`));
+          runButtonAction("#cleanupZipButton", "正在清理 iSpring ZIP 原包...", () => cleanup("zips"), "iSpring ZIP 原包已清理");
+        } else {
+          showFeedback("已取消清理 iSpring ZIP 原包", "warn");
         }
       });
       fields.type.addEventListener("change", updateTypeFields);
@@ -3042,6 +3194,7 @@
         loadSelectedCourseManifest()
           .then(renderCurrentCourseUploadTasks)
           .then(() => restoreCoursePackageTask({ writeOutput: false }))
+          .then(() => showFeedback("当前课程已切换", "success", `${fields.course.value} 已成为后台操作上下文。`))
           .catch((error) => write(`Error: ${error.message}`));
       });
       fields.unit.addEventListener("change", populateLessonOptions);
@@ -3061,6 +3214,7 @@
         const button = event.target.closest("[data-user-action='edit']");
         if (!button) return;
         fillUserForm(button.dataset.username);
+        showFeedback("已载入用户表单", "success", `${button.dataset.username} 的权限可在右侧表单继续编辑。`);
       });
       courseLifecycleTable.addEventListener("click", (event) => {
         if (!(event.target instanceof Element)) return;
