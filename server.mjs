@@ -1927,6 +1927,13 @@ function writeJsonFile(path, data) {
   writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 }
 
+async function removeFileIfExists(path) {
+  if (!path) return false;
+  if (!existsSync(path)) return false;
+  await rm(path, { force: true });
+  return true;
+}
+
 function normalizeImportPath(value) {
   return String(value || "").replaceAll("\\", "/");
 }
@@ -2178,6 +2185,10 @@ async function mergeCoursePackageChunks({ course, importId, originalFilename, ch
     percent: 100,
   });
   const review = await createCoursePackageReview({ course, sourceZip, originalFilename, importId });
+  const uploadedZipRemoved = await removeFileIfExists(sourceZip);
+  review.uploadedZipRemoved = uploadedZipRemoved;
+  review.uploadedZipRemovedAt = uploadedZipRemoved ? new Date().toISOString() : null;
+  writeJsonFile(coursePackageReviewPath(course, importId), review);
   writeCoursePackageTask(course, importId, {
     status: "complete",
     phase: "ready",
@@ -2684,7 +2695,14 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     installedCount: installed.length,
     backups,
   });
-  return { ok: true, course, importId, installed, backups, manifest: "manifest updated directly from course package import" };
+  let cleanup = { removed: false };
+  try {
+    await rm(coursePackageDir(course, importId), { recursive: true, force: true });
+    cleanup = { removed: true };
+  } catch (error) {
+    cleanup = { removed: false, error: error instanceof Error ? error.message : String(error) };
+  }
+  return { ok: true, course, importId, installed, backups, cleanup, manifest: "manifest updated directly from course package import" };
 }
 
 async function handleAdminApi(req, res) {
@@ -3106,6 +3124,10 @@ async function handleAdminApi(req, res) {
       try {
         await writeRequestToFileWithProgress(req, sourceZip, { course, importId, contentLength });
         const review = await createCoursePackageReview({ course, sourceZip, originalFilename, importId });
+        const uploadedZipRemoved = await removeFileIfExists(sourceZip);
+        review.uploadedZipRemoved = uploadedZipRemoved;
+        review.uploadedZipRemovedAt = uploadedZipRemoved ? new Date().toISOString() : null;
+        writeJsonFile(coursePackageReviewPath(course, importId), review);
         writeCoursePackageTask(course, importId, {
           status: "complete",
           phase: "ready",
