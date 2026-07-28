@@ -1708,10 +1708,35 @@ function runCommand(command, args, cwd, options = {}) {
   });
 }
 
+async function runPythonScript(scriptPath, args, cwd) {
+  const candidates = [];
+  if (process.env.PYTHON_BIN) candidates.push([process.env.PYTHON_BIN]);
+  candidates.push(process.platform === "win32" ? ["python"] : ["python3"]);
+  candidates.push(process.platform === "win32" ? ["py", "-3"] : ["python"]);
+
+  let lastError;
+  for (const candidate of candidates) {
+    const [command, ...baseArgs] = candidate;
+    try {
+      return await runCommand(command, [...baseArgs, scriptPath, ...args], cwd);
+    } catch (error) {
+      lastError = error;
+      const message = error instanceof Error ? error.message : String(error);
+      const mayTryNext =
+        message.includes("ENOENT") ||
+        message.includes("not found") ||
+        message.includes("No installed Python found") ||
+        message.includes("exited 103");
+      if (!mayTryNext) throw error;
+    }
+  }
+  throw lastError || new Error("Python interpreter not found.");
+}
+
 async function rebuildManifest(course) {
   const scriptName = course.toUpperCase() === "ENG3U" ? "build_course_manifest.py" : "build_plan_course_manifest.py";
   const scriptPath = join(projectRoot, "tools", scriptName);
-  return runCommand("python", [scriptPath, "--course", course], workspaceRoot);
+  return runPythonScript(scriptPath, ["--course", course], workspaceRoot);
 }
 
 async function generateDocumentPreviews(course) {
@@ -1721,7 +1746,7 @@ async function generateDocumentPreviews(course) {
 
 async function generateLightweightPreviews(course) {
   const scriptPath = join(projectRoot, "tools", "generate_lightweight_docx_previews.py");
-  return runCommand("python", [scriptPath, "--course", course, "--workspace-root", workspaceRoot, "--course-root", courseRoot(course)], projectRoot);
+  return runPythonScript(scriptPath, ["--course", course, "--workspace-root", workspaceRoot, "--course-root", courseRoot(course)], projectRoot);
 }
 
 async function generateContentWorkbench() {

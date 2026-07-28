@@ -15,7 +15,7 @@
     "import:public-domain-texts": "node scripts/import-public-domain-texts.mjs",
     "package:ispring-downloads": "python tools/package_ispring_downloads.py",
     "generate:previews": "node scripts/generate-document-previews.mjs",
-    "generate:lightweight-docx-previews": "python tools/generate_lightweight_docx_previews.py",
+    "generate:lightweight-docx-previews": "node scripts/run-python-tool.mjs tools/generate_lightweight_docx_previews.py",
     "build:plan-course": "python tools/build_plan_course_manifest.py",
     "build:plan-courses": "node scripts/rebuild-plan-course-manifests.mjs",
     "audit:readiness": "node scripts/generate-readiness-report.mjs",
