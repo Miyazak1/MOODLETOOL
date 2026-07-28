@@ -59,6 +59,22 @@
         justify-content: flex-end;
         gap: 10px;
       }
+      .auth-chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 38px;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 999px;
+        padding: 7px 12px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .auth-chip.signed-out {
+        color: #143b60;
+        background: #fff;
+      }
       .admin-shell {
         display: grid;
         grid-template-columns: 260px minmax(0, 1fr);
@@ -245,6 +261,43 @@
         width: 100%;
         min-height: 34px;
         margin-top: 4px;
+      }
+      .sidebar-session {
+        margin: 0 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px 12px;
+        background: #fff;
+      }
+      .sidebar-session span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .sidebar-session strong {
+        display: block;
+        margin-top: 3px;
+        color: #123d67;
+      }
+      .auth-status {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 16px;
+        border: 1px solid #94c9bd;
+        border-radius: 8px;
+        padding: 14px;
+        color: #0f5b54;
+        background: #f0faf6;
+      }
+      .auth-status.signed-out {
+        border-color: #e4c687;
+        color: #735014;
+        background: #fff8eb;
+      }
+      .auth-status strong {
+        color: inherit;
+        font-size: 18px;
       }
       pre {
         min-height: 120px;
@@ -592,6 +645,7 @@
         <p class="admin-subtitle">上传、归档、容量和老师权限集中管理；内容仍按课程页面结构展示给老师。</p>
       </div>
       <div class="topbar-actions">
+        <span class="auth-chip signed-out" id="topAuthStatus">未登录</span>
         <a class="button-link primary" id="topCourseLink" href="/?course=ENG3U">打开当前课程</a>
         <a class="button-link" id="topPortalLink" href="/">返回课程门户</a>
       </div>
@@ -605,8 +659,12 @@
           <small id="sidebarCourseTitle">English</small>
           <a class="button-link subtle" id="sidebarCourseLink" href="/?course=ENG3U">前台查看这门课</a>
         </div>
+        <div class="sidebar-session" id="sidebarSessionStatus">
+          <span>登录状态</span>
+          <strong>未登录</strong>
+        </div>
         <nav class="admin-nav" aria-label="Admin sections">
-          <button class="active" type="button" data-admin-nav="login">登录</button>
+          <button class="active" type="button" data-admin-nav="login">登录状态</button>
           <button type="button" data-admin-nav="course" data-auth-required="1" disabled>连接 / 状态</button>
           <button type="button" data-admin-nav="upload" data-auth-required="1" disabled>单文件上传</button>
           <button type="button" data-admin-nav="package" data-auth-required="1" disabled>整课 ZIP 导入</button>
@@ -627,23 +685,31 @@
           </div>
           <a class="button-link" href="/">返回课程门户</a>
         </div>
-        <div class="grid">
-          <div>
-            <label for="username">Username</label>
-            <input id="username" autocomplete="username" />
+        <div class="auth-status signed-out" id="adminSessionStatus">
+          <strong>未登录</strong>
+          <span>请输入管理员账号。登录后会开放左侧所有后台功能。</span>
+        </div>
+        <div id="loginForm">
+          <div class="grid">
+            <div>
+              <label for="username">Username</label>
+              <input id="username" autocomplete="username" />
+            </div>
+            <div>
+              <label for="password">Password</label>
+              <input id="password" type="password" autocomplete="current-password" />
+              <p class="hint" id="localTokenHint" hidden>
+                本地启动默认账号：<strong>admin</strong> / <strong>local-admin-password</strong>
+                <button class="inline-action" id="fillLocalLogin" type="button">填入</button>
+              </p>
+            </div>
           </div>
-          <div>
-            <label for="password">Password</label>
-            <input id="password" type="password" autocomplete="current-password" />
-            <p class="hint" id="localTokenHint" hidden>
-              本地启动默认账号：<strong>admin</strong> / <strong>local-admin-password</strong>
-              <button class="inline-action" id="fillLocalLogin" type="button">填入</button>
-            </p>
+          <p class="warn">正式服务器需要在宝塔/Node 环境变量里设置 ADMIN_UPLOADS_ENABLED=1、ADMIN_USERNAME、ADMIN_PASSWORD、ADMIN_SESSION_SECRET。默认限制：普通文件 50MB，iSpring ZIP 2048MB。</p>
+          <div class="actions">
+            <button class="primary" id="loginButton" type="button">登录</button>
           </div>
         </div>
-        <p class="warn">正式服务器需要在宝塔/Node 环境变量里设置 ADMIN_UPLOADS_ENABLED=1、ADMIN_USERNAME、ADMIN_PASSWORD、ADMIN_SESSION_SECRET。默认限制：普通文件 50MB，iSpring ZIP 2048MB。</p>
         <div class="actions">
-          <button class="primary" id="loginButton" type="button">登录</button>
           <button id="logoutButton" type="button" hidden>退出登录</button>
         </div>
       </section>
@@ -935,6 +1001,10 @@
       ];
       const sidebarCourseCode = document.querySelector("#sidebarCourseCode");
       const sidebarCourseTitle = document.querySelector("#sidebarCourseTitle");
+      const topAuthStatus = document.querySelector("#topAuthStatus");
+      const sidebarSessionStatus = document.querySelector("#sidebarSessionStatus");
+      const adminSessionStatus = document.querySelector("#adminSessionStatus");
+      const loginForm = document.querySelector("#loginForm");
       const isLocalAccess = ["localhost", "127.0.0.1"].includes(window.location.hostname);
       let currentManifest = null;
       let currentUploadGapData = null;
@@ -946,6 +1016,7 @@
       let storageData = null;
       let selectedLifecycleCourse = "";
       let adminAuthenticated = false;
+      let currentAdminSession = null;
       let activeAdminPanel = "login";
       const coursePackageChunkBytes = 64 * 1024 * 1024;
       const coursePackageChunkMaxRetries = 5;
@@ -982,6 +1053,32 @@
         });
         if (sidebarCourseCode) sidebarCourseCode.textContent = code;
         if (sidebarCourseTitle) sidebarCourseTitle.textContent = selectedCourseLabel() || "课程资料";
+      }
+
+      function renderAuthState() {
+        const username = currentAdminSession?.username || "admin";
+        if (topAuthStatus) {
+          topAuthStatus.textContent = adminAuthenticated ? `已登录：${username}` : "未登录";
+          topAuthStatus.classList.toggle("signed-out", !adminAuthenticated);
+        }
+        if (sidebarSessionStatus) {
+          sidebarSessionStatus.innerHTML = adminAuthenticated
+            ? `<span>登录状态</span><strong>已登录 · ${escapeHtml(username)}</strong>`
+            : "<span>登录状态</span><strong>未登录</strong>";
+        }
+        if (adminSessionStatus) {
+          adminSessionStatus.classList.toggle("signed-out", !adminAuthenticated);
+          adminSessionStatus.innerHTML = adminAuthenticated
+            ? `
+              <strong>已登录</strong>
+              <span>当前管理员：${escapeHtml(username)}。左侧功能已解锁，可以继续上传、导入、管理课程。</span>
+            `
+            : `
+              <strong>未登录</strong>
+              <span>请输入管理员账号。登录后会开放左侧所有后台功能。</span>
+            `;
+        }
+        if (loginForm) loginForm.hidden = adminAuthenticated;
       }
 
       function renderAdminPanels() {
@@ -2145,19 +2242,21 @@
         populateUnitOptions();
       }
 
-      function setAuthenticated(isAuthenticated) {
-        adminAuthenticated = isAuthenticated;
+      function setAuthenticated(isAuthenticated, sessionData = null) {
+        adminAuthenticated = Boolean(isAuthenticated);
+        currentAdminSession = adminAuthenticated ? { ...(currentAdminSession || {}), ...(sessionData || {}) } : null;
         if (!adminAuthenticated && activeAdminPanel !== "output") activeAdminPanel = "login";
         if (adminAuthenticated && activeAdminPanel === "login") activeAdminPanel = "course";
         document.querySelector("#logoutButton").hidden = !isAuthenticated;
         document.querySelector("#loginButton").hidden = isAuthenticated;
+        renderAuthState();
         renderAdminPanels();
       }
 
       async function checkSession() {
         const response = await fetch("/api/admin/session", { credentials: "same-origin" });
         const data = await response.json();
-        setAuthenticated(Boolean(data.authenticated));
+        setAuthenticated(Boolean(data.authenticated), data);
         if (data.authenticated) {
           await readUsers({ writeOutput: false });
           await readCourseLifecycle({ writeOutput: false });
@@ -2180,7 +2279,7 @@
           }),
         });
         const data = await response.json();
-        setAuthenticated(Boolean(data.ok));
+        setAuthenticated(Boolean(data.ok), data);
         if (data.ok) {
           await readUsers({ writeOutput: false });
           await readCourseLifecycle({ writeOutput: false });
@@ -2198,6 +2297,7 @@
         });
         const data = await response.json();
         setAuthenticated(false);
+        fields.password.value = "";
         write(data);
       }
 
