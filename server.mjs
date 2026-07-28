@@ -929,11 +929,72 @@ function shouldUseCoursewareTextViewer(filePath) {
   if (![".md", ".txt"].includes(extname(filePath).toLowerCase())) return false;
   const relativePath = toPosixPath(relative(courseActiveRoot, filePath)).toLowerCase();
   if (relativePath.startsWith("../") || relativePath === "..") return false;
-  return relativePath.includes("/book_sections/") || relativePath.includes("/downloaded_resources/imported/");
+  return true;
 }
 
-function renderCoursewareTextViewer(filePath, text) {
-  const title = basename(filePath);
+function titleFromText(filePath, text) {
+  const titleMatch = /^Title:\s*(.+)$/im.exec(text);
+  if (titleMatch?.[1]) return titleMatch[1].trim();
+  const firstMeaningfulLine = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .find((line) => line && !/^the project gutenberg ebook of\b/i.test(line));
+  return firstMeaningfulLine || basename(filePath);
+}
+
+function authorFromText(text) {
+  const authorMatch = /^Author:\s*(.+)$/im.exec(text);
+  if (authorMatch?.[1]) return authorMatch[1].trim();
+  const byMatch = /^by\s+(.+)$/im.exec(text);
+  return byMatch?.[1]?.trim() || "";
+}
+
+function textHeadingLevel(line) {
+  const trimmed = line.trim();
+  if (/^(ACT|CHAPTER|BOOK|PART)\s+\b/i.test(trimmed)) return 2;
+  if (/^SCENE\s+\b/i.test(trimmed)) return 3;
+  if (/^[A-Z][A-Z0-9 ,.'’:-]{4,}$/.test(trimmed) && trimmed.length <= 80) return 2;
+  return 0;
+}
+
+function buildTextToc(lines) {
+  const items = [];
+  for (const line of lines) {
+    const text = line.trim();
+    const level = textHeadingLevel(text);
+    if (!level) continue;
+    if (/PROJECT GUTENBERG|LICENSE|TRANSCRIBER|PRODUCED BY/i.test(text)) continue;
+    if (items.some((item) => item.text === text)) continue;
+    items.push({ id: `section-${items.length + 1}`, text, level });
+    if (items.length >= 36) break;
+  }
+  return items;
+}
+
+function renderTextLines(lines, toc) {
+  const headingIds = new Map(toc.map((item) => [item.text, item.id]));
+  return lines
+    .map((line) => {
+      const trimmed = line.trim();
+      if (!trimmed) return "<div class=\"text-blank\" aria-hidden=\"true\"></div>";
+      const level = textHeadingLevel(trimmed);
+      const id = headingIds.get(trimmed);
+      if (level && id) {
+        const tag = level === 3 ? "h3" : "h2";
+        return `<${tag} id="${htmlEscape(id)}" class="text-heading text-heading-${level}">${htmlEscape(trimmed)}</${tag}>`;
+      }
+      return `<p>${htmlEscape(line)}</p>`;
+    })
+    .join("\n");
+}
+
+function renderCoursewareTextViewer(filePath, text, rawHref = "") {
+  const title = titleFromText(filePath, text);
+  const author = authorFromText(text);
+  const relativePath = toPosixPath(relative(courseActiveRoot, filePath));
+  const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+  const toc = buildTextToc(lines);
+  const downloadHref = rawHref ? `${rawHref}${rawHref.includes("?") ? "&" : "?"}download=1` : "";
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -943,30 +1004,154 @@ function renderCoursewareTextViewer(filePath, text) {
   ${coursewareViewerStyle}
   <style>
     .ossd-text-document {
-      max-width: 1080px;
-      margin: 18px auto 64px;
-      padding: 28px 32px;
+      max-width: 1180px;
+      margin: 24px auto 72px;
+      padding: 0;
       border: 1px solid #d4e1f0;
       border-radius: 10px;
       background: #fff;
       box-shadow: 0 14px 36px rgba(14, 44, 74, 0.08);
+      overflow: hidden;
+    }
+    .text-hero {
+      padding: 30px 36px 26px;
+      border-bottom: 1px solid #dbe7f3;
+      background: linear-gradient(180deg, #f8fbff 0%, #fff 100%);
+    }
+    .text-kicker {
+      margin: 0 0 8px;
+      color: #58708e;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
     .ossd-text-document h1 {
-      margin: 0 0 18px;
-      font-size: 24px;
-    }
-    .ossd-text-document pre {
       margin: 0;
+      font-size: 32px;
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+    .text-meta {
+      margin-top: 10px;
+      color: #3d5575;
+      font-size: 15px;
+    }
+    .text-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .text-action {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid #9fb8d4;
+      border-radius: 7px;
+      background: #f8fbff;
+      color: #003366;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .text-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 230px) minmax(0, 1fr);
+      gap: 0;
+    }
+    .text-toc {
+      padding: 24px 18px;
+      border-right: 1px solid #e0e9f4;
+      background: #f7fafe;
+    }
+    .text-toc-title {
+      margin: 0 0 12px;
+      color: #58708e;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+    .text-toc a {
+      display: block;
+      padding: 7px 8px;
+      border-radius: 6px;
+      color: #003366;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .text-toc a.level-3 {
+      padding-left: 18px;
+      color: #48617f;
+      font-weight: 600;
+    }
+    .text-toc a:hover {
+      background: #e8f1fb;
+    }
+    .text-body {
+      max-width: 820px;
+      padding: 34px 44px 56px;
+      color: #0a2440;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 18px;
+      line-height: 1.72;
+    }
+    .text-body p {
+      margin: 0 0 10px;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
-      font: inherit;
+    }
+    .text-heading {
+      margin: 34px 0 16px;
+      color: #001f3f;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+    .text-heading-2 {
+      font-size: 25px;
+    }
+    .text-heading-3 {
+      font-size: 20px;
+    }
+    .text-blank {
+      height: 18px;
+    }
+    @media (max-width: 900px) {
+      .text-layout {
+        grid-template-columns: 1fr;
+      }
+      .text-toc {
+        border-right: 0;
+        border-bottom: 1px solid #e0e9f4;
+      }
+      .text-body {
+        padding: 26px 22px 44px;
+        font-size: 17px;
+      }
+      .text-hero {
+        padding: 24px 22px;
+      }
+      .ossd-text-document h1 {
+        font-size: 26px;
+      }
     }
   </style>
 </head>
 <body>
   <article class="ossd-text-document">
-    <h1>${htmlEscape(title)}</h1>
-    <pre>${htmlEscape(text)}</pre>
+    <header class="text-hero">
+      <p class="text-kicker">Course Text</p>
+      <h1>${htmlEscape(title)}</h1>
+      <div class="text-meta">${author ? `${htmlEscape(author)} · ` : ""}${htmlEscape(relativePath)}</div>
+      ${downloadHref ? `<div class="text-actions"><a class="text-action" href="${htmlEscape(downloadHref)}" download>下载原始 TXT</a></div>` : ""}
+    </header>
+    <div class="text-layout">
+      ${toc.length ? `<nav class="text-toc" aria-label="Text sections"><p class="text-toc-title">Contents</p>${toc.map((item) => `<a class="level-${item.level}" href="#${htmlEscape(item.id)}">${htmlEscape(item.text)}</a>`).join("")}</nav>` : ""}
+      <main class="text-body">
+        ${renderTextLines(lines, toc)}
+      </main>
+    </div>
   </article>
 </body>
 </html>`;
@@ -4102,6 +4287,8 @@ async function handlePortalApi(req, res) {
 }
 
 async function sendFile(req, res, filePath) {
+  const requestUrl = new URL(req.url || "/", "http://127.0.0.1");
+  const shouldDownloadRaw = requestUrl.searchParams.get("download") === "1";
   const fileStat = await stat(filePath);
   if (fileStat.isDirectory()) {
     const indexPath = join(filePath, "index.html");
@@ -4110,14 +4297,14 @@ async function sendFile(req, res, filePath) {
 
   const ext = extname(filePath).toLowerCase();
   const contentType = mimeTypes[ext] || "application/octet-stream";
-  if (shouldUseCoursewareViewerStyle(filePath)) {
+  if (!shouldDownloadRaw && shouldUseCoursewareViewerStyle(filePath)) {
     const html = await readFile(filePath, "utf8");
     sendHtml(res, 200, injectCoursewareViewerStyle(html));
     return;
   }
-  if (shouldUseCoursewareTextViewer(filePath)) {
+  if (!shouldDownloadRaw && shouldUseCoursewareTextViewer(filePath)) {
     const text = await readFile(filePath, "utf8");
-    sendHtml(res, 200, renderCoursewareTextViewer(filePath, text));
+    sendHtml(res, 200, renderCoursewareTextViewer(filePath, text, requestUrl.pathname));
     return;
   }
   const xAccelRedirect = xAccelRedirectForCourseware(filePath);
@@ -4134,6 +4321,9 @@ async function sendFile(req, res, filePath) {
 
   res.setHeader("Content-Type", contentType);
   res.setHeader("Accept-Ranges", "bytes");
+  if (shouldDownloadRaw) {
+    res.setHeader("Content-Disposition", `attachment; filename="${basename(filePath).replaceAll("\"", "")}"`);
+  }
   if (ext === ".html" || ext === ".json") {
     res.setHeader("Cache-Control", "no-store, max-age=0");
     res.setHeader("Pragma", "no-cache");
