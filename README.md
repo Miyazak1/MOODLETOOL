@@ -386,6 +386,12 @@ For Baota deployment, see:
 deployment/BAOTA_DEPLOYMENT.md
 ```
 
+For PM2 process supervision, auto-start after reboot, and production log locations, see:
+
+```text
+docs/宝塔PM2生产运行说明_2026-07-28.md
+```
+
 ## Structure
 
 ```text

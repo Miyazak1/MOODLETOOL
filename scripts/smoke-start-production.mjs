@@ -27,6 +27,8 @@ try {
     "COURSE_ACTIVE_ROOT=/www/wwwroot/ossd-portal/courseware-active",
     "COURSE_ARCHIVE_ROOT=/www/wwwroot/ossd-portal/courseware-archive",
     "X_ACCEL_COURSEWARE_PREFIX=/_protected_courseware/",
+    "EMBED_TOKEN_SECRET=embed-secret-0123456789-0123456789-0123456789",
+    "EMBED_PUBLIC_ORIGIN=https://courses.example.com",
     'PORTAL_USERS_JSON=[{"username":"admin","password":"StrongAdminPassword123!","role":"admin","courses":["*"]}]',
     "ADMIN_UPLOADS_ENABLED=1",
     "ADMIN_USERNAME=admin-main",
