@@ -1295,6 +1295,41 @@ async function readCourseCatalog() {
   return JSON.parse(await readFile(courseCatalogPath, "utf8"));
 }
 
+async function ensureCourseCatalogEntry(course, manifest) {
+  const code = safeSegment(course).toUpperCase();
+  if (!code) throw new Error("Course is required.");
+  const catalog = await readCourseCatalog();
+  catalog.courses = Array.isArray(catalog.courses) ? catalog.courses : [];
+  const index = catalog.courses.findIndex((entry) => String(entry.code || "").toUpperCase() === code);
+  const existing = index >= 0 ? catalog.courses[index] : {};
+  const ispringCount = (manifest.units || []).reduce(
+    (sum, unit) => sum + (unit.lessons || []).reduce((lessonSum, lesson) => lessonSum + (lesson.ispring || []).length, 0),
+    0,
+  );
+  const nextEntry = {
+    code,
+    title: existing.title || manifest.course?.title || `${code} · Course`,
+    level: existing.level || "",
+    status: existing.status || (ispringCount ? "ready" : "planning-only"),
+    manifestUrl: `/courseware/${code}/course-manifest.json`,
+    baseUrl: `/courseware/${code}/`,
+    notes: existing.notes || (ispringCount ? "Imported whole-course package." : "Planning documents imported."),
+  };
+  if (index >= 0) catalog.courses[index] = { ...existing, ...nextEntry };
+  else catalog.courses.push(nextEntry);
+  catalog.courses.sort((left, right) =>
+    String(left.code || "").localeCompare(String(right.code || ""), "en", {
+      numeric: true,
+      sensitivity: "base",
+    }),
+  );
+  if (!catalog.defaultCourse || !catalog.courses.some((entry) => entry.code === catalog.defaultCourse)) {
+    catalog.defaultCourse = code;
+  }
+  writeJsonFile(courseCatalogPath, catalog);
+  return nextEntry;
+}
+
 function findLesson(manifest, unitNumber, lessonNumber) {
   for (const unit of manifest.units || []) {
     if (unit.unit !== unitNumber) continue;
@@ -2876,6 +2911,8 @@ async function commitCoursePackageImport({ course, importId, actor }) {
   }
   recomputeManifestSummaries(manifest);
   writeJsonFile(join(courseRoot(course), "course-manifest.json"), manifest);
+  const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
+  const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after whole-course ZIP import.");
   await appendAdminHistory(course, {
     actor,
     action: "course-package-import",
@@ -2883,6 +2920,7 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     originalFilename: review.originalFilename,
     installedCount: installed.length,
     backups,
+    lifecycleStatus: lifecycle.status,
   });
   let cleanup = { removed: false };
   try {
@@ -2891,7 +2929,17 @@ async function commitCoursePackageImport({ course, importId, actor }) {
   } catch (error) {
     cleanup = { removed: false, error: error instanceof Error ? error.message : String(error) };
   }
-  return { ok: true, course, importId, installed, backups, cleanup, manifest: "manifest updated directly from course package import" };
+  return {
+    ok: true,
+    course,
+    importId,
+    installed,
+    backups,
+    cleanup,
+    catalogEntry,
+    lifecycle,
+    manifest: "manifest updated directly from course package import",
+  };
 }
 
 async function handleAdminApi(req, res) {
