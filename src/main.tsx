@@ -55,6 +55,10 @@ function canGenerateMoodleEmbeds(session: PortalSession | null): boolean {
   return Boolean(session && (session.role === "admin" || session.role === "superadmin" || session.courses.includes("*")));
 }
 
+function canOpenAdminBackend(session: PortalSession | null): boolean {
+  return canGenerateMoodleEmbeds(session);
+}
+
 function resourceUrl(path: string, baseUrl: string): string {
   if (/^https?:\/\//i.test(path) || path.startsWith("/")) {
     return path;
@@ -1130,9 +1134,11 @@ function App() {
               </button>
             </>
           ) : null}
-          <a className="admin-entry" href="/teacher-admin" rel="noopener" target="_blank">
-            管理后台
-          </a>
+          {canOpenAdminBackend(portalSession) ? (
+            <a className="admin-entry" href="/teacher-admin" rel="noopener" target="_blank">
+              管理后台
+            </a>
+          ) : null}
           <div className={`status-pill ${error ? "error" : ""}`}>
             {error ? "Manifest error" : manifest ? `${manifest.course.code} loaded` : "Loading course"}
           </div>

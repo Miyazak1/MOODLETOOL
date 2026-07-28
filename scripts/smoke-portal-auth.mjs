@@ -113,6 +113,15 @@ try {
   expectJson(adminPortalLogin.response.status === 200 && adminPortalLogin.data.authenticated, "admin portal login succeeds", adminPortalLogin.data);
   const adminPortalCookie = setCookieValue(adminPortalLogin.response);
 
+  const adminUsersViaPortalSession = await jsonRequest("/api/admin/users", {
+    headers: { Cookie: adminPortalCookie },
+  });
+  expectJson(
+    adminUsersViaPortalSession.response.status === 200 && adminUsersViaPortalSession.data.ok,
+    "portal admin session can access admin backend",
+    adminUsersViaPortalSession.data,
+  );
+
   const usersBefore = await jsonRequest("/api/admin/users", {
     headers: { Cookie: adminCookie },
   });
@@ -143,6 +152,12 @@ try {
   });
   expectJson(teacherLogin.response.status === 200 && teacherLogin.data.authenticated, "teacher portal login succeeds", teacherLogin.data);
   const teacherCookie = setCookieValue(teacherLogin.response);
+
+  const teacherAdminLogin = await jsonRequest("/api/admin/login", {
+    method: "POST",
+    body: JSON.stringify({ username: teacherUsername, password: teacherPassword }),
+  });
+  expectJson(teacherAdminLogin.response.status === 403, "teacher cannot login to admin backend", teacherAdminLogin.data);
 
   const adminEmbeds = await jsonRequest("/api/portal/moodle-embeds?course=ENG3U", {
     headers: { Cookie: adminPortalCookie },

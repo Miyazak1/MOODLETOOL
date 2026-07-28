@@ -705,6 +705,22 @@ function clearPortalSessionCookie(res) {
   res.setHeader("Set-Cookie", `${portalSessionCookie}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${secure}`);
 }
 
+function appendSetCookieHeader(res, cookieValue) {
+  const existing = res.getHeader("Set-Cookie");
+  if (!existing) {
+    res.setHeader("Set-Cookie", cookieValue);
+  } else if (Array.isArray(existing)) {
+    res.setHeader("Set-Cookie", [...existing, cookieValue]);
+  } else {
+    res.setHeader("Set-Cookie", [existing, cookieValue]);
+  }
+}
+
+function clearPortalSessionCookieAppend(res) {
+  const secure = portalCookieSecure ? "; Secure" : "";
+  appendSetCookieHeader(res, `${portalSessionCookie}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${secure}`);
+}
+
 function publicPortalSession(session) {
   return session
     ? {
@@ -1098,6 +1114,10 @@ function loginConfigured() {
   return Boolean(adminUsername && adminPassword && adminSessionSecret);
 }
 
+function adminLoginConfigured() {
+  return loginConfigured() || portalLoginConfigured();
+}
+
 function loginRateLimitEnabled() {
   return loginRateLimitMaxFailures > 0 && loginRateLimitWindowMs > 0 && loginRateLimitLockMs > 0;
 }
@@ -1201,15 +1221,35 @@ function ensureInside(root, candidate) {
   return resolvedCandidate;
 }
 
+function adminPrincipal(req) {
+  const legacySession = readSession(req);
+  if (legacySession) {
+    return {
+      username: legacySession.username,
+      role: "admin",
+      courses: ["*"],
+      source: "admin",
+    };
+  }
+  const portalSession = readPortalSession(req);
+  if (hasAllCourseAccess(portalSession)) {
+    return {
+      ...portalSession,
+      source: "portal",
+    };
+  }
+  return null;
+}
+
 function isAuthorized(req) {
-  if (readSession(req)) return true;
+  if (adminPrincipal(req)) return true;
   const header = req.headers.authorization || "";
   return Boolean(adminToken) && header === `Bearer ${adminToken}`;
 }
 
 function adminActor(req) {
-  const session = readSession(req);
-  if (session?.username) return session.username;
+  const principal = adminPrincipal(req);
+  if (principal?.username) return principal.username;
   const header = req.headers.authorization || "";
   if (adminToken && header === `Bearer ${adminToken}`) return "token";
   return "anonymous";
@@ -2810,19 +2850,21 @@ async function handleAdminApi(req, res) {
 
   try {
     if (requestUrl.pathname === "/api/admin/session" && req.method === "GET") {
-      const session = readSession(req);
+      const principal = adminPrincipal(req);
       sendJson(res, 200, {
         ok: true,
-        authenticated: Boolean(session),
-        loginEnabled: loginConfigured(),
-        username: session?.username || null,
+        authenticated: Boolean(principal),
+        loginEnabled: adminLoginConfigured(),
+        username: principal?.username || null,
+        role: principal?.role || null,
+        authSource: principal?.source || null,
       });
       return true;
     }
 
     if (requestUrl.pathname === "/api/admin/login" && req.method === "POST") {
-      if (!loginConfigured()) {
-        sendJson(res, 500, { ok: false, error: "Admin login is not configured. Set ADMIN_USERNAME, ADMIN_PASSWORD, and ADMIN_SESSION_SECRET." });
+      if (!adminLoginConfigured()) {
+        sendJson(res, 500, { ok: false, error: "Admin login is not configured. Set ADMIN_USERNAME/ADMIN_PASSWORD or create a portal admin user." });
         return true;
       }
       const body = await readJsonBody(req);
@@ -2832,21 +2874,44 @@ async function handleAdminApi(req, res) {
         sendRateLimitJson(res, rateLimit.retryAfterSeconds);
         return true;
       }
-      const usernameOk = timingSafeStringEqual(body.username || "", adminUsername);
-      const passwordOk = timingSafeStringEqual(body.password || "", adminPassword);
-      if (!usernameOk || !passwordOk) {
-        recordLoginFailure(rateKeys);
-        sendJson(res, 401, { ok: false, error: "Invalid username or password." });
+      const legacyUsernameOk = loginConfigured() && timingSafeStringEqual(body.username || "", adminUsername);
+      const legacyPasswordOk = loginConfigured() && timingSafeStringEqual(body.password || "", adminPassword);
+      if (legacyUsernameOk && legacyPasswordOk) {
+        clearLoginFailures(rateKeys);
+        setSessionCookie(res, adminUsername);
+        sendJson(res, 200, { ok: true, username: adminUsername, role: "admin", authSource: "admin" });
         return true;
       }
-      clearLoginFailures(rateKeys);
-      setSessionCookie(res, adminUsername);
-      sendJson(res, 200, { ok: true, username: adminUsername });
+
+      const portalUser = portalLoginConfigured() ? getPortalUsers().find((item) => timingSafeStringEqual(item.username, body.username || "")) : null;
+      const portalPasswordOk = portalUser && portalUser.status !== "disabled" ? verifyPortalPassword(portalUser, body.password || "") : false;
+      if (portalPasswordOk && hasAllCourseAccess(portalUser)) {
+        clearLoginFailures(rateKeys);
+        setPortalSessionCookie(res, portalUser);
+        sendJson(res, 200, {
+          ok: true,
+          username: portalUser.username,
+          role: portalUser.role,
+          courses: portalUser.courses,
+          authSource: "portal",
+        });
+        return true;
+      }
+
+      if (portalPasswordOk && !hasAllCourseAccess(portalUser)) {
+        recordLoginFailure(rateKeys);
+        sendJson(res, 403, { ok: false, error: "This account is not allowed to use the admin backend." });
+        return true;
+      }
+
+      recordLoginFailure(rateKeys);
+      sendJson(res, 401, { ok: false, error: "Invalid username or password." });
       return true;
     }
 
     if (requestUrl.pathname === "/api/admin/logout" && req.method === "POST") {
       clearSessionCookie(res);
+      clearPortalSessionCookieAppend(res);
       sendJson(res, 200, { ok: true });
       return true;
     }

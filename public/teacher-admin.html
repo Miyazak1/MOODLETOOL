@@ -777,7 +777,7 @@
         <div class="panel-heading">
           <div>
             <h2>管理员登录</h2>
-            <p class="meta-line">登录后才能上传、导入、管理课程和生成 Moodle 嵌入代码。</p>
+            <p class="meta-line">使用统一账号体系里 role=admin 的账号登录。admin 可管理后台并查看全部课程；teacher 只能在前台查看授权课程。</p>
           </div>
           <a class="button-link" href="/">返回课程门户</a>
         </div>
@@ -800,7 +800,7 @@
               </p>
             </div>
           </div>
-          <p class="warn">正式服务器需要在宝塔/Node 环境变量里设置 ADMIN_UPLOADS_ENABLED=1、ADMIN_USERNAME、ADMIN_PASSWORD、ADMIN_SESSION_SECRET。默认限制：普通文件 50MB，iSpring ZIP 2048MB。</p>
+          <p class="warn">正式服务器仍建议保留 ADMIN_USERNAME/ADMIN_PASSWORD 作为应急后台账号；日常账号请在“用户权限”里创建 admin 或 teacher。默认限制：普通文件 50MB，iSpring ZIP 2048MB。</p>
           <div class="actions">
             <button class="primary" id="loginButton" type="button">登录</button>
           </div>
@@ -1195,7 +1195,7 @@
           adminSessionStatus.innerHTML = adminAuthenticated
             ? `
               <strong>已登录</strong>
-              <span>当前管理员：${escapeHtml(username)}。左侧功能已解锁，可以继续上传、导入、管理课程。</span>
+              <span>当前管理员：${escapeHtml(username)}${currentAdminSession?.authSource ? ` · ${escapeHtml(currentAdminSession.authSource)}` : ""}。左侧功能已解锁，可以继续上传、导入、管理课程。</span>
             `
             : `
               <strong>未登录</strong>
