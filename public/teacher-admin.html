@@ -262,6 +262,11 @@
         min-height: 34px;
         margin-top: 4px;
       }
+      .sidebar-course-card button {
+        width: 100%;
+        min-height: 34px;
+        margin-top: 4px;
+      }
       .sidebar-session {
         margin: 0 0 12px;
         border: 1px solid var(--line);
@@ -298,6 +303,79 @@
       .auth-status strong {
         color: inherit;
         font-size: 18px;
+      }
+      .nav-group-label {
+        margin: 10px 8px 2px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .course-context-bar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: center;
+        border: 1px solid #94c9bd;
+        border-radius: 8px;
+        padding: 14px 16px;
+        background: linear-gradient(180deg, #f6fcfa, #eef8f5);
+        box-shadow: 0 10px 24px rgba(15, 91, 84, 0.08);
+      }
+      .context-eyebrow {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .context-title {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: baseline;
+        margin-top: 4px;
+      }
+      .context-title strong {
+        color: #123d67;
+        font-size: 24px;
+      }
+      .context-title span {
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .context-note {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .context-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+      .workflow-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+        margin: 14px 0;
+      }
+      .workflow-step {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        background: #f7f9fc;
+      }
+      .workflow-step strong {
+        display: block;
+        color: #123d67;
+      }
+      .workflow-step span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 13px;
       }
       pre {
         min-height: 120px;
@@ -657,6 +735,7 @@
           <span>当前课程</span>
           <strong id="sidebarCourseCode">ENG3U</strong>
           <small id="sidebarCourseTitle">English</small>
+          <button type="button" data-switch-panel="course">更换当前课程</button>
           <a class="button-link subtle" id="sidebarCourseLink" href="/?course=ENG3U">前台查看这门课</a>
         </div>
         <div class="sidebar-session" id="sidebarSessionStatus">
@@ -665,18 +744,35 @@
         </div>
         <nav class="admin-nav" aria-label="Admin sections">
           <button class="active" type="button" data-admin-nav="login">登录状态</button>
-          <button type="button" data-admin-nav="course" data-auth-required="1" disabled>连接 / 状态</button>
+          <div class="nav-group-label">课程上下文</div>
+          <button type="button" data-admin-nav="course" data-auth-required="1" disabled>选择当前课程</button>
+          <div class="nav-group-label">当前课程操作</div>
           <button type="button" data-admin-nav="upload" data-auth-required="1" disabled>单文件上传</button>
           <button type="button" data-admin-nav="package" data-auth-required="1" disabled>整课 ZIP 导入</button>
-          <button type="button" data-admin-nav="storage" data-auth-required="1" disabled>存储空间</button>
           <button type="button" data-admin-nav="lifecycle" data-auth-required="1" disabled>启用 / 归档</button>
+          <button type="button" data-admin-nav="maintenance" data-auth-required="1" disabled>维护</button>
+          <div class="nav-group-label">全局管理</div>
+          <button type="button" data-admin-nav="storage" data-auth-required="1" disabled>存储空间</button>
           <button type="button" data-admin-nav="overview" data-auth-required="1" disabled>全课程概览</button>
           <button type="button" data-admin-nav="users" data-auth-required="1" disabled>用户权限</button>
-          <button type="button" data-admin-nav="maintenance" data-auth-required="1" disabled>维护</button>
           <button type="button" data-admin-nav="output">结果日志</button>
         </nav>
       </aside>
       <main>
+      <div class="course-context-bar" id="courseContextBar" hidden>
+        <div>
+          <span class="context-eyebrow">当前课程上下文</span>
+          <div class="context-title">
+            <strong id="contextCourseCode">ENG3U</strong>
+            <span id="contextCourseTitle">English</span>
+          </div>
+          <div class="context-note" id="contextCourseNote">上传、整课导入、归档和当前课程维护都会作用于这门课。</div>
+        </div>
+        <div class="context-actions">
+          <button type="button" data-switch-panel="course">更换课程</button>
+          <a class="button-link subtle" id="contextCourseLink" href="/?course=ENG3U">前台查看</a>
+        </div>
+      </div>
       <section class="admin-panel" data-admin-panel="login">
         <div class="panel-heading">
           <div>
@@ -717,10 +813,24 @@
       <section class="admin-panel auth-required" data-admin-panel="course" hidden>
         <div class="panel-heading">
           <div>
-            <h2>连接 / 当前课程</h2>
-            <p class="meta-line">这里选择的课程会同步到上传、整课导入、归档和容量统计。</p>
+            <h2>选择当前课程</h2>
+            <p class="meta-line">先在这里确定要操作哪一门课。选择后，上传、整课 ZIP 导入、启用/归档、当前课程维护都会同步作用于这门课程。</p>
           </div>
           <a class="button-link subtle" id="coursePanelLink" href="/?course=ENG3U">返回当前课程页面</a>
+        </div>
+        <div class="workflow-steps">
+          <div class="workflow-step">
+            <strong>1. 选择课程</strong>
+            <span>下方课程下拉框就是后台所有当前课程操作的来源。</span>
+          </div>
+          <div class="workflow-step">
+            <strong>2. 进入课程操作</strong>
+            <span>上传、整课导入、归档和维护都会读取这个选择。</span>
+          </div>
+          <div class="workflow-step">
+            <strong>3. 前台确认</strong>
+            <span>点“前台查看”确认老师看到的课程页面是否正确。</span>
+          </div>
         </div>
         <div class="grid">
           <div>
@@ -733,14 +843,16 @@
         </div>
         <div class="actions">
           <button id="statusButton" type="button">读取状态</button>
+          <button class="primary" type="button" data-switch-panel="package">去整课 ZIP 导入</button>
+          <button type="button" data-switch-panel="upload">去单文件上传</button>
         </div>
         <div class="stats" id="statusStats" hidden></div>
         <div class="readiness" id="readinessPanel" hidden></div>
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="lifecycle" hidden>
-        <h2>课程启用 / 归档</h2>
-        <p class="meta-line">状态按钮只控制前台可见性；归档任务会调用服务器脚本生成课程压缩包。只有选择“并删除 active”才会在归档校验通过后删除解压目录。</p>
+        <h2>当前课程启用 / 归档</h2>
+        <p class="meta-line">这里的启用、归档、生成归档包和解压启用都只作用于顶部显示的当前课程。状态按钮只控制前台可见性；归档任务会调用服务器脚本生成课程压缩包。只有选择“并删除 active”才会在归档校验通过后删除解压目录。</p>
         <div>
           <label for="courseStatusNote">状态备注</label>
           <input id="courseStatusNote" placeholder="例如：暂不上线，只保留归档包" />
@@ -784,7 +896,8 @@
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="upload" hidden>
-        <h2>上传</h2>
+        <h2>当前课程单文件上传</h2>
+        <p class="meta-line">文件会进入当前课程对应的目录。需要换课时先点上方“更换课程”。</p>
         <div class="storage-mini" id="uploadStorageMini" hidden></div>
         <div id="courseUploadTasks" hidden></div>
         <div class="grid compact">
@@ -836,7 +949,7 @@
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="package" hidden>
-        <h2>整课 ZIP 导入</h2>
+        <h2>当前课程整课 ZIP 导入</h2>
         <p class="meta-line">上传一门课的完整压缩包后，系统会先解压到临时区并自动识别 Course Outline、Unit Plan、Lesson Plan、lesson book、iSpring、视频和资源文件。确认导入前不会覆盖正式课程。</p>
         <div class="storage-mini" id="packageStorageMini" hidden></div>
         <div>
@@ -921,8 +1034,8 @@
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="maintenance" hidden>
-        <h2>维护</h2>
-        <p class="meta-line">清理只针对后台上传产生的临时上传/解压目录，不会删除正式课程文件。iSpring ZIP 原包默认保留，除非选择清理 ZIP。</p>
+        <h2>当前课程维护</h2>
+        <p class="meta-line">历史、备份、预览生成和 ZIP 原包清理都按当前课程执行。清理临时上传/解压目录不会删除正式课程文件。</p>
         <div class="actions">
           <button id="historyButton" type="button">读取上传历史</button>
           <button id="backupsButton" type="button">读取备份列表</button>
@@ -998,9 +1111,14 @@
         document.querySelector("#topCourseLink"),
         document.querySelector("#sidebarCourseLink"),
         document.querySelector("#coursePanelLink"),
+        document.querySelector("#contextCourseLink"),
       ];
       const sidebarCourseCode = document.querySelector("#sidebarCourseCode");
       const sidebarCourseTitle = document.querySelector("#sidebarCourseTitle");
+      const courseContextBar = document.querySelector("#courseContextBar");
+      const contextCourseCode = document.querySelector("#contextCourseCode");
+      const contextCourseTitle = document.querySelector("#contextCourseTitle");
+      const contextCourseNote = document.querySelector("#contextCourseNote");
       const topAuthStatus = document.querySelector("#topAuthStatus");
       const sidebarSessionStatus = document.querySelector("#sidebarSessionStatus");
       const adminSessionStatus = document.querySelector("#adminSessionStatus");
@@ -1046,13 +1164,19 @@
       function updateCourseNavigation() {
         const code = String(fields.course.value || "ENG3U").trim().toUpperCase();
         const href = portalCourseUrl(code);
+        const title = selectedCourseLabel() || "课程资料";
         courseNavigationLinks.forEach((link) => {
           if (!link) return;
           link.href = href;
           link.title = `打开前台课程 ${code}`;
         });
         if (sidebarCourseCode) sidebarCourseCode.textContent = code;
-        if (sidebarCourseTitle) sidebarCourseTitle.textContent = selectedCourseLabel() || "课程资料";
+        if (sidebarCourseTitle) sidebarCourseTitle.textContent = title;
+        if (contextCourseCode) contextCourseCode.textContent = code;
+        if (contextCourseTitle) contextCourseTitle.textContent = title;
+        if (contextCourseNote) {
+          contextCourseNote.textContent = `${code} 是当前课程。上传、整课导入、归档和当前课程维护都会作用于这门课。`;
+        }
       }
 
       function renderAuthState() {
@@ -1079,6 +1203,7 @@
             `;
         }
         if (loginForm) loginForm.hidden = adminAuthenticated;
+        if (courseContextBar) courseContextBar.hidden = !adminAuthenticated;
       }
 
       function renderAdminPanels() {
@@ -2922,6 +3047,11 @@
       fields.unit.addEventListener("change", populateLessonOptions);
       document.addEventListener("click", (event) => {
         if (!(event.target instanceof Element)) return;
+        const switchButton = event.target.closest("[data-switch-panel]");
+        if (switchButton) {
+          switchAdminPanel(switchButton.dataset.switchPanel);
+          return;
+        }
         const button = event.target.closest("[data-gap-action='fill']");
         if (!button) return;
         fillUploadFormFromGap(button.dataset.gapIndex).catch((error) => write(`Error: ${error.message}`));
