@@ -8,6 +8,7 @@ import shutil
 import zipfile
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 from xml.etree import ElementTree
 
 
@@ -681,6 +682,29 @@ def render_docx_table(rows: list[list[str]]) -> str:
     return f"<section class=\"doc-table structured\">{''.join(parts)}</section>"
 
 
+def course_href(value: str) -> str:
+    return "/".join(quote(part) for part in to_posix(value).split("/"))
+
+
+def add_doc_heading_ids(body_html: str) -> tuple[str, list[dict[str, str]]]:
+    headings: list[dict[str, str]] = []
+    used: dict[str, int] = {}
+
+    def replacement(match: re.Match[str]) -> str:
+        raw = match.group(1)
+        text = re.sub(r"<[^>]+>", " ", html.unescape(raw))
+        text = re.sub(r"\s+", " ", text).strip()
+        if not text:
+            return match.group(0)
+        base = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-") or "section"
+        used[base] = used.get(base, 0) + 1
+        heading_id = base if used[base] == 1 else f"{base}-{used[base]}"
+        headings.append({"id": heading_id, "text": text})
+        return f'<h2 id="{html.escape(heading_id, quote=True)}">{raw}</h2>'
+
+    return re.sub(r"<h2>(.*?)</h2>", replacement, body_html, flags=re.DOTALL), headings
+
+
 def render_preview_html(
     title: str,
     source_rel: str,
@@ -698,6 +722,16 @@ def render_preview_html(
         else:
             body_parts.append(render_text(str(content), "body-text"))
 
+    body_html, headings = add_doc_heading_ids("".join(body_parts))
+    download_href = f"../{course_href(source_rel)}"
+    toc_html = ""
+    if headings:
+        toc_items = "".join(
+            f'<a href="#{html.escape(item["id"], quote=True)}">{html.escape(item["text"])}</a>'
+            for item in headings[:28]
+        )
+        toc_html = f'<nav class="doc-toc" aria-label="Document sections"><p>Contents</p>{toc_items}</nav>'
+
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -714,34 +748,43 @@ def render_preview_html(
     }}
     body {{
       margin: 0;
-      padding: 32px 20px;
+      padding: 24px 18px 72px;
     }}
-    main {{
-      max-width: 1040px;
+    .ossd-doc-document {{
+      max-width: 1180px;
       margin: 0 auto;
       background: #fff;
       border: 1px solid #d8e2ef;
-      border-radius: 8px;
-      padding: 30px 38px 42px;
-      box-shadow: 0 10px 26px rgba(16, 35, 63, 0.08);
+      border-radius: 10px;
+      box-shadow: 0 14px 36px rgba(14, 44, 74, 0.08);
+      overflow: hidden;
     }}
-    header {{
+    .doc-hero {{
       border-bottom: 1px solid #d8e2ef;
-      margin-bottom: 22px;
-      padding-bottom: 14px;
+      background: linear-gradient(180deg, #f8fbff 0%, #fff 100%);
+      padding: 30px 36px 26px;
+    }}
+    .doc-kicker {{
+      color: #58708e;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin: 0 0 8px;
+      text-transform: uppercase;
     }}
     h1 {{
-      font-size: 25px;
+      color: #001f3f;
+      font-size: 30px;
       line-height: 1.25;
       margin: 0 0 8px;
     }}
     h2 {{
-      border-top: 1px solid #dbe5f0;
+      border-top: 1px solid #dbe7f3;
       color: #0f3764;
-      font-size: 18px;
+      font-size: 21px;
       line-height: 1.35;
-      margin: 26px 0 14px;
-      padding-top: 18px;
+      margin: 30px 0 14px;
+      padding-top: 22px;
     }}
     h2:first-child {{
       border-top: 0;
@@ -759,19 +802,79 @@ def render_preview_html(
     .meta {{
       color: #526681;
       font-size: 13px;
-      word-break: break-word;
+      overflow-wrap: anywhere;
     }}
-    .notice {{
+    .doc-actions {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }}
+    .doc-action {{
+      align-items: center;
       background: #eef6ff;
-      border: 1px solid #c9dff7;
+      border: 1px solid #9fbfe5;
       border-radius: 6px;
-      color: #174a7c;
+      color: #003b72;
+      display: inline-flex;
       font-size: 13px;
-      margin: 0 0 22px;
-      padding: 10px 12px;
+      font-weight: 800;
+      min-height: 34px;
+      padding: 0 12px;
+      text-decoration: none;
+    }}
+    .preview-note {{
+      color: #58708e;
+      font-size: 13px;
+      margin: 10px 0 0;
+    }}
+    .doc-layout {{
+      display: grid;
+      gap: 28px;
+      grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+      padding: 30px 36px 42px;
+    }}
+    .doc-layout.no-toc {{
+      display: block;
+    }}
+    .doc-toc {{
+      align-self: start;
+      background: #f7faff;
+      border: 1px solid #dbe7f3;
+      border-radius: 8px;
+      max-height: calc(100vh - 64px);
+      overflow: auto;
+      padding: 14px;
+      position: sticky;
+      top: 18px;
+    }}
+    .doc-toc p {{
+      color: #58708e;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin: 0 0 10px;
+      text-transform: uppercase;
+    }}
+    .doc-toc a {{
+      border-left: 3px solid transparent;
+      color: #153a62;
+      display: block;
+      font-size: 13px;
+      line-height: 1.35;
+      padding: 7px 8px;
+      text-decoration: none;
+    }}
+    .doc-toc a:hover {{
+      background: #eef6ff;
+      border-left-color: #0b4f71;
     }}
     p {{
       margin: 0;
+    }}
+    .doc-content {{
+      min-width: 0;
+      color: #0f2743;
     }}
     .doc-table {{
       margin: 0;
@@ -781,11 +884,11 @@ def render_preview_html(
       padding-left: 20px;
     }}
     .doc-field {{
-      background: #fbfcfe;
+      background: #fbfdff;
       border: 1px solid #e1e8f1;
-      border-radius: 6px;
-      margin: 10px 0;
-      padding: 12px 14px;
+      border-radius: 8px;
+      margin: 12px 0;
+      padding: 14px 16px;
     }}
     .doc-field.empty {{
       background: transparent;
@@ -794,7 +897,29 @@ def render_preview_html(
     }}
     .field-value,
     .body-text {{
-      max-width: 76ch;
+      max-width: 78ch;
+    }}
+    .doc-content > .body-text {{
+      color: #071f3d;
+      font-family: Georgia, "Times New Roman", Times, serif;
+      font-size: 18px;
+      line-height: 1.86;
+      max-width: 70ch;
+      text-wrap: pretty;
+    }}
+    .doc-content > .body-text + .body-text {{
+      margin-top: 0.72em;
+    }}
+    .doc-content > .body-text:first-child {{
+      margin-top: 2px;
+    }}
+    .doc-field .field-value,
+    .doc-field .text-lines,
+    .table-text {{
+      color: #17314f;
+      font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
+      font-size: 15px;
+      line-height: 1.68;
     }}
     .text-lines {{
       margin: 0;
@@ -806,7 +931,9 @@ def render_preview_html(
       padding-left: 2px;
     }}
     .table-scroll {{
-      margin: 12px 0;
+      border: 1px solid #d8e2ef;
+      border-radius: 8px;
+      margin: 14px 0;
       overflow-x: auto;
     }}
     table {{
@@ -817,7 +944,7 @@ def render_preview_html(
     th,
     td {{
       border: 1px solid #d8e2ef;
-      padding: 10px 12px;
+      padding: 11px 13px;
       text-align: left;
       vertical-align: top;
     }}
@@ -837,14 +964,30 @@ def render_preview_html(
       body {{
         padding: 0;
       }}
-      main {{
+      .ossd-doc-document {{
         border-left: 0;
         border-radius: 0;
         border-right: 0;
+      }}
+      .doc-hero {{
+        padding: 24px 18px 20px;
+      }}
+      .doc-layout {{
+        display: block;
         padding: 22px 18px 34px;
       }}
+      .doc-toc {{
+        margin-bottom: 20px;
+        max-height: none;
+        position: static;
+      }}
       h1 {{
-        font-size: 21px;
+        font-size: 24px;
+      }}
+      .doc-content > .body-text {{
+        font-size: 17px;
+        line-height: 1.78;
+        max-width: none;
       }}
       .doc-field {{
         padding: 11px 12px;
@@ -853,13 +996,22 @@ def render_preview_html(
   </style>
 </head>
 <body>
-  <main>
-    <header>
+  <main class="ossd-doc-document">
+    <header class="doc-hero">
+      <p class="doc-kicker">Course File Preview</p>
       <h1>{html.escape(title)}</h1>
       <div class="meta">{html.escape(source_rel)}</div>
+      <div class="doc-actions">
+        <a class="doc-action" href="{html.escape(download_href, quote=True)}" download>下载原始文件</a>
+      </div>
+      <p class="preview-note">{html.escape(notice)}</p>
     </header>
-    <div class="notice">{html.escape(notice)}</div>
-    {"".join(body_parts)}
+    <div class="doc-layout{' no-toc' if not headings else ''}">
+      {toc_html}
+      <article class="doc-content">
+        {body_html}
+      </article>
+    </div>
   </main>
 </body>
 </html>
