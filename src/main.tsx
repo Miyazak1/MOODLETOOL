@@ -24,6 +24,12 @@ type PortalSession = {
 };
 
 type MoodleEmbedMap = Map<string, MoodleEmbedRow>;
+type ShareLinkResponse = {
+  ok: boolean;
+  shareUrl?: string;
+  expiresAt?: string;
+  error?: string;
+};
 
 const FALLBACK_COURSE: CourseCatalogEntry = {
   code: "ENG3U",
@@ -79,6 +85,20 @@ type LinkableResource = {
   source?: string;
   bytes?: number;
 };
+
+function courseCodeFromBaseUrl(baseUrl: string): string {
+  const match = /\/courseware\/([^/]+)/i.exec(baseUrl);
+  return match ? decodeURIComponent(match[1]).toUpperCase() : FALLBACK_COURSE.code;
+}
+
+function shareKindForItem(item: LinkableResource): MoodleEmbedRow["kind"] {
+  const type = (item.type || "").toLowerCase();
+  const role = (item.role || "").toLowerCase();
+  if (type === "mp4" || type === "video") return "video";
+  if (type === "h5p") return "h5p";
+  if (role === "lesson_book_section" || role === "lesson_book") return "book-section";
+  return "file";
+}
 
 function resourceHref(item: LinkableResource, baseUrl: string): string {
   if (item.path) return resourceUrl(item.path, baseUrl);
@@ -172,7 +192,78 @@ function MoodleEmbedButton({ row }: { row?: MoodleEmbedRow }) {
 
   return (
     <button className="button-link moodle-copy" onClick={copy} title="复制可粘贴到 Moodle HTML/source 编辑器的代码" type="button">
-      {copied ? "已复制" : "代码"}
+      <span className="button-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="m9 18-6-6 6-6" />
+          <path d="m15 6 6 6-6 6" />
+          <path d="m13 4-2 16" />
+        </svg>
+      </span>
+      <span>{copied ? "已复制" : "代码"}</span>
+    </button>
+  );
+}
+
+function PublicShareButton({
+  courseCode,
+  item,
+  kind,
+}: {
+  courseCode: string;
+  item: LinkableResource;
+  kind?: MoodleEmbedRow["kind"];
+}) {
+  const [status, setStatus] = useState<"idle" | "working" | "copied" | "failed">("idle");
+  if (!item.path && !item.previewPath) return null;
+
+  const createShare = async () => {
+    const input = window.prompt("公开分享有效期（天）。到期后链接自动失效。", "30");
+    if (input === null) return;
+    const days = Number(input.trim() || "30");
+    if (!Number.isFinite(days) || days <= 0) {
+      window.alert("请输入大于 0 的天数。");
+      return;
+    }
+    setStatus("working");
+    try {
+      const response = await fetch("/api/portal/share-link", {
+        body: JSON.stringify({
+          course: courseCode,
+          expiresInDays: days,
+          kind: kind || shareKindForItem(item),
+          label: item.label,
+          path: item.path,
+          previewPath: item.previewPath,
+        }),
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+      const data = (await response.json()) as ShareLinkResponse;
+      if (!response.ok || !data.ok || !data.shareUrl) throw new Error(data.error || "Share link request failed.");
+      await copyText(data.shareUrl);
+      setStatus("copied");
+      window.setTimeout(() => setStatus("idle"), 1800);
+    } catch (error) {
+      setStatus("failed");
+      window.alert(error instanceof Error ? error.message : "生成分享链接失败。");
+      window.setTimeout(() => setStatus("idle"), 1800);
+    }
+  };
+
+  const label = status === "working" ? "生成中" : status === "copied" ? "已复制" : status === "failed" ? "失败" : "分享";
+  return (
+    <button className="button-link share-copy" disabled={status === "working"} onClick={createShare} title="生成不需要登录的公开分享链接" type="button">
+      <span className="button-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <path d="m8.6 10.7 6.8-4.4" />
+          <path d="m8.6 13.3 6.8 4.4" />
+        </svg>
+      </span>
+      <span>{label}</span>
     </button>
   );
 }
@@ -180,6 +271,8 @@ function MoodleEmbedButton({ row }: { row?: MoodleEmbedRow }) {
 function ResourceActions({
   item,
   courseBaseUrl,
+  courseCode,
+  canShare = false,
   displayLabel,
   labelPrefix,
   variant,
@@ -188,6 +281,8 @@ function ResourceActions({
 }: {
   item: LinkableResource;
   courseBaseUrl: string;
+  courseCode?: string;
+  canShare?: boolean;
   displayLabel?: string;
   labelPrefix?: string;
   variant?: string;
@@ -218,6 +313,7 @@ function ResourceActions({
           </a>
         )}
         <MoodleEmbedButton row={moodleEmbed} />
+        {canShare ? <PublicShareButton courseCode={courseCode || courseCodeFromBaseUrl(courseBaseUrl)} item={item} /> : null}
       </span>
     </span>
   );
@@ -226,11 +322,15 @@ function ResourceActions({
 function ISpringActions({
   item,
   courseBaseUrl,
+  courseCode,
+  canShare = false,
   label,
   moodleEmbed,
 }: {
   item: Lesson["ispring"][number];
   courseBaseUrl: string;
+  courseCode?: string;
+  canShare?: boolean;
   label: string;
   moodleEmbed?: MoodleEmbedRow;
 }) {
@@ -253,6 +353,12 @@ function ISpringActions({
     : null;
 
   if (!playItem && !downloadItem) return null;
+  const shareItem: LinkableResource = {
+    label,
+    path: item.downloadPath || item.path,
+    previewPath: item.path,
+    type: "ispring",
+  };
 
   return (
     <span className="resource-actions resource-card featured ispring-card">
@@ -276,6 +382,9 @@ function ISpringActions({
         </a>
       ) : null}
       <MoodleEmbedButton row={moodleEmbed} />
+      {canShare ? (
+        <PublicShareButton courseCode={courseCode || courseCodeFromBaseUrl(courseBaseUrl)} item={shareItem} kind="ispring" />
+      ) : null}
       </span>
     </span>
   );
@@ -479,6 +588,8 @@ function lessonTextResource(item: Lesson["lessonText"][number]): LinkableResourc
 function LessonFlowPanel({
   lesson,
   courseBaseUrl,
+  courseCode,
+  canShare,
   moodleEmbedByPath,
   visibleDownloads,
   visibleTextExports,
@@ -486,6 +597,8 @@ function LessonFlowPanel({
 }: {
   lesson: Lesson;
   courseBaseUrl: string;
+  courseCode: string;
+  canShare: boolean;
   moodleEmbedByPath?: MoodleEmbedMap;
   visibleDownloads: FileResource[];
   visibleTextExports: FileResource[];
@@ -535,6 +648,8 @@ function LessonFlowPanel({
               {sectionBookPages.map((item) => (
                 <ResourceActions
                   courseBaseUrl={courseBaseUrl}
+                  courseCode={courseCode}
+                  canShare={canShare}
                   displayLabel={item.label || item.sectionLabel || flowLabelForKey(bookSectionFlowKey(item))}
                   item={item}
                   key={resourceKey(item)}
@@ -547,6 +662,8 @@ function LessonFlowPanel({
                 return (
                   <ISpringActions
                     courseBaseUrl={courseBaseUrl}
+                    courseCode={courseCode}
+                    canShare={canShare}
                     item={item}
                     key={resourceKey(item)}
                     label={label}
@@ -557,6 +674,8 @@ function LessonFlowPanel({
               {sectionDownloads.map((item) => (
                 <ResourceActions
                   courseBaseUrl={courseBaseUrl}
+                  courseCode={courseCode}
+                  canShare={canShare}
                   item={item}
                   key={resourceKey(item)}
                   labelPrefix={downloadFlowKey(item) === "resources" ? undefined : roleLabel(item.role)}
@@ -729,11 +848,13 @@ function Overview({
   course,
   manifest,
   courseBaseUrl,
+  canShare,
   roadmapItem,
 }: {
   course: CourseCatalogEntry;
   manifest: CourseManifest;
   courseBaseUrl: string;
+  canShare: boolean;
   roadmapItem?: CourseRoadmapEntry;
 }) {
   const audit = manifest.sourceAudit || {};
@@ -799,7 +920,14 @@ function Overview({
           <h3>课程级文件</h3>
           <div className="lesson-tools">
             {visibleCourseDownloads.map((item) => (
-              <ResourceActions courseBaseUrl={courseBaseUrl} item={item} key={resourceKey(item)} labelPrefix={roleLabel(item.role)} />
+              <ResourceActions
+                courseBaseUrl={courseBaseUrl}
+                courseCode={manifest.course.code}
+                canShare={canShare}
+                item={item}
+                key={resourceKey(item)}
+                labelPrefix={roleLabel(item.role)}
+              />
             ))}
           </div>
         </div>
@@ -933,11 +1061,15 @@ function LessonRow({
   lesson,
   defaultOpen,
   courseBaseUrl,
+  courseCode,
+  canShare,
   moodleEmbedByPath,
 }: {
   lesson: Lesson;
   defaultOpen: boolean;
   courseBaseUrl: string;
+  courseCode: string;
+  canShare: boolean;
   moodleEmbedByPath?: MoodleEmbedMap;
 }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -967,7 +1099,14 @@ function LessonRow({
       <div className="lesson-body">
         <div className="lesson-tools">
           {lesson.lessonPlan ? (
-            <ResourceActions courseBaseUrl={courseBaseUrl} item={lesson.lessonPlan} labelPrefix="Lesson Plan" variant="plan" />
+            <ResourceActions
+              courseBaseUrl={courseBaseUrl}
+              courseCode={courseCode}
+              canShare={canShare}
+              item={lesson.lessonPlan}
+              labelPrefix="Lesson Plan"
+              variant="plan"
+            />
           ) : unitOverview ? (
             <span className="tag text">Unit-level iSpring slot</span>
           ) : (
@@ -976,6 +1115,8 @@ function LessonRow({
         </div>
         <LessonFlowPanel
           courseBaseUrl={courseBaseUrl}
+          courseCode={courseCode}
+          canShare={canShare}
           lesson={lesson}
           moodleEmbedByPath={moodleEmbedByPath}
           visibleDownloads={visibleDownloads}
@@ -992,12 +1133,16 @@ function UnitDetail({
   texts,
   query,
   courseBaseUrl,
+  courseCode,
+  canShare,
   moodleEmbedByPath,
 }: {
   unit: Unit;
   texts: TextRegistryEntry[];
   query: string;
   courseBaseUrl: string;
+  courseCode: string;
+  canShare: boolean;
   moodleEmbedByPath?: MoodleEmbedMap;
 }) {
   const visibleLessons = unit.lessons.filter((lesson) => lessonMatches(lesson, query));
@@ -1017,7 +1162,14 @@ function UnitDetail({
         <div className="unit-actions">
           {textTags.length ? textTags.map((text) => <span className="tag text" key={text.id}>{text.title}</span>) : <span className="tag warn">No core text assigned</span>}
           {unit.unitPlan ? (
-            <ResourceActions courseBaseUrl={courseBaseUrl} item={unit.unitPlan} labelPrefix="Unit Plan" variant="plan" />
+            <ResourceActions
+              courseBaseUrl={courseBaseUrl}
+              courseCode={courseCode}
+              canShare={canShare}
+              item={unit.unitPlan}
+              labelPrefix="Unit Plan"
+              variant="plan"
+            />
           ) : (
             <span className="tag warn">Unit plan pending</span>
           )}
@@ -1028,6 +1180,8 @@ function UnitDetail({
           visibleLessons.map((lesson, index) => (
             <LessonRow
               courseBaseUrl={courseBaseUrl}
+              courseCode={courseCode}
+              canShare={canShare}
               defaultOpen={index === 0}
               key={lesson.id}
               lesson={lesson}
@@ -1044,7 +1198,17 @@ function UnitDetail({
   );
 }
 
-function TextIndex({ courseBaseUrl, texts }: { courseBaseUrl: string; texts: TextRegistryEntry[] }) {
+function TextIndex({
+  courseBaseUrl,
+  courseCode,
+  canShare,
+  texts,
+}: {
+  courseBaseUrl: string;
+  courseCode: string;
+  canShare: boolean;
+  texts: TextRegistryEntry[];
+}) {
   if (!texts.length) return null;
   return (
     <section className="text-index panel">
@@ -1066,7 +1230,13 @@ function TextIndex({ courseBaseUrl, texts }: { courseBaseUrl: string; texts: Tex
             {text.materials.length ? (
               <div className="text-materials">
                 {text.materials.map((item) => (
-                  <ResourceActions courseBaseUrl={courseBaseUrl} item={item} key={resourceKey(item)} />
+                  <ResourceActions
+                    courseBaseUrl={courseBaseUrl}
+                    courseCode={courseCode}
+                    canShare={canShare}
+                    item={item}
+                    key={resourceKey(item)}
+                  />
                 ))}
               </div>
             ) : (
@@ -1217,6 +1387,7 @@ function App() {
   const selectedRoadmapItem = useMemo(() => {
     return courseRoadmap?.courses.find((course) => course.course === selectedCourse.code);
   }, [courseRoadmap, selectedCourse.code]);
+  const adminCanShare = canGenerateMoodleEmbeds(portalSession);
   const moodleEmbedByPath = useMemo(() => {
     const rowsByPath: MoodleEmbedMap = new Map();
     for (const row of moodleEmbedRows) {
@@ -1303,6 +1474,7 @@ function App() {
           {manifest && unit ? (
             <>
               <Overview
+                canShare={adminCanShare}
                 course={selectedCourse}
                 courseBaseUrl={selectedCourse.baseUrl}
                 manifest={manifest}
@@ -1315,13 +1487,20 @@ function App() {
                 units={manifest.units}
               />
               <UnitDetail
+                canShare={adminCanShare}
                 courseBaseUrl={selectedCourse.baseUrl}
+                courseCode={manifest.course.code}
                 moodleEmbedByPath={moodleEmbedByPath}
                 query={normalizedQuery}
                 texts={manifest.texts}
                 unit={unit}
               />
-              <TextIndex courseBaseUrl={selectedCourse.baseUrl} texts={manifest.texts} />
+              <TextIndex
+                canShare={adminCanShare}
+                courseBaseUrl={selectedCourse.baseUrl}
+                courseCode={manifest.course.code}
+                texts={manifest.texts}
+              />
             </>
           ) : null}
         </section>

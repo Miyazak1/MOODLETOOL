@@ -43,6 +43,7 @@ const xAccelCoursewarePrefix = process.env.X_ACCEL_COURSEWARE_PREFIX || "";
 const embedTokenSecret = process.env.EMBED_TOKEN_SECRET || adminSessionSecret || portalSessionSecret || "";
 const embedTokenMaxAgeSeconds = Number(process.env.EMBED_TOKEN_MAX_AGE_SECONDS || 3650 * 24 * 60 * 60);
 const embedPublicOrigin = process.env.EMBED_PUBLIC_ORIGIN || "";
+const shareTokenMaxAgeSeconds = Number(process.env.SHARE_TOKEN_MAX_AGE_SECONDS || 30 * 24 * 60 * 60);
 const loginRateLimitMaxFailures = Number(process.env.LOGIN_RATE_LIMIT_MAX_FAILURES || 8);
 const loginRateLimitWindowMs = Number(process.env.LOGIN_RATE_LIMIT_WINDOW_SECONDS || 15 * 60) * 1000;
 const loginRateLimitLockMs = Number(process.env.LOGIN_RATE_LIMIT_LOCK_SECONDS || 15 * 60) * 1000;
@@ -776,6 +777,7 @@ function shouldBypassPortalLogin(pathname) {
     pathname === "/api/portal/logout" ||
     pathname.startsWith("/api/admin/") ||
     pathname.startsWith("/embed/") ||
+    pathname.startsWith("/share/") ||
     pathname.startsWith("/assets/") ||
     pathname === "/favicon.ico"
   );
@@ -835,6 +837,98 @@ function dirnamePosix(path) {
   const value = toPosixPath(path);
   const index = value.lastIndexOf("/");
   return index >= 0 ? value.slice(0, index) : "";
+}
+
+function shareTokenForResource({ course, kind, path, previewPath, label, expiresInSeconds }) {
+  const rawPath = toPosixPath(path || previewPath || "");
+  const viewPath = toPosixPath(previewPath || path || "");
+  if (!rawPath && !viewPath) throw new Error("A local resource path is required.");
+  return signEmbedPayload({
+    v: 1,
+    share: true,
+    course: safeSegment(course).toUpperCase(),
+    kind: kind || "file",
+    label,
+    path: viewPath || rawPath,
+    downloadPath: rawPath || viewPath,
+    exp: Math.floor(Date.now() / 1000) + Math.max(60, Math.min(Number(expiresInSeconds) || shareTokenMaxAgeSeconds, embedTokenMaxAgeSeconds)),
+  });
+}
+
+function tokenForSharedPath(payload, requestedPath) {
+  const normalizedPath = toPosixPath(requestedPath);
+  return signEmbedPayload({
+    v: 1,
+    shareFile: true,
+    course: safeSegment(payload.course).toUpperCase(),
+    kind: payload.kind || "file",
+    label: payload.label,
+    path: normalizedPath,
+    prefix: dirnamePosix(normalizedPath),
+    exp: payload.exp,
+  });
+}
+
+function shareKindLabel(kind) {
+  const labels = {
+    ispring: "iSpring Courseware",
+    h5p: "H5P Activity",
+    video: "Video",
+    "book-section": "Lesson Page",
+    file: "Course Resource",
+  };
+  return labels[kind] || "Course Resource";
+}
+
+function renderSharePage(req, token, payload) {
+  const course = safeSegment(payload.course).toUpperCase();
+  const viewPath = toPosixPath(payload.path || payload.downloadPath || "");
+  const downloadPath = toPosixPath(payload.downloadPath || payload.path || "");
+  const viewToken = tokenForSharedPath(payload, viewPath);
+  const downloadToken = tokenForSharedPath(payload, downloadPath);
+  const viewHref = `/embed/t/${encodeURIComponent(viewToken)}/${encodeURIComponent(course)}/${encodePathSegments(viewPath)}`;
+  const downloadHref = `/embed/t/${encodeURIComponent(downloadToken)}/${encodeURIComponent(course)}/${encodePathSegments(downloadPath)}?download=1`;
+  const expiresAt = payload.exp ? new Date(Number(payload.exp) * 1000).toLocaleString("zh-CN", { hour12: false }) : "未设置";
+  const title = payload.label || basename(downloadPath || viewPath) || "Shared resource";
+  return `<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${htmlEscape(title)}</title>
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #f3f7fb; color: #001f3f; font-family: Inter, "Segoe UI", Arial, sans-serif; }
+      .share-shell { max-width: 1180px; margin: 0 auto; padding: 28px 20px 36px; }
+      .share-header { background: #fff; border: 1px solid #d4e0ee; border-radius: 8px; box-shadow: 0 18px 48px rgba(0,31,63,.08); padding: 24px; }
+      .kicker { margin: 0 0 8px; color: #57708f; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+      h1 { margin: 0; font-size: clamp(24px, 3vw, 38px); line-height: 1.12; }
+      .meta { margin-top: 10px; color: #3f5878; line-height: 1.55; }
+      .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+      .button { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 9px 14px; border: 1px solid #9bb8d8; border-radius: 6px; color: #00366d; background: #f7fbff; font-weight: 800; text-decoration: none; }
+      .button.primary { border-color: #116b61; background: #eaf8f4; color: #00564d; }
+      .viewer { margin-top: 18px; background: #fff; border: 1px solid #d4e0ee; border-radius: 8px; min-height: 72vh; overflow: hidden; box-shadow: 0 18px 48px rgba(0,31,63,.08); }
+      iframe { display: block; width: 100%; min-height: 72vh; border: 0; background: #fff; }
+    </style>
+  </head>
+  <body>
+    <main class="share-shell">
+      <section class="share-header">
+        <p class="kicker">${htmlEscape(course)} · ${htmlEscape(shareKindLabel(payload.kind))}</p>
+        <h1>${htmlEscape(title)}</h1>
+        <div class="meta">${htmlEscape(downloadPath || viewPath)}<br>分享有效期至：${htmlEscape(expiresAt)}</div>
+        <div class="actions">
+          <a class="button primary" href="${htmlEscape(viewHref)}" target="_blank" rel="noopener">新窗口查看</a>
+          <a class="button" href="${htmlEscape(downloadHref)}">下载原始文件</a>
+        </div>
+      </section>
+      <section class="viewer">
+        <iframe src="${htmlEscape(viewHref)}" title="${htmlEscape(title)}"></iframe>
+      </section>
+    </main>
+  </body>
+</html>`;
 }
 
 function publicOrigin(req) {
@@ -4297,12 +4391,70 @@ async function handlePortalApi(req, res) {
       return true;
     }
 
+    if (requestUrl.pathname === "/api/portal/share-link" && req.method === "POST") {
+      const session = readPortalSession(req);
+      if (!canGenerateMoodleEmbeds(session)) {
+        sendJson(res, 403, { ok: false, error: "Admin portal access is required to generate public share links." });
+        return true;
+      }
+      const body = await readJsonBody(req, 64 * 1024);
+      const requestedCourse = safeSegment(body.course || "ENG3U").toUpperCase();
+      if (!canAccessCourse(session, requestedCourse)) {
+        sendJson(res, 403, { ok: false, error: `No portal access to ${requestedCourse}.` });
+        return true;
+      }
+      const path = toPosixPath(body.path || "");
+      const previewPath = toPosixPath(body.previewPath || "");
+      if (!path && !previewPath) {
+        sendJson(res, 400, { ok: false, error: "A local resource path or preview path is required." });
+        return true;
+      }
+      const days = Number(body.expiresInDays || 30);
+      const expiresInSeconds = Math.round(Math.max(1, Math.min(days, 3650)) * 24 * 60 * 60);
+      const token = shareTokenForResource({
+        course: requestedCourse,
+        kind: body.kind || "file",
+        label: body.label || basename(path || previewPath),
+        path,
+        previewPath,
+        expiresInSeconds,
+      });
+      const payload = verifyEmbedToken(token);
+      sendJson(res, 200, {
+        ok: true,
+        shareUrl: `${publicOrigin(req)}/share/${encodeURIComponent(token)}`,
+        expiresAt: payload?.exp ? new Date(Number(payload.exp) * 1000).toISOString() : null,
+        tokenMaxAgeSeconds: expiresInSeconds,
+      });
+      return true;
+    }
+
     sendJson(res, 404, { ok: false, error: "Unknown portal endpoint." });
     return true;
   } catch (error) {
     sendJson(res, 500, { ok: false, error: error instanceof Error ? error.message : String(error) });
     return true;
   }
+}
+
+async function handleShareRequest(req, res, requestUrl) {
+  const match = /^\/share\/([^/]+)$/i.exec(requestUrl.pathname);
+  if (!match) return false;
+  const token = decodeURIComponent(match[1]);
+  const payload = verifyEmbedToken(token);
+  if (!payload?.share) {
+    res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Forbidden: invalid or expired share link");
+    return true;
+  }
+  const course = safeSegment(payload.course).toUpperCase();
+  if (!isCourseActive(course)) {
+    res.writeHead(423, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Locked: course is archived");
+    return true;
+  }
+  sendHtml(res, 200, renderSharePage(req, token, payload));
+  return true;
 }
 
 async function sendFile(req, res, filePath) {
@@ -4378,6 +4530,7 @@ const server = createServer(async (req, res) => {
     if (await handlePortalApi(req, res)) return;
     if (await handleAdminApi(req, res)) return;
     if (await handleEmbedRequest(req, res, requestUrl)) return;
+    if (await handleShareRequest(req, res, requestUrl)) return;
 
     if (portalLoginConfigured() && !shouldBypassPortalLogin(pathname) && !readPortalSession(req)) {
       redirectToLogin(res);

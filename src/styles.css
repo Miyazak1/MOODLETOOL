@@ -858,6 +858,26 @@ input {
   padding: 6px 10px;
   justify-content: center;
   text-align: center;
+  gap: 5px;
+}
+
+.button-icon {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-icon svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
 }
 
 .resource-card-actions .button-link.view {
@@ -881,6 +901,20 @@ input {
   color: #0f5b54;
   background: #f0faf6;
   font-size: 12px;
+}
+
+.resource-card-actions .button-link.share-copy {
+  min-width: 48px;
+  justify-content: center;
+  border-color: #99bdd7;
+  color: #0d4b75;
+  background: #f0f8fc;
+  font-size: 12px;
+}
+
+.resource-card-actions .button-link:disabled {
+  cursor: progress;
+  opacity: 0.68;
 }
 
 .button-link.ispring {
