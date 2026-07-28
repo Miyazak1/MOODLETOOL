@@ -624,7 +624,14 @@ input {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  align-items: flex-start;
   margin-top: 14px;
+}
+
+.unit-actions .tag {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin-top: 4px;
 }
 
 .tag,
