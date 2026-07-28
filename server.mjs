@@ -2645,7 +2645,7 @@ function classifyCoursePackageFile({ course, manifest, contentRoot, file, isprin
   const lesson = lessonForImport(manifest, detected.unit, detected.lesson) || ensureManifestLesson(manifest, detected.unit, detected.lesson, cleanImportLabel(fileStem(basename(file))));
   const sectionFolder = section.key === "resource" ? "resources" : section.key;
   if ([".html", ".md", ".txt"].includes(ext) && /book|section|lesson[-_\s]*book|expectation|hands[-_\s]*on|consolidation|homework|introduction/.test(lower)) {
-    const name = `${String(section.index).padStart(2, "0")}-${safeSegment(basename(file))}`;
+    const name = bookSectionImportFilename(section, file);
     return {
       kind: "book-section",
       role: "lesson_book_section",
@@ -2679,6 +2679,17 @@ function classifyCoursePackageFile({ course, manifest, contentRoot, file, isprin
   };
 }
 
+function shouldIgnoreCoursePackagePath(sourcePath) {
+  const normalized = normalizeImportPath(sourcePath).toLowerCase();
+  return normalized.startsWith("previews-html/") || normalized.includes("/previews-html/");
+}
+
+function bookSectionImportFilename(section, file) {
+  const name = safeSegment(basename(file));
+  if (/^\d{2}-/.test(name)) return name;
+  return `${String(section.index).padStart(2, "0")}-${name}`;
+}
+
 async function createCoursePackageReview({ course, sourceZip, originalFilename, importId = coursePackageId() }) {
   const packageDir = coursePackageDir(course, importId);
   const extractRoot = ensureInside(packageDir, join(packageDir, "extract"));
@@ -2686,7 +2697,7 @@ async function createCoursePackageReview({ course, sourceZip, originalFilename, 
   await extractZip(sourceZip, extractRoot);
   const contentRoot = await packageContentRoot(extractRoot);
   const manifest = await readManifestOrEmpty(course);
-  const files = await listPackageFiles(contentRoot);
+  const files = (await listPackageFiles(contentRoot)).filter((file) => !shouldIgnoreCoursePackagePath(relative(contentRoot, file)));
   const expandedIspringDirs = await findExpandedIspringDirs(files);
   const operations = [];
   const ispringDirOps = [];
@@ -2705,7 +2716,7 @@ async function createCoursePackageReview({ course, sourceZip, originalFilename, 
             lesson: detected.lesson,
             lessonId: lesson.id,
             lessonTitle: lesson.title,
-            targetPath: normalizeImportPath(join(lesson.path, "html5-package-imported")),
+            targetPath: normalizeImportPath(join(lesson.path, safeSegment(basename(dir)) || "html5-package")),
             label: cleanImportLabel(basename(dir)) || "iSpring",
           }
         : { kind: "ispring-dir", sourcePath, status: "needs-review", reason: "Expanded iSpring folder has presentation.html, but Unit/Lesson could not be matched.", unit: detected.unit, lesson: detected.lesson },

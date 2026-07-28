@@ -200,12 +200,17 @@ async function createSmokeCoursePackageZip() {
   await rm(packageRoot, { recursive: true, force: true });
   await rm(zipPath, { force: true });
   await mkdir(resolve(packageRoot, "course"), { recursive: true });
-  await mkdir(resolve(packageRoot, "unit-01", "lesson-01", "lesson-book"), { recursive: true });
+  await mkdir(resolve(packageRoot, "unit-01", "lesson-01", "book_sections"), { recursive: true });
+  await mkdir(resolve(packageRoot, "unit-01", "lesson-01", "html5-package"), { recursive: true });
   await mkdir(resolve(packageRoot, "unit-01", "lesson-01", "resources"), { recursive: true });
+  await mkdir(resolve(packageRoot, "previews-html", "unit-01", "lesson-01", "text_export"), { recursive: true });
   await writeFile(resolve(packageRoot, "course", `${smokeCourse}_Course_Outline.md`), "# Smoke Course Outline\n", "utf8");
   await writeFile(resolve(packageRoot, "unit-01", "U01_Unit_Plan.md"), "# Imported Unit Plan\n", "utf8");
   await writeFile(resolve(packageRoot, "unit-01", "lesson-01", "U01_L01_Lesson_Plan.md"), "# Imported Lesson Plan\n", "utf8");
-  await writeFile(resolve(packageRoot, "unit-01", "lesson-01", "lesson-book", "U01_L01_Introduction.html"), "<h1>Imported Lesson Intro</h1>", "utf8");
+  await writeFile(resolve(packageRoot, "unit-01", "lesson-01", "book_sections", "02-lesson.html"), '<h1>Imported Lesson Section</h1><iframe src="../html5-package/presentation.html"></iframe>', "utf8");
+  await writeFile(resolve(packageRoot, "unit-01", "lesson-01", "html5-package", "presentation.html"), "<!doctype html><title>Imported iSpring</title>", "utf8");
+  await writeFile(resolve(packageRoot, "unit-01", "lesson-01", "html5-package", "lms.js"), "", "utf8");
+  await writeFile(resolve(packageRoot, "previews-html", "unit-01", "lesson-01", "text_export", "complete_lesson.docx.html"), "<h1>Generated DOCX preview must not import</h1>", "utf8");
   await writeFile(resolve(packageRoot, "unit-01", "lesson-01", "resources", "U01_L01_Hands_On.mp4"), "video", "utf8");
   await writeFile(resolve(packageRoot, "unit-01", "lesson-01", "resources", "U01_L01_Worksheet.pdf"), "%PDF smoke", "utf8");
 
@@ -410,7 +415,9 @@ try {
     !importedManifest.courseDownloads?.some((item) => item.role === "course_outline") ||
     !importedManifest.units?.[0]?.unitPlan?.path?.includes("U01_Unit_Plan") ||
     !importedLesson?.lessonPlan?.path?.includes("U01_L01_Lesson_Plan") ||
-    !importedLesson?.bookSections?.length ||
+    !importedLesson?.bookSections?.some((item) => item.path?.endsWith("book_sections/02-lesson.html")) ||
+    importedLesson?.bookSections?.some((item) => item.path?.includes("complete_lesson")) ||
+    !importedLesson?.ispring?.some((item) => item.path?.endsWith("html5-package/presentation.html")) ||
     !importedLesson?.downloads?.some((item) => item.type === "mp4") ||
     !importedLesson?.downloads?.some((item) => item.type === "pdf")
   ) {
@@ -447,7 +454,14 @@ try {
   }
   const emptyImportedManifestResponse = await check(`${enabledUrl}/courseware/${emptyImportCourse}/course-manifest.json`, "empty course package writes new manifest", 200);
   const emptyImportedManifest = await emptyImportedManifestResponse.json();
-  if (emptyImportedManifest.course?.code !== emptyImportCourse || !emptyImportedManifest.units?.[0]?.lessons?.[0]?.downloads?.length) {
+  const emptyImportedLesson = emptyImportedManifest.units?.[0]?.lessons?.[0];
+  if (
+    emptyImportedManifest.course?.code !== emptyImportCourse ||
+    !emptyImportedLesson?.downloads?.length ||
+    !emptyImportedLesson?.bookSections?.some((item) => item.path?.endsWith("book_sections/02-lesson.html")) ||
+    emptyImportedLesson?.bookSections?.some((item) => item.path?.includes("complete_lesson")) ||
+    !emptyImportedLesson?.ispring?.some((item) => item.path?.endsWith("html5-package/presentation.html"))
+  ) {
     console.error(`Unexpected empty imported course manifest: ${JSON.stringify(emptyImportedManifest, null, 2)}`);
     process.exitCode = 1;
   }
