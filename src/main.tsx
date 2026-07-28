@@ -46,6 +46,11 @@ function sortCatalogCourses(courses: CourseCatalogEntry[]): CourseCatalogEntry[]
   );
 }
 
+function requestedCourseCodeFromUrl(): string | null {
+  const value = new URLSearchParams(window.location.search).get("course")?.trim().toUpperCase();
+  return value || null;
+}
+
 function canGenerateMoodleEmbeds(session: PortalSession | null): boolean {
   return Boolean(session && (session.role === "admin" || session.role === "superadmin" || session.courses.includes("*")));
 }
@@ -1001,8 +1006,13 @@ function App() {
       })
       .then((data) => {
         const courses = sortCatalogCourses(data.courses || []);
+        const requestedCourseCode = requestedCourseCodeFromUrl();
+        const initialCourseCode =
+          requestedCourseCode && courses.some((course) => course.code === requestedCourseCode)
+            ? requestedCourseCode
+            : data.defaultCourse || courses[0]?.code || FALLBACK_COURSE.code;
         setCatalog({ ...data, courses });
-        setSelectedCourseCode(data.defaultCourse || courses[0]?.code || FALLBACK_COURSE.code);
+        setSelectedCourseCode(initialCourseCode);
       })
       .catch(() => {
         setCatalog({
@@ -1088,6 +1098,14 @@ function App() {
     return rowsByPath;
   }, [moodleEmbedRows]);
 
+  const handleCourseSelect = (courseCode: string) => {
+    const normalizedCourseCode = courseCode.trim().toUpperCase();
+    setSelectedCourseCode(normalizedCourseCode);
+    const params = new URLSearchParams(window.location.search);
+    params.set("course", normalizedCourseCode);
+    window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+  };
+
   const handleLogout = async () => {
     await fetch("/api/portal/logout", { credentials: "same-origin", method: "POST" });
     window.location.href = "/login";
@@ -1125,7 +1143,7 @@ function App() {
           {catalog ? (
             <CourseSelector
               catalog={catalog}
-              onSelect={setSelectedCourseCode}
+              onSelect={handleCourseSelect}
               selectedCourseCode={selectedCourse.code}
             />
           ) : null}

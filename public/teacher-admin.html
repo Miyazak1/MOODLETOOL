@@ -25,32 +25,57 @@
         font-family: Arial, "Microsoft YaHei", sans-serif;
         color: var(--ink);
         background: var(--page);
+        line-height: 1.45;
       }
-      header {
-        padding: 22px 28px;
+      .admin-topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: center;
+        padding: 24px 32px;
         color: #fff;
         background: linear-gradient(110deg, #15365d 0%, #225375 58%, #236b65 100%);
+      }
+      .admin-kicker {
+        margin: 0 0 6px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.82;
       }
       h1 {
         margin: 0;
         font-size: 26px;
       }
+      .admin-subtitle {
+        margin: 8px 0 0;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 14px;
+      }
+      .topbar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 10px;
+      }
       .admin-shell {
         display: grid;
-        grid-template-columns: 240px minmax(0, 1fr);
-        gap: 18px;
-        max-width: 1280px;
+        grid-template-columns: 260px minmax(0, 1fr);
+        gap: 20px;
+        max-width: 1440px;
         margin: 0 auto;
-        padding: 22px;
+        padding: 24px;
       }
       .admin-sidebar {
         position: sticky;
-        top: 16px;
+        top: 18px;
         align-self: start;
         border: 1px solid var(--line);
         border-radius: 8px;
-        padding: 10px;
+        padding: 12px;
         background: var(--surface);
+        box-shadow: 0 12px 28px rgba(21, 54, 93, 0.08);
       }
       .admin-sidebar-title {
         padding: 8px 10px 10px;
@@ -67,6 +92,7 @@
         justify-content: flex-start;
         width: 100%;
         border-color: transparent;
+        border-radius: 7px;
         text-align: left;
         color: var(--ink);
         background: transparent;
@@ -93,10 +119,21 @@
         border-radius: 8px;
         padding: 18px;
         background: var(--surface);
+        box-shadow: 0 10px 24px rgba(21, 54, 93, 0.05);
       }
       h2 {
         margin: 0 0 12px;
         font-size: 18px;
+      }
+      .panel-heading {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+        margin-bottom: 12px;
+      }
+      .panel-heading h2 {
+        margin: 0;
       }
       label {
         display: block;
@@ -143,10 +180,71 @@
         background: #f7fbff;
         cursor: pointer;
       }
+      button:hover:not(:disabled),
+      .button-link:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(21, 54, 93, 0.12);
+      }
+      button:disabled {
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
       button.primary {
         border-color: #6ca39b;
         color: #0f5b54;
         background: #e7f4ef;
+      }
+      .button-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        border: 1px solid #93abc6;
+        border-radius: 6px;
+        padding: 7px 12px;
+        color: #123d67;
+        font-weight: 700;
+        text-decoration: none;
+        background: #f7fbff;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .button-link.primary {
+        border-color: rgba(255, 255, 255, 0.42);
+        color: #fff;
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .button-link.subtle {
+        color: #0f5b54;
+        background: #eef8f5;
+        border-color: #94c9bd;
+      }
+      .sidebar-course-card {
+        display: grid;
+        gap: 6px;
+        margin: 4px 0 12px;
+        border: 1px solid #c9d8e8;
+        border-radius: 8px;
+        padding: 12px;
+        background: linear-gradient(180deg, #f8fbff, #eef6fb);
+      }
+      .sidebar-course-card span {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .sidebar-course-card strong {
+        color: #123d67;
+        font-size: 20px;
+      }
+      .sidebar-course-card small {
+        color: var(--muted);
+        line-height: 1.35;
+      }
+      .sidebar-course-card .button-link {
+        width: 100%;
+        min-height: 34px;
+        margin-top: 4px;
       }
       pre {
         min-height: 120px;
@@ -461,6 +559,15 @@
         border-left: 4px solid var(--teal);
       }
       @media (max-width: 860px) {
+        .admin-topbar {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 20px;
+        }
+        .topbar-actions {
+          justify-content: flex-start;
+          width: 100%;
+        }
         .admin-shell {
           grid-template-columns: 1fr;
           padding: 14px;
@@ -478,12 +585,26 @@
     </style>
   </head>
   <body>
-    <header>
-      <h1>OSSD Teacher Admin</h1>
+    <header class="admin-topbar">
+      <div>
+        <p class="admin-kicker">Sunnybrook OSSD</p>
+        <h1>课程资源管理后台</h1>
+        <p class="admin-subtitle">上传、归档、容量和老师权限集中管理；内容仍按课程页面结构展示给老师。</p>
+      </div>
+      <div class="topbar-actions">
+        <a class="button-link primary" id="topCourseLink" href="/?course=ENG3U">打开当前课程</a>
+        <a class="button-link" id="topPortalLink" href="/">返回课程门户</a>
+      </div>
     </header>
     <div class="admin-shell">
       <aside class="admin-sidebar">
         <div class="admin-sidebar-title">后台导航</div>
+        <div class="sidebar-course-card">
+          <span>当前课程</span>
+          <strong id="sidebarCourseCode">ENG3U</strong>
+          <small id="sidebarCourseTitle">English</small>
+          <a class="button-link subtle" id="sidebarCourseLink" href="/?course=ENG3U">前台查看这门课</a>
+        </div>
         <nav class="admin-nav" aria-label="Admin sections">
           <button class="active" type="button" data-admin-nav="login">登录</button>
           <button type="button" data-admin-nav="course" data-auth-required="1" disabled>连接 / 状态</button>
@@ -499,7 +620,13 @@
       </aside>
       <main>
       <section class="admin-panel" data-admin-panel="login">
-        <h2>管理员登录</h2>
+        <div class="panel-heading">
+          <div>
+            <h2>管理员登录</h2>
+            <p class="meta-line">登录后才能上传、导入、管理课程和生成 Moodle 嵌入代码。</p>
+          </div>
+          <a class="button-link" href="/">返回课程门户</a>
+        </div>
         <div class="grid">
           <div>
             <label for="username">Username</label>
@@ -522,7 +649,13 @@
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="course" hidden>
-        <h2>连接</h2>
+        <div class="panel-heading">
+          <div>
+            <h2>连接 / 当前课程</h2>
+            <p class="meta-line">这里选择的课程会同步到上传、整课导入、归档和容量统计。</p>
+          </div>
+          <a class="button-link subtle" id="coursePanelLink" href="/?course=ENG3U">返回当前课程页面</a>
+        </div>
         <div class="grid">
           <div>
             <label for="course">Course</label>
@@ -795,6 +928,13 @@
       const courseLifecycleNotice = document.querySelector("#courseLifecycleNotice");
       const selectedCourseBanner = document.querySelector("#selectedCourseBanner");
       const courseLifecycleJobs = document.querySelector("#courseLifecycleJobs");
+      const courseNavigationLinks = [
+        document.querySelector("#topCourseLink"),
+        document.querySelector("#sidebarCourseLink"),
+        document.querySelector("#coursePanelLink"),
+      ];
+      const sidebarCourseCode = document.querySelector("#sidebarCourseCode");
+      const sidebarCourseTitle = document.querySelector("#sidebarCourseTitle");
       const isLocalAccess = ["localhost", "127.0.0.1"].includes(window.location.hostname);
       let currentManifest = null;
       let currentUploadGapData = null;
@@ -818,6 +958,30 @@
 
       function write(value) {
         output.textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+      }
+
+      function portalCourseUrl(courseCode = fields.course.value || "ENG3U") {
+        const params = new URLSearchParams({ course: String(courseCode || "ENG3U").trim().toUpperCase() });
+        return `/?${params.toString()}`;
+      }
+
+      function selectedCourseLabel() {
+        const selectedOption = fields.course.options[fields.course.selectedIndex];
+        if (currentManifest?.course?.title) return currentManifest.course.title;
+        if (!selectedOption) return "";
+        return selectedOption.textContent.replace(/^[A-Z0-9]+ · /, "");
+      }
+
+      function updateCourseNavigation() {
+        const code = String(fields.course.value || "ENG3U").trim().toUpperCase();
+        const href = portalCourseUrl(code);
+        courseNavigationLinks.forEach((link) => {
+          if (!link) return;
+          link.href = href;
+          link.title = `打开前台课程 ${code}`;
+        });
+        if (sidebarCourseCode) sidebarCourseCode.textContent = code;
+        if (sidebarCourseTitle) sidebarCourseTitle.textContent = selectedCourseLabel() || "课程资料";
       }
 
       function renderAdminPanels() {
@@ -1321,6 +1485,7 @@
           fields.lesson.append(option("Lesson 1", 1));
           write(`课程 manifest 无法读取，Unit/Lesson 使用默认值。${error.message}`);
         }
+        updateCourseNavigation();
         populateUnitOptions();
       }
 
@@ -1949,9 +2114,11 @@
           });
           fields.course.value = data.defaultCourse || "ENG3U";
           courseMeta.textContent = `${courses.length} courses loaded from Unit Plans and Lesson Plans. Textbooks are excluded.`;
+          updateCourseNavigation();
           await loadSelectedCourseManifest();
         } catch (error) {
           courseMeta.textContent = `Course options unavailable. Using ENG3U only. ${error.message}`;
+          updateCourseNavigation();
           await loadSelectedCourseManifest();
         }
       }
@@ -2114,6 +2281,7 @@
         if (!code) return;
         selectedLifecycleCourse = code;
         fields.course.value = code;
+        updateCourseNavigation();
         renderCourseLifecycle(courseLifecycleData);
         await loadSelectedCourseManifest();
         renderCurrentCourseUploadTasks();
@@ -2641,6 +2809,7 @@
       fields.type.addEventListener("change", updateTypeFields);
       fields.course.addEventListener("change", () => {
         selectedLifecycleCourse = fields.course.value;
+        updateCourseNavigation();
         currentCoursePackageImport = null;
         coursePackageCommitButton.disabled = true;
         coursePackagePanel.hidden = true;
@@ -2677,6 +2846,7 @@
       }, 60000);
       loadCourses().catch((error) => write(`Error: ${error.message}`));
       updateTypeFields();
+      updateCourseNavigation();
       renderAdminPanels();
       checkSession().catch((error) => write(`Error: ${error.message}`));
     </script>
