@@ -1478,7 +1478,8 @@ async function courseUploadGapRecord(course) {
   };
 }
 
-function runCommand(command, args, cwd) {
+function runCommand(command, args, cwd, options = {}) {
+  const allowedExitCodes = new Set(options.allowedExitCodes || []);
   return new Promise((resolveRun, rejectRun) => {
     const child = spawn(command, args, { cwd, shell: false });
     let stdout = "";
@@ -1491,8 +1492,8 @@ function runCommand(command, args, cwd) {
     });
     child.on("error", rejectRun);
     child.on("close", (code) => {
-      if (code === 0) {
-        resolveRun({ stdout, stderr });
+      if (code === 0 || allowedExitCodes.has(code)) {
+        resolveRun({ stdout, stderr, code });
       } else {
         rejectRun(new Error(`${command} exited ${code}\n${stderr || stdout}`));
       }
@@ -1890,8 +1891,29 @@ async function extractZip(zipPath, targetDir) {
     const safeTarget = targetDir.replaceAll("'", "''");
     await runCommand("powershell.exe", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", `Expand-Archive -LiteralPath '${safeZip}' -DestinationPath '${safeTarget}' -Force`], projectRoot);
   } else {
-    await runCommand("unzip", ["-q", zipPath, "-d", targetDir], projectRoot);
+    const result = await runCommand("unzip", ["-q", zipPath, "-d", targetDir], projectRoot, { allowedExitCodes: [1] });
+    if (result.code === 1) {
+      const output = `${result.stderr || ""}\n${result.stdout || ""}`;
+      const filenameEncodingWarning = /mismatching "local" filename|continuing with "central" filename/i.test(output);
+      if (!filenameEncodingWarning || !(await directoryHasAnyFile(targetDir))) {
+        throw new Error(`unzip exited 1\n${result.stderr || result.stdout}`);
+      }
+    }
   }
+}
+
+async function directoryHasAnyFile(rootDir) {
+  const stack = [rootDir];
+  while (stack.length) {
+    const dir = stack.pop();
+    const entries = await readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.name.startsWith(".") || entry.name.startsWith("~$")) continue;
+      if (entry.isFile()) return true;
+      if (entry.isDirectory()) stack.push(join(dir, entry.name));
+    }
+  }
+  return false;
 }
 
 async function locatePresentationDir(rootDir) {
