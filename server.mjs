@@ -127,6 +127,15 @@ function sendJson(res, statusCode, data) {
   res.end(`${JSON.stringify(data, null, 2)}\n`);
 }
 
+function sendNoStoreJson(res, statusCode, data) {
+  res.writeHead(statusCode, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store, max-age=0",
+    "Pragma": "no-cache",
+  });
+  res.end(`${JSON.stringify(data, null, 2)}\n`);
+}
+
 function htmlEscape(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -263,14 +272,14 @@ function filterRoadmapForSession(roadmap, session) {
 async function sendPublicCourseCatalog(req, pathname, res) {
   if (pathname !== "/course-catalog.json") return false;
   const catalog = await readCourseCatalog();
-  sendJson(res, 200, filterCatalogForSession(catalog, readPortalSession(req)));
+  sendNoStoreJson(res, 200, filterCatalogForSession(catalog, readPortalSession(req)));
   return true;
 }
 
 async function sendPublicCourseRoadmap(req, pathname, res) {
   if (pathname !== "/course-roadmap.json") return false;
   const roadmap = JSON.parse(await readFile(join(projectRoot, "public", "course-roadmap.json"), "utf8"));
-  sendJson(res, 200, filterRoadmapForSession(roadmap, readPortalSession(req)));
+  sendNoStoreJson(res, 200, filterRoadmapForSession(roadmap, readPortalSession(req)));
   return true;
 }
 
@@ -287,7 +296,7 @@ async function sendPublicCourseManifest(req, pathname, res) {
     return true;
   }
   const manifest = await readManifest(course);
-  sendJson(res, 200, sanitizePublicManifest(manifest));
+  sendNoStoreJson(res, 200, sanitizePublicManifest(manifest));
   return true;
 }
 
@@ -4125,6 +4134,10 @@ async function sendFile(req, res, filePath) {
 
   res.setHeader("Content-Type", contentType);
   res.setHeader("Accept-Ranges", "bytes");
+  if (ext === ".html" || ext === ".json") {
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+    res.setHeader("Pragma", "no-cache");
+  }
 
   if (range) {
     const match = /bytes=(\d+)-(\d*)/.exec(range);
