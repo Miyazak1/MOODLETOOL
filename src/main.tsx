@@ -730,6 +730,10 @@ function isUnitOverviewLesson(lesson: Lesson): boolean {
   return lesson.planningStatus === "unit_overview";
 }
 
+function displayLessonId(id: string): string {
+  return id.replace(/^U0*(\d+)L0*(\d+)$/i, "U$1L$2");
+}
+
 function countLessonsRequiringPlans(units: Unit[]): number {
   return units.reduce((sum, unit) => sum + unit.lessons.filter(needsLessonPlan).length, 0);
 }
@@ -1082,7 +1086,7 @@ function LessonRow({
   return (
     <article className={`lesson-row ${open ? "open" : ""}`}>
       <button className="lesson-summary" type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
-        <span className="lesson-code">{lesson.id}</span>
+        <span className="lesson-code">{displayLessonId(lesson.id)}</span>
         <span>
           <span className="lesson-title">{lesson.title}</span>
           <span className="lesson-counts">

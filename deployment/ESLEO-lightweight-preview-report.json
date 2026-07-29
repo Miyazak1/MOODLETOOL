@@ -1,11 +1,11 @@
 {
   "course": "ESLEO",
-  "generatedPreviewFiles": 32,
+  "generatedPreviewFiles": 72,
   "generatedByType": {
-    "docx": 32,
-    "h5p": 0
+    "docx": 36,
+    "h5p": 36
   },
-  "manifestItemsUpdated": 32,
+  "manifestItemsUpdated": 0,
   "skipped": [],
   "previewRoot": "previews-html"
 }

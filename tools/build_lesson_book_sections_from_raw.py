@@ -251,21 +251,15 @@ def local_h5p_embed(lesson: dict, output_dir: Path, course_root: Path, section_l
         preview_path = item.get("previewPath")
         download_path = item.get("path")
         preview_href = relative_course_href(output_dir, course_root, preview_path)
-        download_href = relative_course_href(output_dir, course_root, download_path)
         raw_title = str(item.get("label") or "")
         if not raw_title or raw_title.lower().endswith(".h5p"):
             raw_title = f"{section_label_value} H5P Quiz" if section_label_value == "Hands On" else f"{section_label_value} H5P Activity"
         title = html.escape(raw_title)
+        embed_href = f"{preview_href}?embed=1"
         return (
             '<div class="embedded-h5p">'
-            f'<iframe src="{html.escape(preview_href, quote=True)}" title="{title}" '
+            f'<iframe src="{html.escape(embed_href, quote=True)}" title="{title}" '
             'loading="lazy" allowfullscreen="allowfullscreen"></iframe>'
-            "</div>"
-            '<div class="embedded-resource-card">'
-            f"<strong>{title}</strong>"
-            "<span>Local playable H5P package.</span>"
-            f'<a href="{html.escape(preview_href, quote=True)}" target="_blank" rel="noopener">Open quiz</a>'
-            f'<a href="{html.escape(download_href, quote=True)}" download>Download H5P</a>'
             "</div>"
         )
     return ""
@@ -378,7 +372,7 @@ def sanitize_body(
     cleaned = re.sub(r'<a\b[^>]*title=["\']Edit H5P content["\'][^>]*>.*?</a>', "", cleaned, flags=re.IGNORECASE | re.DOTALL)
     cleaned = re.sub(r">https?://[^<]+<", ">Local resource<", cleaned)
     cleaned = re.sub(r"<p>\s*(<div class=\"embedded-ispring\">.*?</div>)\s*</p>", r"\1", cleaned, flags=re.DOTALL)
-    cleaned = re.sub(r"<p>\s*(<div class=\"embedded-h5p\">.*?</div><div class=\"embedded-resource-card\">.*?</div>)\s*</p>", r"\1", cleaned, flags=re.DOTALL)
+    cleaned = re.sub(r"<p>\s*(<div class=\"embedded-h5p\">.*?</div>)\s*</p>", r"\1", cleaned, flags=re.DOTALL)
     return cleaned
 
 
@@ -428,8 +422,8 @@ def standalone_section_html(course: str, unit: int, lesson_number: int, lesson_t
     .embedded-ispring iframe {{ border: 0; display: block; height: 100%; width: 100%; }}
     .embedded-video {{ border: 1px solid #b7cbe5; border-radius: 8px; background: #000; margin: 16px 0; overflow: hidden; }}
     .embedded-video video {{ display: block; width: 100%; }}
-    .embedded-h5p {{ border: 1px solid #b7cbe5; border-radius: 8px; background: #fff; margin: 16px 0; overflow: hidden; min-height: 620px; }}
-    .embedded-h5p iframe {{ border: 0; display: block; min-height: 620px; width: 100%; }}
+    .embedded-h5p {{ border: 1px solid #b7cbe5; border-radius: 8px; background: #fff; margin: 16px 0; overflow: hidden; min-height: 240px; }}
+    .embedded-h5p iframe {{ border: 0; display: block; height: 240px; min-height: 240px; width: 100%; }}
     .embedded-resource-card {{ border: 1px solid #9bb8d9; border-radius: 8px; background: #f2f7fc; color: #102f4e; margin: 12px 0; padding: 12px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }}
     .embedded-resource-card strong, .embedded-resource-card span {{ flex-basis: 100%; }}
     .embedded-resource-card a {{ width: fit-content; border: 1px solid #7da2cd; border-radius: 6px; padding: 7px 10px; background: #fff; font-weight: 700; }}
@@ -445,6 +439,17 @@ def standalone_section_html(course: str, unit: int, lesson_number: int, lesson_t
       <div class="moodle-content">{body}</div>
     </section>
   </main>
+  <script>
+    window.addEventListener("message", function (event) {{
+      if (!event.data || event.data.type !== "ossd:h5p-height") return;
+      var iframes = document.querySelectorAll(".embedded-h5p iframe");
+      iframes.forEach(function (iframe) {{
+        if (event.source === iframe.contentWindow) {{
+          iframe.style.height = Math.max(Number(event.data.height) || 0, 240) + "px";
+        }}
+      }});
+    }});
+  </script>
 </body>
 </html>
 """

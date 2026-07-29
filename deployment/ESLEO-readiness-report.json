@@ -1,29 +1,215 @@
 {
-  "generatedAt": "2026-07-23T09:38:40.563Z",
+  "generatedAt": "2026-07-29T02:59:31.606Z",
   "course": {
     "code": "ESLEO",
     "title": "ESLEO · ESL Level 5",
     "localCourseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ESLEO\\"
   },
   "counts": {
-    "courseDocuments": 0,
-    "courseOutlines": 0,
-    "introductions": 0,
+    "courseDocuments": 3,
+    "courseOutlines": 1,
+    "introductions": 1,
     "units": 4,
     "lessons": 28,
-    "unitPlans": 4,
+    "unitPlans": 0,
     "lessonPlanExpected": 28,
-    "lessonPlans": 28,
-    "ispringEntries": 0,
-    "lessonDownloads": 0,
-    "textEntries": 0,
-    "textMaterials": 0
+    "lessonPlans": 0,
+    "ispringEntries": 28,
+    "lessonDownloads": 100,
+    "textEntries": 2,
+    "textMaterials": 1
   },
   "gaps": {
-    "missingCourseOutline": true,
-    "missingIntroduction": true,
-    "missingUnitPlans": [],
-    "missingLessonPlans": [],
+    "missingCourseOutline": false,
+    "missingIntroduction": false,
+    "missingUnitPlans": [
+      {
+        "unit": 1,
+        "title": "Unit 1"
+      },
+      {
+        "unit": 2,
+        "title": "Unit 2"
+      },
+      {
+        "unit": 3,
+        "title": "Unit 3"
+      },
+      {
+        "unit": 4,
+        "title": "Unit 4"
+      }
+    ],
+    "missingLessonPlans": [
+      {
+        "id": "U01L01",
+        "unit": 1,
+        "lesson": 1,
+        "title": "Lesson 1: Pre-writing Strategies"
+      },
+      {
+        "id": "U01L02",
+        "unit": 1,
+        "lesson": 2,
+        "title": "Lesson 2: Writing Structure"
+      },
+      {
+        "id": "U01L03",
+        "unit": 1,
+        "lesson": 3,
+        "title": "Lesson 3: Writing for Different Audiences"
+      },
+      {
+        "id": "U01L04",
+        "unit": 1,
+        "lesson": 4,
+        "title": "Lesson 4: Revising and Editing Your Draft Part 1"
+      },
+      {
+        "id": "U01L05",
+        "unit": 1,
+        "lesson": 5,
+        "title": "Lesson 5: Revising and Editing Your Draft Part 2"
+      },
+      {
+        "id": "U01L06",
+        "unit": 1,
+        "lesson": 6,
+        "title": "Lesson 6: Presenting Your Work"
+      },
+      {
+        "id": "U01L07",
+        "unit": 1,
+        "lesson": 7,
+        "title": "Lesson 7: Clauses"
+      },
+      {
+        "id": "U02L01",
+        "unit": 2,
+        "lesson": 1,
+        "title": "Lesson 1: Comprehension Strategies"
+      },
+      {
+        "id": "U02L02",
+        "unit": 2,
+        "lesson": 2,
+        "title": "Lesson 2: Developing Your Vocabulary"
+      },
+      {
+        "id": "U02L03",
+        "unit": 2,
+        "lesson": 3,
+        "title": "Lesson 3: Romeo & Juliet - Introduction"
+      },
+      {
+        "id": "U02L04",
+        "unit": 2,
+        "lesson": 4,
+        "title": "Lesson 4: Romeo & Juliet - Act I"
+      },
+      {
+        "id": "U02L05",
+        "unit": 2,
+        "lesson": 5,
+        "title": "Lesson 5: Romeo & Juliet - Act II"
+      },
+      {
+        "id": "U02L06",
+        "unit": 2,
+        "lesson": 6,
+        "title": "Lesson 6: Romeo & Juliet - Act III"
+      },
+      {
+        "id": "U02L07",
+        "unit": 2,
+        "lesson": 7,
+        "title": "Lesson 7: Romeo & Juliet - Act IV"
+      },
+      {
+        "id": "U02L08",
+        "unit": 2,
+        "lesson": 8,
+        "title": "Lesson 8 : Romeo & Juliet - Act V"
+      },
+      {
+        "id": "U03L01",
+        "unit": 3,
+        "lesson": 1,
+        "title": "Lesson 1: Canadian News & Media"
+      },
+      {
+        "id": "U03L02",
+        "unit": 3,
+        "lesson": 2,
+        "title": "Lesson 2: Structure of a News Article"
+      },
+      {
+        "id": "U03L03",
+        "unit": 3,
+        "lesson": 3,
+        "title": "Lesson 3: Media Bias"
+      },
+      {
+        "id": "U03L04",
+        "unit": 3,
+        "lesson": 4,
+        "title": "Lesson 4: Advertisements"
+      },
+      {
+        "id": "U03L05",
+        "unit": 3,
+        "lesson": 5,
+        "title": "Lesson 5: Communication"
+      },
+      {
+        "id": "U03L06",
+        "unit": 3,
+        "lesson": 6,
+        "title": "Lesson 6: The Canadian Identity & Citizenship"
+      },
+      {
+        "id": "U03L07",
+        "unit": 3,
+        "lesson": 7,
+        "title": "Lesson 7: Ontario's Secondary School System & Becoming a Great Student"
+      },
+      {
+        "id": "U04L01",
+        "unit": 4,
+        "lesson": 1,
+        "title": "Lesson 1: Introduction to Of Mice and Men"
+      },
+      {
+        "id": "U04L02",
+        "unit": 4,
+        "lesson": 2,
+        "title": "Lesson 2: Of Mice and Men - Chapters 1 & 2"
+      },
+      {
+        "id": "U04L03",
+        "unit": 4,
+        "lesson": 3,
+        "title": "Lesson 3: Of Mice and Men - Chapters 3 & 4"
+      },
+      {
+        "id": "U04L04",
+        "unit": 4,
+        "lesson": 4,
+        "title": "Lesson 4: Of Mice and Men - Chapters 5 & 6"
+      },
+      {
+        "id": "U04L05",
+        "unit": 4,
+        "lesson": 5,
+        "title": "Lesson 5: Of Mice and Men - Themes, Motifs & Symbols"
+      },
+      {
+        "id": "U04L06",
+        "unit": 4,
+        "lesson": 6,
+        "title": "Lesson 6: Effective Oral Communications"
+      }
+    ],
     "textsNeedingReview": [],
     "textsMissingDownload": [],
     "linkOnlyTexts": [],
@@ -31,7 +217,7 @@
   },
   "sourceAudit": {
     "lessonCount": 28,
-    "ispringExpected": 0,
-    "ispringComplete": 0
+    "ispringExpected": 28,
+    "ispringComplete": 28
   }
 }

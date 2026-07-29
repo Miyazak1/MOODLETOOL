@@ -696,13 +696,16 @@ input {
 .lesson-code {
   display: grid;
   place-items: center;
-  width: 58px;
+  min-width: 58px;
   height: 42px;
+  padding: 0 8px;
   border: 1px solid var(--line);
   border-radius: 6px;
   font-weight: 800;
+  line-height: 1;
   color: var(--navy);
   background: #fff;
+  white-space: nowrap;
 }
 
 .lesson-title {

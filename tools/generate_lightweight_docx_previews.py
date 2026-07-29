@@ -231,9 +231,16 @@ def render_h5p_standalone_player(meta: dict[str, Any], source_rel: str, download
       margin: 0;
       padding: 28px 18px 42px;
     }}
+    body.is-embedded {{
+      background: #fff;
+      padding: 0;
+    }}
     main {{
       max-width: 1120px;
       margin: 0 auto;
+    }}
+    body.is-embedded main {{
+      max-width: none;
     }}
     header {{
       background: #fff;
@@ -256,11 +263,19 @@ def render_h5p_standalone_player(meta: dict[str, Any], source_rel: str, download
       background: #fff;
       border: 1px solid #d8e2ef;
       border-radius: 8px;
-      min-height: 360px;
+      min-height: 220px;
       overflow: hidden;
     }}
+    body.is-embedded header {{
+      display: none;
+    }}
+    body.is-embedded .player-shell {{
+      border: 0;
+      border-radius: 0;
+      min-height: 220px;
+    }}
     #h5p-container {{
-      min-height: 360px;
+      min-height: 220px;
     }}
     .fallback {{
       background: #fff3f3;
@@ -309,9 +324,30 @@ def render_h5p_standalone_player(meta: dict[str, Any], source_rel: str, download
   </main>
   <script src="/vendor/h5p-standalone/main.bundle.js" charset="UTF-8"></script>
   <script>
+    if (new URLSearchParams(window.location.search).get("embed") === "1") {{
+      document.body.classList.add("is-embedded");
+    }}
     document.addEventListener("DOMContentLoaded", function () {{
       const el = document.getElementById("h5p-container");
       const fallback = document.getElementById("h5p-fallback");
+      const measurePlayerHeight = () => {{
+        const shell = document.querySelector(".player-shell");
+        const content =
+          el.querySelector(".h5p-content") ||
+          el.querySelector(".h5p-container") ||
+          el.firstElementChild ||
+          el;
+        const shellRect = shell ? shell.getBoundingClientRect() : {{ top: 0 }};
+        const contentRect = content.getBoundingClientRect();
+        const measured = Math.max(contentRect.bottom - shellRect.top, contentRect.height);
+        return Math.min(Math.max(Math.ceil(measured) + 10, 220), 900);
+      }};
+      const notifyParent = () => {{
+        const height = measurePlayerHeight();
+        if (window.parent && window.parent !== window) {{
+          window.parent.postMessage({{ type: "ossd:h5p-height", height }}, "*");
+        }}
+      }};
       const options = {{
         h5pJsonPath: ".",
         librariesPath: ".",
@@ -325,16 +361,29 @@ def render_h5p_standalone_player(meta: dict[str, Any], source_rel: str, download
       }};
       try {{
         const player = new H5PStandalone.H5P(el, options);
+        setTimeout(notifyParent, 500);
+        setTimeout(notifyParent, 1500);
+        setTimeout(notifyParent, 3000);
+        if ("ResizeObserver" in window) {{
+          const resizeObserver = new ResizeObserver(notifyParent);
+          resizeObserver.observe(el);
+        }}
         if (player && typeof player.catch === "function") {{
           player.catch(function (error) {{
             console.error(error);
             fallback.style.display = "block";
+            notifyParent();
           }});
         }}
       }} catch (error) {{
         console.error(error);
         fallback.style.display = "block";
+        notifyParent();
       }}
+      window.addEventListener("resize", notifyParent);
+      document.addEventListener("click", function () {{
+        setTimeout(notifyParent, 250);
+      }}, true);
     }});
   </script>
 </body>
