@@ -1318,6 +1318,7 @@ function moodleIspringIframeHtml(src) {
   return `<iframe style="border: none; background-color: transparent;"
     src="${htmlEscape(src)}"
     width="1500" height="750" frameborder="0" scrolling="auto"
+    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-presentation"
     allowfullscreen="allowfullscreen"></iframe>`;
 }
 
