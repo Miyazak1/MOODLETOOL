@@ -1351,6 +1351,14 @@ function moodleIspringIframeHtml(src) {
     allowfullscreen="allowfullscreen"></iframe>`;
 }
 
+function moodleShortcodeAttribute(value) {
+  return String(value ?? "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("[", "&#91;").replaceAll("]", "&#93;");
+}
+
+function moodlePortalIframeShortcode(src, { width = 1500, height = 750 } = {}) {
+  return `[portal_iframe src="${moodleShortcodeAttribute(src)}" width="${moodleShortcodeAttribute(width)}" height="${moodleShortcodeAttribute(height)}"]`;
+}
+
 function moodleH5pIframeHtml(src, { height = 560 } = {}) {
   return `<iframe src="${htmlEscape(src)}"
     class="h5p-iframe" name="h5pcontent"
@@ -1392,17 +1400,27 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
         const embedUrl = `${origin}/embed/${candidate.kind}/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
         const fileUrl = `${origin}/embed/file/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
         let moodleHtml = "";
+        let moodleIframeHtml = "";
+        let moodleShortcode = "";
         let status = "ready";
         if (candidate.kind === "ispring") {
-          moodleHtml = moodleIspringIframeHtml(embedUrl);
+          moodleIframeHtml = moodleIspringIframeHtml(embedUrl);
+          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: 1500, height: 750 });
+          moodleHtml = moodleShortcode;
         } else if (candidate.kind === "video") {
           moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video");
         } else if (candidate.kind === "book-section") {
-          moodleHtml = moodleContentIframeHtml(embedUrl);
+          moodleIframeHtml = moodleContentIframeHtml(embedUrl);
+          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 750 });
+          moodleHtml = moodleShortcode;
         } else if (candidate.kind === "h5p") {
-          moodleHtml = moodleH5pIframeHtml(embedUrl);
+          moodleIframeHtml = moodleH5pIframeHtml(embedUrl);
+          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 560 });
+          moodleHtml = moodleShortcode;
         } else if (String(item.type || "").toLowerCase() === "pdf") {
-          moodleHtml = moodleContentIframeHtml(fileUrl);
+          moodleIframeHtml = moodleContentIframeHtml(fileUrl);
+          moodleShortcode = moodlePortalIframeShortcode(fileUrl, { width: "100%", height: 750 });
+          moodleHtml = moodleShortcode;
         } else {
           moodleHtml = `<a href="${fileUrl}" target="_blank" rel="noopener">${htmlEscape(item.label || "Download resource")}</a>`;
         }
@@ -1420,6 +1438,8 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
           status,
           embedUrl,
           fileUrl,
+          moodleShortcode,
+          moodleIframeHtml,
           moodleHtml,
         });
       }

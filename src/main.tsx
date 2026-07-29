@@ -182,16 +182,17 @@ async function copyText(value: string) {
 
 function MoodleEmbedButton({ row }: { row?: MoodleEmbedRow }) {
   const [copied, setCopied] = useState(false);
-  if (!row?.moodleHtml) return null;
+  const moodleCode = row?.moodleShortcode || row?.moodleHtml;
+  if (!moodleCode) return null;
 
   const copy = async () => {
-    await copyText(row.moodleHtml);
+    await copyText(moodleCode);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1600);
   };
 
   return (
-    <button className="button-link moodle-copy" onClick={copy} title="复制可粘贴到 Moodle HTML/source 编辑器的代码" type="button">
+    <button className="button-link moodle-copy" onClick={copy} title="复制可粘贴到 Moodle 的 Portal embed 短代码" type="button">
       <span className="button-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" focusable="false">
           <path d="m9 18-6-6 6-6" />
@@ -199,7 +200,7 @@ function MoodleEmbedButton({ row }: { row?: MoodleEmbedRow }) {
           <path d="m13 4-2 16" />
         </svg>
       </span>
-      <span>{copied ? "已复制" : "代码"}</span>
+      <span>{copied ? "已复制" : "短代码"}</span>
     </button>
   );
 }

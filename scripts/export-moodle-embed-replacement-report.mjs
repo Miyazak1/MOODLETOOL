@@ -54,6 +54,14 @@ function htmlEscape(value) {
     .replaceAll("'", "&#39;");
 }
 
+function shortcodeAttribute(value) {
+  return String(value ?? "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("[", "&#91;").replaceAll("]", "&#93;");
+}
+
+function portalIframeShortcode(src, { width = "100%", height = 720 } = {}) {
+  return `[portal_iframe src="${shortcodeAttribute(src)}" width="${shortcodeAttribute(width)}" height="${shortcodeAttribute(height)}"]`;
+}
+
 function base64UrlJson(value) {
   return Buffer.from(JSON.stringify(value), "utf8").toString("base64url");
 }
@@ -106,17 +114,25 @@ function rowForResource(unit, lesson, candidate) {
   const fileUrl = `${baseUrl}/embed/file/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
   let status = "ready";
   let moodleHtml = "";
+  let moodleIframeHtml = "";
+  let moodleShortcode = "";
   if (candidate.kind === "ispring") {
-    moodleHtml = `<iframe src="${embedUrl}" width="100%" height="720" frameborder="0" scrolling="auto" allowfullscreen="allowfullscreen"></iframe>`;
+    moodleIframeHtml = `<iframe src="${embedUrl}" width="100%" height="720" frameborder="0" scrolling="auto" allowfullscreen="allowfullscreen"></iframe>`;
+    moodleShortcode = portalIframeShortcode(embedUrl, { width: "100%", height: 720 });
+    moodleHtml = moodleShortcode;
   } else if (candidate.kind === "video") {
     moodleHtml = `<iframe src="${embedUrl}" width="100%" height="540" frameborder="0" allowfullscreen="allowfullscreen"></iframe>`;
   } else if (candidate.kind === "book-section") {
-    moodleHtml = `<iframe src="${embedUrl}" width="100%" height="720" frameborder="0"></iframe>`;
+    moodleIframeHtml = `<iframe src="${embedUrl}" width="100%" height="720" frameborder="0"></iframe>`;
+    moodleShortcode = portalIframeShortcode(embedUrl, { width: "100%", height: 720 });
+    moodleHtml = moodleShortcode;
   } else if (candidate.kind === "h5p") {
     moodleHtml = `<a href="${fileUrl}" target="_blank" rel="noopener">${htmlEscape(item.label || "Download H5P")}</a>`;
     status = "needs-h5p-runtime";
   } else if (String(item.type || "").toLowerCase() === "pdf") {
-    moodleHtml = `<iframe src="${fileUrl}" width="100%" height="720" frameborder="0"></iframe>`;
+    moodleIframeHtml = `<iframe src="${fileUrl}" width="100%" height="720" frameborder="0"></iframe>`;
+    moodleShortcode = portalIframeShortcode(fileUrl, { width: "100%", height: 720 });
+    moodleHtml = moodleShortcode;
   } else {
     moodleHtml = `<a href="${fileUrl}" target="_blank" rel="noopener">${htmlEscape(item.label || "Download resource")}</a>`;
   }
@@ -134,6 +150,8 @@ function rowForResource(unit, lesson, candidate) {
     status,
     embedUrl,
     fileUrl,
+    moodleShortcode,
+    moodleIframeHtml,
     moodleHtml,
   };
 }
@@ -200,9 +218,24 @@ writeFileSync(mdPath, renderMarkdown(report), "utf8");
 writeFileSync(
   csvPath,
   [
-    "course,unit,lesson,lessonId,kind,status,label,path,source,embedUrl,fileUrl,moodleHtml",
+    "course,unit,lesson,lessonId,kind,status,label,path,source,embedUrl,fileUrl,moodleShortcode,moodleIframeHtml,moodleHtml",
     ...rows.map((row) =>
-      [row.course, row.unit, row.lesson, row.lessonId, row.kind, row.status, row.label, row.path, row.source, row.embedUrl, row.fileUrl, row.moodleHtml]
+      [
+        row.course,
+        row.unit,
+        row.lesson,
+        row.lessonId,
+        row.kind,
+        row.status,
+        row.label,
+        row.path,
+        row.source,
+        row.embedUrl,
+        row.fileUrl,
+        row.moodleShortcode,
+        row.moodleIframeHtml,
+        row.moodleHtml,
+      ]
         .map(csvEscape)
         .join(","),
     ),

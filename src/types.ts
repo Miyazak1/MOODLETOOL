@@ -23,6 +23,8 @@ export interface MoodleEmbedRow {
   status: string;
   embedUrl?: string;
   fileUrl?: string;
+  moodleShortcode?: string;
+  moodleIframeHtml?: string;
   moodleHtml: string;
 }
 
