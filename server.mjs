@@ -1445,11 +1445,9 @@ async function handleEmbedRequest(req, res, requestUrl) {
 
   const tokenizedRawUrl = `/embed/t/${encodeURIComponent(token)}/${encodeURIComponent(course)}/${encodePathSegments(payload.path)}`;
   if (kind === "ispring") {
-    const root = courseRoot(course);
-    const filePath = ensureInside(root, join(root, toPosixPath(payload.path)));
-    const html = await readFile(filePath, "utf8");
-    const baseHref = `/embed/t/${encodeURIComponent(token)}/${encodeURIComponent(course)}/${encodePathSegments(dirnamePosix(payload.path))}/`;
-    sendHtml(res, 200, injectEmbedBase(html, baseHref));
+    // Load iSpring from its real package URL so relative JS, media, and data files resolve naturally.
+    res.writeHead(302, { Location: tokenizedRawUrl });
+    res.end();
     return true;
   }
   if (kind === "video") {
