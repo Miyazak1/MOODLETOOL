@@ -146,6 +146,30 @@ function htmlEscape(value) {
     .replaceAll("'", "&#39;");
 }
 
+function directoryHrefForRequest(req) {
+  const requestUrl = new URL(req.url || "/", "http://127.0.0.1");
+  const pathname = requestUrl.pathname || "/";
+  if (pathname.endsWith("/")) return pathname;
+  const slashIndex = pathname.lastIndexOf("/");
+  return slashIndex >= 0 ? `${pathname.slice(0, slashIndex + 1)}` : "/";
+}
+
+function injectIspringEmbedCompatibility(html, baseHref) {
+  const compatibilityScript = `<script>
+    window.ispringPresentationConnector = window.ispringPresentationConnector || {
+      getState: function() { return undefined; },
+      register: function() {}
+    };
+  </script>`;
+  const baseTag = baseHref && !/<base\s/i.test(html) ? `<base href="${htmlEscape(baseHref)}">` : "";
+  const injection = [baseTag, compatibilityScript].filter(Boolean).join("\n    ");
+  if (!injection) return html;
+  if (/<head(\s[^>]*)?>/i.test(html)) {
+    return html.replace(/<head(\s[^>]*)?>/i, (match) => `${match}\n    ${injection}`);
+  }
+  return `${injection}\n${html}`;
+}
+
 function toPosixPath(value) {
   return String(value || "").replaceAll("\\", "/").replace(/^\/+/, "");
 }
@@ -1293,6 +1317,11 @@ async function sendEmbedCoursewareFile(req, res, course, requestedPath, payload)
   }
   const root = courseRoot(course);
   const filePath = ensureInside(root, join(root, toPosixPath(requestedPath)));
+  if (payload.kind === "ispring" && basename(filePath).toLowerCase() === "presentation.html") {
+    const html = await readFile(filePath, "utf8");
+    sendHtml(res, 200, injectIspringEmbedCompatibility(html, directoryHrefForRequest(req)));
+    return true;
+  }
   await sendFile(req, res, filePath);
   return true;
 }
@@ -1318,7 +1347,8 @@ function moodleIspringIframeHtml(src) {
   return `<iframe style="border: none; background-color: transparent;"
     src="${htmlEscape(src)}"
     width="1500" height="750" frameborder="0" scrolling="auto"
-    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-presentation"
+    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-presentation allow-modals"
+    allow="autoplay; fullscreen; clipboard-write; encrypted-media; picture-in-picture"
     allowfullscreen="allowfullscreen"></iframe>`;
 }
 

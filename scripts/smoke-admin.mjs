@@ -477,7 +477,7 @@ try {
   } else {
     const embedResponse = await check(ispringEmbed.embedUrl, "signed Moodle iSpring embed opens", 200);
     const embedHtml = await embedResponse.text();
-    if (!embedHtml.includes("<base ") || !embedHtml.includes("Smoke iSpring")) {
+    if (!embedHtml.includes("<base ") || !embedHtml.includes("window.ispringPresentationConnector") || !embedHtml.includes("Smoke iSpring")) {
       console.error(`Unexpected signed embed HTML: ${embedHtml.slice(0, 500)}`);
       process.exitCode = 1;
     }
