@@ -471,7 +471,7 @@ try {
   });
   const moodleEmbedsData = await moodleEmbedsResponse.json();
   const ispringEmbed = moodleEmbedsData.rows?.find((row) => row.kind === "ispring");
-  if (!moodleEmbedsData.ok || !ispringEmbed?.moodleHtml?.includes("/embed/ispring/") || !ispringEmbed.embedUrl) {
+  if (!moodleEmbedsData.ok || !ispringEmbed?.moodleHtml?.includes("/embed/ispring/") || /sandbox\s*=/i.test(ispringEmbed?.moodleHtml || "") || !ispringEmbed.embedUrl) {
     console.error(`Unexpected Moodle embed payload: ${JSON.stringify(moodleEmbedsData)}`);
     process.exitCode = 1;
   } else {
