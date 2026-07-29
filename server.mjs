@@ -170,47 +170,6 @@ function injectIspringEmbedCompatibility(html, baseHref) {
   return `${injection}\n${html}`;
 }
 
-function renderIspringEmbedShell({ title, src }) {
-  const safeTitle = htmlEscape(title || "iSpring Courseware");
-  const safeSrc = htmlEscape(src);
-  return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${safeTitle}</title>
-    <style>
-      html,
-      body {
-        background: #ced1d3;
-        height: 100%;
-        margin: 0;
-        overflow: hidden;
-      }
-      iframe {
-        border: 0;
-        display: block;
-        height: 100vh;
-        width: 100vw;
-      }
-    </style>
-    <script>
-      window.ispringPresentationConnector = window.ispringPresentationConnector || {
-        getState: function() { return undefined; },
-        register: function() {}
-      };
-    </script>
-  </head>
-  <body>
-    <iframe
-      src="${safeSrc}"
-      title="${safeTitle}"
-      allow="autoplay; fullscreen; clipboard-write; encrypted-media; picture-in-picture"
-      allowfullscreen="allowfullscreen"></iframe>
-  </body>
-</html>`;
-}
-
 function toPosixPath(value) {
   return String(value || "").replaceAll("\\", "/").replace(/^\/+/, "");
 }
@@ -1516,14 +1475,11 @@ async function handleEmbedRequest(req, res, requestUrl) {
 
   const tokenizedRawUrl = `/embed/t/${encodeURIComponent(token)}/${encodeURIComponent(course)}/${encodePathSegments(payload.path)}`;
   if (kind === "ispring") {
-    sendHtml(
-      res,
-      200,
-      renderIspringEmbedShell({
-        title: payload.label || "iSpring Courseware",
-        src: tokenizedRawUrl,
-      }),
-    );
+    const root = courseRoot(course);
+    const filePath = ensureInside(root, join(root, toPosixPath(payload.path)));
+    const html = await readFile(filePath, "utf8");
+    const rawBaseHref = tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1);
+    sendHtml(res, 200, injectIspringEmbedCompatibility(html, rawBaseHref));
     return true;
   }
   if (kind === "video") {

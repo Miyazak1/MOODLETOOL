@@ -477,17 +477,9 @@ try {
   } else {
     const embedResponse = await check(ispringEmbed.embedUrl, "signed Moodle iSpring embed opens", 200);
     const embedHtml = await embedResponse.text();
-    const shellSrc = embedHtml.match(/<iframe[^>]+src="([^"]+)"/i)?.[1] || "";
-    if (!embedHtml.includes("window.ispringPresentationConnector") || !shellSrc.includes("/embed/t/")) {
-      console.error(`Unexpected signed embed shell HTML: ${embedHtml.slice(0, 500)}`);
+    if (!embedHtml.includes("<base ") || !embedHtml.includes("/embed/t/") || !embedHtml.includes("window.ispringPresentationConnector") || !embedHtml.includes("Smoke iSpring")) {
+      console.error(`Unexpected signed embed HTML: ${embedHtml.slice(0, 500)}`);
       process.exitCode = 1;
-    } else {
-      const rawEmbedResponse = await check(new URL(shellSrc, enabledUrl).toString(), "signed Moodle iSpring raw page opens", 200);
-      const rawEmbedHtml = await rawEmbedResponse.text();
-      if (!rawEmbedHtml.includes("<base ") || !rawEmbedHtml.includes("window.ispringPresentationConnector") || !rawEmbedHtml.includes("Smoke iSpring")) {
-        console.error(`Unexpected signed raw embed HTML: ${rawEmbedHtml.slice(0, 500)}`);
-        process.exitCode = 1;
-      }
     }
   }
 
