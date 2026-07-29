@@ -1314,6 +1314,34 @@ function localResourceCandidatesForLesson(lesson) {
   return candidates;
 }
 
+function moodleIspringIframeHtml(src) {
+  return `<iframe style="border: none; background-color: transparent;"
+    src="${htmlEscape(src)}"
+    width="1500" height="750" frameborder="0" scrolling="auto"
+    allowfullscreen="allowfullscreen"></iframe>`;
+}
+
+function moodleH5pIframeHtml(src, { height = 560 } = {}) {
+  return `<iframe src="${htmlEscape(src)}"
+    class="h5p-iframe" name="h5pcontent"
+    style="height: ${height}px; width: 100%; border: 0px;"
+    allowfullscreen="allowfullscreen"></iframe>`;
+}
+
+function moodleVideoHtml(src, label = "Video") {
+  return `<video controls preload="metadata" style="width: 100%; max-width: 1500px; height: auto;">
+    <source src="${htmlEscape(src)}" type="video/mp4">
+    <a href="${htmlEscape(src)}" target="_blank" rel="noopener">${htmlEscape(label)}</a>
+  </video>`;
+}
+
+function moodleContentIframeHtml(src, { height = 750 } = {}) {
+  return `<iframe style="border: none; background-color: transparent;"
+    src="${htmlEscape(src)}"
+    width="100%" height="${height}" frameborder="0" scrolling="auto"
+    allowfullscreen="allowfullscreen"></iframe>`;
+}
+
 function moodleEmbedRowsForCourse(req, course, manifest) {
   const origin = publicOrigin(req);
   const rows = [];
@@ -1336,16 +1364,15 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
         let moodleHtml = "";
         let status = "ready";
         if (candidate.kind === "ispring") {
-          moodleHtml = `<iframe src="${embedUrl}" width="100%" height="720" frameborder="0" scrolling="auto" allowfullscreen="allowfullscreen"></iframe>`;
+          moodleHtml = moodleIspringIframeHtml(embedUrl);
         } else if (candidate.kind === "video") {
-          moodleHtml = `<iframe src="${embedUrl}" width="100%" height="540" frameborder="0" allowfullscreen="allowfullscreen"></iframe>`;
+          moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video");
         } else if (candidate.kind === "book-section") {
-          moodleHtml = `<iframe src="${embedUrl}" width="100%" height="720" frameborder="0"></iframe>`;
+          moodleHtml = moodleContentIframeHtml(embedUrl);
         } else if (candidate.kind === "h5p") {
-          moodleHtml = `<a href="${fileUrl}" target="_blank" rel="noopener">${htmlEscape(item.label || "Download H5P")}</a>`;
-          status = "needs-h5p-runtime";
+          moodleHtml = moodleH5pIframeHtml(embedUrl);
         } else if (String(item.type || "").toLowerCase() === "pdf") {
-          moodleHtml = `<iframe src="${fileUrl}" width="100%" height="720" frameborder="0"></iframe>`;
+          moodleHtml = moodleContentIframeHtml(fileUrl);
         } else {
           moodleHtml = `<a href="${fileUrl}" target="_blank" rel="noopener">${htmlEscape(item.label || "Download resource")}</a>`;
         }
