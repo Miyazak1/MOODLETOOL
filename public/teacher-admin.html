@@ -2057,9 +2057,31 @@
         uploadGapTable.hidden = false;
       }
 
+      function coursePackageReviewCourse(data) {
+        return String(data?.course || data?.packageCourse || data?.review?.course || data?.review?.packageCourse || "").trim().toUpperCase();
+      }
+
+      function updateCoursePackageCommitState(data = currentCoursePackageImport) {
+        const selected = String(fields.course.value || "").trim().toUpperCase();
+        const previewCourse = coursePackageReviewCourse(data);
+        const hasReady = Boolean(data?.summary?.ready > 0);
+        const courseMatches = Boolean(data) && (!previewCourse || previewCourse === selected);
+        const canCommit = Boolean(data) && hasReady && courseMatches;
+        coursePackageCommitButton.disabled = !canCommit;
+        coursePackageCommitButton.textContent = selected ? `确认导入到 ${selected}` : "确认导入到当前课程";
+        coursePackageCommitButton.title = !data
+          ? "请先上传整课 ZIP 并生成预览"
+          : !hasReady
+            ? "预览里没有可导入的资源"
+            : !courseMatches
+              ? `这次预览属于 ${previewCourse}，当前课程是 ${selected}`
+              : `确认导入到 ${selected}`;
+        return { selected, previewCourse, hasReady, courseMatches, canCommit };
+      }
+
       function renderCoursePackagePreview(data) {
         currentCoursePackageImport = data.ok ? data : null;
-        coursePackageCommitButton.disabled = !currentCoursePackageImport || !(data.summary?.ready > 0);
+        const commitState = updateCoursePackageCommitState(currentCoursePackageImport);
         const rows = (data.operations || [])
           .slice(0, 200)
           .map((item) => {
@@ -2075,6 +2097,9 @@
             `;
           })
           .join("");
+        const mismatchNotice = currentCoursePackageImport && !commitState.courseMatches
+          ? `<p class="error">这次预览属于 ${escapeHtml(commitState.previewCourse || "未知课程")}，当前课程是 ${escapeHtml(commitState.selected || "未选择")}。请先切回正确课程，或重新上传当前课程的课包。</p>`
+          : "";
         coursePackagePanel.innerHTML = `
           <div class="stats">
             <div class="stat"><span>Ready</span><strong>${data.summary?.ready || 0}</strong></div>
@@ -2084,7 +2109,8 @@
             <div class="stat"><span>Book Sections</span><strong>${data.summary?.bookSections || 0}</strong></div>
             <div class="stat"><span>Resources</span><strong>${data.summary?.resources || 0}</strong></div>
           </div>
-          <p class="meta-line">Import ID: ${escapeHtml(data.importId || "")} · Course: ${escapeHtml(data.course || "")}</p>
+          <p class="meta-line">Import ID: ${escapeHtml(data.importId || "")} · Package Course: ${escapeHtml(commitState.previewCourse || data.course || "")} · Current Course: ${escapeHtml(commitState.selected || "")}</p>
+          ${mismatchNotice}
           <div class="table-wrap">
             <table>
               <thead>
@@ -2281,8 +2307,17 @@
           });
           if (task.review) {
             currentCoursePackageImport = task.review;
-            coursePackageCommitButton.disabled = false;
             renderCoursePackagePreview(task.review);
+          } else {
+            currentCoursePackageImport = null;
+            updateCoursePackageCommitState(null);
+            coursePackagePanel.hidden = true;
+            setCoursePackageStatus({
+              title: "最近一次上传预览记录不完整",
+              detail: "服务器有上传完成记录，但没有找到可恢复的预览详情。请点击“读取状态”或重新上传生成预览。",
+              percent: 100,
+              showProgress: true,
+            });
           }
           return;
         }
@@ -2923,7 +2958,7 @@
           return;
         }
         currentCoursePackageImport = null;
-        coursePackageCommitButton.disabled = true;
+        updateCoursePackageCommitState(null);
         coursePackageUploadButton.disabled = true;
         coursePackagePanel.hidden = true;
         const importId = reusableCoursePackageImportId(file);
@@ -3064,10 +3099,26 @@
       async function commitCoursePackage() {
         if (!currentCoursePackageImport?.importId) {
           write("请先上传整课 ZIP 并生成预览。");
-          return;
+          return { canceled: true, message: "请先上传整课 ZIP 并生成预览。" };
+        }
+        const commitState = updateCoursePackageCommitState(currentCoursePackageImport);
+        if (!commitState.hasReady) {
+          setCoursePackageStatus({
+            title: "无法导入",
+            detail: "这次预览里没有可导入的资源，请重新上传正确的整课 ZIP。",
+            showProgress: false,
+          });
+          write("这次预览里没有可导入的资源。");
+          return { canceled: true, message: "这次预览里没有可导入的资源。" };
+        }
+        if (!commitState.courseMatches) {
+          const message = `这次预览属于 ${commitState.previewCourse || "未知课程"}，当前课程是 ${commitState.selected || "未选择"}。请先切回正确课程，或重新上传当前课程的课包。`;
+          setCoursePackageStatus({ title: "课程不匹配，无法导入", detail: message, showProgress: false });
+          write(message);
+          return { canceled: true, message };
         }
         if (!confirm(`确认把 ${currentCoursePackageImport.summary?.ready || 0} 个资源导入 ${fields.course.value}？现有同名文件会先备份。`)) {
-          return;
+          return { canceled: true, message: "已取消整课 ZIP 导入。" };
         }
         write(`正在导入整课包：${currentCoursePackageImport.importId}...`);
         const response = await fetch("/api/admin/course-package/commit", {
@@ -3084,7 +3135,7 @@
         if (data.ok) {
           fields.coursePackageFile.value = "";
           currentCoursePackageImport = null;
-          coursePackageCommitButton.disabled = true;
+          updateCoursePackageCommitState(null);
           await loadSelectedCourseManifest();
           await readStatus({ writeOutput: false });
           await readStorage({ writeOutput: false });
@@ -3120,7 +3171,7 @@
       });
       document.querySelector("#coursePackageCommitButton").addEventListener("click", () => {
         runButtonAction("#coursePackageCommitButton", "正在导入整课 ZIP...", () => commitCoursePackage(), "整课导入完成").then(() => {
-          if (!currentCoursePackageImport) coursePackageCommitButton.disabled = true;
+          updateCoursePackageCommitState();
         });
       });
       document.querySelector("#historyButton").addEventListener("click", () => {
@@ -3219,7 +3270,7 @@
         selectedLifecycleCourse = fields.course.value;
         updateCourseNavigation();
         currentCoursePackageImport = null;
-        coursePackageCommitButton.disabled = true;
+        updateCoursePackageCommitState(null);
         coursePackagePanel.hidden = true;
         renderCourseLifecycle(courseLifecycleData);
         loadSelectedCourseManifest()

@@ -2659,6 +2659,22 @@ function readCoursePackageTask(course, importId) {
 
   const status = readJsonFileSyncSafe(coursePackageStatusPath(safeCourse, safeImportId));
   if (status) {
+    if (status.status === "complete" && !status.review) {
+      const review = readJsonFileSyncSafe(coursePackageReviewPath(safeCourse, safeImportId));
+      if (review) {
+        const restored = {
+          ...status,
+          ok: status.ok ?? true,
+          course: status.course || safeCourse,
+          importId: status.importId || safeImportId,
+          summary: status.summary || review.summary,
+          review,
+          updatedAt: status.updatedAt || review.generatedAt || new Date().toISOString(),
+        };
+        coursePackageTasks.set(key, restored);
+        return restored;
+      }
+    }
     coursePackageTasks.set(key, status);
     return status;
   }
@@ -3042,6 +3058,10 @@ function normalizeManifestCourse(manifest, course) {
   };
 }
 
+function manifestCourseCode(manifest) {
+  return safeSegment(manifest?.course?.code || manifest?.courseCode || manifest?.code || "").toUpperCase();
+}
+
 function manifestCoursePackageSummary(manifest, fileCount) {
   const units = manifest.units || [];
   const lessons = units.flatMap((unit) => unit.lessons || []);
@@ -3297,6 +3317,11 @@ async function createCoursePackageReview({ course, sourceZip, originalFilename, 
   const files = (await listPackageFiles(contentRoot)).filter((file) => !shouldIgnoreCoursePackagePath(relative(contentRoot, file)));
   const packageManifest = await readPackageManifest(contentRoot, files);
   if (packageManifest) {
+    const selectedCourse = safeSegment(course).toUpperCase();
+    const embeddedCourse = manifestCourseCode(packageManifest.manifest);
+    if (embeddedCourse && embeddedCourse !== selectedCourse) {
+      throw new Error(`Course package is for ${embeddedCourse}, but current course is ${selectedCourse}. Switch the current course before uploading.`);
+    }
     const manifest = normalizeManifestCourse(packageManifest.manifest, course);
     const operations = [
       {
@@ -3314,6 +3339,7 @@ async function createCoursePackageReview({ course, sourceZip, originalFilename, 
       mode: "manifest-course-package",
       importId,
       course,
+      packageCourse: embeddedCourse || selectedCourse,
       originalFilename,
       uploadedZip: sourceZip,
       packageDir,
@@ -3419,6 +3445,11 @@ function readdirSyncSafe(path) {
 }
 
 async function commitManifestCoursePackageImport({ course, importId, actor, review }) {
+  const selectedCourse = safeSegment(course).toUpperCase();
+  const reviewCourse = safeSegment(review.course || review.packageCourse || "").toUpperCase();
+  if (reviewCourse && reviewCourse !== selectedCourse) {
+    throw new Error(`This package preview belongs to ${reviewCourse}, not ${selectedCourse}. Switch to ${reviewCourse} or upload a package for ${selectedCourse}.`);
+  }
   if (!review.contentRoot || !existsSync(review.contentRoot)) {
     throw new Error("Package content root is missing. Re-upload the course ZIP and generate preview again.");
   }
