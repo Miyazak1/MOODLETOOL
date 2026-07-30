@@ -149,10 +149,17 @@ if (embedOrigin && !/^https:\/\//i.test(embedOrigin)) errors.push("EMBED_PUBLIC_
 
 const assetBaseUrl = values.COURSEWARE_ASSET_BASE_URL || "";
 const assetMode = String(values.COURSEWARE_ASSET_MODE || (assetBaseUrl ? "hybrid" : "local")).toLowerCase();
+const ossBucket = values.OSS_BUCKET_URI || "";
 if (!["local", "hybrid", "cdn"].includes(assetMode)) {
   errors.push("COURSEWARE_ASSET_MODE must be local, hybrid, or cdn.");
 } else {
   ok.push(`COURSEWARE_ASSET_MODE=${assetMode}.`);
+}
+if (ossBucket) {
+  if (!/^oss:\/\/[^/]+/i.test(ossBucket)) errors.push("OSS_BUCKET_URI should look like oss://bucket-name.");
+  else ok.push("OSS_BUCKET_URI is set.");
+} else if (assetMode !== "local") {
+  warnings.push("OSS_BUCKET_URI is not set; sync:oss commands must pass --bucket explicitly.");
 }
 if (assetBaseUrl) {
   if (!/^https:\/\//i.test(assetBaseUrl)) errors.push("COURSEWARE_ASSET_BASE_URL should be an HTTPS CDN URL, for example https://cdn.example.com/courseware-active.");

@@ -26,6 +26,7 @@ mkdirSync(smokeRoot, { recursive: true });
 
 try {
   const goodEnvPath = join(smokeRoot, ".env.production.good");
+  const cdnEnvPath = join(smokeRoot, ".env.production.cdn");
   const badEnvPath = join(smokeRoot, ".env.production.bad");
   const secretA = "portal-secret-0123456789-0123456789-0123456789";
   const secretB = "admin-secret-0123456789-0123456789-0123456789";
@@ -70,10 +71,42 @@ try {
     "",
   ].join("\n"), "utf8");
 
+  writeFileSync(cdnEnvPath, [
+    "NODE_ENV=production",
+    "PORTAL_AUTH_ENABLED=1",
+    `PORTAL_SESSION_SECRET=${secretA}`,
+    "PORTAL_COOKIE_SECURE=1",
+    "PORTAL_DATA_DIR=/www/wwwroot/ossd-portal/data",
+    "COURSE_STATUS_FILE=/www/wwwroot/ossd-portal/data/course-status.json",
+    "COURSE_ACTIVE_ROOT=/www/wwwroot/ossd-portal/courseware-active",
+    "COURSE_ARCHIVE_ROOT=/www/wwwroot/ossd-portal/courseware-archive",
+    "X_ACCEL_COURSEWARE_PREFIX=/_protected_courseware/",
+    "OSS_BUCKET_URI=oss://moodletool-courseware",
+    "COURSEWARE_ASSET_MODE=hybrid",
+    "COURSEWARE_ASSET_BASE_URL=https://cdn.example.com/courseware-active",
+    "COURSEWARE_ASSET_PREFIX=courseware-active",
+    "COURSEWARE_ASSET_REGISTRY_FILE=/www/wwwroot/ossd-course-portal/deployment/asset-registry.json",
+    `EMBED_TOKEN_SECRET=${secretC}`,
+    "EMBED_PUBLIC_ORIGIN=https://courses.example.com",
+    'PORTAL_USERS_JSON=[{"username":"admin","password":"StrongAdminPassword123!","role":"admin","courses":["*"]},{"username":"teacher1","password":"StrongTeacherPassword123!","role":"teacher","courses":["ENG3U"]}]',
+    "ADMIN_UPLOADS_ENABLED=1",
+    "ADMIN_USERNAME=admin-main",
+    "ADMIN_PASSWORD=AnotherStrongAdminPassword123!",
+    `ADMIN_SESSION_SECRET=${secretB}`,
+    "ADMIN_COOKIE_SECURE=1",
+    "",
+  ].join("\n"), "utf8");
+
   const good = runCheck(goodEnvPath);
   if (good.status !== 0) throw new Error(`Expected good production env to pass:\n${good.stderr || good.stdout}`);
   const goodReport = JSON.parse(good.stdout);
   if (goodReport.status !== "ready") throw new Error(`Expected ready env, got ${goodReport.status}`);
+
+  const cdn = runCheck(cdnEnvPath);
+  if (cdn.status !== 0) throw new Error(`Expected CDN production env to pass:\n${cdn.stderr || cdn.stdout}`);
+  const cdnReport = JSON.parse(cdn.stdout);
+  if (cdnReport.status !== "ready") throw new Error(`Expected ready CDN env, got ${cdnReport.status}`);
+  if (!cdnReport.ok.some((item) => item.includes("OSS_BUCKET_URI"))) throw new Error("Expected CDN env report to validate OSS_BUCKET_URI.");
 
   const bad = runCheck(badEnvPath);
   if (bad.status === 0) throw new Error("Expected bad production env to fail.");
