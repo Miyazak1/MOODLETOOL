@@ -508,8 +508,11 @@ function downloadFlowKey(item: LinkableResource): string {
   const role = item.role || "download";
   const type = (item.type || "").toLowerCase();
   const category = (item.category || "").toLowerCase();
+  const roleFlowKey = flowKeyForRole(role);
   if (role === "lesson") return "lesson";
-  if (role === "video" || type === "mp4" || type === "webm" || type === "video" || category.includes("video")) return "resources";
+  if (type === "mp4" || type === "webm" || type === "video" || category.includes("video")) {
+    return roleFlowKey === "other" ? "resources" : roleFlowKey;
+  }
   if (role === "other" || role === "download") return "resources";
   if (
     role === "lesson_resource" ||
@@ -524,7 +527,7 @@ function downloadFlowKey(item: LinkableResource): string {
   ) {
     return "resources";
   }
-  return flowKeyForRole(role);
+  return roleFlowKey;
 }
 
 function flowLabelForKey(key: string): string {
