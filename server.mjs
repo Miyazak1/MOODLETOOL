@@ -1369,10 +1369,12 @@ function moodleH5pIframeHtml(src, { height = 560 } = {}) {
 }
 
 function moodleVideoHtml(src, label = "Video", mimeType = "video/mp4") {
-  return `<video controls preload="metadata" style="width: 100%; max-width: 1500px; height: auto;">
-    <source src="${htmlEscape(src)}" type="${htmlEscape(mimeType)}">
-    <a href="${htmlEscape(src)}" target="_blank" rel="noopener">${htmlEscape(label)}</a>
-  </video>`;
+  return `<div style="width: 100%; max-width: 960px; height: 540px; max-height: 70vh; background: #000; margin: 12px 0 18px;">
+    <video controls preload="metadata" style="display: block; width: 100%; height: 100%; object-fit: contain; background: #000;">
+      <source src="${htmlEscape(src)}" type="${htmlEscape(mimeType)}">
+      <a href="${htmlEscape(src)}" target="_blank" rel="noopener">${htmlEscape(label)}</a>
+    </video>
+  </div>`;
 }
 
 function moodleContentIframeHtml(src, { height = 750 } = {}) {
@@ -1411,6 +1413,8 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
           moodleHtml = moodleShortcode;
         } else if (candidate.kind === "video") {
           const ext = extname(item.path || "").toLowerCase();
+          moodleIframeHtml = moodleContentIframeHtml(embedUrl, { height: 540 });
+          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 540 });
           moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video", mimeTypes[ext] || "video/mp4");
         } else if (candidate.kind === "book-section") {
           moodleIframeHtml = moodleContentIframeHtml(embedUrl);
