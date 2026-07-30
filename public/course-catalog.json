@@ -159,10 +159,10 @@
       "code": "ENG4U",
       "title": "ENG4U · English",
       "level": "Grade 12",
-      "status": "planning-only",
+      "status": "ready",
       "manifestUrl": "/courseware/ENG4U/course-manifest.json",
       "baseUrl": "/courseware/ENG4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "notes": "Moodle book lessons, local documents, videos, H5P, and iSpring courseware included."
     },
     {
       "code": "EPS3O",

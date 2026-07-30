@@ -283,7 +283,7 @@ async function mirrorPlayerPackage(row, playerUrl) {
 
 function patchManifest(reportRows) {
   const byCourse = new Map();
-  for (const row of reportRows.filter((item) => item.status === "localized")) {
+  for (const row of reportRows.filter((item) => ["localized", "partial"].includes(item.status))) {
     const rows = byCourse.get(row.course) || [];
     rows.push(row);
     byCourse.set(row.course, rows);
@@ -310,6 +310,10 @@ function patchManifest(reportRows) {
             source: row.url,
             files: row.fileCount,
           };
+          if (row.status === "partial") {
+            record.localizationStatus = "partial";
+            record.failedAssets = row.failures || [];
+          }
           lesson.ispring = lesson.ispring || [];
           const index = lesson.ispring.findIndex((item) => item.path === record.path || item.source === record.source);
           if (index >= 0) lesson.ispring[index] = { ...lesson.ispring[index], ...record };
@@ -326,7 +330,8 @@ function patchManifest(reportRows) {
     }
     manifest.sourceAudit = manifest.sourceAudit || {};
     manifest.sourceAudit.ispringExpected = rows.length;
-    manifest.sourceAudit.ispringComplete = rows.length;
+    manifest.sourceAudit.ispringComplete = rows.filter((row) => row.status === "localized").length;
+    manifest.sourceAudit.ispringPartial = rows.filter((row) => row.status === "partial").length;
     if (changed) writeJson(manifestPath, manifest);
     patched.push({ course, changed });
   }
