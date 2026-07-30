@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-29T02:35:13.862Z",
+  "generatedAt": "2026-07-29T10:08:17.302Z",
   "status": "ready",
   "courses": [
-    "ESLEO"
+    "HFC3M"
   ],
   "coursewareRoot": "D:\\工作文件\\SUNNYBROOK\\courseware",
   "statusPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\data\\course-status.json",
@@ -16,21 +16,21 @@
   "warnings": [],
   "results": [
     {
-      "code": "ESLEO",
-      "title": "ESLEO · ESL Level 5",
+      "code": "HFC3M",
+      "title": "HFC3M · Food and Culture",
       "status": "ready",
       "catalogStatus": "ready",
       "lifecycleStatus": "active",
       "blockers": [],
       "warnings": [],
       "metrics": {
-        "units": 4,
-        "lessons": 28,
-        "courseDownloads": 3,
-        "texts": 2,
-        "ispringEntries": 28,
-        "localResourcePaths": 299,
-        "coursewareBytes": 4266893360
+        "units": 7,
+        "lessons": 45,
+        "courseDownloads": 5,
+        "texts": 0,
+        "ispringEntries": 0,
+        "localResourcePaths": 198,
+        "coursewareBytes": 42769284
       }
     }
   ]

@@ -1,221 +1,119 @@
 {
-  "generatedAt": "2026-07-27T07:29:28.752Z",
+  "generatedAt": "2026-07-29T09:53:25.634Z",
   "status": "ready",
   "targetRoot": "/www/wwwroot/ossd-portal/courseware-active",
   "courses": [
-    "ENG3U",
-    "ESLEO"
+    "HFC3M"
   ],
   "totals": {
-    "courses": 2,
-    "files": 11708,
-    "directories": 1476,
-    "bytes": 14504903933,
-    "sizeGb": 13.51,
+    "courses": 1,
+    "files": 160,
+    "directories": 111,
+    "bytes": 42264560,
+    "sizeGb": 0.04,
     "blockers": 0
   },
   "blockers": [],
   "plans": [
     {
-      "code": "ENG3U",
-      "title": "ENG3U · English",
-      "sourceRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG3U",
-      "targetPath": "/www/wwwroot/ossd-portal/courseware-active/ENG3U",
+      "code": "HFC3M",
+      "title": "HFC3M · Food and Culture",
+      "sourceRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M",
+      "targetPath": "/www/wwwroot/ossd-portal/courseware-active/HFC3M",
       "status": "ready",
       "blockers": [],
       "stats": {
-        "files": 7163,
-        "directories": 1327,
-        "bytes": 10252953146,
+        "files": 160,
+        "directories": 111,
+        "bytes": 42264560,
         "largestFiles": [
           {
-            "path": "Unit 1/Lesson 6 - Macbeth Act V/html5-package.zip",
-            "bytes": 191759457
+            "path": "localized-moodle-activities/assign/U03L03-5677-033fdfd4db/files/11cc40594e-international-foods-part1.ppt",
+            "bytes": 4604928
           },
           {
-            "path": "Unit 1/Lesson 2 - Macbeth Act I/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L2.mp4",
-            "bytes": 181066669
+            "path": "localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/617884a205-introductory-lesson-what-is-culture2.pptx",
+            "bytes": 4024734
           },
           {
-            "path": "Unit 1/Lesson 2 - Macbeth Act I/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L2-2.mp4",
-            "bytes": 181066669
+            "path": "localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/9ec0c7c25c-introductory-lesson-what-is-culture1.pptx",
+            "bytes": 2515615
           },
           {
-            "path": "Unit 1/Lesson 2 - Macbeth Act I/downloaded_resources/consolidation/video/ENG3U-U1L2.mp4",
-            "bytes": 181066669
+            "path": "localized-moodle-activities/assign/U03L03-5677-033fdfd4db/files/d46636ce22-international-foods-2.ppt",
+            "bytes": 2443776
           },
           {
-            "path": "Unit 1/Lesson 7 - Macbeth Themes Motifs and Symbols/html5-package.zip",
-            "bytes": 161061951
+            "path": "localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/b324f43d5d-nutrition-powerpoint-1.pptx",
+            "bytes": 2308426
           },
           {
-            "path": "Unit 1/Lesson 6 - Macbeth Act V/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L6.mp4",
-            "bytes": 154776332
+            "path": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/9636b241fd-nutrition-powerpoint-1.pptx",
+            "bytes": 2308411
           },
           {
-            "path": "Unit 1/Lesson 6 - Macbeth Act V/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L6-2.mp4",
-            "bytes": 154776332
+            "path": "localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/a999a24bfe-nutrition-powerpoint-1.pptx",
+            "bytes": 2308411
           },
           {
-            "path": "Unit 1/Lesson 6 - Macbeth Act V/downloaded_resources/consolidation/video/ENG3U-U1L6.mp4",
-            "bytes": 154776332
+            "path": "localized-moodle-activities/assign/course-5647-9ae1876eaa/files/5b6258526c-Our-Food-Choices.pdf",
+            "bytes": 1273475
           },
           {
-            "path": "Unit 1/Lesson 3 - Macbeth Act II/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L3.mp4",
-            "bytes": 151565070
+            "path": "localized-moodle-activities/assign/U04L07-5693-320bf53481/files/cab059a369-influences-on-your-food-choices-1.pptx",
+            "bytes": 1267466
           },
           {
-            "path": "Unit 1/Lesson 3 - Macbeth Act II/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L3-2.mp4",
-            "bytes": 151565070
+            "path": "localized-moodle-activities/assign/U01L05-5656-c8f3245410/files/ef6f92c21b-Food-Safety-Practices.pdf",
+            "bytes": 1177728
           },
           {
-            "path": "Unit 1/Lesson 3 - Macbeth Act II/downloaded_resources/consolidation/video/ENG3U-U1L3.mp4",
-            "bytes": 151565070
+            "path": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/17e4300934-Food-Guide.docx",
+            "bytes": 1157724
           },
           {
-            "path": "Unit 1/Lesson 4 - Macbeth Act III/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L4.mp4",
-            "bytes": 139651866
+            "path": "localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/7e690434f3-HFC3M-Kitchen-Assignment-AOL-PAge-2.pdf",
+            "bytes": 846386
           },
           {
-            "path": "Unit 1/Lesson 4 - Macbeth Act III/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L4-2.mp4",
-            "bytes": 139651866
+            "path": "localized-moodle-activities/resource/U01L02-5651-b885236310/b885236310-Food-and-Safety-Poster.docx",
+            "bytes": 723721
           },
           {
-            "path": "Unit 1/Lesson 4 - Macbeth Act III/downloaded_resources/consolidation/video/ENG3U-U1L4.mp4",
-            "bytes": 139651866
+            "path": "localized-moodle-activities/assign/course-5647-9ae1876eaa/files/02ef9eca67-Food-and-Safety-Poster.docx",
+            "bytes": 723721
           },
           {
-            "path": "Unit 1/Lesson 5 - Macbeth Act IV/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L5.mp4",
-            "bytes": 112856799
+            "path": "plans/source/HFC3M-CourseOutline.pdf",
+            "bytes": 650243
           },
           {
-            "path": "Unit 1/Lesson 5 - Macbeth Act IV/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U1L5-2.mp4",
-            "bytes": 112856799
+            "path": "localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/30d57611d9-nutrition-note.docx",
+            "bytes": 629642
           },
           {
-            "path": "Unit 1/Lesson 5 - Macbeth Act IV/downloaded_resources/consolidation/video/ENG3U-U1L5.mp4",
-            "bytes": 112856799
+            "path": "localized-moodle-activities/assign/course-5647-9ae1876eaa/files/0693b05225-Eating-Well-Throughout-the-Life-Cycle.pptx",
+            "bytes": 547015
           },
           {
-            "path": "Unit 1/Lesson 5 - Macbeth Act IV/html5-package.zip",
-            "bytes": 104889519
+            "path": "localized-moodle-activities/assign/U01L04-5654-45d297ef1c/files/0e32098120-safety-in-the-Kitchen-work-sheet.pdf",
+            "bytes": 537324
           },
           {
-            "path": "Unit 3/Lesson 4 - Propaganda/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U3L4-P3.mp4",
-            "bytes": 95395728
+            "path": "localized-moodle-activities/assign/U02L07-5669-18e78ebfb5/files/718ec330d9-Instructions-for-Food-Origin-Investigation.pdf",
+            "bytes": 492577
           },
           {
-            "path": "Unit 3/Lesson 4 - Propaganda/downloaded_resources_from_direct_index/consolidation/video/ENG3U-U3L4-P3-2.mp4",
-            "bytes": 95395728
+            "path": "localized-moodle-activities/assign/U02L08-5670-4d17824579/files/f0db224cb1-uses-of-spices-and-herbs.pdf",
+            "bytes": 455024
           }
         ],
-        "sizeGb": 9.55
+        "sizeGb": 0.04
       },
       "commands": {
-        "rcloneSftp": "rclone copy \"D:\\工作文件\\SUNNYBROOK\\courseware\\ENG3U\" \"<server-sftp-remote>:/www/wwwroot/ossd-portal/courseware-active/ENG3U\" --transfers 4 --checkers 8 --progress --log-file \"deployment/logs/ENG3U-course-transfer.log\" --log-level INFO",
-        "rsync": "rsync -avh --partial --progress 'D:/工作文件/SUNNYBROOK/courseware/ENG3U/' 'root@your-server:/www/wwwroot/ossd-portal/courseware-active/ENG3U/'",
-        "serverVerify": "test -f '/www/wwwroot/ossd-portal/courseware-active/ENG3U/course-manifest.json' && find '/www/wwwroot/ossd-portal/courseware-active/ENG3U' -type f | wc -l"
-      }
-    },
-    {
-      "code": "ESLEO",
-      "title": "ESLEO · ESL Level 5",
-      "sourceRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ESLEO",
-      "targetPath": "/www/wwwroot/ossd-portal/courseware-active/ESLEO",
-      "status": "ready",
-      "blockers": [],
-      "stats": {
-        "files": 4545,
-        "directories": 149,
-        "bytes": 4251950787,
-        "largestFiles": [
-          {
-            "path": "ispring-localized/unit-01/U01L04.zip",
-            "bytes": 161612794
-          },
-          {
-            "path": "localized-moodle/video/ded892a891-ESLEO-U2L2.mp4",
-            "bytes": 101887158
-          },
-          {
-            "path": "ispring-localized/unit-03/U03L03.zip",
-            "bytes": 83296825
-          },
-          {
-            "path": "ispring-localized/unit-03/U03L04.zip",
-            "bytes": 78983037
-          },
-          {
-            "path": "localized-moodle/video/b0270fc61b-ESLEO-U2L4.mp4",
-            "bytes": 78330869
-          },
-          {
-            "path": "ispring-localized/unit-03/U03L05.zip",
-            "bytes": 71145594
-          },
-          {
-            "path": "ispring-localized/unit-03/U03L06.zip",
-            "bytes": 69746728
-          },
-          {
-            "path": "ispring-localized/unit-03/U03L01.zip",
-            "bytes": 68965865
-          },
-          {
-            "path": "ispring-localized/unit-04/U04L02.zip",
-            "bytes": 67307932
-          },
-          {
-            "path": "localized-moodle/video/df9cbb865a-ESLEO-U2L6.mp4",
-            "bytes": 66266197
-          },
-          {
-            "path": "ispring-localized/unit-02/U02L04.zip",
-            "bytes": 65212985
-          },
-          {
-            "path": "ispring-localized/unit-04/U04L06.zip",
-            "bytes": 64552619
-          },
-          {
-            "path": "ispring-localized/unit-01/U01L01.zip",
-            "bytes": 63536820
-          },
-          {
-            "path": "ispring-localized/unit-04/U04L03.zip",
-            "bytes": 61670806
-          },
-          {
-            "path": "ispring-localized/unit-03/U03L02.zip",
-            "bytes": 60256196
-          },
-          {
-            "path": "ispring-localized/unit-04/U04L05.zip",
-            "bytes": 58537989
-          },
-          {
-            "path": "localized-moodle/video/d9f010d84e-ESLEO-U2L5.mp4",
-            "bytes": 57310902
-          },
-          {
-            "path": "ispring-localized/unit-02/U02L08.zip",
-            "bytes": 56901755
-          },
-          {
-            "path": "ispring-localized/unit-02/U02L06.zip",
-            "bytes": 56719955
-          },
-          {
-            "path": "ispring-localized/unit-04/U04L01.zip",
-            "bytes": 56244659
-          }
-        ],
-        "sizeGb": 3.96
-      },
-      "commands": {
-        "rcloneSftp": "rclone copy \"D:\\工作文件\\SUNNYBROOK\\courseware\\ESLEO\" \"<server-sftp-remote>:/www/wwwroot/ossd-portal/courseware-active/ESLEO\" --transfers 4 --checkers 8 --progress --log-file \"deployment/logs/ESLEO-course-transfer.log\" --log-level INFO",
-        "rsync": "rsync -avh --partial --progress 'D:/工作文件/SUNNYBROOK/courseware/ESLEO/' 'root@your-server:/www/wwwroot/ossd-portal/courseware-active/ESLEO/'",
-        "serverVerify": "test -f '/www/wwwroot/ossd-portal/courseware-active/ESLEO/course-manifest.json' && find '/www/wwwroot/ossd-portal/courseware-active/ESLEO' -type f | wc -l"
+        "rcloneSftp": "rclone copy \"D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\" \"<server-sftp-remote>:/www/wwwroot/ossd-portal/courseware-active/HFC3M\" --transfers 4 --checkers 8 --progress --log-file \"deployment/logs/HFC3M-course-transfer.log\" --log-level INFO",
+        "rsync": "rsync -avh --partial --progress 'D:/工作文件/SUNNYBROOK/courseware/HFC3M/' 'root@your-server:/www/wwwroot/ossd-portal/courseware-active/HFC3M/'",
+        "serverVerify": "test -f '/www/wwwroot/ossd-portal/courseware-active/HFC3M/course-manifest.json' && find '/www/wwwroot/ossd-portal/courseware-active/HFC3M' -type f | wc -l"
       }
     }
   ]

@@ -1,0 +1,507 @@
+{
+  "generatedAt": "2026-07-29T09:45:10.321Z",
+  "course": "HFC3M",
+  "dryRun": false,
+  "force": false,
+  "rows": 15,
+  "downloads": [
+    {
+      "label": "Unit 4-Learning Log - AAL",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L01-5686-49baa5f44f/index.html",
+      "type": "html",
+      "bytes": 1791,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5686",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L01-5686-49baa5f44f/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "Learning-Log.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U04L01-5686-49baa5f44f/files/088903cd7a-Learning-Log.docx",
+          "href": "files/088903cd7a-Learning-Log.docx",
+          "bytes": 13610,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5768/mod_assign/introattachment/0/Learning-Log.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "What is on the Canadian Table (AAL)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/index.html",
+      "type": "html",
+      "bytes": 2087,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5687",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "Food-Guide.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/17e4300934-Food-Guide.docx",
+          "href": "files/17e4300934-Food-Guide.docx",
+          "bytes": 1157724,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5769/mod_assign/introattachment/0/Food-Guide.docx?forcedownload=1"
+        },
+        {
+          "label": "what-is-on-the-canadian-table-1.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/e307305677-what-is-on-the-canadian-table-1.pdf",
+          "href": "files/e307305677-what-is-on-the-canadian-table-1.pdf",
+          "bytes": 75973,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5769/mod_assign/introattachment/0/what-is-on-the-canadian-table-1.pdf?forcedownload=1"
+        },
+        {
+          "label": "what-is-on-the-canadian-table.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/d8f7aec562-what-is-on-the-canadian-table.docx",
+          "href": "files/d8f7aec562-what-is-on-the-canadian-table.docx",
+          "bytes": 15614,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5769/mod_assign/introattachment/0/what-is-on-the-canadian-table.docx?forcedownload=1"
+        },
+        {
+          "label": "what-is-on-the-canadian-table2.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/1391d85b53-what-is-on-the-canadian-table2.pdf",
+          "href": "files/1391d85b53-what-is-on-the-canadian-table2.pdf",
+          "bytes": 58145,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5769/mod_assign/introattachment/0/what-is-on-the-canadian-table2.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Canadian Nutrition Worksheet (AAL)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L03-5689-1028b55b6b/index.html",
+      "type": "html",
+      "bytes": 1852,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5689",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "nutrition-note.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/30d57611d9-nutrition-note.docx",
+          "href": "files/30d57611d9-nutrition-note.docx",
+          "bytes": 629642,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5771/mod_assign/introattachment/0/nutrition-note.docx?forcedownload=1"
+        },
+        {
+          "label": "nutrition-powerpoint-1.pptx",
+          "type": "pptx",
+          "path": "localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/a999a24bfe-nutrition-powerpoint-1.pptx",
+          "href": "files/a999a24bfe-nutrition-powerpoint-1.pptx",
+          "bytes": 2308411,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5771/mod_assign/introattachment/0/nutrition-powerpoint-1.pptx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Micronutrients (AAL)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/index.html",
+      "type": "html",
+      "bytes": 2066,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5690",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "a-food-lovers-guide-to-canada-1.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/95fd0252a2-a-food-lovers-guide-to-canada-1.pdf",
+          "href": "files/95fd0252a2-a-food-lovers-guide-to-canada-1.pdf",
+          "bytes": 148511,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5772/mod_assign/introattachment/0/a-food-lovers-guide-to-canada-1.pdf?forcedownload=1"
+        },
+        {
+          "label": "a-food-lovers-guide-to-canada-2.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/3990b09793-a-food-lovers-guide-to-canada-2.pdf",
+          "href": "files/3990b09793-a-food-lovers-guide-to-canada-2.pdf",
+          "bytes": 35709,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5772/mod_assign/introattachment/0/a-food-lovers-guide-to-canada-2.pdf?forcedownload=1"
+        },
+        {
+          "label": "macronutrients-fill-in-blanks-handout-1.docm",
+          "type": "docm",
+          "path": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/831c28c10c-macronutrients-fill-in-blanks-handout-1.docm",
+          "href": "files/831c28c10c-macronutrients-fill-in-blanks-handout-1.docm",
+          "bytes": 374794,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5772/mod_assign/introattachment/0/macronutrients-fill-in-blanks-handout-1.docm?forcedownload=1"
+        },
+        {
+          "label": "nutrition-powerpoint-1.pptx",
+          "type": "pptx",
+          "path": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/9636b241fd-nutrition-powerpoint-1.pptx",
+          "href": "files/9636b241fd-nutrition-powerpoint-1.pptx",
+          "bytes": 2308411,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5772/mod_assign/introattachment/0/nutrition-powerpoint-1.pptx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "A Rose By No Other Name (AFL)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L05-5691-04a6e19597/index.html",
+      "type": "html",
+      "bytes": 1640,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5691",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L05-5691-04a6e19597/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "a-rose-by-any-other-name.tif",
+          "type": "tif",
+          "path": "localized-moodle-activities/assign/U04L05-5691-04a6e19597/files/78b35003a4-a-rose-by-any-other-name.tif",
+          "href": "files/78b35003a4-a-rose-by-any-other-name.tif",
+          "bytes": 78526,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5773/mod_assign/introattachment/0/a-rose-by-any-other-name.tif?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Uniquely Canadian (AFL)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L06-5692-fd14e91a6e/index.html",
+      "type": "html",
+      "bytes": 1949,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5692",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L06-5692-fd14e91a6e/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "uniquely_canadian_foods.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U04L06-5692-fd14e91a6e/files/0b34416085-uniquely_canadian_foods.docx",
+          "href": "files/0b34416085-uniquely_canadian_foods.docx",
+          "bytes": 23762,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5774/mod_assign/introattachment/0/uniquely_canadian_foods.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "What Influences your Food Choices? (AFL)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L07-5693-320bf53481/index.html",
+      "type": "html",
+      "bytes": 1940,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5693",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L07-5693-320bf53481/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "influences-on-your-food-choices-1.pptx",
+          "type": "pptx",
+          "path": "localized-moodle-activities/assign/U04L07-5693-320bf53481/files/cab059a369-influences-on-your-food-choices-1.pptx",
+          "href": "files/cab059a369-influences-on-your-food-choices-1.pptx",
+          "bytes": 1267466,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5775/mod_assign/introattachment/0/influences-on-your-food-choices-1.pptx?forcedownload=1"
+        },
+        {
+          "label": "what-influences-your-food-choices-handout-1.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U04L07-5693-320bf53481/files/8ab13bcd3c-what-influences-your-food-choices-handout-1.docx",
+          "href": "files/8ab13bcd3c-what-influences-your-food-choices-handout-1.docx",
+          "bytes": 284697,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5775/mod_assign/introattachment/0/what-influences-your-food-choices-handout-1.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Kitchen Mathematics (AOL)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L08-5694-22b50d256d/index.html",
+      "type": "html",
+      "bytes": 2040,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5694",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "HFC3M-Kitchen-Assignment-AOL-PAge-1.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/ff5d0899df-HFC3M-Kitchen-Assignment-AOL-PAge-1.pdf",
+          "href": "files/ff5d0899df-HFC3M-Kitchen-Assignment-AOL-PAge-1.pdf",
+          "bytes": 269889,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5776/mod_assign/introattachment/0/HFC3M-Kitchen-Assignment-AOL-PAge-1.pdf?forcedownload=1"
+        },
+        {
+          "label": "HFC3M-Kitchen-Assignment-AOL-PAge-2.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/7e690434f3-HFC3M-Kitchen-Assignment-AOL-PAge-2.pdf",
+          "href": "files/7e690434f3-HFC3M-Kitchen-Assignment-AOL-PAge-2.pdf",
+          "bytes": 846386,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5776/mod_assign/introattachment/0/HFC3M-Kitchen-Assignment-AOL-PAge-2.pdf?forcedownload=1"
+        },
+        {
+          "label": "Math-Problem-Solving-Rubric.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/4d4a0e3b54-Math-Problem-Solving-Rubric.pdf",
+          "href": "files/4d4a0e3b54-Math-Problem-Solving-Rubric.pdf",
+          "bytes": 206942,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5776/mod_assign/introattachment/0/Math-Problem-Solving-Rubric.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Canadian Food Project (AOL)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L09-5695-6828b98683/index.html",
+      "type": "html",
+      "bytes": 2060,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5695",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L09-5695-6828b98683/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "Power-Point-Rubric.doc",
+          "type": "doc",
+          "path": "localized-moodle-activities/assign/U04L09-5695-6828b98683/files/7e5b82bf8c-Power-Point-Rubric.doc",
+          "href": "files/7e5b82bf8c-Power-Point-Rubric.doc",
+          "bytes": 38400,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5777/mod_assign/introattachment/0/Power-Point-Rubric.doc?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Discussion Canadian Romantic Foods (AOL)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L10-5696-6d60f51abe/index.html",
+      "type": "html",
+      "bytes": 2039,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5696",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L10-5696-6d60f51abe/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "Discussion-Rubric.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U04L10-5696-6d60f51abe/files/a8969a04b9-Discussion-Rubric.docx",
+          "href": "files/a8969a04b9-Discussion-Rubric.docx",
+          "bytes": 189141,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5778/mod_assign/introattachment/0/Discussion-Rubric.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Unit 4 Observation/Conversation of Student Performance Feedback (Teacher Only)",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U04L11-5697-0d4be4d091/index.html",
+      "type": "html",
+      "bytes": 2030,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5697",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U04L11-5697-0d4be4d091/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "Conversation-Checklist-Gao.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U04L11-5697-0d4be4d091/files/4665f4ebaf-Conversation-Checklist-Gao.docx",
+          "href": "files/4665f4ebaf-Conversation-Checklist-Gao.docx",
+          "bytes": 26566,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5779/mod_assign/introattachment/0/Conversation-Checklist-Gao.docx?forcedownload=1"
+        },
+        {
+          "label": "Teacher-Observation-Checklist.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U04L11-5697-0d4be4d091/files/bffeeb9937-Teacher-Observation-Checklist.pdf",
+          "href": "files/bffeeb9937-Teacher-Observation-Checklist.pdf",
+          "bytes": 77129,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5779/mod_assign/introattachment/0/Teacher-Observation-Checklist.pdf?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "CPT- The Great Canadian Cooking Show",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U05L01-5699-e4ae5916bc/index.html",
+      "type": "html",
+      "bytes": 1814,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5699",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U05L01-5699-e4ae5916bc/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "Canadian-Explore-the-recipes-tips-and-techniques-of-Canadian-cuisine-Culminating-Assignment.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U05L01-5699-e4ae5916bc/files/7495e164c7-Canadian-Explore-the-recipes-tips-and-techniques-of-Canadian-cuisine-Culminating",
+          "href": "files/7495e164c7-Canadian-Explore-the-recipes-tips-and-techniques-of-Canadian-cuisine-Culminating",
+          "bytes": 18465,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5781/mod_assign/introattachment/0/Canadian-Explore-the-recipes-tips-and-techniques-of-Canadian-cuisine-Culminating-Assignment.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Final Exam",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U06L01-5700-e5ed6818ee/index.html",
+      "type": "html",
+      "bytes": 1779,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5700",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U06L01-5700-e5ed6818ee/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "HFC3M-Final-Exam.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U06L01-5700-e5ed6818ee/files/fbd898ee66-HFC3M-Final-Exam.docx",
+          "href": "files/fbd898ee66-HFC3M-Final-Exam.docx",
+          "bytes": 433628,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5782/mod_assign/introattachment/0/HFC3M-Final-Exam.docx?forcedownload=1"
+        }
+      ]
+    },
+    {
+      "label": "Final Exam Submission",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U06L02-5701-d86a55e447/index.html",
+      "type": "html",
+      "bytes": 1536,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5701",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U06L02-5701-d86a55e447/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        }
+      ]
+    },
+    {
+      "label": "Comments - Learning skills Evaluation",
+      "status": "localized",
+      "mode": "html",
+      "path": "localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/index.html",
+      "type": "html",
+      "bytes": 1999,
+      "source": "https://www.esunnybrook.com/mod/assign/view.php?id=5702",
+      "attachments": [
+        {
+          "label": "20260514205240_755_110.png",
+          "type": "png",
+          "path": "localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/files/61b237cd0d-20260514205240_755_110.png",
+          "href": "files/61b237cd0d-20260514205240_755_110.png",
+          "bytes": 726286,
+          "source": "https://www.esunnybrook.com/pluginfile.php/1/theme_remui/logo/1785314859/20260514205240_755_110.png"
+        },
+        {
+          "label": "Learning-Skills-and-Work-Habits.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/files/e0320780ab-Learning-Skills-and-Work-Habits.pdf",
+          "href": "files/e0320780ab-Learning-Skills-and-Work-Habits.pdf",
+          "bytes": 364903,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5784/mod_assign/introattachment/0/Learning-Skills-and-Work-Habits.pdf?forcedownload=1"
+        },
+        {
+          "label": "Teachers-Comments.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/files/7a476801af-Teachers-Comments.docx",
+          "href": "files/7a476801af-Teachers-Comments.docx",
+          "bytes": 12607,
+          "source": "https://www.esunnybrook.com/pluginfile.php/5784/mod_assign/introattachment/0/Teachers-Comments.docx?forcedownload=1"
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "auth": {
+    "loggedIn": true,
+    "reason": "credentials"
+  }
+}

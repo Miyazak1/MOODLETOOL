@@ -61,7 +61,7 @@ function directoryStats(root) {
       files += 1;
       bytes += stats.size;
       const rel = relative(root, current).replaceAll("\\", "/");
-      if (rel === "course-manifest.json" || rel.endsWith("/presentation.html") || rel.match(/\.(mp4|pdf|docx|h5p)$/i)) {
+      if (rel === "course-manifest.json" || rel.endsWith("/presentation.html") || rel.match(/\.(mp4|webm|pdf|docx|h5p)$/i)) {
         keyFiles.push(rel);
       }
     }

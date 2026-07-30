@@ -238,7 +238,7 @@ function pluginfileUrls(html, baseUrl) {
       // Ignore malformed links.
     }
   }
-  return [...urls].filter((url) => !/\/theme\/|\/webservice\//i.test(url));
+  return [...urls].filter((url) => !/\/(?:theme|webservice)\//i.test(url) && !/\/pluginfile\.php\/\d+\/theme_[^/]+\//i.test(url));
 }
 
 function extractBody(htmlText) {
@@ -246,11 +246,59 @@ function extractBody(htmlText) {
     || /<div\b[^>]*\bclass=["'][^"']*\bactivity-description\b[^"']*["'][^>]*>([\s\S]*?)<\/div>/i.exec(htmlText)?.[1]
     || /<body\b[^>]*>([\s\S]*?)<\/body>/i.exec(htmlText)?.[1]
     || htmlText;
-  return region
+  return embedYoutubeLinks(region)
     .replace(/<script\b[\s\S]*?<\/script>/gi, "")
     .replace(/<style\b[\s\S]*?<\/style>/gi, "")
     .replace(/\s(?:href|src|poster|action)=["'](?:https?:)?\/\/www\.esunnybrook\.com\/[^"']*["']/gi, ' data-localized-link="removed"')
     .replace(/\s(?:href|src|poster|action)=["']\/pluginfile\.php[^"']*["']/gi, ' data-localized-link="removed"');
+}
+
+function decodeHtmlAttribute(value) {
+  return String(value || "")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .trim();
+}
+
+function youtubeEmbedUrl(url) {
+  const raw = decodeHtmlAttribute(url);
+  try {
+    const parsed = new URL(raw);
+    if (/(^|\.)youtube\.com$/i.test(parsed.hostname) || /(^|\.)youtube-nocookie\.com$/i.test(parsed.hostname)) {
+      if (parsed.pathname.startsWith("/embed/")) return parsed.toString();
+      const id = parsed.searchParams.get("v");
+      if (id) return `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
+    }
+    if (/youtu\.be$/i.test(parsed.hostname)) {
+      const id = parsed.pathname.split("/").filter(Boolean)[0];
+      if (id) return `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
+    }
+  } catch {
+    // Not a URL we can normalize.
+  }
+  return "";
+}
+
+function renderYoutubeEmbed(url, label = "YouTube video") {
+  const embedUrl = youtubeEmbedUrl(url);
+  if (!embedUrl) return "";
+  return `<figure class="youtube-embed">
+    <iframe src="${htmlEscape(embedUrl, true)}" title="${htmlEscape(label, true)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    <figcaption><a href="${htmlEscape(url, true)}" target="_blank" rel="noopener">${htmlEscape(label)}</a></figcaption>
+  </figure>`;
+}
+
+function embedYoutubeLinks(html) {
+  return String(html || "")
+    .replace(/<iframe\b[\s\S]*?<\/iframe>/gi, (match) => {
+      const src = /\bsrc=["']([^"']+)["']/i.exec(match)?.[1] || "";
+      return youtubeEmbedUrl(src) ? renderYoutubeEmbed(src) || match : match;
+    })
+    .replace(/<a\b([^>]*)href=["']([^"']*(?:youtube\.com|youtube-nocookie\.com|youtu\.be)[^"']*)["']([^>]*)>([\s\S]*?)<\/a>/gi, (match, before, href, after, label) => {
+      const text = label.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || "YouTube video";
+      return renderYoutubeEmbed(decodeHtmlAttribute(href), text) || match;
+    });
 }
 
 function isMoodleActivityUrl(url) {
@@ -310,6 +358,10 @@ function standaloneHtml(title, body, attachments = [], externalUrl = "") {
     a { color: #00396f; font-weight: 700; }
     .button { display: inline-block; border: 1px solid #8db0d7; border-radius: 6px; padding: 8px 12px; background: #f4f9ff; text-decoration: none; }
     .notice { border: 1px solid #e0b45c; border-radius: 6px; background: #fff8e8; color: #674000; padding: 10px 12px; }
+    iframe { display: block; width: min(100%, 820px); min-height: 420px; border: 1px solid #d9e2ef; border-radius: 6px; background: #fff; }
+    .youtube-embed { width: min(100%, 820px); margin: 18px 0 24px; }
+    .youtube-embed iframe { width: 100%; aspect-ratio: 16 / 9; min-height: 0; }
+    .youtube-embed figcaption { color: #637083; font-size: 13px; margin-top: 8px; }
     .attachments { border-top: 1px solid #edf1f6; margin-top: 18px; padding-top: 12px; }
   </style>
 </head>
@@ -483,7 +535,7 @@ try {
         current.path = result.path;
         current.type = result.type;
         current.bytes = result.bytes;
-        current.source = current.source || current.url;
+        current.source = result.source || current.url || current.source;
         delete current.url;
         if (result.externalUrl) current.externalUrl = result.externalUrl;
         else delete current.externalUrl;

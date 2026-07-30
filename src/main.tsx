@@ -94,7 +94,7 @@ function courseCodeFromBaseUrl(baseUrl: string): string {
 function shareKindForItem(item: LinkableResource): MoodleEmbedRow["kind"] {
   const type = (item.type || "").toLowerCase();
   const role = (item.role || "").toLowerCase();
-  if (type === "mp4" || type === "video") return "video";
+  if (type === "mp4" || type === "webm" || type === "video") return "video";
   if (type === "h5p") return "h5p";
   if (role === "lesson_book_section" || role === "lesson_book") return "book-section";
   return "file";
@@ -503,8 +503,10 @@ function flowKeyForRole(role?: string): string {
 
 function downloadFlowKey(item: LinkableResource): string {
   const role = item.role || "download";
+  const type = (item.type || "").toLowerCase();
   const category = (item.category || "").toLowerCase();
   if (role === "lesson") return "lesson";
+  if (role === "video" || type === "mp4" || type === "webm" || type === "video" || category.includes("video")) return "resources";
   if (role === "other" || role === "download") return "resources";
   if (
     role === "lesson_resource" ||
@@ -707,6 +709,33 @@ function courseStatusLabel(status?: string): string {
   return labels[status || ""] || status || "Draft";
 }
 
+type CourseStructureLabels = {
+  secondarySingular: string;
+  secondaryPlural: string;
+  secondaryPluralLower: string;
+  secondaryKind: "lesson" | "activity";
+};
+
+function courseStructureLabels(manifest: CourseManifest): CourseStructureLabels {
+  const secondary = manifest.navigation?.secondary?.toLowerCase();
+  const note = manifest.sourceAudit?.structureNote?.toLowerCase() || "";
+  const activityBased = secondary === "activity" || note.includes("moodle course sections");
+  if (activityBased) {
+    return {
+      secondarySingular: "Activity",
+      secondaryPlural: "Activities",
+      secondaryPluralLower: "activities",
+      secondaryKind: "activity",
+    };
+  }
+  return {
+    secondarySingular: "Lesson",
+    secondaryPlural: "Lessons",
+    secondaryPluralLower: "lessons",
+    secondaryKind: "lesson",
+  };
+}
+
 function countLessons(units: Unit[]): number {
   return units.reduce((sum, unit) => sum + unit.lessons.length, 0);
 }
@@ -752,6 +781,7 @@ function readinessItems(course: CourseCatalogEntry, manifest: CourseManifest) {
   const ispring = countIspringEntries(manifest.units);
   const expectedIspring = manifest.sourceAudit?.ispringExpected ?? 0;
   const iSpringRequired = course.status === "ready" || expectedIspring > 0;
+  const labels = courseStructureLabels(manifest);
 
   return [
     {
@@ -769,11 +799,17 @@ function readinessItems(course: CourseCatalogEntry, manifest: CourseManifest) {
       detail: `${unitPlans}/${units}`,
       ready: units > 0 && unitPlans === units,
     },
-    {
-      label: "Lesson Plans",
-      detail: `${lessonPlans}/${lessonsRequiringPlans}`,
-      ready: lessonsRequiringPlans === 0 || lessonPlans === lessonsRequiringPlans,
-    },
+    labels.secondaryKind === "activity"
+      ? {
+          label: "Moodle Activities",
+          detail: `${lessons}`,
+          ready: lessons > 0,
+        }
+      : {
+          label: "Lesson Plans",
+          detail: `${lessonPlans}/${lessonsRequiringPlans}`,
+          ready: lessonsRequiringPlans === 0 || lessonPlans === lessonsRequiringPlans,
+        },
     {
       label: "iSpring",
       detail: iSpringRequired ? `${ispring}/${expectedIspring || ispring}` : "Not connected",
@@ -829,11 +865,17 @@ function CourseRoadmapPanel({ item }: { item?: CourseRoadmapEntry }) {
   );
 }
 
-function PrepFlowGuide() {
+function PrepFlowGuide({ structureLabels }: { structureLabels: CourseStructureLabels }) {
   const steps = [
     ["1", "Course", "先看大纲、整体说明和课程级文件。"],
     ["2", "Unit", "进入单元，确认 Unit Plan、核心文本和本单元课程序列。"],
-    ["3", "Lesson", "按 Lesson Expectations、Lesson、Hands On、Consolidation、Homework 备课。"],
+    [
+      "3",
+      structureLabels.secondarySingular,
+      structureLabels.secondaryKind === "activity"
+        ? "按 Moodle 原始活动顺序查看 assignment、folder、resource、lesson 和媒体。"
+        : "按 Lesson Expectations、Lesson、Hands On、Consolidation、Homework 备课。",
+    ],
     ["4", "Use", "课件可在线播放，文件可在线查看或下载，管理员可复制 Moodle 嵌入代码。"],
   ];
   return (
@@ -855,12 +897,14 @@ function Overview({
   courseBaseUrl,
   canShare,
   roadmapItem,
+  structureLabels,
 }: {
   course: CourseCatalogEntry;
   manifest: CourseManifest;
   courseBaseUrl: string;
   canShare: boolean;
   roadmapItem?: CourseRoadmapEntry;
+  structureLabels: CourseStructureLabels;
 }) {
   const audit = manifest.sourceAudit || {};
   const checklist = readinessItems(course, manifest);
@@ -871,7 +915,9 @@ function Overview({
         <div>
           <p className="eyebrow">{manifest.course.code}</p>
           <h2>{manifest.course.title}</h2>
-          <p>{manifest.course.audience}. 当前页面按 Unit 和 Lesson 组织所有备课材料。</p>
+          <p>
+            {manifest.course.audience}. 当前页面按 Unit 和 {structureLabels.secondarySingular} 组织所有备课材料。
+          </p>
           <p className="course-note">
             {course.level ? `${course.level} · ` : ""}
             {course.notes || manifest.course.source}
@@ -888,7 +934,7 @@ function Overview({
           <strong>{manifest.units.length}</strong>
         </div>
         <div className="stat">
-          <span>Lessons</span>
+          <span>{structureLabels.secondaryPlural}</span>
           <strong>{audit.lessonCount || 0}</strong>
         </div>
         <div className="stat">
@@ -918,7 +964,7 @@ function Overview({
           </div>
         ))}
       </div>
-      <PrepFlowGuide />
+      <PrepFlowGuide structureLabels={structureLabels} />
       <CourseRoadmapPanel item={roadmapItem} />
       {visibleCourseDownloads.length ? (
         <div className="course-downloads">
@@ -987,11 +1033,13 @@ function UnitRoadmap({
   selectedUnit,
   query,
   onSelect,
+  structureLabels,
 }: {
   units: Unit[];
   selectedUnit: number;
   query: string;
   onSelect: (unit: number) => void;
+  structureLabels: CourseStructureLabels;
 }) {
   return (
     <section className="unit-roadmap panel" aria-label="Course unit roadmap">
@@ -999,7 +1047,11 @@ function UnitRoadmap({
         <div>
           <p className="eyebrow dark">Unit Roadmap</p>
           <h2>课程备课路径</h2>
-          <p>先选 Unit，再展开 Lesson。每个 Lesson 按 Moodle book 的教学环节组织。</p>
+          <p>
+            {structureLabels.secondaryKind === "activity"
+              ? "先选 Unit，再按 Moodle activity 顺序查看每个活动、文件和媒体。"
+              : "先选 Unit，再展开 Lesson。每个 Lesson 按 Moodle book 的教学环节组织。"}
+          </p>
         </div>
         <span>{units.length} units</span>
       </div>
@@ -1016,7 +1068,8 @@ function UnitRoadmap({
               <span>U{unit.unit}</span>
               <strong>{unit.title}</strong>
               <p>
-                {visibleCount}/{unit.lessons.length} lessons · {unit.summary.ispring} iSpring · {unitLocalDownloadCount(unit)} files
+                {visibleCount}/{unit.lessons.length} {structureLabels.secondaryPluralLower} · {unit.summary.ispring} iSpring ·{" "}
+                {unitLocalDownloadCount(unit)} files
               </p>
             </button>
           );
@@ -1031,11 +1084,13 @@ function UnitNav({
   selectedUnit,
   query,
   onSelect,
+  structureLabels,
 }: {
   units: Unit[];
   selectedUnit: number;
   query: string;
   onSelect: (unit: number) => void;
+  structureLabels: CourseStructureLabels;
 }) {
   return (
     <nav className="unit-nav" aria-label="Unit navigation">
@@ -1052,7 +1107,7 @@ function UnitNav({
             <span>
               <span className="unit-title">{unit.title}</span>
               <span className="unit-meta">
-                {visibleCount}/{unit.lessons.length} lessons · {unitLocalDownloadCount(unit)} files
+                {visibleCount}/{unit.lessons.length} {structureLabels.secondaryPluralLower} · {unitLocalDownloadCount(unit)} files
               </span>
             </span>
           </button>
@@ -1069,6 +1124,7 @@ function LessonRow({
   courseCode,
   canShare,
   moodleEmbedByPath,
+  structureLabels,
 }: {
   lesson: Lesson;
   defaultOpen: boolean;
@@ -1076,6 +1132,7 @@ function LessonRow({
   courseCode: string;
   canShare: boolean;
   moodleEmbedByPath?: MoodleEmbedMap;
+  structureLabels: CourseStructureLabels;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const visibleDownloads = lesson.downloads.filter(isTeacherVisibleResource);
@@ -1087,23 +1144,29 @@ function LessonRow({
   return (
     <article className={`lesson-row ${open ? "open" : ""}`}>
       <button className="lesson-summary" type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
-        <span className="lesson-code">{displayLessonId(lesson.id)}</span>
+        <span className="lesson-code">
+          {structureLabels.secondaryKind === "activity" ? `A${lesson.lesson}` : displayLessonId(lesson.id)}
+        </span>
         <span>
           <span className="lesson-title">{lesson.title}</span>
           <span className="lesson-counts">
-            <span className="count-chip">{visibleBookPageCount} book pages</span>
-            <span className="count-chip">{visibleISpring.length} iSpring</span>
+            {structureLabels.secondaryKind === "lesson" ? <span className="count-chip">{visibleBookPageCount} book pages</span> : null}
+            {visibleISpring.length ? <span className="count-chip">{visibleISpring.length} iSpring</span> : null}
             <span className="count-chip">{lessonLocalDownloadCount(lesson)} resources</span>
-            <span className={`count-chip ${lesson.lessonPlan ? "ready" : unitOverview ? "" : "pending"}`}>
-              {lesson.lessonPlan ? "Plan ready" : unitOverview ? "Unit slot" : "Plan pending"}
-            </span>
+            {structureLabels.secondaryKind === "lesson" ? (
+              <span className={`count-chip ${lesson.lessonPlan ? "ready" : unitOverview ? "" : "pending"}`}>
+                {lesson.lessonPlan ? "Plan ready" : unitOverview ? "Unit slot" : "Plan pending"}
+              </span>
+            ) : null}
           </span>
         </span>
         <span className="expand-icon">{open ? "-" : "+"}</span>
       </button>
       <div className="lesson-body">
         <div className="lesson-tools">
-          {lesson.lessonPlan ? (
+          {structureLabels.secondaryKind === "activity" ? (
+            <span className="tag text">Moodle activity</span>
+          ) : lesson.lessonPlan ? (
             <ResourceActions
               courseBaseUrl={courseBaseUrl}
               courseCode={courseCode}
@@ -1141,6 +1204,7 @@ function UnitDetail({
   courseCode,
   canShare,
   moodleEmbedByPath,
+  structureLabels,
 }: {
   unit: Unit;
   texts: TextRegistryEntry[];
@@ -1149,6 +1213,7 @@ function UnitDetail({
   courseCode: string;
   canShare: boolean;
   moodleEmbedByPath?: MoodleEmbedMap;
+  structureLabels: CourseStructureLabels;
 }) {
   const visibleLessons = unit.lessons.filter((lesson) => lessonMatches(lesson, query));
   const textTags = unit.coreTexts
@@ -1161,8 +1226,8 @@ function UnitDetail({
         <p className="eyebrow">Unit {unit.unit}</p>
         <h2>{unit.title}</h2>
         <p>
-          {unit.lessons.length} lessons · {unit.summary.ispring} iSpring modules · {unitLocalDownloadCount(unit)} downloadable
-          resources
+          {unit.lessons.length} {structureLabels.secondaryPluralLower} · {unit.summary.ispring} iSpring modules ·{" "}
+          {unitLocalDownloadCount(unit)} downloadable resources
         </p>
         <div className="unit-actions">
           {textTags.length ? textTags.map((text) => <span className="tag text" key={text.id}>{text.title}</span>) : <span className="tag warn">No core text assigned</span>}
@@ -1191,11 +1256,14 @@ function UnitDetail({
               key={lesson.id}
               lesson={lesson}
               moodleEmbedByPath={moodleEmbedByPath}
+              structureLabels={structureLabels}
             />
           ))
         ) : (
           <div className="empty-state">
-            {query ? "当前搜索没有匹配这个 Unit 的 lesson。" : "此 Unit 暂无 lesson 级资料，可先使用上方 Unit Plan。"}
+            {query
+              ? `当前搜索没有匹配这个 Unit 的 ${structureLabels.secondaryPluralLower}。`
+              : `此 Unit 暂无 ${structureLabels.secondarySingular.toLowerCase()} 级资料，可先使用上方 Unit Plan。`}
           </div>
         )}
       </div>
@@ -1389,6 +1457,7 @@ function App() {
 
   const normalizedQuery = useMemo(() => normalizeQuery(query), [query]);
   const unit = manifest?.units.find((item) => item.unit === selectedUnit) ?? manifest?.units[0];
+  const structureLabels = manifest ? courseStructureLabels(manifest) : null;
   const selectedRoadmapItem = useMemo(() => {
     return courseRoadmap?.courses.find((course) => course.course === selectedCourse.code);
   }, [courseRoadmap, selectedCourse.code]);
@@ -1465,7 +1534,13 @@ function App() {
           </div>
           {manifest ? (
             <>
-              <UnitNav onSelect={setSelectedUnit} query={normalizedQuery} selectedUnit={selectedUnit} units={manifest.units} />
+              <UnitNav
+                onSelect={setSelectedUnit}
+                query={normalizedQuery}
+                selectedUnit={selectedUnit}
+                structureLabels={courseStructureLabels(manifest)}
+                units={manifest.units}
+              />
               <CompactTextIndex texts={manifest.texts} />
             </>
           ) : null}
@@ -1476,7 +1551,7 @@ function App() {
               <div className="empty-state">无法读取课程 manifest。请确认课程目录和资源地址可访问。</div>
             </section>
           ) : null}
-          {manifest && unit ? (
+          {manifest && unit && structureLabels ? (
             <>
               <Overview
                 canShare={adminCanShare}
@@ -1484,11 +1559,13 @@ function App() {
                 courseBaseUrl={selectedCourse.baseUrl}
                 manifest={manifest}
                 roadmapItem={selectedRoadmapItem}
+                structureLabels={structureLabels}
               />
               <UnitRoadmap
                 onSelect={setSelectedUnit}
                 query={normalizedQuery}
                 selectedUnit={selectedUnit}
+                structureLabels={structureLabels}
                 units={manifest.units}
               />
               <UnitDetail
@@ -1497,6 +1574,7 @@ function App() {
                 courseCode={manifest.course.code}
                 moodleEmbedByPath={moodleEmbedByPath}
                 query={normalizedQuery}
+                structureLabels={structureLabels}
                 texts={manifest.texts}
                 unit={unit}
               />

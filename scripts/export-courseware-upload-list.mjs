@@ -29,6 +29,7 @@ function addManifestFiles(course, manifest, courseRoot) {
   const files = new Map();
 
   function addFile(relativePath, role) {
+    if (!relativePath) return;
     const absolutePath = join(courseRoot, relativePath);
     if (!existsSync(absolutePath)) return;
     const stat = statSync(absolutePath);
@@ -48,19 +49,30 @@ function addManifestFiles(course, manifest, courseRoot) {
     });
   }
 
+  function addResource(item, role) {
+    if (!item) return;
+    addFile(item.path, role);
+    addFile(item.previewPath, `${role}:preview`);
+    addFile(item.downloadPath, `${role}:download`);
+    addFile(item.packagePath, `${role}:package`);
+    for (const attachment of item.attachments || []) {
+      addResource(attachment, `${role}:attachment`);
+    }
+  }
+
   addFile("course-manifest.json", "manifest");
-  for (const item of manifest.courseDownloads || []) addFile(item.path, item.role || "course-document");
+  for (const item of manifest.courseDownloads || []) addResource(item, item.role || "course-document");
   for (const text of manifest.texts || []) {
-    for (const item of text.materials || []) addFile(item.path, "text-material");
+    for (const item of text.materials || []) addResource(item, "text-material");
   }
 
   for (const unit of manifest.units || []) {
-    if (unit.unitPlan) addFile(unit.unitPlan.path, "unit-plan");
+    if (unit.unitPlan) addResource(unit.unitPlan, "unit-plan");
     for (const lesson of unit.lessons || []) {
-      if (lesson.lessonPlan) addFile(lesson.lessonPlan.path, "lesson-plan");
-      for (const item of lesson.ispring || []) addFile(item.path, "ispring-entry");
-      for (const item of lesson.downloads || []) addFile(item.path, item.role || item.category || "download");
-      for (const item of lesson.textExports || []) addFile(item.path, "lesson-text");
+      if (lesson.lessonPlan) addResource(lesson.lessonPlan, "lesson-plan");
+      for (const item of lesson.ispring || []) addResource(item, "ispring-entry");
+      for (const item of lesson.downloads || []) addResource(item, item.role || item.category || "download");
+      for (const item of lesson.textExports || []) addResource(item, "lesson-text");
     }
   }
 

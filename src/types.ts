@@ -132,6 +132,7 @@ export interface CourseManifest {
       okCount?: number;
       checkedCount?: number;
     };
+    structureNote?: string;
   };
   navigation: {
     primary: string;

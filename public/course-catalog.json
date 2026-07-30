@@ -240,10 +240,10 @@
       "code": "HFC3M",
       "title": "HFC3M · Food and Culture",
       "level": "Grade 11",
-      "status": "planning-only",
+      "status": "ready",
       "manifestUrl": "/courseware/HFC3M/course-manifest.json",
       "baseUrl": "/courseware/HFC3M/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "notes": "Moodle activities and files localized; unavailable legacy MP4 positions are preserved as video placeholders."
     },
     {
       "code": "HFN1O",

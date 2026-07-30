@@ -1,0 +1,1828 @@
+{
+  "generatedAt": "2026-07-30T04:52:13.412Z",
+  "course": "HFC3M",
+  "fileCount": 202,
+  "totalBytes": 272472913,
+  "totalGB": 0.25,
+  "targetKeyPrefix": "HFC3M/",
+  "files": [
+    {
+      "key": "HFC3M/course-manifest.json",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\course-manifest.json",
+      "relativePath": "course-manifest.json",
+      "bytes": 112035,
+      "roles": [
+        "manifest"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/course-5647-9ae1876eaa/files/02ef9eca67-Food-and-Safety-Poster.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\course-5647-9ae1876eaa\\files\\02ef9eca67-Food-and-Safety-Poster.docx",
+      "relativePath": "localized-moodle-activities/assign/course-5647-9ae1876eaa/files/02ef9eca67-Food-and-Safety-Poster.docx",
+      "bytes": 723721,
+      "roles": [
+        "course_resource:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/course-5647-9ae1876eaa/files/0693b05225-Eating-Well-Throughout-the-Life-Cycle.pptx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\course-5647-9ae1876eaa\\files\\0693b05225-Eating-Well-Throughout-the-Life-Cycle.pptx",
+      "relativePath": "localized-moodle-activities/assign/course-5647-9ae1876eaa/files/0693b05225-Eating-Well-Throughout-the-Life-Cycle.pptx",
+      "bytes": 547015,
+      "roles": [
+        "course_resource:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/course-5647-9ae1876eaa/files/18e12094c2-Why-People-Eat-Foods-they-Do.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\course-5647-9ae1876eaa\\files\\18e12094c2-Why-People-Eat-Foods-they-Do.pdf",
+      "relativePath": "localized-moodle-activities/assign/course-5647-9ae1876eaa/files/18e12094c2-Why-People-Eat-Foods-they-Do.pdf",
+      "bytes": 309360,
+      "roles": [
+        "course_resource:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/course-5647-9ae1876eaa/files/5b6258526c-Our-Food-Choices.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\course-5647-9ae1876eaa\\files\\5b6258526c-Our-Food-Choices.pdf",
+      "relativePath": "localized-moodle-activities/assign/course-5647-9ae1876eaa/files/5b6258526c-Our-Food-Choices.pdf",
+      "bytes": 1273475,
+      "roles": [
+        "course_resource:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/course-5647-9ae1876eaa/files/6e89e0a331-The-Effect-of-childhood-Eating-Patterns.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\course-5647-9ae1876eaa\\files\\6e89e0a331-The-Effect-of-childhood-Eating-Patterns.pdf",
+      "relativePath": "localized-moodle-activities/assign/course-5647-9ae1876eaa/files/6e89e0a331-The-Effect-of-childhood-Eating-Patterns.pdf",
+      "bytes": 311608,
+      "roles": [
+        "course_resource:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/course-5647-9ae1876eaa/files/d53881aa03-Food-Marketing.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\course-5647-9ae1876eaa\\files\\d53881aa03-Food-Marketing.pdf",
+      "relativePath": "localized-moodle-activities/assign/course-5647-9ae1876eaa/files/d53881aa03-Food-Marketing.pdf",
+      "bytes": 344657,
+      "roles": [
+        "course_resource:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/course-5647-9ae1876eaa/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\course-5647-9ae1876eaa\\index.html",
+      "relativePath": "localized-moodle-activities/assign/course-5647-9ae1876eaa/index.html",
+      "bytes": 6751,
+      "roles": [
+        "course_resource"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L01-5650-03941de0bd/files/d243b48232-Learning-Log.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L01-5650-03941de0bd\\files\\d243b48232-Learning-Log.docx",
+      "relativePath": "localized-moodle-activities/assign/U01L01-5650-03941de0bd/files/d243b48232-Learning-Log.docx",
+      "bytes": 13610,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L01-5650-03941de0bd/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L01-5650-03941de0bd\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U01L01-5650-03941de0bd/index.html",
+      "bytes": 5753,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L03-5652-f953a862af/files/aa257da08a-Food-Safety-Poster-AAL-.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L03-5652-f953a862af\\files\\aa257da08a-Food-Safety-Poster-AAL-.pdf",
+      "relativePath": "localized-moodle-activities/assign/U01L03-5652-f953a862af/files/aa257da08a-Food-Safety-Poster-AAL-.pdf",
+      "bytes": 69589,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L03-5652-f953a862af/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L03-5652-f953a862af\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U01L03-5652-f953a862af/index.html",
+      "bytes": 4626,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L04-5654-45d297ef1c/files/0e32098120-safety-in-the-Kitchen-work-sheet.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L04-5654-45d297ef1c\\files\\0e32098120-safety-in-the-Kitchen-work-sheet.pdf",
+      "relativePath": "localized-moodle-activities/assign/U01L04-5654-45d297ef1c/files/0e32098120-safety-in-the-Kitchen-work-sheet.pdf",
+      "bytes": 537324,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L04-5654-45d297ef1c/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L04-5654-45d297ef1c\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U01L04-5654-45d297ef1c/index.html",
+      "bytes": 4487,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L05-5656-c8f3245410/files/ef6f92c21b-Food-Safety-Practices.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L05-5656-c8f3245410\\files\\ef6f92c21b-Food-Safety-Practices.pdf",
+      "relativePath": "localized-moodle-activities/assign/U01L05-5656-c8f3245410/files/ef6f92c21b-Food-Safety-Practices.pdf",
+      "bytes": 1177728,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L05-5656-c8f3245410/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L05-5656-c8f3245410\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U01L05-5656-c8f3245410/index.html",
+      "bytes": 4488,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L06-5657-20e64b6991/files/3687a836cf-Power_Point_Rubric.doc",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L06-5657-20e64b6991\\files\\3687a836cf-Power_Point_Rubric.doc",
+      "relativePath": "localized-moodle-activities/assign/U01L06-5657-20e64b6991/files/3687a836cf-Power_Point_Rubric.doc",
+      "bytes": 38912,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L06-5657-20e64b6991/files/7810b42ece-Food_Safety_Article_Assignment.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L06-5657-20e64b6991\\files\\7810b42ece-Food_Safety_Article_Assignment.pdf",
+      "relativePath": "localized-moodle-activities/assign/U01L06-5657-20e64b6991/files/7810b42ece-Food_Safety_Article_Assignment.pdf",
+      "bytes": 177118,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L06-5657-20e64b6991/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L06-5657-20e64b6991\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U01L06-5657-20e64b6991/index.html",
+      "bytes": 5965,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L07-5658-1ad79a765d/files/65fee1cf5f-Discussion-Rubric.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L07-5658-1ad79a765d\\files\\65fee1cf5f-Discussion-Rubric.docx",
+      "relativePath": "localized-moodle-activities/assign/U01L07-5658-1ad79a765d/files/65fee1cf5f-Discussion-Rubric.docx",
+      "bytes": 189141,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L07-5658-1ad79a765d/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L07-5658-1ad79a765d\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U01L07-5658-1ad79a765d/index.html",
+      "bytes": 4931,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L08-5659-9126623237/files/e3014022ef-unit1-Test-Food-and-Safety.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L08-5659-9126623237\\files\\e3014022ef-unit1-Test-Food-and-Safety.docx",
+      "relativePath": "localized-moodle-activities/assign/U01L08-5659-9126623237/files/e3014022ef-unit1-Test-Food-and-Safety.docx",
+      "bytes": 15604,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L08-5659-9126623237/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L08-5659-9126623237\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U01L08-5659-9126623237/index.html",
+      "bytes": 4531,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L09-5660-b6e94850b0/files/15a8bb0eba-Conversation-Checklist-Gao.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L09-5660-b6e94850b0\\files\\15a8bb0eba-Conversation-Checklist-Gao.docx",
+      "relativePath": "localized-moodle-activities/assign/U01L09-5660-b6e94850b0/files/15a8bb0eba-Conversation-Checklist-Gao.docx",
+      "bytes": 21745,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L09-5660-b6e94850b0/files/cd582f602a-Teacher-Observation-Checklist.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L09-5660-b6e94850b0\\files\\cd582f602a-Teacher-Observation-Checklist.pdf",
+      "relativePath": "localized-moodle-activities/assign/U01L09-5660-b6e94850b0/files/cd582f602a-Teacher-Observation-Checklist.pdf",
+      "bytes": 77129,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U01L09-5660-b6e94850b0/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L09-5660-b6e94850b0\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U01L09-5660-b6e94850b0/index.html",
+      "bytes": 5158,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L01-5661-1491a94c4b/files/6fe86b59ef-Learning-Log.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L01-5661-1491a94c4b\\files\\6fe86b59ef-Learning-Log.docx",
+      "relativePath": "localized-moodle-activities/assign/U02L01-5661-1491a94c4b/files/6fe86b59ef-Learning-Log.docx",
+      "bytes": 13610,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L01-5661-1491a94c4b/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L01-5661-1491a94c4b\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U02L01-5661-1491a94c4b/index.html",
+      "bytes": 4542,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L02-5662-7920ed5e18/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L02-5662-7920ed5e18\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U02L02-5662-7920ed5e18/index.html",
+      "bytes": 4938,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L04-5664-15e0cdf7ec/files/59c4a048c1-introduction-to-international-foods.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L04-5664-15e0cdf7ec\\files\\59c4a048c1-introduction-to-international-foods.docx",
+      "relativePath": "localized-moodle-activities/assign/U02L04-5664-15e0cdf7ec/files/59c4a048c1-introduction-to-international-foods.docx",
+      "bytes": 22810,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L04-5664-15e0cdf7ec/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L04-5664-15e0cdf7ec\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U02L04-5664-15e0cdf7ec/index.html",
+      "bytes": 4644,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/files/19005a21b0-Spices-and-Herbs-Answer-Key.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L05-5666-9b2960f9a3\\files\\19005a21b0-Spices-and-Herbs-Answer-Key.docx",
+      "relativePath": "localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/files/19005a21b0-Spices-and-Herbs-Answer-Key.docx",
+      "bytes": 13399,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/files/485a41bdf4-herb-and-spice-history.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L05-5666-9b2960f9a3\\files\\485a41bdf4-herb-and-spice-history.pdf",
+      "relativePath": "localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/files/485a41bdf4-herb-and-spice-history.pdf",
+      "bytes": 40548,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/files/d52567caba-Herbs-and-Spices-worksheets.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L05-5666-9b2960f9a3\\files\\d52567caba-Herbs-and-Spices-worksheets.docx",
+      "relativePath": "localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/files/d52567caba-Herbs-and-Spices-worksheets.docx",
+      "bytes": 12696,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L05-5666-9b2960f9a3\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/index.html",
+      "bytes": 6228,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L06-5668-6b934fae81/files/eaf7eb4f1c-FoodOriginsWorksheet-1.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L06-5668-6b934fae81\\files\\eaf7eb4f1c-FoodOriginsWorksheet-1.pdf",
+      "relativePath": "localized-moodle-activities/assign/U02L06-5668-6b934fae81/files/eaf7eb4f1c-FoodOriginsWorksheet-1.pdf",
+      "bytes": 447857,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L06-5668-6b934fae81/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L06-5668-6b934fae81\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U02L06-5668-6b934fae81/index.html",
+      "bytes": 5283,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L07-5669-18e78ebfb5/files/718ec330d9-Instructions-for-Food-Origin-Investigation.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L07-5669-18e78ebfb5\\files\\718ec330d9-Instructions-for-Food-Origin-Investigation.pdf",
+      "relativePath": "localized-moodle-activities/assign/U02L07-5669-18e78ebfb5/files/718ec330d9-Instructions-for-Food-Origin-Investigation.pdf",
+      "bytes": 492577,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L07-5669-18e78ebfb5/files/f1fd6f82b9-Food-Origin-Project-Samples.pptx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L07-5669-18e78ebfb5\\files\\f1fd6f82b9-Food-Origin-Project-Samples.pptx",
+      "relativePath": "localized-moodle-activities/assign/U02L07-5669-18e78ebfb5/files/f1fd6f82b9-Food-Origin-Project-Samples.pptx",
+      "bytes": 426111,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L07-5669-18e78ebfb5/files/f5195a38dc-Rubric-For-Food-origin-investigation.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L07-5669-18e78ebfb5\\files\\f5195a38dc-Rubric-For-Food-origin-investigation.pdf",
+      "relativePath": "localized-moodle-activities/assign/U02L07-5669-18e78ebfb5/files/f5195a38dc-Rubric-For-Food-origin-investigation.pdf",
+      "bytes": 238036,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L07-5669-18e78ebfb5/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L07-5669-18e78ebfb5\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U02L07-5669-18e78ebfb5/index.html",
+      "bytes": 5457,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L08-5670-4d17824579/files/084e9a1cfa-COOKING-LESSON.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L08-5670-4d17824579\\files\\084e9a1cfa-COOKING-LESSON.docx",
+      "relativePath": "localized-moodle-activities/assign/U02L08-5670-4d17824579/files/084e9a1cfa-COOKING-LESSON.docx",
+      "bytes": 14116,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L08-5670-4d17824579/files/3a0051da9d-flavour-profiles.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L08-5670-4d17824579\\files\\3a0051da9d-flavour-profiles.pdf",
+      "relativePath": "localized-moodle-activities/assign/U02L08-5670-4d17824579/files/3a0051da9d-flavour-profiles.pdf",
+      "bytes": 125071,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L08-5670-4d17824579/files/9774c4d53a-Cooking-rubric.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L08-5670-4d17824579\\files\\9774c4d53a-Cooking-rubric.pdf",
+      "relativePath": "localized-moodle-activities/assign/U02L08-5670-4d17824579/files/9774c4d53a-Cooking-rubric.pdf",
+      "bytes": 147152,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L08-5670-4d17824579/files/f0db224cb1-uses-of-spices-and-herbs.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L08-5670-4d17824579\\files\\f0db224cb1-uses-of-spices-and-herbs.pdf",
+      "relativePath": "localized-moodle-activities/assign/U02L08-5670-4d17824579/files/f0db224cb1-uses-of-spices-and-herbs.pdf",
+      "bytes": 455024,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L08-5670-4d17824579/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L08-5670-4d17824579\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U02L08-5670-4d17824579/index.html",
+      "bytes": 5806,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L09-5671-95b7ffefb4/files/e734c2f879-Brochure-Rubric-1.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L09-5671-95b7ffefb4\\files\\e734c2f879-Brochure-Rubric-1.pdf",
+      "relativePath": "localized-moodle-activities/assign/U02L09-5671-95b7ffefb4/files/e734c2f879-Brochure-Rubric-1.pdf",
+      "bytes": 60304,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L09-5671-95b7ffefb4/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L09-5671-95b7ffefb4\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U02L09-5671-95b7ffefb4/index.html",
+      "bytes": 5103,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L10-5672-a4eebbf501/files/98d11da81b-cultural_investigation.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L10-5672-a4eebbf501\\files\\98d11da81b-cultural_investigation.docx",
+      "relativePath": "localized-moodle-activities/assign/U02L10-5672-a4eebbf501/files/98d11da81b-cultural_investigation.docx",
+      "bytes": 30515,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L10-5672-a4eebbf501/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L10-5672-a4eebbf501\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U02L10-5672-a4eebbf501/index.html",
+      "bytes": 4842,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L11-5673-315d569efb/files/0353483cb3-Conversation-Checklist-Gao.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L11-5673-315d569efb\\files\\0353483cb3-Conversation-Checklist-Gao.docx",
+      "relativePath": "localized-moodle-activities/assign/U02L11-5673-315d569efb/files/0353483cb3-Conversation-Checklist-Gao.docx",
+      "bytes": 26566,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L11-5673-315d569efb/files/3902fc6046-Teacher-Observation-Checklist.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L11-5673-315d569efb\\files\\3902fc6046-Teacher-Observation-Checklist.pdf",
+      "relativePath": "localized-moodle-activities/assign/U02L11-5673-315d569efb/files/3902fc6046-Teacher-Observation-Checklist.pdf",
+      "bytes": 77129,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U02L11-5673-315d569efb/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L11-5673-315d569efb\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U02L11-5673-315d569efb/index.html",
+      "bytes": 5162,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L01-5675-df8fc52ca8/files/80378346b0-Learning-Log.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L01-5675-df8fc52ca8\\files\\80378346b0-Learning-Log.docx",
+      "relativePath": "localized-moodle-activities/assign/U03L01-5675-df8fc52ca8/files/80378346b0-Learning-Log.docx",
+      "bytes": 13610,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L01-5675-df8fc52ca8/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L01-5675-df8fc52ca8\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U03L01-5675-df8fc52ca8/index.html",
+      "bytes": 4542,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/2f6b412451-dietary-guidelines-around-the-world.tif",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L02-5676-b82f7c3898\\files\\2f6b412451-dietary-guidelines-around-the-world.tif",
+      "relativePath": "localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/2f6b412451-dietary-guidelines-around-the-world.tif",
+      "bytes": 206562,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/617884a205-introductory-lesson-what-is-culture2.pptx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L02-5676-b82f7c3898\\files\\617884a205-introductory-lesson-what-is-culture2.pptx",
+      "relativePath": "localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/617884a205-introductory-lesson-what-is-culture2.pptx",
+      "bytes": 4024734,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/9ec0c7c25c-introductory-lesson-what-is-culture1.pptx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L02-5676-b82f7c3898\\files\\9ec0c7c25c-introductory-lesson-what-is-culture1.pptx",
+      "relativePath": "localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/9ec0c7c25c-introductory-lesson-what-is-culture1.pptx",
+      "bytes": 2515615,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/a5aee4b0e9-equipment-and-techniques.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L02-5676-b82f7c3898\\files\\a5aee4b0e9-equipment-and-techniques.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/a5aee4b0e9-equipment-and-techniques.pdf",
+      "bytes": 79723,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/b324f43d5d-nutrition-powerpoint-1.pptx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L02-5676-b82f7c3898\\files\\b324f43d5d-nutrition-powerpoint-1.pptx",
+      "relativePath": "localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/b324f43d5d-nutrition-powerpoint-1.pptx",
+      "bytes": 2308426,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/f836e19739-dietary_guidelines_around_the_world.tif",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L02-5676-b82f7c3898\\files\\f836e19739-dietary_guidelines_around_the_world.tif",
+      "relativePath": "localized-moodle-activities/assign/U03L02-5676-b82f7c3898/files/f836e19739-dietary_guidelines_around_the_world.tif",
+      "bytes": 206562,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L02-5676-b82f7c3898/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L02-5676-b82f7c3898\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U03L02-5676-b82f7c3898/index.html",
+      "bytes": 6636,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L03-5677-033fdfd4db/files/11cc40594e-international-foods-part1.ppt",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L03-5677-033fdfd4db\\files\\11cc40594e-international-foods-part1.ppt",
+      "relativePath": "localized-moodle-activities/assign/U03L03-5677-033fdfd4db/files/11cc40594e-international-foods-part1.ppt",
+      "bytes": 4604928,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L03-5677-033fdfd4db/files/93303870fe-notes-on-some-international-cuisines.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L03-5677-033fdfd4db\\files\\93303870fe-notes-on-some-international-cuisines.docx",
+      "relativePath": "localized-moodle-activities/assign/U03L03-5677-033fdfd4db/files/93303870fe-notes-on-some-international-cuisines.docx",
+      "bytes": 14447,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L03-5677-033fdfd4db/files/d46636ce22-international-foods-2.ppt",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L03-5677-033fdfd4db\\files\\d46636ce22-international-foods-2.ppt",
+      "relativePath": "localized-moodle-activities/assign/U03L03-5677-033fdfd4db/files/d46636ce22-international-foods-2.ppt",
+      "bytes": 2443776,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L03-5677-033fdfd4db/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L03-5677-033fdfd4db\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U03L03-5677-033fdfd4db/index.html",
+      "bytes": 5399,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/3784d8b3fe-woks.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L04-5678-99b509cc60\\files\\3784d8b3fe-woks.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/3784d8b3fe-woks.pdf",
+      "bytes": 382431,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/40759d2583-sushi-equipment.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L04-5678-99b509cc60\\files\\40759d2583-sushi-equipment.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/40759d2583-sushi-equipment.pdf",
+      "bytes": 160742,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/435f9b250e-foreign-cooking-equipment.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L04-5678-99b509cc60\\files\\435f9b250e-foreign-cooking-equipment.docx",
+      "relativePath": "localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/435f9b250e-foreign-cooking-equipment.docx",
+      "bytes": 398808,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/95547f3530-specialty-casseroles.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L04-5678-99b509cc60\\files\\95547f3530-specialty-casseroles.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/95547f3530-specialty-casseroles.pdf",
+      "bytes": 154858,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/9a8ae05b40-tortilla-and-chapati-presses.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L04-5678-99b509cc60\\files\\9a8ae05b40-tortilla-and-chapati-presses.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/9a8ae05b40-tortilla-and-chapati-presses.pdf",
+      "bytes": 261966,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/c16f2a7ae8-mortars-and-pestles.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L04-5678-99b509cc60\\files\\c16f2a7ae8-mortars-and-pestles.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/c16f2a7ae8-mortars-and-pestles.pdf",
+      "bytes": 422472,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/d793db7932-steamers.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L04-5678-99b509cc60\\files\\d793db7932-steamers.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/d793db7932-steamers.pdf",
+      "bytes": 204027,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/e9370a36a3-mandolines.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L04-5678-99b509cc60\\files\\e9370a36a3-mandolines.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/e9370a36a3-mandolines.pdf",
+      "bytes": 207919,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L04-5678-99b509cc60/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L04-5678-99b509cc60\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U03L04-5678-99b509cc60/index.html",
+      "bytes": 7297,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L05-5679-67a31b484e/files/72afcd0bac-Cultural-Menu-using-Cultural-Tools-and-Equipment-Rubric.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L05-5679-67a31b484e\\files\\72afcd0bac-Cultural-Menu-using-Cultural-Tools-and-Equipment-Rubric.docx",
+      "relativePath": "localized-moodle-activities/assign/U03L05-5679-67a31b484e/files/72afcd0bac-Cultural-Menu-using-Cultural-Tools-and-Equipment-Rubric.docx",
+      "bytes": 17936,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L05-5679-67a31b484e/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L05-5679-67a31b484e\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U03L05-5679-67a31b484e/index.html",
+      "bytes": 5283,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L06-5680-e07c141780/files/3250cc8bf2-Power-Point-Rubric.doc",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L06-5680-e07c141780\\files\\3250cc8bf2-Power-Point-Rubric.doc",
+      "relativePath": "localized-moodle-activities/assign/U03L06-5680-e07c141780/files/3250cc8bf2-Power-Point-Rubric.doc",
+      "bytes": 33792,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L06-5680-e07c141780/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L06-5680-e07c141780\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U03L06-5680-e07c141780/index.html",
+      "bytes": 5774,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L07-5681-f6c139a726/files/600bd5dfeb-Discussion-Rubric.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L07-5681-f6c139a726\\files\\600bd5dfeb-Discussion-Rubric.docx",
+      "relativePath": "localized-moodle-activities/assign/U03L07-5681-f6c139a726/files/600bd5dfeb-Discussion-Rubric.docx",
+      "bytes": 189141,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L07-5681-f6c139a726/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L07-5681-f6c139a726\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U03L07-5681-f6c139a726/index.html",
+      "bytes": 4618,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L08-5682-29af0c1d79/files/2dceeade1c-rubric.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L08-5682-29af0c1d79\\files\\2dceeade1c-rubric.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L08-5682-29af0c1d79/files/2dceeade1c-rubric.pdf",
+      "bytes": 86175,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L08-5682-29af0c1d79/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L08-5682-29af0c1d79\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U03L08-5682-29af0c1d79/index.html",
+      "bytes": 4817,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L09-5683-e20f37a5a8/files/bb92ef3834-Food-Truck-Design-Project-Rubric.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L09-5683-e20f37a5a8\\files\\bb92ef3834-Food-Truck-Design-Project-Rubric.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L09-5683-e20f37a5a8/files/bb92ef3834-Food-Truck-Design-Project-Rubric.pdf",
+      "bytes": 293508,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L09-5683-e20f37a5a8/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L09-5683-e20f37a5a8\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U03L09-5683-e20f37a5a8/index.html",
+      "bytes": 5124,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L10-5685-bfd581e482/files/23fae51f76-Teacher-Observation-Checklist.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L10-5685-bfd581e482\\files\\23fae51f76-Teacher-Observation-Checklist.pdf",
+      "relativePath": "localized-moodle-activities/assign/U03L10-5685-bfd581e482/files/23fae51f76-Teacher-Observation-Checklist.pdf",
+      "bytes": 77129,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L10-5685-bfd581e482/files/8e452ef3ff-Conversation-Checklist-Gao.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L10-5685-bfd581e482\\files\\8e452ef3ff-Conversation-Checklist-Gao.docx",
+      "relativePath": "localized-moodle-activities/assign/U03L10-5685-bfd581e482/files/8e452ef3ff-Conversation-Checklist-Gao.docx",
+      "bytes": 26566,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U03L10-5685-bfd581e482/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U03L10-5685-bfd581e482\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U03L10-5685-bfd581e482/index.html",
+      "bytes": 5162,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L01-5686-49baa5f44f/files/088903cd7a-Learning-Log.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L01-5686-49baa5f44f\\files\\088903cd7a-Learning-Log.docx",
+      "relativePath": "localized-moodle-activities/assign/U04L01-5686-49baa5f44f/files/088903cd7a-Learning-Log.docx",
+      "bytes": 13610,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L01-5686-49baa5f44f/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L01-5686-49baa5f44f\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L01-5686-49baa5f44f/index.html",
+      "bytes": 4542,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/1391d85b53-what-is-on-the-canadian-table2.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L02-5687-2a8493ee42\\files\\1391d85b53-what-is-on-the-canadian-table2.pdf",
+      "relativePath": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/1391d85b53-what-is-on-the-canadian-table2.pdf",
+      "bytes": 58145,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/17e4300934-Food-Guide.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L02-5687-2a8493ee42\\files\\17e4300934-Food-Guide.docx",
+      "relativePath": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/17e4300934-Food-Guide.docx",
+      "bytes": 1157724,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/d8f7aec562-what-is-on-the-canadian-table.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L02-5687-2a8493ee42\\files\\d8f7aec562-what-is-on-the-canadian-table.docx",
+      "relativePath": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/d8f7aec562-what-is-on-the-canadian-table.docx",
+      "bytes": 15614,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/e307305677-what-is-on-the-canadian-table-1.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L02-5687-2a8493ee42\\files\\e307305677-what-is-on-the-canadian-table-1.pdf",
+      "relativePath": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/e307305677-what-is-on-the-canadian-table-1.pdf",
+      "bytes": 75973,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L02-5687-2a8493ee42/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L02-5687-2a8493ee42\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L02-5687-2a8493ee42/index.html",
+      "bytes": 5904,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/30d57611d9-nutrition-note.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L03-5689-1028b55b6b\\files\\30d57611d9-nutrition-note.docx",
+      "relativePath": "localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/30d57611d9-nutrition-note.docx",
+      "bytes": 629642,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/a999a24bfe-nutrition-powerpoint-1.pptx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L03-5689-1028b55b6b\\files\\a999a24bfe-nutrition-powerpoint-1.pptx",
+      "relativePath": "localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/a999a24bfe-nutrition-powerpoint-1.pptx",
+      "bytes": 2308411,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L03-5689-1028b55b6b/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L03-5689-1028b55b6b\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L03-5689-1028b55b6b/index.html",
+      "bytes": 4966,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/3990b09793-a-food-lovers-guide-to-canada-2.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L04-5690-dade6fe696\\files\\3990b09793-a-food-lovers-guide-to-canada-2.pdf",
+      "relativePath": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/3990b09793-a-food-lovers-guide-to-canada-2.pdf",
+      "bytes": 35709,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/831c28c10c-macronutrients-fill-in-blanks-handout-1.docm",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L04-5690-dade6fe696\\files\\831c28c10c-macronutrients-fill-in-blanks-handout-1.docm",
+      "relativePath": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/831c28c10c-macronutrients-fill-in-blanks-handout-1.docm",
+      "bytes": 374794,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/95fd0252a2-a-food-lovers-guide-to-canada-1.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L04-5690-dade6fe696\\files\\95fd0252a2-a-food-lovers-guide-to-canada-1.pdf",
+      "relativePath": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/95fd0252a2-a-food-lovers-guide-to-canada-1.pdf",
+      "bytes": 148511,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/9636b241fd-nutrition-powerpoint-1.pptx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L04-5690-dade6fe696\\files\\9636b241fd-nutrition-powerpoint-1.pptx",
+      "relativePath": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/files/9636b241fd-nutrition-powerpoint-1.pptx",
+      "bytes": 2308411,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L04-5690-dade6fe696/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L04-5690-dade6fe696\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L04-5690-dade6fe696/index.html",
+      "bytes": 5721,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L05-5691-04a6e19597/files/78b35003a4-a-rose-by-any-other-name.tif",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L05-5691-04a6e19597\\files\\78b35003a4-a-rose-by-any-other-name.tif",
+      "relativePath": "localized-moodle-activities/assign/U04L05-5691-04a6e19597/files/78b35003a4-a-rose-by-any-other-name.tif",
+      "bytes": 78526,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L05-5691-04a6e19597/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L05-5691-04a6e19597\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L05-5691-04a6e19597/index.html",
+      "bytes": 4369,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L06-5692-fd14e91a6e/files/0b34416085-uniquely_canadian_foods.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L06-5692-fd14e91a6e\\files\\0b34416085-uniquely_canadian_foods.docx",
+      "relativePath": "localized-moodle-activities/assign/U04L06-5692-fd14e91a6e/files/0b34416085-uniquely_canadian_foods.docx",
+      "bytes": 23762,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L06-5692-fd14e91a6e/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L06-5692-fd14e91a6e\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L06-5692-fd14e91a6e/index.html",
+      "bytes": 4771,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L07-5693-320bf53481/files/8ab13bcd3c-what-influences-your-food-choices-handout-1.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L07-5693-320bf53481\\files\\8ab13bcd3c-what-influences-your-food-choices-handout-1.docx",
+      "relativePath": "localized-moodle-activities/assign/U04L07-5693-320bf53481/files/8ab13bcd3c-what-influences-your-food-choices-handout-1.docx",
+      "bytes": 284697,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L07-5693-320bf53481/files/cab059a369-influences-on-your-food-choices-1.pptx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L07-5693-320bf53481\\files\\cab059a369-influences-on-your-food-choices-1.pptx",
+      "relativePath": "localized-moodle-activities/assign/U04L07-5693-320bf53481/files/cab059a369-influences-on-your-food-choices-1.pptx",
+      "bytes": 1267466,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L07-5693-320bf53481/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L07-5693-320bf53481\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L07-5693-320bf53481/index.html",
+      "bytes": 5092,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/4d4a0e3b54-Math-Problem-Solving-Rubric.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L08-5694-22b50d256d\\files\\4d4a0e3b54-Math-Problem-Solving-Rubric.pdf",
+      "relativePath": "localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/4d4a0e3b54-Math-Problem-Solving-Rubric.pdf",
+      "bytes": 206942,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/7e690434f3-HFC3M-Kitchen-Assignment-AOL-PAge-2.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L08-5694-22b50d256d\\files\\7e690434f3-HFC3M-Kitchen-Assignment-AOL-PAge-2.pdf",
+      "relativePath": "localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/7e690434f3-HFC3M-Kitchen-Assignment-AOL-PAge-2.pdf",
+      "bytes": 846386,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/ff5d0899df-HFC3M-Kitchen-Assignment-AOL-PAge-1.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L08-5694-22b50d256d\\files\\ff5d0899df-HFC3M-Kitchen-Assignment-AOL-PAge-1.pdf",
+      "relativePath": "localized-moodle-activities/assign/U04L08-5694-22b50d256d/files/ff5d0899df-HFC3M-Kitchen-Assignment-AOL-PAge-1.pdf",
+      "bytes": 269889,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L08-5694-22b50d256d/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L08-5694-22b50d256d\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L08-5694-22b50d256d/index.html",
+      "bytes": 5393,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L09-5695-6828b98683/files/7e5b82bf8c-Power-Point-Rubric.doc",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L09-5695-6828b98683\\files\\7e5b82bf8c-Power-Point-Rubric.doc",
+      "relativePath": "localized-moodle-activities/assign/U04L09-5695-6828b98683/files/7e5b82bf8c-Power-Point-Rubric.doc",
+      "bytes": 38400,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L09-5695-6828b98683/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L09-5695-6828b98683\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L09-5695-6828b98683/index.html",
+      "bytes": 4783,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L10-5696-6d60f51abe/files/a8969a04b9-Discussion-Rubric.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L10-5696-6d60f51abe\\files\\a8969a04b9-Discussion-Rubric.docx",
+      "relativePath": "localized-moodle-activities/assign/U04L10-5696-6d60f51abe/files/a8969a04b9-Discussion-Rubric.docx",
+      "bytes": 189141,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L10-5696-6d60f51abe/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L10-5696-6d60f51abe\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L10-5696-6d60f51abe/index.html",
+      "bytes": 4856,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L11-5697-0d4be4d091/files/4665f4ebaf-Conversation-Checklist-Gao.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L11-5697-0d4be4d091\\files\\4665f4ebaf-Conversation-Checklist-Gao.docx",
+      "relativePath": "localized-moodle-activities/assign/U04L11-5697-0d4be4d091/files/4665f4ebaf-Conversation-Checklist-Gao.docx",
+      "bytes": 26566,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L11-5697-0d4be4d091/files/bffeeb9937-Teacher-Observation-Checklist.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L11-5697-0d4be4d091\\files\\bffeeb9937-Teacher-Observation-Checklist.pdf",
+      "relativePath": "localized-moodle-activities/assign/U04L11-5697-0d4be4d091/files/bffeeb9937-Teacher-Observation-Checklist.pdf",
+      "bytes": 77129,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U04L11-5697-0d4be4d091/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U04L11-5697-0d4be4d091\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U04L11-5697-0d4be4d091/index.html",
+      "bytes": 5158,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U05L01-5699-e4ae5916bc/files/7495e164c7-Canadian-Explore-the-recipes-tips-and-techniques-of-Canadian-cuisine-Culminating",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U05L01-5699-e4ae5916bc\\files\\7495e164c7-Canadian-Explore-the-recipes-tips-and-techniques-of-Canadian-cuisine-Culminating",
+      "relativePath": "localized-moodle-activities/assign/U05L01-5699-e4ae5916bc/files/7495e164c7-Canadian-Explore-the-recipes-tips-and-techniques-of-Canadian-cuisine-Culminating",
+      "bytes": 18465,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U05L01-5699-e4ae5916bc/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U05L01-5699-e4ae5916bc\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U05L01-5699-e4ae5916bc/index.html",
+      "bytes": 4594,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U06L01-5700-e5ed6818ee/files/fbd898ee66-HFC3M-Final-Exam.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U06L01-5700-e5ed6818ee\\files\\fbd898ee66-HFC3M-Final-Exam.docx",
+      "relativePath": "localized-moodle-activities/assign/U06L01-5700-e5ed6818ee/files/fbd898ee66-HFC3M-Final-Exam.docx",
+      "bytes": 433628,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U06L01-5700-e5ed6818ee/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U06L01-5700-e5ed6818ee\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U06L01-5700-e5ed6818ee/index.html",
+      "bytes": 4565,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U06L02-5701-d86a55e447/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U06L02-5701-d86a55e447\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U06L02-5701-d86a55e447/index.html",
+      "bytes": 3862,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/files/7a476801af-Teachers-Comments.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U07L01-5702-3fe8fa27af\\files\\7a476801af-Teachers-Comments.docx",
+      "relativePath": "localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/files/7a476801af-Teachers-Comments.docx",
+      "bytes": 12607,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/files/e0320780ab-Learning-Skills-and-Work-Habits.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U07L01-5702-3fe8fa27af\\files\\e0320780ab-Learning-Skills-and-Work-Habits.pdf",
+      "relativePath": "localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/files/e0320780ab-Learning-Skills-and-Work-Habits.pdf",
+      "bytes": 364903,
+      "roles": [
+        "assignment:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U07L01-5702-3fe8fa27af\\index.html",
+      "relativePath": "localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/index.html",
+      "bytes": 5061,
+      "roles": [
+        "assignment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/1affc76eea-HFC3M-Unit2-Culture-and-Food.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5648-3de0e4bddb\\files\\1affc76eea-HFC3M-Unit2-Culture-and-Food.docx",
+      "relativePath": "localized-moodle-activities/folder/course-5648-3de0e4bddb/files/1affc76eea-HFC3M-Unit2-Culture-and-Food.docx",
+      "bytes": 28881,
+      "roles": [
+        "unit_plan_folder:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/1c4db89a63-HFC3M-Unit1-Safety-and-Food-Preparation.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5648-3de0e4bddb\\files\\1c4db89a63-HFC3M-Unit1-Safety-and-Food-Preparation.docx",
+      "relativePath": "localized-moodle-activities/folder/course-5648-3de0e4bddb/files/1c4db89a63-HFC3M-Unit1-Safety-and-Food-Preparation.docx",
+      "bytes": 29048,
+      "roles": [
+        "unit_plan_folder:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/57e9a44840-HFC3M-Unit4-Food-in-Canada.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5648-3de0e4bddb\\files\\57e9a44840-HFC3M-Unit4-Food-in-Canada.docx",
+      "relativePath": "localized-moodle-activities/folder/course-5648-3de0e4bddb/files/57e9a44840-HFC3M-Unit4-Food-in-Canada.docx",
+      "bytes": 28947,
+      "roles": [
+        "unit_plan_folder:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/c95394d639-HFC3M-Unit3-The-Global-Kitchen-Copy.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5648-3de0e4bddb\\files\\c95394d639-HFC3M-Unit3-The-Global-Kitchen-Copy.docx",
+      "relativePath": "localized-moodle-activities/folder/course-5648-3de0e4bddb/files/c95394d639-HFC3M-Unit3-The-Global-Kitchen-Copy.docx",
+      "bytes": 28956,
+      "roles": [
+        "unit_plan_folder:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5648-3de0e4bddb/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5648-3de0e4bddb\\index.html",
+      "relativePath": "localized-moodle-activities/folder/course-5648-3de0e4bddb/index.html",
+      "bytes": 203535,
+      "roles": [
+        "unit_plan_folder"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/3bed639714-HFC3M-Unit1-LessonPlan4-Food-Safety-Research.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\3bed639714-HFC3M-Unit1-LessonPlan4-Food-Safety-Research.docx",
+      "relativePath": "localized-moodle-activities/folder/course-5649-9fbade4bd9/files/3bed639714-HFC3M-Unit1-LessonPlan4-Food-Safety-Research.docx",
+      "bytes": 170754,
+      "roles": [
+        "lesson_plan_folder:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/54d4ab1e04-HFC3M-Unit1-Lesson-Plan5-Food-safety-Discussion.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\54d4ab1e04-HFC3M-Unit1-Lesson-Plan5-Food-safety-Discussion.docx",
+      "relativePath": "localized-moodle-activities/folder/course-5649-9fbade4bd9/files/54d4ab1e04-HFC3M-Unit1-Lesson-Plan5-Food-safety-Discussion.docx",
+      "bytes": 171698,
+      "roles": [
+        "lesson_plan_folder:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/c6665c2d66-HFC3M-Unit1-Lesson-Plan3-Food-Safety-Practices.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\c6665c2d66-HFC3M-Unit1-Lesson-Plan3-Food-Safety-Practices.docx",
+      "relativePath": "localized-moodle-activities/folder/course-5649-9fbade4bd9/files/c6665c2d66-HFC3M-Unit1-Lesson-Plan3-Food-Safety-Practices.docx",
+      "bytes": 170781,
+      "roles": [
+        "lesson_plan_folder:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/d8e23f936d-HFC3M-Unit-1Lesson-Plan1-Safety-and-Food-Poster.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\d8e23f936d-HFC3M-Unit-1Lesson-Plan1-Safety-and-Food-Poster.docx",
+      "relativePath": "localized-moodle-activities/folder/course-5649-9fbade4bd9/files/d8e23f936d-HFC3M-Unit-1Lesson-Plan1-Safety-and-Food-Poster.docx",
+      "bytes": 57693,
+      "roles": [
+        "lesson_plan_folder:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/e38a4e6ab6-HFC3M-Unit-1-Lesson-Plan-6-Unit-Test.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\e38a4e6ab6-HFC3M-Unit-1-Lesson-Plan-6-Unit-Test.docx",
+      "relativePath": "localized-moodle-activities/folder/course-5649-9fbade4bd9/files/e38a4e6ab6-HFC3M-Unit-1-Lesson-Plan-6-Unit-Test.docx",
+      "bytes": 170506,
+      "roles": [
+        "lesson_plan_folder:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/fa71a38dda-HFC3M-Unit1-Lesson-Plan-2-Safety-in-the-Kitchen.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\fa71a38dda-HFC3M-Unit1-Lesson-Plan-2-Safety-in-the-Kitchen.docx",
+      "relativePath": "localized-moodle-activities/folder/course-5649-9fbade4bd9/files/fa71a38dda-HFC3M-Unit1-Lesson-Plan-2-Safety-in-the-Kitchen.docx",
+      "bytes": 170387,
+      "roles": [
+        "lesson_plan_folder:attachment"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/folder/course-5649-9fbade4bd9/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\index.html",
+      "relativePath": "localized-moodle-activities/folder/course-5649-9fbade4bd9/index.html",
+      "bytes": 206551,
+      "roles": [
+        "lesson_plan_folder"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/forum/course-5645-6c5e9115ba/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\forum\\course-5645-6c5e9115ba\\index.html",
+      "relativePath": "localized-moodle-activities/forum/course-5645-6c5e9115ba/index.html",
+      "bytes": 3719,
+      "roles": [
+        "forum"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/lesson/U02L03-5663-bdd39b337a/index.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\lesson\\U02L03-5663-bdd39b337a\\index.html",
+      "relativePath": "localized-moodle-activities/lesson/U02L03-5663-bdd39b337a/index.html",
+      "bytes": 5058,
+      "roles": [
+        "lesson_activity"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/resource/U01L02-5651-b885236310/b885236310-Food-and-Safety-Poster.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\resource\\U01L02-5651-b885236310\\b885236310-Food-and-Safety-Poster.docx",
+      "relativePath": "localized-moodle-activities/resource/U01L02-5651-b885236310/b885236310-Food-and-Safety-Poster.docx",
+      "bytes": 723721,
+      "roles": [
+        "lesson_resource"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/video-placeholder/3de1d4d687-Video-placeholder---Origins-of-Fruits-and-Vegetables.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\3de1d4d687-Video-placeholder---Origins-of-Fruits-and-Vegetables.html",
+      "relativePath": "localized-moodle-activities/video-placeholder/3de1d4d687-Video-placeholder---Origins-of-Fruits-and-Vegetables.html",
+      "bytes": 1552,
+      "roles": [
+        "video_placeholder"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/video-placeholder/ad3c2151c5-Video-placeholder---Origins-of-Fruits-and-Vegetables-Ali-copy.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\ad3c2151c5-Video-placeholder---Origins-of-Fruits-and-Vegetables-Ali-copy.html",
+      "relativePath": "localized-moodle-activities/video-placeholder/ad3c2151c5-Video-placeholder---Origins-of-Fruits-and-Vegetables-Ali-copy.html",
+      "bytes": 1598,
+      "roles": [
+        "video_placeholder"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/video-placeholder/Basic Food Safety Chapter 2 Health and Hygiene .mp4",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\Basic Food Safety Chapter 2 Health and Hygiene .mp4",
+      "relativePath": "localized-moodle-activities/video-placeholder/Basic Food Safety Chapter 2 Health and Hygiene .mp4",
+      "bytes": 24556885,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/video-placeholder/Basic Food Safety Chapter 5 Cleaning and Sanitizing.mp4",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\Basic Food Safety Chapter 5 Cleaning and Sanitizing.mp4",
+      "relativePath": "localized-moodle-activities/video-placeholder/Basic Food Safety Chapter 5 Cleaning and Sanitizing.mp4",
+      "bytes": 19237690,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/video-placeholder/Food Trip Around the world.webm",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\Food Trip Around the world.webm",
+      "relativePath": "localized-moodle-activities/video-placeholder/Food Trip Around the world.webm",
+      "bytes": 153822105,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/video-placeholder/Safety Tips for Handling and Preparing Common Food.mp4",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\Safety Tips for Handling and Preparing Common Food.mp4",
+      "relativePath": "localized-moodle-activities/video-placeholder/Safety Tips for Handling and Preparing Common Food.mp4",
+      "bytes": 3422247,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/video-placeholder/World food.mp4",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\World food.mp4",
+      "relativePath": "localized-moodle-activities/video-placeholder/World food.mp4",
+      "bytes": 21915903,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/youtube/U02L03-2da747a327-Around-The-World-Season-3-Marathon.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\youtube\\U02L03-2da747a327-Around-The-World-Season-3-Marathon.html",
+      "relativePath": "localized-moodle-activities/youtube/U02L03-2da747a327-Around-The-World-Season-3-Marathon.html",
+      "bytes": 1799,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/youtube/U02L03-60a29392ae-Street-Food-Around-the-World---HD-Documentary-International-Food.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\youtube\\U02L03-60a29392ae-Street-Food-Around-the-World---HD-Documentary-International-Food.html",
+      "relativePath": "localized-moodle-activities/youtube/U02L03-60a29392ae-Street-Food-Around-the-World---HD-Documentary-International-Food.html",
+      "bytes": 1919,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle-activities/youtube/U02L05-d536f9c175-The-Geography-of-Spices-and-Herbs.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\youtube\\U02L05-d536f9c175-The-Geography-of-Spices-and-Herbs.html",
+      "relativePath": "localized-moodle-activities/youtube/U02L05-d536f9c175-The-Geography-of-Spices-and-Herbs.html",
+      "bytes": 1801,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/plans/source/HFC3M-CourseOutline.pdf",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\plans\\source\\HFC3M-CourseOutline.pdf",
+      "relativePath": "plans/source/HFC3M-CourseOutline.pdf",
+      "bytes": 650243,
+      "roles": [
+        "course_outline"
+      ]
+    },
+    {
+      "key": "HFC3M/plans/source/HFC3M-Unit Plan-Unit1-Safety-and-Food-Preparation.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\plans\\source\\HFC3M-Unit Plan-Unit1-Safety-and-Food-Preparation.docx",
+      "relativePath": "plans/source/HFC3M-Unit Plan-Unit1-Safety-and-Food-Preparation.docx",
+      "bytes": 29048,
+      "roles": [
+        "unit-plan"
+      ]
+    },
+    {
+      "key": "HFC3M/plans/source/HFC3M-Unit Plan-Unit2-Culture-and-Food.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\plans\\source\\HFC3M-Unit Plan-Unit2-Culture-and-Food.docx",
+      "relativePath": "plans/source/HFC3M-Unit Plan-Unit2-Culture-and-Food.docx",
+      "bytes": 28881,
+      "roles": [
+        "unit-plan"
+      ]
+    },
+    {
+      "key": "HFC3M/plans/source/HFC3M-Unit Plan-Unit3-The-Global-Kitchen-Copy.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\plans\\source\\HFC3M-Unit Plan-Unit3-The-Global-Kitchen-Copy.docx",
+      "relativePath": "plans/source/HFC3M-Unit Plan-Unit3-The-Global-Kitchen-Copy.docx",
+      "bytes": 28956,
+      "roles": [
+        "unit-plan"
+      ]
+    },
+    {
+      "key": "HFC3M/plans/source/HFC3M-Unit Plan-Unit4-Food-in-Canada.docx",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\plans\\source\\HFC3M-Unit Plan-Unit4-Food-in-Canada.docx",
+      "relativePath": "plans/source/HFC3M-Unit Plan-Unit4-Food-in-Canada.docx",
+      "bytes": 28947,
+      "roles": [
+        "unit-plan"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/course-5647-9ae1876eaa/files/02ef9eca67-Food-and-Safety-Poster.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\course-5647-9ae1876eaa\\files\\02ef9eca67-Food-and-Safety-Poster.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/course-5647-9ae1876eaa/files/02ef9eca67-Food-and-Safety-Poster.docx.html",
+      "bytes": 954989,
+      "roles": [
+        "course_resource:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U01L01-5650-03941de0bd/files/d243b48232-Learning-Log.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U01L01-5650-03941de0bd\\files\\d243b48232-Learning-Log.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U01L01-5650-03941de0bd/files/d243b48232-Learning-Log.docx.html",
+      "bytes": 7866,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U01L07-5658-1ad79a765d/files/65fee1cf5f-Discussion-Rubric.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U01L07-5658-1ad79a765d\\files\\65fee1cf5f-Discussion-Rubric.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U01L07-5658-1ad79a765d/files/65fee1cf5f-Discussion-Rubric.docx.html",
+      "bytes": 237198,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U01L08-5659-9126623237/files/e3014022ef-unit1-Test-Food-and-Safety.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U01L08-5659-9126623237\\files\\e3014022ef-unit1-Test-Food-and-Safety.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U01L08-5659-9126623237/files/e3014022ef-unit1-Test-Food-and-Safety.docx.html",
+      "bytes": 10179,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U01L09-5660-b6e94850b0/files/15a8bb0eba-Conversation-Checklist-Gao.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U01L09-5660-b6e94850b0\\files\\15a8bb0eba-Conversation-Checklist-Gao.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U01L09-5660-b6e94850b0/files/15a8bb0eba-Conversation-Checklist-Gao.docx.html",
+      "bytes": 12872,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U02L01-5661-1491a94c4b/files/6fe86b59ef-Learning-Log.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U02L01-5661-1491a94c4b\\files\\6fe86b59ef-Learning-Log.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U02L01-5661-1491a94c4b/files/6fe86b59ef-Learning-Log.docx.html",
+      "bytes": 7866,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U02L04-5664-15e0cdf7ec/files/59c4a048c1-introduction-to-international-foods.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U02L04-5664-15e0cdf7ec\\files\\59c4a048c1-introduction-to-international-foods.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U02L04-5664-15e0cdf7ec/files/59c4a048c1-introduction-to-international-foods.docx.html",
+      "bytes": 20533,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/files/19005a21b0-Spices-and-Herbs-Answer-Key.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U02L05-5666-9b2960f9a3\\files\\19005a21b0-Spices-and-Herbs-Answer-Key.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/files/19005a21b0-Spices-and-Herbs-Answer-Key.docx.html",
+      "bytes": 9567,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/files/d52567caba-Herbs-and-Spices-worksheets.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U02L05-5666-9b2960f9a3\\files\\d52567caba-Herbs-and-Spices-worksheets.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U02L05-5666-9b2960f9a3/files/d52567caba-Herbs-and-Spices-worksheets.docx.html",
+      "bytes": 8284,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U02L08-5670-4d17824579/files/084e9a1cfa-COOKING-LESSON.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U02L08-5670-4d17824579\\files\\084e9a1cfa-COOKING-LESSON.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U02L08-5670-4d17824579/files/084e9a1cfa-COOKING-LESSON.docx.html",
+      "bytes": 7582,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U02L10-5672-a4eebbf501/files/98d11da81b-cultural_investigation.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U02L10-5672-a4eebbf501\\files\\98d11da81b-cultural_investigation.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U02L10-5672-a4eebbf501/files/98d11da81b-cultural_investigation.docx.html",
+      "bytes": 11221,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U02L11-5673-315d569efb/files/0353483cb3-Conversation-Checklist-Gao.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U02L11-5673-315d569efb\\files\\0353483cb3-Conversation-Checklist-Gao.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U02L11-5673-315d569efb/files/0353483cb3-Conversation-Checklist-Gao.docx.html",
+      "bytes": 20103,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U03L01-5675-df8fc52ca8/files/80378346b0-Learning-Log.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U03L01-5675-df8fc52ca8\\files\\80378346b0-Learning-Log.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U03L01-5675-df8fc52ca8/files/80378346b0-Learning-Log.docx.html",
+      "bytes": 7866,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U03L03-5677-033fdfd4db/files/93303870fe-notes-on-some-international-cuisines.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U03L03-5677-033fdfd4db\\files\\93303870fe-notes-on-some-international-cuisines.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U03L03-5677-033fdfd4db/files/93303870fe-notes-on-some-international-cuisines.docx.html",
+      "bytes": 8693,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/435f9b250e-foreign-cooking-equipment.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U03L04-5678-99b509cc60\\files\\435f9b250e-foreign-cooking-equipment.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U03L04-5678-99b509cc60/files/435f9b250e-foreign-cooking-equipment.docx.html",
+      "bytes": 518634,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U03L05-5679-67a31b484e/files/72afcd0bac-Cultural-Menu-using-Cultural-Tools-and-Equipment-Rubric.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U03L05-5679-67a31b484e\\files\\72afcd0bac-Cultural-Menu-using-Cultural-Tools-and-Equipment-Rubric.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U03L05-5679-67a31b484e/files/72afcd0bac-Cultural-Menu-using-Cultural-Tools-and-Equipment-Rubric.docx.html",
+      "bytes": 9018,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U03L07-5681-f6c139a726/files/600bd5dfeb-Discussion-Rubric.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U03L07-5681-f6c139a726\\files\\600bd5dfeb-Discussion-Rubric.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U03L07-5681-f6c139a726/files/600bd5dfeb-Discussion-Rubric.docx.html",
+      "bytes": 237198,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U03L10-5685-bfd581e482/files/8e452ef3ff-Conversation-Checklist-Gao.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U03L10-5685-bfd581e482\\files\\8e452ef3ff-Conversation-Checklist-Gao.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U03L10-5685-bfd581e482/files/8e452ef3ff-Conversation-Checklist-Gao.docx.html",
+      "bytes": 20103,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U04L01-5686-49baa5f44f/files/088903cd7a-Learning-Log.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U04L01-5686-49baa5f44f\\files\\088903cd7a-Learning-Log.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U04L01-5686-49baa5f44f/files/088903cd7a-Learning-Log.docx.html",
+      "bytes": 7866,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/17e4300934-Food-Guide.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U04L02-5687-2a8493ee42\\files\\17e4300934-Food-Guide.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/17e4300934-Food-Guide.docx.html",
+      "bytes": 1533825,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/d8f7aec562-what-is-on-the-canadian-table.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U04L02-5687-2a8493ee42\\files\\d8f7aec562-what-is-on-the-canadian-table.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U04L02-5687-2a8493ee42/files/d8f7aec562-what-is-on-the-canadian-table.docx.html",
+      "bytes": 9624,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/30d57611d9-nutrition-note.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U04L03-5689-1028b55b6b\\files\\30d57611d9-nutrition-note.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U04L03-5689-1028b55b6b/files/30d57611d9-nutrition-note.docx.html",
+      "bytes": 737547,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U04L06-5692-fd14e91a6e/files/0b34416085-uniquely_canadian_foods.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U04L06-5692-fd14e91a6e\\files\\0b34416085-uniquely_canadian_foods.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U04L06-5692-fd14e91a6e/files/0b34416085-uniquely_canadian_foods.docx.html",
+      "bytes": 9784,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U04L07-5693-320bf53481/files/8ab13bcd3c-what-influences-your-food-choices-handout-1.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U04L07-5693-320bf53481\\files\\8ab13bcd3c-what-influences-your-food-choices-handout-1.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U04L07-5693-320bf53481/files/8ab13bcd3c-what-influences-your-food-choices-handout-1.docx.html",
+      "bytes": 354673,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U04L10-5696-6d60f51abe/files/a8969a04b9-Discussion-Rubric.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U04L10-5696-6d60f51abe\\files\\a8969a04b9-Discussion-Rubric.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U04L10-5696-6d60f51abe/files/a8969a04b9-Discussion-Rubric.docx.html",
+      "bytes": 237198,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U04L11-5697-0d4be4d091/files/4665f4ebaf-Conversation-Checklist-Gao.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U04L11-5697-0d4be4d091\\files\\4665f4ebaf-Conversation-Checklist-Gao.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U04L11-5697-0d4be4d091/files/4665f4ebaf-Conversation-Checklist-Gao.docx.html",
+      "bytes": 20103,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U06L01-5700-e5ed6818ee/files/fbd898ee66-HFC3M-Final-Exam.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U06L01-5700-e5ed6818ee\\files\\fbd898ee66-HFC3M-Final-Exam.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U06L01-5700-e5ed6818ee/files/fbd898ee66-HFC3M-Final-Exam.docx.html",
+      "bytes": 561430,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/files/7a476801af-Teachers-Comments.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\assign\\U07L01-5702-3fe8fa27af\\files\\7a476801af-Teachers-Comments.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/assign/U07L01-5702-3fe8fa27af/files/7a476801af-Teachers-Comments.docx.html",
+      "bytes": 7196,
+      "roles": [
+        "assignment:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/1affc76eea-HFC3M-Unit2-Culture-and-Food.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\folder\\course-5648-3de0e4bddb\\files\\1affc76eea-HFC3M-Unit2-Culture-and-Food.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/1affc76eea-HFC3M-Unit2-Culture-and-Food.docx.html",
+      "bytes": 11996,
+      "roles": [
+        "unit_plan_folder:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/1c4db89a63-HFC3M-Unit1-Safety-and-Food-Preparation.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\folder\\course-5648-3de0e4bddb\\files\\1c4db89a63-HFC3M-Unit1-Safety-and-Food-Preparation.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/1c4db89a63-HFC3M-Unit1-Safety-and-Food-Preparation.docx.html",
+      "bytes": 12433,
+      "roles": [
+        "unit_plan_folder:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/57e9a44840-HFC3M-Unit4-Food-in-Canada.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\folder\\course-5648-3de0e4bddb\\files\\57e9a44840-HFC3M-Unit4-Food-in-Canada.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/57e9a44840-HFC3M-Unit4-Food-in-Canada.docx.html",
+      "bytes": 12173,
+      "roles": [
+        "unit_plan_folder:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/c95394d639-HFC3M-Unit3-The-Global-Kitchen-Copy.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\folder\\course-5648-3de0e4bddb\\files\\c95394d639-HFC3M-Unit3-The-Global-Kitchen-Copy.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/folder/course-5648-3de0e4bddb/files/c95394d639-HFC3M-Unit3-The-Global-Kitchen-Copy.docx.html",
+      "bytes": 12251,
+      "roles": [
+        "unit_plan_folder:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/3bed639714-HFC3M-Unit1-LessonPlan4-Food-Safety-Research.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\3bed639714-HFC3M-Unit1-LessonPlan4-Food-Safety-Research.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/3bed639714-HFC3M-Unit1-LessonPlan4-Food-Safety-Research.docx.html",
+      "bytes": 93676,
+      "roles": [
+        "lesson_plan_folder:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/54d4ab1e04-HFC3M-Unit1-Lesson-Plan5-Food-safety-Discussion.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\54d4ab1e04-HFC3M-Unit1-Lesson-Plan5-Food-safety-Discussion.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/54d4ab1e04-HFC3M-Unit1-Lesson-Plan5-Food-safety-Discussion.docx.html",
+      "bytes": 93789,
+      "roles": [
+        "lesson_plan_folder:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/c6665c2d66-HFC3M-Unit1-Lesson-Plan3-Food-Safety-Practices.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\c6665c2d66-HFC3M-Unit1-Lesson-Plan3-Food-Safety-Practices.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/c6665c2d66-HFC3M-Unit1-Lesson-Plan3-Food-Safety-Practices.docx.html",
+      "bytes": 93566,
+      "roles": [
+        "lesson_plan_folder:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/d8e23f936d-HFC3M-Unit-1Lesson-Plan1-Safety-and-Food-Poster.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\d8e23f936d-HFC3M-Unit-1Lesson-Plan1-Safety-and-Food-Poster.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/d8e23f936d-HFC3M-Unit-1Lesson-Plan1-Safety-and-Food-Poster.docx.html",
+      "bytes": 52497,
+      "roles": [
+        "lesson_plan_folder:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/e38a4e6ab6-HFC3M-Unit-1-Lesson-Plan-6-Unit-Test.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\e38a4e6ab6-HFC3M-Unit-1-Lesson-Plan-6-Unit-Test.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/e38a4e6ab6-HFC3M-Unit-1-Lesson-Plan-6-Unit-Test.docx.html",
+      "bytes": 93511,
+      "roles": [
+        "lesson_plan_folder:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/fa71a38dda-HFC3M-Unit1-Lesson-Plan-2-Safety-in-the-Kitchen.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\folder\\course-5649-9fbade4bd9\\files\\fa71a38dda-HFC3M-Unit1-Lesson-Plan-2-Safety-in-the-Kitchen.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/folder/course-5649-9fbade4bd9/files/fa71a38dda-HFC3M-Unit1-Lesson-Plan-2-Safety-in-the-Kitchen.docx.html",
+      "bytes": 93508,
+      "roles": [
+        "lesson_plan_folder:attachment:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/localized-moodle-activities/resource/U01L02-5651-b885236310/b885236310-Food-and-Safety-Poster.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\localized-moodle-activities\\resource\\U01L02-5651-b885236310\\b885236310-Food-and-Safety-Poster.docx.html",
+      "relativePath": "previews-html/localized-moodle-activities/resource/U01L02-5651-b885236310/b885236310-Food-and-Safety-Poster.docx.html",
+      "bytes": 954981,
+      "roles": [
+        "lesson_resource:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/plans/source/HFC3M-Unit Plan-Unit1-Safety-and-Food-Preparation.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\plans\\source\\HFC3M-Unit Plan-Unit1-Safety-and-Food-Preparation.docx.html",
+      "relativePath": "previews-html/plans/source/HFC3M-Unit Plan-Unit1-Safety-and-Food-Preparation.docx.html",
+      "bytes": 12351,
+      "roles": [
+        "unit-plan:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/plans/source/HFC3M-Unit Plan-Unit2-Culture-and-Food.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\plans\\source\\HFC3M-Unit Plan-Unit2-Culture-and-Food.docx.html",
+      "relativePath": "previews-html/plans/source/HFC3M-Unit Plan-Unit2-Culture-and-Food.docx.html",
+      "bytes": 11914,
+      "roles": [
+        "unit-plan:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/plans/source/HFC3M-Unit Plan-Unit3-The-Global-Kitchen-Copy.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\plans\\source\\HFC3M-Unit Plan-Unit3-The-Global-Kitchen-Copy.docx.html",
+      "relativePath": "previews-html/plans/source/HFC3M-Unit Plan-Unit3-The-Global-Kitchen-Copy.docx.html",
+      "bytes": 12169,
+      "roles": [
+        "unit-plan:preview"
+      ]
+    },
+    {
+      "key": "HFC3M/previews-html/plans/source/HFC3M-Unit Plan-Unit4-Food-in-Canada.docx.html",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\previews-html\\plans\\source\\HFC3M-Unit Plan-Unit4-Food-in-Canada.docx.html",
+      "relativePath": "previews-html/plans/source/HFC3M-Unit Plan-Unit4-Food-in-Canada.docx.html",
+      "bytes": 12091,
+      "roles": [
+        "unit-plan:preview"
+      ]
+    }
+  ]
+}

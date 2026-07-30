@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import html
 import json
+import mimetypes
 import re
 import shutil
 import zipfile
@@ -60,28 +62,34 @@ def sanitize_segment(value: str) -> str:
 
 
 def iter_resource_items(manifest: dict[str, Any]):
-    for item in manifest.get("courseDownloads", []):
+    def yield_with_attachments(item: dict[str, Any]):
         yield item
+        for attachment in item.get("attachments", []) or []:
+            if isinstance(attachment, dict):
+                yield from yield_with_attachments(attachment)
+
+    for item in manifest.get("courseDownloads", []):
+        yield from yield_with_attachments(item)
 
     for text in manifest.get("texts", []):
         for item in text.get("materials", []):
-            yield item
+            yield from yield_with_attachments(item)
 
     for unit in manifest.get("units", []):
         unit_plan = unit.get("unitPlan")
         if unit_plan:
-            yield unit_plan
+            yield from yield_with_attachments(unit_plan)
 
         for lesson in unit.get("lessons", []):
             lesson_plan = lesson.get("lessonPlan")
             if lesson_plan:
-                yield lesson_plan
+                yield from yield_with_attachments(lesson_plan)
 
             for item in lesson.get("downloads", []):
-                yield item
+                yield from yield_with_attachments(item)
 
             for item in lesson.get("textExports", []):
-                yield item
+                yield from yield_with_attachments(item)
 
 
 def paragraph_text(paragraph: ElementTree.Element) -> str:
@@ -108,11 +116,30 @@ def cell_text(cell: ElementTree.Element) -> str:
 def extract_docx_blocks(path: Path) -> list[tuple[str, Any]]:
     with zipfile.ZipFile(path) as package:
         document_xml = package.read("word/document.xml")
+        media_blocks: list[tuple[str, Any]] = []
+        for name in sorted(package.namelist()):
+            if not name.lower().startswith("word/media/"):
+                continue
+            suffix = Path(name).suffix.lower()
+            if suffix not in {".png", ".jpg", ".jpeg", ".gif", ".webp"}:
+                continue
+            mime_type = mimetypes.types_map.get(suffix, "application/octet-stream")
+            encoded = base64.b64encode(package.read(name)).decode("ascii")
+            media_blocks.append(
+                (
+                    "image",
+                    {
+                        "name": Path(name).name,
+                        "mimeType": mime_type,
+                        "data": encoded,
+                    },
+                )
+            )
 
     root = ElementTree.fromstring(document_xml)
     body = root.find("w:body", NAMESPACES)
     if body is None:
-        return [("paragraph", "No document body was found.")]
+        return media_blocks or [("paragraph", "No document body was found.")]
 
     blocks: list[tuple[str, Any]] = []
     for child in list(body):
@@ -128,6 +155,9 @@ def extract_docx_blocks(path: Path) -> list[tuple[str, Any]]:
                     rows.append(cells)
             if rows:
                 blocks.append(("table", rows))
+
+    if media_blocks:
+        blocks.extend(media_blocks)
 
     return blocks or [("paragraph", "No readable text was extracted from this document.")]
 
@@ -758,7 +788,6 @@ def render_preview_html(
     title: str,
     source_rel: str,
     blocks: list[tuple[str, Any]],
-    notice: str,
 ) -> str:
     body_parts: list[str] = []
     for kind, content in blocks:
@@ -768,6 +797,16 @@ def render_preview_html(
             else:
                 rows = "\n".join(f"<li>{html.escape(str(row))}</li>" for row in content)
                 body_parts.append(f"<section class=\"doc-table\"><ul>{rows}</ul></section>")
+        elif kind == "image" and isinstance(content, dict):
+            mime_type = html.escape(str(content.get("mimeType") or "application/octet-stream"), quote=True)
+            data = html.escape(str(content.get("data") or ""), quote=True)
+            name = html.escape(str(content.get("name") or "Embedded image"))
+            body_parts.append(
+                f'<figure class="doc-image">'
+                f'<img src="data:{mime_type};base64,{data}" alt="{name}">'
+                f"<figcaption>{name}</figcaption>"
+                f"</figure>"
+            )
         else:
             body_parts.append(render_text(str(content), "body-text"))
 
@@ -872,11 +911,6 @@ def render_preview_html(
       padding: 0 12px;
       text-decoration: none;
     }}
-    .preview-note {{
-      color: #58708e;
-      font-size: 13px;
-      margin: 10px 0 0;
-    }}
     .doc-layout {{
       display: grid;
       gap: 28px;
@@ -931,6 +965,25 @@ def render_preview_html(
     .doc-table ul {{
       margin: 0;
       padding-left: 20px;
+    }}
+    .doc-image {{
+      margin: 0 auto 28px;
+      max-width: 980px;
+      text-align: center;
+    }}
+    .doc-image img {{
+      background: #fff;
+      border: 1px solid #d8e2ef;
+      border-radius: 8px;
+      display: block;
+      height: auto;
+      margin: 0 auto;
+      max-width: 100%;
+    }}
+    .doc-image figcaption {{
+      color: #526681;
+      font-size: 12px;
+      margin-top: 8px;
     }}
     .doc-field {{
       background: #fbfdff;
@@ -1053,7 +1106,6 @@ def render_preview_html(
       <div class="doc-actions">
         <a class="doc-action" href="{html.escape(download_href, quote=True)}" download>下载原始文件</a>
       </div>
-      <p class="preview-note">{html.escape(notice)}</p>
     </header>
     <div class="doc-layout{' no-toc' if not headings else ''}">
       {toc_html}
@@ -1102,9 +1154,8 @@ def main() -> int:
                 preview_path = course_root / preview_rel
                 blocks = extract_docx_blocks(source_path)
                 title = item.get("label") or Path(source_rel).stem
-                notice = "Lightweight in-site preview generated from DOCX text. Use the download button for the original layout."
                 preview_path.parent.mkdir(parents=True, exist_ok=True)
-                preview_path.write_text(render_preview_html(title, source_rel, blocks, notice), encoding="utf-8")
+                preview_path.write_text(render_preview_html(title, source_rel, blocks), encoding="utf-8")
                 generated_by_type["docx"] += 1
             else:
                 try:

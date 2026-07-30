@@ -1,0 +1,117 @@
+{
+  "course": "HFC3M",
+  "generatedAt": "2026-07-30T04:50:46.748Z",
+  "moodleExpectedActivityCount": 50,
+  "localActivityCount": 50,
+  "units": [
+    {
+      "unit": 1,
+      "title": "Unit 1: Safety and Food Preparation",
+      "activities": 9,
+      "downloads": 12,
+      "videos": 3,
+      "videoPlaceholders": 0
+    },
+    {
+      "unit": 2,
+      "title": "Unit 2: Culture and Food",
+      "activities": 11,
+      "downloads": 18,
+      "videos": 5,
+      "videoPlaceholders": 2
+    },
+    {
+      "unit": 3,
+      "title": "Unit 3: The Global Kitchen",
+      "activities": 10,
+      "downloads": 10,
+      "videos": 0,
+      "videoPlaceholders": 0
+    },
+    {
+      "unit": 4,
+      "title": "Unit 4: Food in Canada",
+      "activities": 11,
+      "downloads": 11,
+      "videos": 0,
+      "videoPlaceholders": 0
+    },
+    {
+      "unit": 5,
+      "title": "CPT",
+      "activities": 1,
+      "downloads": 1,
+      "videos": 0,
+      "videoPlaceholders": 0
+    },
+    {
+      "unit": 6,
+      "title": "Final Exam",
+      "activities": 2,
+      "downloads": 2,
+      "videos": 0,
+      "videoPlaceholders": 0
+    },
+    {
+      "unit": 7,
+      "title": "Teacher's Comments - Learning Skills and Work Habits",
+      "activities": 1,
+      "downloads": 1,
+      "videos": 0,
+      "videoPlaceholders": 0
+    }
+  ],
+  "missingActivities": [],
+  "extraActivities": [],
+  "titleMismatches": [],
+  "missingFiles": [],
+  "emptyPreviews": [],
+  "videoPlaceholders": [
+    {
+      "scope": "unit-2",
+      "activityId": "U02L06",
+      "activityTitle": "Origins of Food (AFL)",
+      "label": "Video placeholder - Origins of Fruits and Vegetables",
+      "type": "html",
+      "role": "video_placeholder",
+      "category": "external_video_placeholder",
+      "path": "localized-moodle-activities/video-placeholder/3de1d4d687-Video-placeholder---Origins-of-Fruits-and-Vegetables.html",
+      "source": "https://sisonline.oss-cn-hongkong.aliyuncs.com/MoodleCloud/youtube%20videos/HFC3M/11.%20Origins%20of%20Fruits%20and%20Vegetables.mp4"
+    },
+    {
+      "scope": "unit-2",
+      "activityId": "U02L06",
+      "activityTitle": "Origins of Food (AFL)",
+      "label": "Video placeholder - Origins of Fruits and Vegetables (Ali copy)",
+      "type": "html",
+      "role": "video_placeholder",
+      "category": "external_video_placeholder",
+      "path": "localized-moodle-activities/video-placeholder/ad3c2151c5-Video-placeholder---Origins-of-Fruits-and-Vegetables-Ali-copy.html",
+      "source": "https://sisonline.oss-cn-hongkong.aliyuncs.com/MoodleCloud/youtube%20videos/HFC3M/11.%20%28Ali%29%20Origins%20of%20Fruits%20and%20Vegetables.mp4"
+    }
+  ],
+  "externalResiduals": [
+    {
+      "scope": "unit-2",
+      "activityId": "U02L06",
+      "activityTitle": "Origins of Food (AFL)",
+      "label": "Video placeholder - Origins of Fruits and Vegetables",
+      "type": "html",
+      "role": "video_placeholder",
+      "category": "external_video_placeholder",
+      "path": "localized-moodle-activities/video-placeholder/3de1d4d687-Video-placeholder---Origins-of-Fruits-and-Vegetables.html",
+      "source": "https://sisonline.oss-cn-hongkong.aliyuncs.com/MoodleCloud/youtube%20videos/HFC3M/11.%20Origins%20of%20Fruits%20and%20Vegetables.mp4"
+    },
+    {
+      "scope": "unit-2",
+      "activityId": "U02L06",
+      "activityTitle": "Origins of Food (AFL)",
+      "label": "Video placeholder - Origins of Fruits and Vegetables (Ali copy)",
+      "type": "html",
+      "role": "video_placeholder",
+      "category": "external_video_placeholder",
+      "path": "localized-moodle-activities/video-placeholder/ad3c2151c5-Video-placeholder---Origins-of-Fruits-and-Vegetables-Ali-copy.html",
+      "source": "https://sisonline.oss-cn-hongkong.aliyuncs.com/MoodleCloud/youtube%20videos/HFC3M/11.%20%28Ali%29%20Origins%20of%20Fruits%20and%20Vegetables.mp4"
+    }
+  ]
+}

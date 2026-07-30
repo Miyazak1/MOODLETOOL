@@ -75,6 +75,7 @@ const mimeTypes = {
   ".pdf": "application/pdf",
   ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   ".mp4": "video/mp4",
+  ".webm": "video/webm",
   ".h5p": "application/octet-stream",
   ".png": "image/png",
   ".jpg": "image/jpeg",
@@ -1334,7 +1335,8 @@ function localResourceCandidatesForLesson(lesson) {
   for (const item of lesson.downloads || []) {
     if (!item.path) continue;
     const type = String(item.type || "").toLowerCase();
-    const kind = type === "mp4" || type === "video" ? "video" : type === "h5p" ? "h5p" : "file";
+    const ext = extname(item.path || "").toLowerCase();
+    const kind = type === "mp4" || type === "webm" || type === "video" || [".mp4", ".webm"].includes(ext) ? "video" : type === "h5p" ? "h5p" : "file";
     candidates.push({ kind, role: item.role || "download", item });
   }
   for (const item of lesson.bookSections || []) {
@@ -1366,9 +1368,9 @@ function moodleH5pIframeHtml(src, { height = 560 } = {}) {
     allowfullscreen="allowfullscreen"></iframe>`;
 }
 
-function moodleVideoHtml(src, label = "Video") {
+function moodleVideoHtml(src, label = "Video", mimeType = "video/mp4") {
   return `<video controls preload="metadata" style="width: 100%; max-width: 1500px; height: auto;">
-    <source src="${htmlEscape(src)}" type="video/mp4">
+    <source src="${htmlEscape(src)}" type="${htmlEscape(mimeType)}">
     <a href="${htmlEscape(src)}" target="_blank" rel="noopener">${htmlEscape(label)}</a>
   </video>`;
 }
@@ -1408,7 +1410,8 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
           moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: 1500, height: 750 });
           moodleHtml = moodleShortcode;
         } else if (candidate.kind === "video") {
-          moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video");
+          const ext = extname(item.path || "").toLowerCase();
+          moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video", mimeTypes[ext] || "video/mp4");
         } else if (candidate.kind === "book-section") {
           moodleIframeHtml = moodleContentIframeHtml(embedUrl);
           moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 750 });
@@ -3215,7 +3218,7 @@ function classifyCoursePackageFile({ course, manifest, contentRoot, file, isprin
   const ext = extname(file).toLowerCase();
   const detected = detectUnitLesson(sourcePath);
   const section = sectionRoleForPath(sourcePath);
-  const supported = new Set([".docx", ".doc", ".pdf", ".pptx", ".xlsx", ".txt", ".md", ".html", ".mp4", ".h5p", ".zip"]);
+  const supported = new Set([".docx", ".doc", ".pdf", ".pptx", ".xlsx", ".txt", ".md", ".html", ".mp4", ".webm", ".h5p", ".zip"]);
   if (!supported.has(ext)) {
     return { kind: "skip", sourcePath, status: "skipped", reason: `Unsupported extension ${ext || "(none)"}.` };
   }
@@ -3280,9 +3283,9 @@ function classifyCoursePackageFile({ course, manifest, contentRoot, file, isprin
     };
   }
   const typeFolder = ext.replace(".", "") || "file";
-  const role = ext === ".mp4" ? section.key : ext === ".h5p" ? section.key : section.key === "resource" ? "lesson_resource" : section.key;
+  const role = [".mp4", ".webm"].includes(ext) ? section.key : ext === ".h5p" ? section.key : section.key === "resource" ? "lesson_resource" : section.key;
   return {
-    kind: ext === ".mp4" ? "video" : ext === ".h5p" ? "h5p" : "lesson-resource",
+    kind: [".mp4", ".webm"].includes(ext) ? "video" : ext === ".h5p" ? "h5p" : "lesson-resource",
     role,
     sourcePath,
     sourceAbs: file,
