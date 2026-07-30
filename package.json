@@ -14,6 +14,7 @@
     "import:ispring-packages": "python tools/import_ispring_packages.py",
     "import:public-domain-texts": "node scripts/import-public-domain-texts.mjs",
     "package:ispring-downloads": "python tools/package_ispring_downloads.py",
+    "package:moodle-filter": "node scripts/package-moodle-filter-portalembed.mjs",
     "generate:previews": "node scripts/generate-document-previews.mjs",
     "generate:lightweight-docx-previews": "node scripts/run-python-tool.mjs tools/generate_lightweight_docx_previews.py",
     "build:plan-course": "python tools/build_plan_course_manifest.py",
