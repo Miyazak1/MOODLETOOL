@@ -14,6 +14,7 @@ const coursewareRoot = resolve(args.coursewareRoot || process.env.COURSE_ACTIVE_
 const bucket = normalizeBucket(args.bucket || process.env.OSS_BUCKET_URI || "");
 const cdnBaseUrl = stripSlash(args.cdnBaseUrl || process.env.COURSEWARE_ASSET_BASE_URL || "");
 const objectPrefix = stripSlash(args.prefix || process.env.OSS_COURSEWARE_PREFIX || "courseware-active");
+const registryPath = resolve(args.registry || join(deploymentRoot, "asset-registry.json"));
 const dryRun = !args.apply;
 const includeHash = args.hash;
 const limit = Number(args.limit || 0);
@@ -32,6 +33,7 @@ function parseArgs(argv) {
     bucket: "",
     cdnBaseUrl: "",
     prefix: "",
+    registry: "",
     hash: false,
     limit: "",
     ossutil: "",
@@ -58,6 +60,8 @@ function parseArgs(argv) {
       out.cdnBaseUrl = argv[++i] || "";
     } else if (arg === "--prefix") {
       out.prefix = argv[++i] || "";
+    } else if (arg === "--registry") {
+      out.registry = argv[++i] || "";
     } else if (arg === "--hash") {
       out.hash = true;
     } else if (arg === "--limit") {
@@ -82,6 +86,7 @@ Options:
   --bucket URI           OSS bucket URI, for example oss://moodletool-courseware.
   --cdn-base-url URL     CDN asset base URL, usually https://cdn.example.com/courseware-active.
   --prefix PREFIX        OSS object prefix. Default courseware-active.
+  --registry PATH        Asset registry output path. Defaults to deployment/asset-registry.json.
   --hash                 Include sha256 hashes in the registry.
   --limit N              Limit files for smoke checks.
   --ossutil PATH         ossutil executable path.`);
@@ -362,7 +367,6 @@ mkdirSync(deploymentRoot, { recursive: true });
 const suffix = dryRun ? "plan" : "report";
 const jsonPath = join(deploymentRoot, `oss-sync-${suffix}.json`);
 const mdPath = join(deploymentRoot, `oss-sync-${suffix}.md`);
-const registryPath = join(deploymentRoot, "asset-registry.json");
 writeJson(jsonPath, report);
 writeFileSync(mdPath, renderMarkdown(report), "utf8");
 writeJson(registryPath, {

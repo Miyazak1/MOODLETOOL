@@ -23,3 +23,5 @@ deployment/video-bitrate-audit*
 deployment/video-optimization-plan.*
 deployment/video-optimization-report.*
 deployment/cdn-preheat-urls*
+deployment/media-delivery-pipeline-report.*
+deployment/.media-delivery-pipeline-smoke/
