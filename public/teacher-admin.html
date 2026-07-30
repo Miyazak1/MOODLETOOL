@@ -399,6 +399,51 @@
         color: var(--muted);
         font-size: 13px;
       }
+      .guide-layout {
+        display: grid;
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .guide-block {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: #f8fbff;
+      }
+      .guide-block h3 {
+        margin: 0 0 8px;
+        color: #123d67;
+        font-size: 16px;
+      }
+      .guide-block p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .guide-list {
+        margin: 8px 0 0;
+        padding-left: 18px;
+        color: var(--ink);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .guide-code {
+        position: relative;
+        margin-top: 10px;
+      }
+      .guide-code pre {
+        min-height: 0;
+        margin: 0;
+        padding-right: 116px;
+      }
+      .guide-code button {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        min-height: 30px;
+        padding: 5px 9px;
+        font-size: 12px;
+      }
       pre {
         min-height: 120px;
         overflow: auto;
@@ -823,6 +868,7 @@
           <button type="button" data-admin-nav="storage" data-auth-required="1" disabled>存储空间</button>
           <button type="button" data-admin-nav="overview" data-auth-required="1" disabled>全课程概览</button>
           <button type="button" data-admin-nav="users" data-auth-required="1" disabled>用户权限</button>
+          <button type="button" data-admin-nav="moodlePlugin" data-auth-required="1" disabled>Moodle 嵌入插件</button>
           <button type="button" data-admin-nav="output">结果日志</button>
         </nav>
       </aside>
@@ -1109,6 +1155,105 @@
         <div id="userTable" hidden></div>
       </section>
 
+      <section class="admin-panel auth-required" data-admin-panel="moodlePlugin" hidden>
+        <div class="panel-heading">
+          <div>
+            <h2>Moodle 嵌入插件教程</h2>
+            <p class="meta-line">Portal Embed Filter 是一个 Moodle 文本过滤器插件。它让 Moodle 内容里可以粘贴短代码，由 Moodle 服务端渲染成带正确 sandbox 和 allow 权限的 iframe。</p>
+          </div>
+          <a class="button-link subtle" href="/downloads/filter_portalembed.zip">下载插件 ZIP</a>
+        </div>
+        <div class="workflow-steps">
+          <div class="workflow-step">
+            <strong>1. 下载插件</strong>
+            <span>从本门户下载 filter_portalembed.zip，解压后目录名是 portalembed。</span>
+          </div>
+          <div class="workflow-step">
+            <strong>2. 安装到 Moodle</strong>
+            <span>把目录放到 Moodle 的 filter/portalembed，然后运行 upgrade 和 purge caches。</span>
+          </div>
+          <div class="workflow-step">
+            <strong>3. 启用过滤器</strong>
+            <span>在 Moodle 后台 Manage filters 里启用 Portal embed shortcode。</span>
+          </div>
+          <div class="workflow-step">
+            <strong>4. 粘贴短代码</strong>
+            <span>以后在 Moodle 内容中放 shortcode，不再直接保存 iframe。</span>
+          </div>
+        </div>
+        <div class="guide-layout">
+          <div class="guide-block">
+            <h3>这是什么</h3>
+            <p>它不是一个单独命令，也不是我们门户里的普通页面，而是标准 Moodle 插件目录：</p>
+            <div class="guide-code">
+              <button type="button" data-copy-target="pluginStructureCode">复制</button>
+              <pre id="pluginStructureCode">filter/portalembed/
+  version.php
+  filter.php
+  settings.php
+  lang/en/filter_portalembed.php</pre>
+            </div>
+          </div>
+          <div class="guide-block">
+            <h3>在 Sunnybrook Moodle 安装</h3>
+            <p>这台服务器建议继续用 PHP 8.1，避免 PHP 8.2 的 curl extension warning。</p>
+            <div class="guide-code">
+              <button type="button" data-copy-target="sunnybrookInstallCode">复制</button>
+              <pre id="sunnybrookInstallCode">cd /www/wwwroot/www.esunnybrook.com/moodle
+curl -L https://www.moodletool.work/downloads/filter_portalembed.zip -o /tmp/filter_portalembed.zip
+unzip -oq /tmp/filter_portalembed.zip -d filter
+/www/server/php/81/bin/php admin/cli/upgrade.php --non-interactive
+/www/server/php/81/bin/php admin/cli/purge_caches.php</pre>
+            </div>
+          </div>
+          <div class="guide-block">
+            <h3>给其他 Moodle 网站安装</h3>
+            <p>把 Moodle 路径和 PHP 命令换成对方服务器自己的路径即可。</p>
+            <div class="guide-code">
+              <button type="button" data-copy-target="genericInstallCode">复制</button>
+              <pre id="genericInstallCode">cd /path/to/moodle
+curl -L https://www.moodletool.work/downloads/filter_portalembed.zip -o /tmp/filter_portalembed.zip
+unzip -oq /tmp/filter_portalembed.zip -d filter
+php admin/cli/upgrade.php --non-interactive
+php admin/cli/purge_caches.php</pre>
+            </div>
+          </div>
+          <div class="guide-block">
+            <h3>Moodle 后台启用位置</h3>
+            <div class="guide-code">
+              <button type="button" data-copy-target="enablePathCode">复制</button>
+              <pre id="enablePathCode">Site administration -> Plugins -> Filters -> Manage filters -> Portal embed shortcode</pre>
+            </div>
+            <ul class="guide-list">
+              <li>过滤器启用后，页面内容里的短代码会在显示时变成 iframe。</li>
+              <li>TinyMCE 不再需要保存完整 iframe，所以不会再把 sandbox 改空。</li>
+              <li>插件默认只允许 https://www.moodletool.work/embed/ 开头的资源。</li>
+            </ul>
+          </div>
+          <div class="guide-block">
+            <h3>短代码示例</h3>
+            <p>门户课程页资源卡片上的“短代码”按钮会自动复制实际可用版本。这里是格式示例：</p>
+            <div class="guide-code">
+              <button type="button" data-copy-target="shortcodeExampleCode">复制</button>
+              <pre id="shortcodeExampleCode">[portal_iframe src="https://www.moodletool.work/embed/ispring/ESLEO/U01L01/87b225257bd8?token=..." width="100%" height="720"]</pre>
+            </div>
+          </div>
+          <div class="guide-block">
+            <h3>更新插件包</h3>
+            <p>如果以后改了插件源码，先在门户项目里重新打包并部署，下载地址会保持不变。</p>
+            <div class="guide-code">
+              <button type="button" data-copy-target="packageCode">复制</button>
+              <pre id="packageCode">cd /www/wwwroot/ossd-course-portal
+git pull
+npm install
+npm run package:moodle-filter
+npm run build
+pm2 restart ossd-course-portal --update-env</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="admin-panel auth-required" data-admin-panel="maintenance" hidden>
         <h2>当前课程维护</h2>
         <p class="meta-line">历史、备份、预览生成和 ZIP 原包清理都按当前课程执行。清理临时上传/解压目录不会删除正式课程文件。</p>
@@ -1229,6 +1374,22 @@
 
       function write(value) {
         output.textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2);
+      }
+
+      async function copyText(value) {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(value);
+          return;
+        }
+        const textarea = document.createElement("textarea");
+        textarea.value = value;
+        textarea.setAttribute("readonly", "true");
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
       }
 
       function errorMessage(error) {
@@ -3285,6 +3446,18 @@
         const switchButton = event.target.closest("[data-switch-panel]");
         if (switchButton) {
           switchAdminPanel(switchButton.dataset.switchPanel);
+          return;
+        }
+        const copyButton = event.target.closest("[data-copy-target]");
+        if (copyButton) {
+          const target = document.getElementById(copyButton.dataset.copyTarget);
+          if (target) {
+            copyText(target.textContent || "").then(() => {
+              showFeedback("已复制", "success", "命令或短代码已复制到剪贴板。");
+            }).catch((error) => {
+              showFeedback("复制失败", "error", errorMessage(error));
+            });
+          }
           return;
         }
         const button = event.target.closest("[data-gap-action='fill']");
