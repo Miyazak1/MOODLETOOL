@@ -16,3 +16,9 @@ deployment/course-packages/
 deployment/.package-smoke/
 deployment/logs/
 deployment/moodle-embed-replacement-*
+deployment/asset-registry.json
+deployment/oss-sync-plan.*
+deployment/oss-sync-report.*
+deployment/video-bitrate-audit*
+deployment/video-optimization-plan.*
+deployment/video-optimization-report.*
