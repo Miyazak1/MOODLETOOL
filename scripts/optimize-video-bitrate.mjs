@@ -10,6 +10,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { dirname, extname, join, relative, resolve } from "node:path";
+import { acquireCourseLocks } from "./lib/course-operation-locks.mjs";
 
 const projectRoot = resolve(import.meta.dirname, "..");
 const workspaceRoot = resolve(projectRoot, "..");
@@ -361,23 +362,29 @@ const audit = readJson(auditPath);
 const planned = loadCandidates(audit).map(planItem);
 const items = [];
 let failed = 0;
+let releaseLocks = () => {};
 
-for (const item of planned) {
-  if (dryRun) {
-    items.push(item);
-    continue;
+try {
+  if (!dryRun) releaseLocks = acquireCourseLocks(planned.map((item) => item.course), { operation: "optimize-videos" });
+  for (const item of planned) {
+    if (dryRun) {
+      items.push(item);
+      continue;
+    }
+    try {
+      items.push(applyItem(item));
+    } catch (error) {
+      failed += 1;
+      rmSync(item.outputPath, { force: true });
+      items.push({
+        ...item,
+        action: "failed",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
-  try {
-    items.push(applyItem(item));
-  } catch (error) {
-    failed += 1;
-    rmSync(item.outputPath, { force: true });
-    items.push({
-      ...item,
-      action: "failed",
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
+} finally {
+  releaseLocks();
 }
 
 const optimized = items.filter((item) => item.action === "optimized");

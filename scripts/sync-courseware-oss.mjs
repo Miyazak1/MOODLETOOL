@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { extname, join, relative, resolve } from "node:path";
+import { acquireCourseLocks } from "./lib/course-operation-locks.mjs";
 
 const projectRoot = resolve(import.meta.dirname, "..");
 const workspaceRoot = resolve(projectRoot, "..");
@@ -73,13 +74,13 @@ function parseArgs(argv) {
 function printUsage() {
   console.log(`Usage:
   node scripts/sync-courseware-oss.mjs --all --dry-run
-  node scripts/sync-courseware-oss.mjs --course HFC3M --bucket oss://moodletool-courseware --cdn-base-url https://cdn.moodletool.work --dry-run
-  node scripts/sync-courseware-oss.mjs --course HFC3M --bucket oss://moodletool-courseware --apply
+  node scripts/sync-courseware-oss.mjs --course HFC3M --bucket oss://moodletool-courseware --cdn-base-url https://cdn.moodletool.work/courseware-active --dry-run
+  node scripts/sync-courseware-oss.mjs --course HFC3M --bucket oss://moodletool-courseware --cdn-base-url https://cdn.moodletool.work/courseware-active --apply
 
 Options:
   --courseware-root PATH  Defaults to COURSE_ACTIVE_ROOT or ../courseware.
   --bucket URI           OSS bucket URI, for example oss://moodletool-courseware.
-  --cdn-base-url URL     CDN base URL used in the generated registry.
+  --cdn-base-url URL     CDN asset base URL, usually https://cdn.example.com/courseware-active.
   --prefix PREFIX        OSS object prefix. Default courseware-active.
   --hash                 Include sha256 hashes in the registry.
   --limit N              Limit files for smoke checks.
@@ -192,6 +193,17 @@ function encodeObjectKey(key) {
   return key.split("/").map(encodeURIComponent).join("/");
 }
 
+function cdnUrlForObjectKey(key) {
+  if (!cdnBaseUrl) return "";
+  const normalizedKey = toPosix(key);
+  const normalizedPrefix = stripSlash(objectPrefix);
+  const baseLooksPrefixed = normalizedPrefix && cdnBaseUrl.toLowerCase().endsWith(`/${normalizedPrefix.toLowerCase()}`);
+  const relativeKey = baseLooksPrefixed && normalizedKey.startsWith(`${normalizedPrefix}/`)
+    ? normalizedKey.slice(normalizedPrefix.length + 1)
+    : normalizedKey;
+  return `${cdnBaseUrl}/${encodeObjectKey(relativeKey)}`;
+}
+
 function detectOssutil() {
   for (const candidate of ["ossutil", "ossutil64"]) {
     const result = spawnSync(candidate, ["--version"], { encoding: "utf8", windowsHide: true });
@@ -214,7 +226,7 @@ function buildItem(course, file) {
     relativePath: relPath,
     objectKey,
     ossUri,
-    cdnUrl: cdnBaseUrl ? `${cdnBaseUrl}/${encodeObjectKey(objectKey)}` : "",
+    cdnUrl: cdnUrlForObjectKey(objectKey),
     contentType,
     cacheControl,
     sizeBytes: stat.size,
@@ -302,21 +314,27 @@ if (limit > 0) planned = planned.slice(0, limit);
 
 const items = [];
 let failed = 0;
-for (const item of planned) {
-  if (dryRun) {
-    items.push(item);
-    continue;
+let releaseLocks = () => {};
+try {
+  if (!dryRun) releaseLocks = acquireCourseLocks(courses, { operation: "sync-oss" });
+  for (const item of planned) {
+    if (dryRun) {
+      items.push(item);
+      continue;
+    }
+    try {
+      items.push(uploadItem(item));
+    } catch (error) {
+      failed += 1;
+      items.push({
+        ...item,
+        action: "failed",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
   }
-  try {
-    items.push(uploadItem(item));
-  } catch (error) {
-    failed += 1;
-    items.push({
-      ...item,
-      action: "failed",
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
+} finally {
+  releaseLocks();
 }
 
 const uploaded = items.filter((item) => item.action === "uploaded").length;
@@ -353,7 +371,8 @@ writeJson(registryPath, {
   bucket,
   cdnBaseUrl,
   objectPrefix,
-  assets: items.map(({ action, error, ...item }) => item),
+  assetCount: items.length,
+  assets: items.map((item) => item.objectKey),
 });
 
 console.log(
