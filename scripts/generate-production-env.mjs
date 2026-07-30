@@ -40,6 +40,11 @@ const teacherUsername = readArg("--teacher-username", "teacher1");
 const portalAdminUsername = readArg("--portal-admin-username", "portal-admin");
 const adminUsername = readArg("--admin-username", "admin-main");
 const domain = readArg("--domain", "your-domain");
+const assetMode = String(readArg("--asset-mode", "local") || "local").toLowerCase();
+const cdnBaseUrl = String(readArg("--cdn-base-url", "") || "").replace(/\/+$/, "");
+const ossBucket = String(readArg("--oss-bucket", "") || "").replace(/\/+$/, "");
+const assetPrefix = String(readArg("--asset-prefix", "courseware-active") || "courseware-active").replace(/^\/+|\/+$/g, "");
+const assetRegistryFile = readArg("--asset-registry-file", "/www/wwwroot/ossd-course-portal/deployment/asset-registry.json");
 
 if (existsSync(outPath) && !force) {
   console.error(`Refusing to overwrite existing env file: ${outPath}`);
@@ -53,6 +58,22 @@ if (existsSync(credentialsPath) && !force) {
 }
 if (!courses.length) {
   console.error("At least one course is required, for example --courses ENG3U,ESLEO.");
+  process.exit(2);
+}
+if (!["local", "hybrid", "cdn"].includes(assetMode)) {
+  console.error("--asset-mode must be local, hybrid, or cdn.");
+  process.exit(2);
+}
+if (assetMode !== "local" && !/^https:\/\//i.test(cdnBaseUrl)) {
+  console.error("--cdn-base-url is required and must be HTTPS when --asset-mode is hybrid or cdn.");
+  process.exit(2);
+}
+if (ossBucket && !/^oss:\/\//i.test(ossBucket)) {
+  console.error("--oss-bucket should look like oss://bucket-name.");
+  process.exit(2);
+}
+if (!assetPrefix) {
+  console.error("--asset-prefix cannot be empty.");
   process.exit(2);
 }
 
@@ -100,10 +121,11 @@ const env = [
   "COURSE_ACTIVE_ROOT=/www/wwwroot/ossd-portal/courseware-active",
   "COURSE_ARCHIVE_ROOT=/www/wwwroot/ossd-portal/courseware-archive",
   "X_ACCEL_COURSEWARE_PREFIX=/_protected_courseware/",
-  "COURSEWARE_ASSET_MODE=local",
-  "COURSEWARE_ASSET_BASE_URL=",
-  "COURSEWARE_ASSET_PREFIX=courseware-active",
-  "COURSEWARE_ASSET_REGISTRY_FILE=/www/wwwroot/ossd-course-portal/deployment/asset-registry.json",
+  envLine("OSS_BUCKET_URI", ossBucket),
+  envLine("COURSEWARE_ASSET_MODE", assetMode),
+  envLine("COURSEWARE_ASSET_BASE_URL", cdnBaseUrl),
+  envLine("COURSEWARE_ASSET_PREFIX", assetPrefix),
+  envLine("COURSEWARE_ASSET_REGISTRY_FILE", assetRegistryFile),
   envLine("EMBED_TOKEN_SECRET", generated.embedTokenSecret),
   `EMBED_PUBLIC_ORIGIN=https://${domain}`,
   "EMBED_TOKEN_MAX_AGE_SECONDS=315360000",
@@ -146,6 +168,9 @@ const credentials = [
   "",
   "Next commands:",
   `  npm run check:production-env -- --env ${outPath}`,
+  assetMode === "local"
+    ? "  npm run check:media-delivery -- --course HFC3M"
+    : `  npm run check:media-delivery -- --course HFC3M --bucket ${ossBucket || "oss://YOUR_BUCKET"} --cdn-base-url ${cdnBaseUrl} --asset-mode ${assetMode} --require-oss`,
   `  npm run smoke:deployed-site -- --base-url https://${domain} --username ${teacherUsername} --password ${generated.teacherPassword} --course ${courses[0]}`,
   "",
 ].join("\n");
