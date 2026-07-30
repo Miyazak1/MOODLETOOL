@@ -1416,10 +1416,11 @@ function App() {
 
   useEffect(() => {
     if (!catalog || !selectedCourse) return;
+    const controller = new AbortController();
     setManifest(null);
     setMoodleEmbedRows([]);
     setError(null);
-    fetch(selectedCourse.manifestUrl)
+    fetch(selectedCourse.manifestUrl, { signal: controller.signal })
       .then((response) => {
         if (!response.ok) throw new Error(`Manifest request failed: ${response.status}`);
         return response.json() as Promise<CourseManifest>;
@@ -1430,8 +1431,11 @@ function App() {
         setQuery("");
       })
       .catch((fetchError: unknown) => {
+        if (fetchError instanceof DOMException && fetchError.name === "AbortError") return;
         setError(fetchError instanceof Error ? fetchError.message : "Unknown manifest error");
       });
+
+    return () => controller.abort();
   }, [catalog, selectedCourse]);
 
   useEffect(() => {

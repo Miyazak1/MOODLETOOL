@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { appendFile, cp, mkdir, readdir, readFile, rename, rm, stat, statfs } from "node:fs/promises";
-import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, normalize, relative, resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { finished, pipeline } from "node:stream/promises";
@@ -64,6 +64,7 @@ const lifecycleJobs = new Map();
 const loginFailures = new Map();
 const coursePackageTasks = new Map();
 const coursePackageFinalizeTasks = new Map();
+const operationLocks = new Map();
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -136,6 +137,42 @@ function sendNoStoreJson(res, statusCode, data) {
     "Pragma": "no-cache",
   });
   res.end(`${JSON.stringify(data, null, 2)}\n`);
+}
+
+function lockKey(value) {
+  return String(value || "global").trim().toLowerCase() || "global";
+}
+
+async function withOperationLock(key, operation) {
+  const normalizedKey = lockKey(key);
+  const previous = operationLocks.get(normalizedKey) || Promise.resolve();
+  let release;
+  const gate = new Promise((resolveGate) => {
+    release = resolveGate;
+  });
+  const current = previous.catch(() => {}).then(() => gate);
+  operationLocks.set(normalizedKey, current);
+  await previous.catch(() => {});
+  try {
+    return await operation();
+  } finally {
+    release();
+    if (operationLocks.get(normalizedKey) === current) {
+      operationLocks.delete(normalizedKey);
+    }
+  }
+}
+
+function writeFileAtomicSync(path, content, encoding = "utf8") {
+  mkdirSync(dirname(path), { recursive: true });
+  const tmpPath = join(dirname(path), `.${basename(path)}.${process.pid}.${Date.now()}.${randomBytes(4).toString("hex")}.tmp`);
+  try {
+    writeFileSync(tmpPath, content, encoding);
+    renameSync(tmpPath, path);
+  } catch (error) {
+    rmSync(tmpPath, { force: true });
+    throw error;
+  }
 }
 
 function htmlEscape(value) {
@@ -440,13 +477,12 @@ function readCourseStatusStore() {
 }
 
 function saveCourseStatusStore(store) {
-  mkdirSync(dirname(courseStatusPath), { recursive: true });
   const normalized = {
     schemaVersion: 1,
     updatedAt: new Date().toISOString(),
     courses: store.courses || {},
   };
-  writeFileSync(courseStatusPath, `${JSON.stringify(normalized, null, 2)}\n`, "utf8");
+  writeJsonFile(courseStatusPath, normalized);
   return normalized;
 }
 
@@ -561,6 +597,11 @@ function listLifecycleJobs() {
     .map(publicLifecycleJob);
 }
 
+function runningLifecycleJobForCourse(course) {
+  const code = safeSegment(course).toUpperCase();
+  return [...lifecycleJobs.values()].find((job) => job.course === code && job.status === "running") || null;
+}
+
 function startCourseLifecycleJob({ action, course, actor, deleteActive = false, force = false, setArchived = false }) {
   const normalizedAction = String(action || "").trim().toLowerCase();
   if (!["archive", "activate"].includes(normalizedAction)) {
@@ -568,6 +609,10 @@ function startCourseLifecycleJob({ action, course, actor, deleteActive = false, 
   }
   const code = safeSegment(course).toUpperCase();
   if (!code) throw new Error("Course is required.");
+  const runningJob = runningLifecycleJobForCourse(code);
+  if (runningJob) {
+    throw new Error(`Course ${code} already has a running ${runningJob.action} job (${runningJob.id}). Wait for it to finish before starting another lifecycle job.`);
+  }
 
   const id = `${Date.now()}-${randomBytes(4).toString("hex")}`;
   const requestedAt = new Date().toISOString();
@@ -665,13 +710,8 @@ function getPortalUsers() {
 }
 
 function savePortalUsers(users) {
-  mkdirSync(dirname(portalUsersPath), { recursive: true });
   const normalized = users.map(normalizePortalUser).filter((user) => user.username);
-  writeFileSync(
-    portalUsersPath,
-    `${JSON.stringify({ schemaVersion: 1, updatedAt: new Date().toISOString(), users: normalized }, null, 2)}\n`,
-    "utf8",
-  );
+  writeJsonFile(portalUsersPath, { schemaVersion: 1, updatedAt: new Date().toISOString(), users: normalized });
   return normalized;
 }
 
@@ -1791,38 +1831,40 @@ async function readCourseCatalog() {
 }
 
 async function ensureCourseCatalogEntry(course, manifest) {
-  const code = safeSegment(course).toUpperCase();
-  if (!code) throw new Error("Course is required.");
-  const catalog = await readCourseCatalog();
-  catalog.courses = Array.isArray(catalog.courses) ? catalog.courses : [];
-  const index = catalog.courses.findIndex((entry) => String(entry.code || "").toUpperCase() === code);
-  const existing = index >= 0 ? catalog.courses[index] : {};
-  const ispringCount = (manifest.units || []).reduce(
-    (sum, unit) => sum + (unit.lessons || []).reduce((lessonSum, lesson) => lessonSum + (lesson.ispring || []).length, 0),
-    0,
-  );
-  const nextEntry = {
-    code,
-    title: existing.title || manifest.course?.title || `${code} · Course`,
-    level: existing.level || "",
-    status: existing.status || (ispringCount ? "ready" : "planning-only"),
-    manifestUrl: `/courseware/${code}/course-manifest.json`,
-    baseUrl: `/courseware/${code}/`,
-    notes: existing.notes || (ispringCount ? "Imported whole-course package." : "Planning documents imported."),
-  };
-  if (index >= 0) catalog.courses[index] = { ...existing, ...nextEntry };
-  else catalog.courses.push(nextEntry);
-  catalog.courses.sort((left, right) =>
-    String(left.code || "").localeCompare(String(right.code || ""), "en", {
-      numeric: true,
-      sensitivity: "base",
-    }),
-  );
-  if (!catalog.defaultCourse || !catalog.courses.some((entry) => entry.code === catalog.defaultCourse)) {
-    catalog.defaultCourse = code;
-  }
-  writeJsonFile(courseCatalogPath, catalog);
-  return nextEntry;
+  return withOperationLock("course-catalog", async () => {
+    const code = safeSegment(course).toUpperCase();
+    if (!code) throw new Error("Course is required.");
+    const catalog = await readCourseCatalog();
+    catalog.courses = Array.isArray(catalog.courses) ? catalog.courses : [];
+    const index = catalog.courses.findIndex((entry) => String(entry.code || "").toUpperCase() === code);
+    const existing = index >= 0 ? catalog.courses[index] : {};
+    const ispringCount = (manifest.units || []).reduce(
+      (sum, unit) => sum + (unit.lessons || []).reduce((lessonSum, lesson) => lessonSum + (lesson.ispring || []).length, 0),
+      0,
+    );
+    const nextEntry = {
+      code,
+      title: existing.title || manifest.course?.title || `${code} · Course`,
+      level: existing.level || "",
+      status: existing.status || (ispringCount ? "ready" : "planning-only"),
+      manifestUrl: `/courseware/${code}/course-manifest.json`,
+      baseUrl: `/courseware/${code}/`,
+      notes: existing.notes || (ispringCount ? "Imported whole-course package." : "Planning documents imported."),
+    };
+    if (index >= 0) catalog.courses[index] = { ...existing, ...nextEntry };
+    else catalog.courses.push(nextEntry);
+    catalog.courses.sort((left, right) =>
+      String(left.code || "").localeCompare(String(right.code || ""), "en", {
+        numeric: true,
+        sensitivity: "base",
+      }),
+    );
+    if (!catalog.defaultCourse || !catalog.courses.some((entry) => entry.code === catalog.defaultCourse)) {
+      catalog.defaultCourse = code;
+    }
+    writeJsonFile(courseCatalogPath, catalog);
+    return nextEntry;
+  });
 }
 
 function findLesson(manifest, unitNumber, lessonNumber) {
@@ -2644,7 +2686,7 @@ async function installIspringBatch(upload, manifest) {
 }
 
 function writeJsonFile(path, data) {
-  writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+  writeFileAtomicSync(path, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 }
 
 async function removeFileIfExists(path) {
@@ -3919,41 +3961,45 @@ async function handleAdminApi(req, res) {
 
     if (requestUrl.pathname === "/api/admin/users" && req.method === "POST") {
       const body = await readJsonBody(req, 64 * 1024);
-      const users = ensurePortalUsersFile();
-      const user = upsertPortalUser(users, body);
-      const saved = savePortalUsers(users);
-      await appendAdminHistory(body.course || "ENG3U", {
-        actor: adminActor(req),
-        action: "portal-user-upsert",
-        username: user.username,
-        role: user.role,
-        courses: user.courses,
-        status: user.status,
-      });
-      sendJson(res, 200, {
-        ok: true,
-        user: publicPortalUser(user),
-        users: saved.map(publicPortalUser),
-        courses: await availablePortalCourses(),
-        usersFile: portalUsersPath,
+      await withOperationLock("portal-users", async () => {
+        const users = ensurePortalUsersFile();
+        const user = upsertPortalUser(users, body);
+        const saved = savePortalUsers(users);
+        await appendAdminHistory(body.course || "ENG3U", {
+          actor: adminActor(req),
+          action: "portal-user-upsert",
+          username: user.username,
+          role: user.role,
+          courses: user.courses,
+          status: user.status,
+        });
+        sendJson(res, 200, {
+          ok: true,
+          user: publicPortalUser(user),
+          users: saved.map(publicPortalUser),
+          courses: await availablePortalCourses(),
+          usersFile: portalUsersPath,
+        });
       });
       return true;
     }
 
     if (requestUrl.pathname === "/api/admin/users" && req.method === "DELETE") {
       const username = requestUrl.searchParams.get("username");
-      const users = ensurePortalUsersFile();
-      const saved = savePortalUsers(removePortalUser(users, username));
-      await appendAdminHistory(requestUrl.searchParams.get("course") || "ENG3U", {
-        actor: adminActor(req),
-        action: "portal-user-delete",
-        username,
-      });
-      sendJson(res, 200, {
-        ok: true,
-        users: saved.map(publicPortalUser),
-        courses: await availablePortalCourses(),
-        usersFile: portalUsersPath,
+      await withOperationLock("portal-users", async () => {
+        const users = ensurePortalUsersFile();
+        const saved = savePortalUsers(removePortalUser(users, username));
+        await appendAdminHistory(requestUrl.searchParams.get("course") || "ENG3U", {
+          actor: adminActor(req),
+          action: "portal-user-delete",
+          username,
+        });
+        sendJson(res, 200, {
+          ok: true,
+          users: saved.map(publicPortalUser),
+          courses: await availablePortalCourses(),
+          usersFile: portalUsersPath,
+        });
       });
       return true;
     }
@@ -3981,17 +4027,19 @@ async function handleAdminApi(req, res) {
     if (requestUrl.pathname === "/api/admin/course-status" && req.method === "POST") {
       const body = await readJsonBody(req, 64 * 1024);
       const actor = adminActor(req);
-      const record = setCourseLifecycleStatus(body.course, body.status, actor, body.note);
-      await appendAdminHistory(record.course, {
-        actor,
-        action: "course-lifecycle-status",
-        status: record.status,
-        note: record.note,
-      });
-      sendJson(res, 200, {
-        ok: true,
-        statusFile: courseStatusPath,
-        course: record,
+      await withOperationLock("course-status", async () => {
+        const record = setCourseLifecycleStatus(body.course, body.status, actor, body.note);
+        await appendAdminHistory(record.course, {
+          actor,
+          action: "course-lifecycle-status",
+          status: record.status,
+          note: record.note,
+        });
+        sendJson(res, 200, {
+          ok: true,
+          statusFile: courseStatusPath,
+          course: record,
+        });
       });
       return true;
     }
@@ -4005,20 +4053,22 @@ async function handleAdminApi(req, res) {
             .split(",")
             .map((course) => course.trim())
             .filter(Boolean);
-      const result = await setLaunchCourseAllowlist(courses, actor, body.note);
-      for (const course of result.launchCourses) {
-        await appendAdminHistory(course, {
-          actor,
-          action: "launch-course-allowlist",
-          launchCourses: result.launchCourses,
-          activeCourseCount: result.activeCourseCount,
-          archivedCourseCount: result.archivedCourseCount,
+      await withOperationLock("course-status", async () => {
+        const result = await setLaunchCourseAllowlist(courses, actor, body.note);
+        for (const course of result.launchCourses) {
+          await appendAdminHistory(course, {
+            actor,
+            action: "launch-course-allowlist",
+            launchCourses: result.launchCourses,
+            activeCourseCount: result.activeCourseCount,
+            archivedCourseCount: result.archivedCourseCount,
+          });
+        }
+        sendJson(res, 200, {
+          ok: true,
+          statusFile: courseStatusPath,
+          ...result,
         });
-      }
-      sendJson(res, 200, {
-        ok: true,
-        statusFile: courseStatusPath,
-        ...result,
       });
       return true;
     }
@@ -4036,28 +4086,31 @@ async function handleAdminApi(req, res) {
     if (requestUrl.pathname === "/api/admin/course-lifecycle-jobs" && req.method === "POST") {
       const body = await readJsonBody(req, 64 * 1024);
       const actor = adminActor(req);
-      const job = startCourseLifecycleJob({
-        action: body.action,
-        course: body.course,
-        actor,
-        deleteActive: Boolean(body.deleteActive),
-        force: Boolean(body.force),
-        setArchived: Boolean(body.setArchived),
-      });
-      await appendAdminHistory(job.course, {
-        actor,
-        action: "course-lifecycle-job-start",
-        jobId: job.id,
-        jobAction: job.action,
-        deleteActive: job.deleteActive,
-        force: job.force,
-        setArchived: job.setArchived,
-      });
-      sendJson(res, 202, {
-        ok: true,
-        activeRoot: courseActiveRoot,
-        archiveRoot: courseArchiveRoot,
-        job,
+      const requestedCourse = safeSegment(body.course || "").toUpperCase();
+      await withOperationLock(`course:${requestedCourse}:lifecycle`, async () => {
+        const job = startCourseLifecycleJob({
+          action: body.action,
+          course: body.course,
+          actor,
+          deleteActive: Boolean(body.deleteActive),
+          force: Boolean(body.force),
+          setArchived: Boolean(body.setArchived),
+        });
+        await appendAdminHistory(job.course, {
+          actor,
+          action: "course-lifecycle-job-start",
+          jobId: job.id,
+          jobAction: job.action,
+          deleteActive: job.deleteActive,
+          force: job.force,
+          setArchived: job.setArchived,
+        });
+        sendJson(res, 202, {
+          ok: true,
+          activeRoot: courseActiveRoot,
+          archiveRoot: courseArchiveRoot,
+          job,
+        });
       });
       return true;
     }
@@ -4118,43 +4171,47 @@ async function handleAdminApi(req, res) {
         sendJson(res, 400, { ok: false, error: "Unsupported cleanup mode." });
         return true;
       }
-      const cleanup = await cleanupAdminUploads(course, mode);
-      await appendAdminHistory(course, {
-        actor: adminActor(req),
-        action: "cleanup",
-        mode,
-        removedBytes: cleanup.removedBytes,
-        removed: cleanup.removed,
-      });
-      sendJson(res, 200, {
-        ok: true,
-        course,
-        mode,
-        removedBytes: cleanup.removedBytes,
-        removed: cleanup.removed,
+      await withOperationLock(`course:${course}:write`, async () => {
+        const cleanup = await cleanupAdminUploads(course, mode);
+        await appendAdminHistory(course, {
+          actor: adminActor(req),
+          action: "cleanup",
+          mode,
+          removedBytes: cleanup.removedBytes,
+          removed: cleanup.removed,
+        });
+        sendJson(res, 200, {
+          ok: true,
+          course,
+          mode,
+          removedBytes: cleanup.removedBytes,
+          removed: cleanup.removed,
+        });
       });
       return true;
     }
 
     if (requestUrl.pathname === "/api/admin/generate-previews" && req.method === "POST") {
-      let preview = null;
-      let previewWarning = null;
-      try {
-        preview = await generateDocumentPreviews(course);
-      } catch (error) {
-        previewWarning = error instanceof Error ? error.message : String(error);
-      }
-      await appendAdminHistory(course, {
-        actor: adminActor(req),
-        action: "generate-previews",
-        preview: preview?.stdout?.trim() || null,
-        previewWarning,
-      });
-      sendJson(res, 200, {
-        ok: !previewWarning,
-        course,
-        preview: preview?.stdout?.trim() || null,
-        previewWarning,
+      await withOperationLock(`course:${course}:write`, async () => {
+        let preview = null;
+        let previewWarning = null;
+        try {
+          preview = await generateDocumentPreviews(course);
+        } catch (error) {
+          previewWarning = error instanceof Error ? error.message : String(error);
+        }
+        await appendAdminHistory(course, {
+          actor: adminActor(req),
+          action: "generate-previews",
+          preview: preview?.stdout?.trim() || null,
+          previewWarning,
+        });
+        sendJson(res, 200, {
+          ok: !previewWarning,
+          course,
+          preview: preview?.stdout?.trim() || null,
+          previewWarning,
+        });
       });
       return true;
     }
@@ -4329,8 +4386,10 @@ async function handleAdminApi(req, res) {
       const requestedCourse = safeSegment(body.course || course).toUpperCase();
       const importId = safeSegment(body.importId || "");
       if (!importId) throw new Error("Missing course package importId.");
-      const result = await commitCoursePackageImport({ course: requestedCourse, importId, actor: adminActor(req) });
-      sendJson(res, 200, result);
+      await withOperationLock(`course:${requestedCourse}:write`, async () => {
+        const result = await commitCoursePackageImport({ course: requestedCourse, importId, actor: adminActor(req) });
+        sendJson(res, 200, result);
+      });
       return true;
     }
 
@@ -4344,74 +4403,77 @@ async function handleAdminApi(req, res) {
       await mkdir(dirname(streamedPath), { recursive: true });
       await pipeline(req, createWriteStream(streamedPath));
 
-      let installedPath = upload.target;
-      const backups = [];
-      let batch = null;
-      if (upload.type === "ispring-zip") {
-        const result = await installIspringPackage({
-          course: upload.course,
-          sourceZip: upload.target,
-          lessonDir: upload.lessonDir,
-          label: originalFilename,
-        });
-        if (result.backupPath) backups.push(result.backupPath);
-        installedPath = result.packageDir;
-      } else if (upload.type === "ispring-batch-zip") {
-        batch = await installIspringBatch(upload, manifest);
-        backups.push(...batch.backups);
-        installedPath = upload.target;
-      } else {
-        const backupPath = await backupExistingPath(upload.course, upload.target);
-        if (backupPath) backups.push(backupPath);
-        await mkdir(dirname(upload.target), { recursive: true });
-        await rename(streamedPath, upload.target);
-      }
+      await withOperationLock(`course:${upload.course}:write`, async () => {
+        let installedPath = upload.target;
+        const backups = [];
+        let batch = null;
+        if (upload.type === "ispring-zip") {
+          const result = await installIspringPackage({
+            course: upload.course,
+            sourceZip: upload.target,
+            lessonDir: upload.lessonDir,
+            label: originalFilename,
+          });
+          if (result.backupPath) backups.push(result.backupPath);
+          installedPath = result.packageDir;
+        } else if (upload.type === "ispring-batch-zip") {
+          const latestManifest = await readManifest(upload.course);
+          batch = await installIspringBatch(upload, latestManifest);
+          backups.push(...batch.backups);
+          installedPath = upload.target;
+        } else {
+          const backupPath = await backupExistingPath(upload.course, upload.target);
+          if (backupPath) backups.push(backupPath);
+          await mkdir(dirname(upload.target), { recursive: true });
+          await rename(streamedPath, upload.target);
+        }
 
-      const rebuild = await rebuildManifest(upload.course);
-      let lightweightPreview = null;
-      let lightweightPreviewWarning = null;
-      if (!isSpringUpload && upload.course.toUpperCase() === "ENG3U") {
-        try {
-          lightweightPreview = await generateLightweightPreviews(upload.course);
-        } catch (error) {
-          lightweightPreviewWarning = error instanceof Error ? error.message : String(error);
+        const rebuild = await rebuildManifest(upload.course);
+        let lightweightPreview = null;
+        let lightweightPreviewWarning = null;
+        if (!isSpringUpload && upload.course.toUpperCase() === "ENG3U") {
+          try {
+            lightweightPreview = await generateLightweightPreviews(upload.course);
+          } catch (error) {
+            lightweightPreviewWarning = error instanceof Error ? error.message : String(error);
+          }
         }
-      }
-      let preview = null;
-      let previewWarning = null;
-      if (generatePreviewsAfterUploads && !isSpringUpload) {
-        try {
-          preview = await generateDocumentPreviews(upload.course);
-        } catch (error) {
-          previewWarning = error instanceof Error ? error.message : String(error);
+        let preview = null;
+        let previewWarning = null;
+        if (generatePreviewsAfterUploads && !isSpringUpload) {
+          try {
+            preview = await generateDocumentPreviews(upload.course);
+          } catch (error) {
+            previewWarning = error instanceof Error ? error.message : String(error);
+          }
         }
-      }
-      await appendAdminHistory(upload.course, {
-        actor: adminActor(req),
-        action: "upload",
-        type: upload.type,
-        filename: originalFilename,
-        installedPath,
-        batch,
-        backups,
-        bytes: Number(req.headers["content-length"] || 0),
-        lightweightPreview: lightweightPreview?.stdout?.trim() || null,
-        lightweightPreviewWarning,
-        preview: preview?.stdout?.trim() || null,
-        previewWarning,
-      });
-      sendJson(res, 200, {
-        ok: true,
-        course: upload.course,
-        type: upload.type,
-        path: installedPath,
-        batch,
-        backups,
-        manifest: rebuild.stdout.trim(),
-        lightweightPreview: lightweightPreview?.stdout?.trim() || null,
-        lightweightPreviewWarning,
-        preview: preview?.stdout?.trim() || null,
-        previewWarning,
+        await appendAdminHistory(upload.course, {
+          actor: adminActor(req),
+          action: "upload",
+          type: upload.type,
+          filename: originalFilename,
+          installedPath,
+          batch,
+          backups,
+          bytes: Number(req.headers["content-length"] || 0),
+          lightweightPreview: lightweightPreview?.stdout?.trim() || null,
+          lightweightPreviewWarning,
+          preview: preview?.stdout?.trim() || null,
+          previewWarning,
+        });
+        sendJson(res, 200, {
+          ok: true,
+          course: upload.course,
+          type: upload.type,
+          path: installedPath,
+          batch,
+          backups,
+          manifest: rebuild.stdout.trim(),
+          lightweightPreview: lightweightPreview?.stdout?.trim() || null,
+          lightweightPreviewWarning,
+          preview: preview?.stdout?.trim() || null,
+          previewWarning,
+        });
       });
       return true;
     }
