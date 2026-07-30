@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-23T09:38:40.589Z",
+  "generatedAt": "2026-07-30T07:57:34.393Z",
   "course": {
     "code": "ENG4U",
     "title": "ENG4U · English",
@@ -14,10 +14,10 @@
     "unitPlans": 4,
     "lessonPlanExpected": 26,
     "lessonPlans": 26,
-    "ispringEntries": 0,
-    "lessonDownloads": 0,
-    "textEntries": 0,
-    "textMaterials": 0
+    "ispringEntries": 26,
+    "lessonDownloads": 137,
+    "textEntries": 2,
+    "textMaterials": 2
   },
   "gaps": {
     "missingCourseOutline": true,
@@ -31,7 +31,7 @@
   },
   "sourceAudit": {
     "lessonCount": 26,
-    "ispringExpected": 0,
-    "ispringComplete": 0
+    "ispringExpected": 26,
+    "ispringComplete": 25
   }
 }

@@ -13,6 +13,7 @@
     "import:gap-files": "python tools/import_upload_gap_files.py",
     "import:ispring-packages": "python tools/import_ispring_packages.py",
     "import:public-domain-texts": "node scripts/import-public-domain-texts.mjs",
+    "patch:eng4u-texts": "node scripts/patch-eng4u-text-materials.mjs",
     "package:ispring-downloads": "python tools/package_ispring_downloads.py",
     "package:moodle-filter": "node scripts/package-moodle-filter-portalembed.mjs",
     "generate:previews": "node scripts/generate-document-previews.mjs",

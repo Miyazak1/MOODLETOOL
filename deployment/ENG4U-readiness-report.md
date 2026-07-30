@@ -1,6 +1,6 @@
 # ENG4U Readiness Report
 
-Generated: 2026-07-23T09:38:40.589Z
+Generated: 2026-07-30T07:57:34.393Z
 
 ## Summary
 
@@ -13,17 +13,17 @@ Generated: 2026-07-23T09:38:40.589Z
 | Lessons | 26 |
 | Unit plans | 4/4 |
 | Lesson plans | 26/26 |
-| iSpring entries | 0 |
-| Lesson downloads | 0 |
-| Text entries | 0 |
-| Text materials | 0 |
+| iSpring entries | 26 |
+| Lesson downloads | 137 |
+| Text entries | 2 |
+| Text materials | 2 |
 
 ## Source Audit
 
 | Item | Status |
 | --- | ---: |
 | Indexed lessons | 26 |
-| iSpring complete | 0/0 |
+| iSpring complete | 25/26 |
 | Unique resources covered | unknown/unknown |
 | Validated resources | unknown/unknown |
 
