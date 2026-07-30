@@ -75,6 +75,7 @@
     "smoke:external-resources": "node scripts/smoke-external-resources.mjs",
     "smoke:portal-auth": "node scripts/smoke-portal-auth.mjs",
     "smoke:login-rate-limit": "node scripts/smoke-login-rate-limit.mjs",
+    "smoke:cdn-assets": "node scripts/smoke-cdn-assets.mjs",
     "smoke:course-lifecycle": "node scripts/smoke-course-lifecycle.mjs",
     "smoke:package-baota": "node scripts/smoke-package-baota-release.mjs",
     "smoke:production-env": "node scripts/smoke-production-env-check.mjs",

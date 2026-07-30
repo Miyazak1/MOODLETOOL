@@ -40,6 +40,14 @@ const courseStatusPath = resolve(process.env.COURSE_STATUS_FILE || join(portalDa
 const courseActiveRoot = resolve(process.env.COURSE_ACTIVE_ROOT || join(workspaceRoot, "courseware"));
 const courseArchiveRoot = resolve(process.env.COURSE_ARCHIVE_ROOT || join(workspaceRoot, "courseware-archive"));
 const xAccelCoursewarePrefix = process.env.X_ACCEL_COURSEWARE_PREFIX || "";
+const coursewareAssetBaseUrl = String(process.env.COURSEWARE_ASSET_BASE_URL || "").replace(/\/+$/, "");
+const coursewareAssetMode = ["local", "hybrid", "cdn"].includes(String(process.env.COURSEWARE_ASSET_MODE || "").toLowerCase())
+  ? String(process.env.COURSEWARE_ASSET_MODE || "").toLowerCase()
+  : coursewareAssetBaseUrl
+    ? "hybrid"
+    : "local";
+const coursewareAssetPrefix = toPosixPath(process.env.COURSEWARE_ASSET_PREFIX || "courseware-active").replace(/\/+$/, "");
+const coursewareAssetRegistryPath = resolve(process.env.COURSEWARE_ASSET_REGISTRY_FILE || join(projectRoot, "deployment", "asset-registry.json"));
 const embedTokenSecret = process.env.EMBED_TOKEN_SECRET || adminSessionSecret || portalSessionSecret || "";
 const embedTokenMaxAgeSeconds = Number(process.env.EMBED_TOKEN_MAX_AGE_SECONDS || 3650 * 24 * 60 * 60);
 const embedPublicOrigin = process.env.EMBED_PUBLIC_ORIGIN || "";
@@ -218,6 +226,59 @@ function encodePathSegments(value) {
     .filter(Boolean)
     .map(encodeURIComponent)
     .join("/");
+}
+
+let coursewareAssetRegistryCache = null;
+
+function coursewareObjectKey(course, requestedPath) {
+  const coursePart = safeSegment(course).toUpperCase();
+  const resourcePath = encodePathSegments(requestedPath);
+  return [coursewareAssetPrefix, coursePart, resourcePath].filter(Boolean).join("/");
+}
+
+function generatedCoursewareAssetUrl(course, requestedPath) {
+  if (!coursewareAssetBaseUrl) return "";
+  return `${coursewareAssetBaseUrl}/${encodeURIComponent(safeSegment(course).toUpperCase())}/${encodePathSegments(requestedPath)}`;
+}
+
+function readCoursewareAssetRegistry() {
+  if (coursewareAssetRegistryCache) return coursewareAssetRegistryCache;
+  if (!existsSync(coursewareAssetRegistryPath)) {
+    coursewareAssetRegistryCache = { byKey: new Map(), missing: true };
+    return coursewareAssetRegistryCache;
+  }
+  try {
+    const data = JSON.parse(readFileSync(coursewareAssetRegistryPath, "utf8").replace(/^\uFEFF/, ""));
+    const byKey = new Map();
+    for (const asset of data.assets || []) {
+      if (asset?.objectKey) byKey.set(toPosixPath(asset.objectKey), asset);
+    }
+    coursewareAssetRegistryCache = { byKey, missing: false };
+  } catch (error) {
+    console.warn(`Failed to read COURSEWARE_ASSET_REGISTRY_FILE ${coursewareAssetRegistryPath}:`, error instanceof Error ? error.message : error);
+    coursewareAssetRegistryCache = { byKey: new Map(), missing: true };
+  }
+  return coursewareAssetRegistryCache;
+}
+
+function coursewareAssetUrl(course, requestedPath) {
+  if (!coursewareAssetBaseUrl || coursewareAssetMode === "local") return "";
+  const path = toPosixPath(requestedPath);
+  if (!path) return "";
+  if (coursewareAssetMode === "hybrid") {
+    const registry = readCoursewareAssetRegistry();
+    const asset = registry.byKey.get(coursewareObjectKey(course, path));
+    if (!asset) return "";
+    return asset.cdnUrl || generatedCoursewareAssetUrl(course, path);
+  }
+  return generatedCoursewareAssetUrl(course, path);
+}
+
+function coursewareAssetDirectoryHref(course, requestedPath) {
+  const assetUrl = coursewareAssetUrl(course, requestedPath);
+  if (!assetUrl) return "";
+  const slash = assetUrl.lastIndexOf("/");
+  return slash >= 0 ? `${assetUrl.slice(0, slash + 1)}` : "";
 }
 
 function sendRateLimitJson(res, retryAfterSeconds) {
@@ -1360,7 +1421,7 @@ async function sendEmbedCoursewareFile(req, res, course, requestedPath, payload)
   const filePath = ensureInside(root, join(root, toPosixPath(requestedPath)));
   if (payload.kind === "ispring" && basename(filePath).toLowerCase() === "presentation.html") {
     const html = await readFile(filePath, "utf8");
-    sendHtml(res, 200, injectIspringEmbedCompatibility(html, directoryHrefForRequest(req)));
+    sendHtml(res, 200, injectIspringEmbedCompatibility(html, coursewareAssetDirectoryHref(course, requestedPath) || directoryHrefForRequest(req)));
     return true;
   }
   await sendFile(req, res, filePath);
@@ -1540,11 +1601,12 @@ async function handleEmbedRequest(req, res, requestUrl) {
   }
 
   const tokenizedRawUrl = `/embed/t/${encodeURIComponent(token)}/${encodeURIComponent(course)}/${encodePathSegments(payload.path)}`;
+  const assetRawUrl = coursewareAssetUrl(course, payload.path) || tokenizedRawUrl;
   if (kind === "ispring") {
     const root = courseRoot(course);
     const filePath = ensureInside(root, join(root, toPosixPath(payload.path)));
     const html = await readFile(filePath, "utf8");
-    const rawBaseHref = tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1);
+    const rawBaseHref = coursewareAssetDirectoryHref(course, payload.path) || tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1);
     sendHtml(res, 200, injectIspringEmbedCompatibility(html, rawBaseHref));
     return true;
   }
@@ -1563,7 +1625,7 @@ async function handleEmbedRequest(req, res, requestUrl) {
   </head>
   <body>
     <video controls preload="metadata">
-      <source src="${htmlEscape(tokenizedRawUrl)}" type="${htmlEscape(videoType)}">
+      <source src="${htmlEscape(assetRawUrl)}" type="${htmlEscape(videoType)}">
     </video>
   </body>
 </html>`,

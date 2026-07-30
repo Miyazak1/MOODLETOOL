@@ -147,6 +147,27 @@ if (xAccelPrefix && (!xAccelPrefix.startsWith("/") || !xAccelPrefix.endsWith("/"
 }
 if (embedOrigin && !/^https:\/\//i.test(embedOrigin)) errors.push("EMBED_PUBLIC_ORIGIN should be the production HTTPS origin, for example https://courses.example.com.");
 
+const assetBaseUrl = values.COURSEWARE_ASSET_BASE_URL || "";
+const assetMode = String(values.COURSEWARE_ASSET_MODE || (assetBaseUrl ? "hybrid" : "local")).toLowerCase();
+if (!["local", "hybrid", "cdn"].includes(assetMode)) {
+  errors.push("COURSEWARE_ASSET_MODE must be local, hybrid, or cdn.");
+} else {
+  ok.push(`COURSEWARE_ASSET_MODE=${assetMode}.`);
+}
+if (assetBaseUrl) {
+  if (!/^https:\/\//i.test(assetBaseUrl)) errors.push("COURSEWARE_ASSET_BASE_URL should be an HTTPS CDN URL, for example https://cdn.example.com/courseware-active.");
+  else ok.push("COURSEWARE_ASSET_BASE_URL is set.");
+  if (!/\/courseware-active$/i.test(assetBaseUrl.replace(/\/+$/, ""))) {
+    warnings.push("COURSEWARE_ASSET_BASE_URL usually should end with /courseware-active to match sync:oss default object prefix.");
+  }
+}
+if (assetMode === "hybrid") {
+  const registryPath = values.COURSEWARE_ASSET_REGISTRY_FILE || "";
+  if (registryPath && !registryPath.startsWith("/")) errors.push("COURSEWARE_ASSET_REGISTRY_FILE should be an absolute Linux path when set.");
+  if (!registryPath) warnings.push("COURSEWARE_ASSET_MODE=hybrid will use deployment/asset-registry.json unless COURSEWARE_ASSET_REGISTRY_FILE is set.");
+}
+if (assetMode === "cdn" && !assetBaseUrl) errors.push("COURSEWARE_ASSET_BASE_URL is required when COURSEWARE_ASSET_MODE=cdn.");
+
 if ((values.ADMIN_UPLOADS_ENABLED || "") === "1") {
   requireValue("ADMIN_USERNAME");
   requirePassword("ADMIN_PASSWORD");
