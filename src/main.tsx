@@ -155,7 +155,10 @@ function unitLocalDownloadCount(unit: Unit): number {
   return unit.lessons.reduce((sum, lesson) => sum + lessonLocalDownloadCount(lesson), 0);
 }
 
-function localOpenProps(item: LinkableResource, baseUrl: string) {
+function localOpenProps(item: LinkableResource, baseUrl: string, moodleEmbed?: MoodleEmbedRow) {
+  if (moodleEmbed?.kind === "video" && moodleEmbed.embedUrl) {
+    return { href: moodleEmbed.embedUrl, rel: "noopener", target: "_blank" };
+  }
   return { href: resourcePreviewHref(item, baseUrl), rel: "noopener", target: "_blank" };
 }
 
@@ -305,7 +308,7 @@ function ResourceActions({
         {item.type ? <span className="resource-card-meta">{item.type.toUpperCase()}</span> : null}
       </span>
       <span className="resource-card-actions">
-        <a className="button-link view" {...localOpenProps(item, courseBaseUrl)}>
+        <a className="button-link view" {...localOpenProps(item, courseBaseUrl, moodleEmbed)}>
           查看
         </a>
         {showDownload && (

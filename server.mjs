@@ -1505,6 +1505,7 @@ async function handleEmbedRequest(req, res, requestUrl) {
     return true;
   }
   if (kind === "video") {
+    const videoType = mimeTypes[extname(payload.path || "").toLowerCase()] || "video/mp4";
     sendHtml(
       res,
       200,
@@ -1517,7 +1518,9 @@ async function handleEmbedRequest(req, res, requestUrl) {
     <style>html,body{margin:0;background:#000;}video{display:block;width:100%;height:100vh;max-height:100vh;background:#000;}</style>
   </head>
   <body>
-    <video controls preload="metadata" src="${htmlEscape(tokenizedRawUrl)}"></video>
+    <video controls preload="metadata">
+      <source src="${htmlEscape(tokenizedRawUrl)}" type="${htmlEscape(videoType)}">
+    </video>
   </body>
 </html>`,
     );
