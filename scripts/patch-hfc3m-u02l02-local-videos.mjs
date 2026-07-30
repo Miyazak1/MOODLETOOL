@@ -48,11 +48,11 @@ function htmlEscape(value, quote = false) {
 }
 
 function videoRelPath(video) {
-  return `localized-moodle-activities/video-placeholder/${video.file}`;
+  return `localized-moodle/video/U02L02/${video.file}`;
 }
 
 function pageVideoSrc(video) {
-  return `../../video-placeholder/${video.file}`;
+  return `../../../localized-moodle/video/U02L02/${video.file}`;
 }
 
 function renderVideoFigure(video) {

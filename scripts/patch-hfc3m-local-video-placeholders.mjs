@@ -55,15 +55,15 @@ function htmlEscape(value, quote = false) {
 }
 
 function videoRelPath(video) {
-  return `localized-moodle-activities/video-placeholder/${video.file}`;
+  return `localized-moodle/video/U01L01/${video.file}`;
 }
 
 function videoAbsPath(video) {
-  return join(courseRoot, "localized-moodle-activities", "video-placeholder", video.file);
+  return join(courseRoot, "localized-moodle", "video", "U01L01", video.file);
 }
 
 function pageVideoSrc(video) {
-  return `../../video-placeholder/${video.file.replaceAll("#", "%23")}`;
+  return `../../../localized-moodle/video/U01L01/${video.file.replaceAll("#", "%23")}`;
 }
 
 function renderVideoFigure(video) {

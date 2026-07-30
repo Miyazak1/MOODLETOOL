@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-07-30T04:52:13.412Z",
+  "generatedAt": "2026-07-30T04:59:04.812Z",
   "course": "HFC3M",
   "fileCount": 202,
-  "totalBytes": 272472913,
+  "totalBytes": 272472908,
   "totalGB": 0.25,
   "targetKeyPrefix": "HFC3M/",
   "files": [
@@ -10,7 +10,7 @@
       "key": "HFC3M/course-manifest.json",
       "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\course-manifest.json",
       "relativePath": "course-manifest.json",
-      "bytes": 112035,
+      "bytes": 111955,
       "roles": [
         "manifest"
       ]
@@ -91,7 +91,7 @@
       "key": "HFC3M/localized-moodle-activities/assign/U01L01-5650-03941de0bd/index.html",
       "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U01L01-5650-03941de0bd\\index.html",
       "relativePath": "localized-moodle-activities/assign/U01L01-5650-03941de0bd/index.html",
-      "bytes": 5753,
+      "bytes": 5798,
       "roles": [
         "assignment"
       ]
@@ -262,7 +262,7 @@
       "key": "HFC3M/localized-moodle-activities/assign/U02L02-5662-7920ed5e18/index.html",
       "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\assign\\U02L02-5662-7920ed5e18\\index.html",
       "relativePath": "localized-moodle-activities/assign/U02L02-5662-7920ed5e18/index.html",
-      "bytes": 4938,
+      "bytes": 4968,
       "roles": [
         "assignment"
       ]
@@ -1321,51 +1321,6 @@
       ]
     },
     {
-      "key": "HFC3M/localized-moodle-activities/video-placeholder/Basic Food Safety Chapter 2 Health and Hygiene .mp4",
-      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\Basic Food Safety Chapter 2 Health and Hygiene .mp4",
-      "relativePath": "localized-moodle-activities/video-placeholder/Basic Food Safety Chapter 2 Health and Hygiene .mp4",
-      "bytes": 24556885,
-      "roles": [
-        "video"
-      ]
-    },
-    {
-      "key": "HFC3M/localized-moodle-activities/video-placeholder/Basic Food Safety Chapter 5 Cleaning and Sanitizing.mp4",
-      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\Basic Food Safety Chapter 5 Cleaning and Sanitizing.mp4",
-      "relativePath": "localized-moodle-activities/video-placeholder/Basic Food Safety Chapter 5 Cleaning and Sanitizing.mp4",
-      "bytes": 19237690,
-      "roles": [
-        "video"
-      ]
-    },
-    {
-      "key": "HFC3M/localized-moodle-activities/video-placeholder/Food Trip Around the world.webm",
-      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\Food Trip Around the world.webm",
-      "relativePath": "localized-moodle-activities/video-placeholder/Food Trip Around the world.webm",
-      "bytes": 153822105,
-      "roles": [
-        "video"
-      ]
-    },
-    {
-      "key": "HFC3M/localized-moodle-activities/video-placeholder/Safety Tips for Handling and Preparing Common Food.mp4",
-      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\Safety Tips for Handling and Preparing Common Food.mp4",
-      "relativePath": "localized-moodle-activities/video-placeholder/Safety Tips for Handling and Preparing Common Food.mp4",
-      "bytes": 3422247,
-      "roles": [
-        "video"
-      ]
-    },
-    {
-      "key": "HFC3M/localized-moodle-activities/video-placeholder/World food.mp4",
-      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\video-placeholder\\World food.mp4",
-      "relativePath": "localized-moodle-activities/video-placeholder/World food.mp4",
-      "bytes": 21915903,
-      "roles": [
-        "video"
-      ]
-    },
-    {
       "key": "HFC3M/localized-moodle-activities/youtube/U02L03-2da747a327-Around-The-World-Season-3-Marathon.html",
       "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\youtube\\U02L03-2da747a327-Around-The-World-Season-3-Marathon.html",
       "relativePath": "localized-moodle-activities/youtube/U02L03-2da747a327-Around-The-World-Season-3-Marathon.html",
@@ -1388,6 +1343,51 @@
       "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle-activities\\youtube\\U02L05-d536f9c175-The-Geography-of-Spices-and-Herbs.html",
       "relativePath": "localized-moodle-activities/youtube/U02L05-d536f9c175-The-Geography-of-Spices-and-Herbs.html",
       "bytes": 1801,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle/video/U01L01/Basic Food Safety Chapter 2 Health and Hygiene .mp4",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle\\video\\U01L01\\Basic Food Safety Chapter 2 Health and Hygiene .mp4",
+      "relativePath": "localized-moodle/video/U01L01/Basic Food Safety Chapter 2 Health and Hygiene .mp4",
+      "bytes": 24556885,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle/video/U01L01/Basic Food Safety Chapter 5 Cleaning and Sanitizing.mp4",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle\\video\\U01L01\\Basic Food Safety Chapter 5 Cleaning and Sanitizing.mp4",
+      "relativePath": "localized-moodle/video/U01L01/Basic Food Safety Chapter 5 Cleaning and Sanitizing.mp4",
+      "bytes": 19237690,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle/video/U01L01/Safety Tips for Handling and Preparing Common Food.mp4",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle\\video\\U01L01\\Safety Tips for Handling and Preparing Common Food.mp4",
+      "relativePath": "localized-moodle/video/U01L01/Safety Tips for Handling and Preparing Common Food.mp4",
+      "bytes": 3422247,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle/video/U02L02/Food Trip Around the world.webm",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle\\video\\U02L02\\Food Trip Around the world.webm",
+      "relativePath": "localized-moodle/video/U02L02/Food Trip Around the world.webm",
+      "bytes": 153822105,
+      "roles": [
+        "video"
+      ]
+    },
+    {
+      "key": "HFC3M/localized-moodle/video/U02L02/World food.mp4",
+      "path": "D:\\工作文件\\SUNNYBROOK\\courseware\\HFC3M\\localized-moodle\\video\\U02L02\\World food.mp4",
+      "relativePath": "localized-moodle/video/U02L02/World food.mp4",
+      "bytes": 21915903,
       "roles": [
         "video"
       ]
