@@ -22,3 +22,4 @@ deployment/oss-sync-report.*
 deployment/video-bitrate-audit*
 deployment/video-optimization-plan.*
 deployment/video-optimization-report.*
+deployment/cdn-preheat-urls*
