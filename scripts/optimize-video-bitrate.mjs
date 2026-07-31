@@ -369,13 +369,16 @@ let releaseLocks = () => {};
 
 try {
   if (!dryRun) releaseLocks = acquireCourseLocks(planned.map((item) => item.course), { operation: "optimize-videos" });
-  for (const item of planned) {
+  for (let index = 0; index < planned.length; index += 1) {
+    const item = planned[index];
     if (dryRun) {
       items.push(item);
       continue;
     }
     try {
+      console.log(`Video optimization processing: ${index + 1}/${planned.length} ${formatNumber(item.originalSizeMb)} MB ${item.relativePath}`);
       items.push(applyItem(item));
+      console.log(`Video optimization progress: ${index + 1}/${planned.length} optimized, failed ${failed}`);
     } catch (error) {
       failed += 1;
       rmSync(item.outputPath, { force: true });

@@ -798,6 +798,30 @@
         line-height: 1.45;
         overflow-wrap: anywhere;
       }
+      .media-job-progress {
+        display: grid;
+        gap: 5px;
+        margin-top: 7px;
+      }
+      .media-job-progress .progress {
+        height: 8px;
+        margin: 0;
+      }
+      .media-job-progress-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .media-job-current {
+        max-width: 100%;
+        overflow: hidden;
+        color: var(--muted);
+        font-size: 12px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
       .media-job-actions {
         display: flex;
         flex-wrap: wrap;
@@ -2096,7 +2120,7 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       function mediaJobResult(job) {
         const raw = job.error || job.summary?.status || job.payload?.status || "";
-        if (!raw) return job.status === "running" ? "正在运行" : "";
+        if (!raw) return job.progress?.message || (job.status === "running" ? "正在运行" : "");
         const text = String(raw).replace(/\s+/g, " ").trim();
         const lockMatch = /Course\s+([A-Z0-9]+)\s+is locked/i.exec(text);
         if (lockMatch) return `${lockMatch[1]} 存在旧操作锁，清理锁后重试`;
@@ -2104,6 +2128,26 @@ pm2 restart ossd-course-portal --update-env</pre>
         if (/Video audit report is missing/i.test(text)) return "缺少视频审计报告";
         if (/ossutil/i.test(text) && /not available|not found/i.test(text)) return "ossutil 不可用";
         return text.length > 180 ? `${text.slice(0, 180)}...` : text;
+      }
+
+      function renderMediaJobProgress(job) {
+        const progress = job.progress || {};
+        const hasProgress = progress.percent !== null && progress.percent !== undefined;
+        const active = ["queued", "running", "cancelling"].includes(job.status);
+        if (!hasProgress && !active && !progress.message) return "";
+        const percentValue = hasProgress ? Math.max(0, Math.min(100, Number(progress.percent || 0))) : 0;
+        const count = progress.total ? `${progress.current || 0}/${progress.total}` : "";
+        const phase = progress.phase || job.type;
+        return `
+          <div class="media-job-progress">
+            <div class="media-job-progress-meta">
+              <span>${escapeHtml(phase)}</span>
+              <span>${escapeHtml(count || (hasProgress ? `${percentValue}%` : ""))}</span>
+            </div>
+            ${hasProgress ? `<div class="progress"><div class="progress-bar" style="width: ${percentValue}%"></div></div>` : ""}
+            ${progress.currentFile ? `<div class="media-job-current" title="${escapeHtml(progress.currentFile)}">${escapeHtml(progress.currentFile)}</div>` : ""}
+          </div>
+        `;
       }
 
       function renderMediaConfig(data) {
@@ -2177,6 +2221,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           .map((job) => {
             const jobId = escapeHtml(job.id);
             const result = mediaJobResult(job);
+            const progress = renderMediaJobProgress(job);
             return `
             <tr>
               <td><strong class="media-job-id" title="${jobId}">${jobId}</strong></td>
@@ -2185,7 +2230,10 @@ pm2 restart ossd-course-portal --update-env</pre>
               <td>${mediaStatusLabel(job.status)}</td>
               <td class="nowrap">${escapeHtml(shortDateTime(job.startedAt || job.requestedAt))}</td>
               <td class="nowrap">${escapeHtml(shortDateTime(job.finishedAt))}</td>
-              <td><span class="media-job-result" title="${escapeHtml(String(job.error || result || ""))}">${escapeHtml(result)}</span></td>
+              <td>
+                <span class="media-job-result" title="${escapeHtml(String(job.error || result || ""))}">${escapeHtml(result)}</span>
+                ${progress}
+              </td>
               <td>
                 <div class="media-job-actions">
                 <button class="small" type="button" data-media-job-action="log" data-job="${jobId}">日志</button>

@@ -749,6 +749,81 @@ function mediaJobScope(type, course) {
   return { scope: normalizedCourse ? "course" : "all", course: normalizedCourse };
 }
 
+function parseMediaJobProgress(job) {
+  const stdoutPath = mediaJobPath(job.id, "stdout.log");
+  const stderrPath = mediaJobPath(job.id, "stderr.log");
+  const stdout = readFileTail(stdoutPath, Math.min(mediaJobsLogTailBytes, 300000));
+  const stderr = readFileTail(stderrPath, Math.min(mediaJobsLogTailBytes, 120000));
+  const lines = `${stdout}\n${stderr}`.split(/\r?\n/).filter(Boolean);
+  const progress = {
+    phase: "",
+    current: 0,
+    total: 0,
+    percent: null,
+    failed: 0,
+    currentFile: "",
+    message: "",
+  };
+  for (const line of lines) {
+    const phaseMatch = /^==\s+(.+?)\s+==$/.exec(line.trim());
+    if (phaseMatch) {
+      progress.phase = phaseMatch[1];
+      progress.message = phaseMatch[1];
+      continue;
+    }
+    let match = /^OSS sync uploading:\s+(\d+)\/(\d+)\s+([0-9.]+)\s+MB\s+(.+)$/i.exec(line);
+    if (match) {
+      progress.phase = "OSS upload";
+      progress.current = Number(match[1]);
+      progress.total = Number(match[2]);
+      progress.percent = progress.total ? Math.max(0, Math.min(99, Math.round(((progress.current - 1) / progress.total) * 100))) : null;
+      progress.currentFile = match[4];
+      progress.message = `正在上传 ${match[1]}/${match[2]} · ${match[3]} MB`;
+      continue;
+    }
+    match = /^OSS sync progress:\s+(\d+)\/(\d+)\s+uploaded,\s+failed\s+(\d+)$/i.exec(line);
+    if (match) {
+      progress.phase = "OSS upload";
+      progress.current = Number(match[1]);
+      progress.total = Number(match[2]);
+      progress.failed = Number(match[3]);
+      progress.percent = progress.total ? Math.round((progress.current / progress.total) * 100) : null;
+      progress.message = `已上传 ${match[1]}/${match[2]}，失败 ${match[3]}`;
+      continue;
+    }
+    match = /^Video optimization processing:\s+(\d+)\/(\d+)\s+([0-9.]+)\s+MB\s+(.+)$/i.exec(line);
+    if (match) {
+      progress.phase = "Video optimization";
+      progress.current = Number(match[1]);
+      progress.total = Number(match[2]);
+      progress.percent = progress.total ? Math.max(0, Math.min(99, Math.round(((progress.current - 1) / progress.total) * 100))) : null;
+      progress.currentFile = match[4];
+      progress.message = `正在压缩 ${match[1]}/${match[2]} · ${match[3]} MB`;
+      continue;
+    }
+    match = /^Video optimization progress:\s+(\d+)\/(\d+)\s+optimized,\s+failed\s+(\d+)$/i.exec(line);
+    if (match) {
+      progress.phase = "Video optimization";
+      progress.current = Number(match[1]);
+      progress.total = Number(match[2]);
+      progress.failed = Number(match[3]);
+      progress.percent = progress.total ? Math.round((progress.current / progress.total) * 100) : null;
+      progress.message = `已压缩 ${match[1]}/${match[2]}，失败 ${match[3]}`;
+    }
+  }
+  if (job.status === "succeeded" || job.status === "warning") {
+    progress.percent = 100;
+    progress.message = job.status === "warning" ? "已完成，有提示" : "已完成";
+  } else if (job.status === "failed") {
+    progress.message = progress.message || "任务失败";
+  } else if (job.status === "queued") {
+    progress.message = "等待执行";
+  } else if (!progress.message && job.status === "running") {
+    progress.message = "正在运行";
+  }
+  return progress;
+}
+
 function publicMediaJob(job) {
   return {
     id: job.id,
@@ -763,6 +838,7 @@ function publicMediaJob(job) {
     pid: job.pid || null,
     exitCode: job.exitCode ?? null,
     params: job.params || {},
+    progress: parseMediaJobProgress(job),
     summary: job.summary || null,
     payload: job.payload || null,
     error: job.error || null,

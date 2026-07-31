@@ -358,6 +358,7 @@ try {
       continue;
     }
     try {
+      console.log(`OSS sync uploading: ${index + 1}/${planned.length} ${formatNumber(item.sizeMb)} MB ${item.objectKey}`);
       items.push(uploadItem(item));
       if ((index + 1) % 100 === 0 || index + 1 === planned.length) {
         console.log(`OSS sync progress: ${index + 1}/${planned.length} uploaded, failed ${failed}`);
