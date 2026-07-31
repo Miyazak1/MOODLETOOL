@@ -641,17 +641,42 @@ function parseJobPayload(stdout) {
   try {
     return JSON.parse(text);
   } catch {
-    const firstBrace = text.indexOf("{");
-    const lastBrace = text.lastIndexOf("}");
-    if (firstBrace >= 0 && lastBrace > firstBrace) {
+    const end = text.lastIndexOf("}");
+    if (end < 0) return null;
+    for (let start = text.lastIndexOf("{"); start >= 0; start = text.lastIndexOf("{", start - 1)) {
       try {
-        return JSON.parse(text.slice(firstBrace, lastBrace + 1));
+        return JSON.parse(text.slice(start, end + 1));
       } catch {
-        return null;
+        // Keep walking backward; media jobs print several JSON summaries.
       }
     }
     return null;
   }
+}
+
+function mediaJobSucceededStatus(job, stdout = "", stderr = "") {
+  const payloadStatus = String(job.payload?.status || "").toLowerCase();
+  if (payloadStatus === "ready-with-warnings" || payloadStatus === "warning") return "warning";
+  if (payloadStatus === "blocked" || payloadStatus === "failed") return "failed";
+  if (payloadStatus === "ready" || payloadStatus === "ok" || payloadStatus === "succeeded") return "succeeded";
+
+  const stepStatuses = Array.isArray(job.payload?.steps) ? job.payload.steps.map((step) => String(step?.status || "").toLowerCase()) : [];
+  if (stepStatuses.includes("failed")) return "failed";
+  if (stepStatuses.includes("warning")) return "warning";
+
+  const output = `${stdout}\n${stderr}`;
+  if (/^Media delivery readiness:\s*ready-with-warnings\b/im.test(output) || /^WARN:/m.test(output)) return "warning";
+  return "succeeded";
+}
+
+function effectiveMediaJobStatus(job) {
+  if (job.exitCode !== 0 || !["warning", "succeeded"].includes(job.status)) return job.status;
+  const stdoutPath = mediaJobPath(job.id, "stdout.log");
+  const stderrPath = mediaJobPath(job.id, "stderr.log");
+  const stdout = readFileTail(stdoutPath, Math.min(mediaJobsLogTailBytes, 300000));
+  const stderr = readFileTail(stderrPath, Math.min(mediaJobsLogTailBytes, 120000));
+  const payload = job.payload || parseJobPayload(stdout) || parseJobPayload(stderr);
+  return mediaJobSucceededStatus({ ...job, payload }, stdout, stderr);
 }
 
 function publicLifecycleJob(job) {
@@ -918,12 +943,13 @@ function parseMediaJobProgress(job) {
 }
 
 function publicMediaJob(job) {
+  const status = effectiveMediaJobStatus(job);
   return {
     id: job.id,
     type: job.type,
     scope: job.scope,
     course: job.course || null,
-    status: job.status,
+    status,
     requestedBy: job.requestedBy,
     requestedAt: job.requestedAt,
     startedAt: job.startedAt || null,
@@ -931,7 +957,7 @@ function publicMediaJob(job) {
     pid: job.pid || null,
     exitCode: job.exitCode ?? null,
     params: job.params || {},
-    progress: parseMediaJobProgress(job),
+    progress: parseMediaJobProgress({ ...job, status }),
     summary: job.summary || null,
     payload: job.payload || null,
     error: job.error || null,
@@ -1208,7 +1234,7 @@ function runMediaJob(job) {
     if (job.status === "cancelling") {
       job.status = "cancelled";
     } else if (exitCode === 0) {
-      job.status = /ready-with-warnings|warning/i.test(String(stdout + stderr)) ? "warning" : "succeeded";
+      job.status = mediaJobSucceededStatus(job, stdout, stderr);
     } else {
       job.status = "failed";
       job.error = stderr.slice(-4000) || stdout.slice(-4000) || `Media job exited ${exitCode}`;
