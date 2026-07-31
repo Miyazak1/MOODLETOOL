@@ -322,13 +322,17 @@ let failed = 0;
 let releaseLocks = () => {};
 try {
   if (!dryRun) releaseLocks = acquireCourseLocks(courses, { operation: "sync-oss" });
-  for (const item of planned) {
+  for (let index = 0; index < planned.length; index += 1) {
+    const item = planned[index];
     if (dryRun) {
       items.push(item);
       continue;
     }
     try {
       items.push(uploadItem(item));
+      if ((index + 1) % 100 === 0 || index + 1 === planned.length) {
+        console.log(`OSS sync progress: ${index + 1}/${planned.length} uploaded, failed ${failed}`);
+      }
     } catch (error) {
       failed += 1;
       items.push({
@@ -336,6 +340,7 @@ try {
         action: "failed",
         error: error instanceof Error ? error.message : String(error),
       });
+      console.error(`OSS sync failed: ${index + 1}/${planned.length} ${item.objectKey}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 } finally {

@@ -82,6 +82,7 @@
     "smoke:cdn-published": "node scripts/smoke-cdn-published.mjs",
     "smoke:cdn-published-local": "node scripts/smoke-cdn-published-local.mjs",
     "smoke:media-delivery-pipeline": "node scripts/smoke-media-delivery-pipeline.mjs",
+    "smoke:media-jobs": "node scripts/smoke-media-jobs.mjs",
     "smoke:course-locks": "node scripts/smoke-course-operation-locks.mjs",
     "smoke:course-lifecycle": "node scripts/smoke-course-lifecycle.mjs",
     "smoke:package-baota": "node scripts/smoke-package-baota-release.mjs",

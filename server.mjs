@@ -59,6 +59,18 @@ const maxDocumentUploadBytes = Number(process.env.ADMIN_MAX_DOCUMENT_MB || 50) *
 const maxIspringUploadBytes = Number(process.env.ADMIN_MAX_ISPRING_MB || 2048) * 1024 * 1024;
 const maxCoursePackageUploadBytes = Number(process.env.ADMIN_MAX_COURSE_PACKAGE_MB || 4096) * 1024 * 1024;
 const generatePreviewsAfterUploads = process.env.GENERATE_PREVIEWS_AFTER_UPLOADS === "1";
+const mediaJobsEnabled = process.env.MEDIA_JOBS_ENABLED === "1";
+const mediaJobsDataRoot = resolve(process.env.MEDIA_JOBS_DATA_ROOT || join(portalDataRoot, "media-jobs"));
+const mediaJobsIndexPath = join(mediaJobsDataRoot, "index.json");
+const mediaJobsMaxConcurrency = Math.max(1, Number(process.env.MEDIA_JOBS_MAX_CONCURRENCY || 1));
+const mediaJobsLogTailBytes = Math.max(16 * 1024, Number(process.env.MEDIA_JOBS_LOG_TAIL_BYTES || 200000));
+const mediaJobsAutoPublishAfterUpload = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_UPLOAD === "1";
+const mediaJobsAutoPublishAfterPackage = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_PACKAGE === "1";
+const mediaJobsAutoPublishAfterActivate = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_ACTIVATE === "1";
+const ossBucketUri = process.env.OSS_BUCKET_URI || "";
+const ffmpegPath = process.env.FFMPEG_PATH || "ffmpeg";
+const ffprobePath = process.env.FFPROBE_PATH || "ffprobe";
+const ossutilPath = process.env.OSSUTIL_PATH || "ossutil";
 const allowedExtensionsByType = {
   "course-outline": new Set([".docx", ".pdf", ".pptx", ".txt", ".md"]),
   "course-introduction": new Set([".docx", ".pdf", ".pptx", ".txt", ".md"]),
@@ -69,6 +81,11 @@ const allowedExtensionsByType = {
   "ispring-batch-zip": new Set([".zip"]),
 };
 const lifecycleJobs = new Map();
+const mediaJobs = new Map();
+const mediaJobQueue = [];
+const mediaJobChildren = new Map();
+let mediaJobsInitialized = false;
+let mediaJobsRunningCount = 0;
 const loginFailures = new Map();
 const coursePackageTasks = new Map();
 const coursePackageFinalizeTasks = new Map();
@@ -659,6 +676,496 @@ function listLifecycleJobs() {
     .map(publicLifecycleJob);
 }
 
+function mediaJobDir(id) {
+  return join(mediaJobsDataRoot, safeSegment(id));
+}
+
+function mediaJobPath(id, name) {
+  return join(mediaJobDir(id), name);
+}
+
+function readJsonFileSync(path, fallback = null) {
+  try {
+    if (!existsSync(path)) return fallback;
+    return JSON.parse(readFileSync(path, "utf8").replace(/^\uFEFF/, ""));
+  } catch {
+    return fallback;
+  }
+}
+
+function mediaConfig() {
+  return {
+    enabled: mediaJobsEnabled,
+    maxConcurrency: mediaJobsMaxConcurrency,
+    coursewareRoot: courseActiveRoot,
+    assetMode: coursewareAssetMode,
+    bucket: ossBucketUri,
+    cdnBaseUrl: coursewareAssetBaseUrl,
+    assetPrefix: coursewareAssetPrefix,
+    registryFile: coursewareAssetRegistryPath,
+    ffmpeg: ffmpegPath,
+    ffprobe: ffprobePath,
+    ossutil: ossutilPath,
+    autoPublishAfterUpload: mediaJobsAutoPublishAfterUpload,
+    autoPublishAfterPackage: mediaJobsAutoPublishAfterPackage,
+    autoPublishAfterActivate: mediaJobsAutoPublishAfterActivate,
+  };
+}
+
+function assertMediaJobsEnabled() {
+  if (!mediaJobsEnabled) {
+    throw new Error("Media jobs are disabled. Set MEDIA_JOBS_ENABLED=1 after the current command-line migration is complete.");
+  }
+}
+
+function normalizeMediaJobType(value) {
+  const type = String(value || "").trim().toLowerCase();
+  const allowed = new Set([
+    "audit-videos",
+    "optimize-videos",
+    "sync-oss",
+    "export-cdn-preheat",
+    "check-readiness",
+    "publish-course",
+    "publish-all",
+  ]);
+  if (!allowed.has(type)) throw new Error("Unsupported media job type.");
+  return type;
+}
+
+function mediaJobScope(type, course) {
+  if (type === "publish-all") return { scope: "all", course: "" };
+  if (type === "audit-videos" && !course) return { scope: "all", course: "" };
+  if (type === "optimize-videos" && !course) return { scope: "all", course: "" };
+  if (type === "sync-oss" && !course) return { scope: "all", course: "" };
+  const normalizedCourse = safeSegment(course || "").toUpperCase();
+  if (!normalizedCourse && !["check-readiness", "export-cdn-preheat"].includes(type)) {
+    throw new Error("Course is required for this media job type.");
+  }
+  return { scope: normalizedCourse ? "course" : "all", course: normalizedCourse };
+}
+
+function publicMediaJob(job) {
+  return {
+    id: job.id,
+    type: job.type,
+    scope: job.scope,
+    course: job.course || null,
+    status: job.status,
+    requestedBy: job.requestedBy,
+    requestedAt: job.requestedAt,
+    startedAt: job.startedAt || null,
+    finishedAt: job.finishedAt || null,
+    pid: job.pid || null,
+    exitCode: job.exitCode ?? null,
+    params: job.params || {},
+    summary: job.summary || null,
+    payload: job.payload || null,
+    error: job.error || null,
+    logs: {
+      stdout: mediaJobPath(job.id, "stdout.log"),
+      stderr: mediaJobPath(job.id, "stderr.log"),
+      report: mediaJobPath(job.id, "report.json"),
+    },
+  };
+}
+
+function persistMediaJobsIndex() {
+  const jobs = [...mediaJobs.values()]
+    .sort((a, b) => String(b.requestedAt).localeCompare(String(a.requestedAt)))
+    .map((job) => ({
+      id: job.id,
+      type: job.type,
+      scope: job.scope,
+      course: job.course || "",
+      status: job.status,
+      requestedBy: job.requestedBy,
+      requestedAt: job.requestedAt,
+      startedAt: job.startedAt || null,
+      finishedAt: job.finishedAt || null,
+      pid: job.pid || null,
+      exitCode: job.exitCode ?? null,
+      summary: job.summary || null,
+      error: job.error || null,
+    }))
+    .slice(0, 200);
+  writeJsonFile(mediaJobsIndexPath, { schemaVersion: 1, updatedAt: new Date().toISOString(), jobs });
+}
+
+function persistMediaJob(job) {
+  mkdirSync(mediaJobDir(job.id), { recursive: true });
+  writeJsonFile(mediaJobPath(job.id, "job.json"), job);
+  persistMediaJobsIndex();
+}
+
+function ensureMediaJobsLoaded() {
+  if (mediaJobsInitialized) return;
+  mediaJobsInitialized = true;
+  mkdirSync(mediaJobsDataRoot, { recursive: true });
+  const index = readJsonFileSync(mediaJobsIndexPath, { jobs: [] });
+  for (const item of index.jobs || []) {
+    const job = readJsonFileSync(mediaJobPath(item.id, "job.json"), null) || item;
+    if (!job?.id) continue;
+    if (job.status === "running" || job.status === "cancelling") {
+      job.status = "interrupted";
+      job.finishedAt = new Date().toISOString();
+      job.error = "The server restarted while this media job was running. Check OSS/CDN manually before retrying.";
+      job.pid = null;
+    }
+    mediaJobs.set(job.id, job);
+  }
+  for (const job of mediaJobs.values()) {
+    if (job.status === "queued") mediaJobQueue.push(job.id);
+  }
+  if (mediaJobs.size) persistMediaJobsIndex();
+}
+
+function listMediaJobs({ status = "", course = "", limit = 50 } = {}) {
+  ensureMediaJobsLoaded();
+  const normalizedCourse = safeSegment(course || "").toUpperCase();
+  return [...mediaJobs.values()]
+    .filter((job) => !status || job.status === status)
+    .filter((job) => !normalizedCourse || job.course === normalizedCourse)
+    .sort((a, b) => String(b.requestedAt).localeCompare(String(a.requestedAt)))
+    .slice(0, limit)
+    .map(publicMediaJob);
+}
+
+function appendCourseArg(commandArgs, course, all) {
+  if (all) commandArgs.push("--all");
+  else commandArgs.push("--course", course);
+}
+
+function mediaJobCommand(job) {
+  const p = job.params || {};
+  const all = job.scope === "all";
+  const course = job.course;
+  const coursewareRootArg = p.coursewareRoot || courseActiveRoot;
+  const bucketArg = p.bucket || ossBucketUri;
+  const cdnArg = p.cdnBaseUrl || coursewareAssetBaseUrl;
+  const assetModeArg = p.assetMode || coursewareAssetMode;
+  const registryArg = p.registry || coursewareAssetRegistryPath;
+  if (job.type === "audit-videos") {
+    const args = ["scripts/audit-video-bitrate.mjs"];
+    appendCourseArg(args, course, all);
+    args.push("--courseware-root", coursewareRootArg, "--ffprobe", p.ffprobe || ffprobePath);
+    return args;
+  }
+  if (job.type === "optimize-videos") {
+    const args = ["scripts/optimize-video-bitrate.mjs", p.applyOptimize === false ? "--dry-run" : "--apply"];
+    appendCourseArg(args, course, all);
+    args.push("--ffmpeg", p.ffmpeg || ffmpegPath, "--ffprobe", p.ffprobe || ffprobePath);
+    if (p.audit) args.push("--audit", p.audit);
+    return args;
+  }
+  if (job.type === "sync-oss") {
+    const args = ["scripts/sync-courseware-oss.mjs", p.applyOss === false ? "--dry-run" : "--apply"];
+    appendCourseArg(args, course, all);
+    args.push("--courseware-root", coursewareRootArg, "--bucket", bucketArg, "--cdn-base-url", cdnArg, "--registry", registryArg, "--ossutil", p.ossutil || ossutilPath);
+    return args;
+  }
+  if (job.type === "export-cdn-preheat") {
+    const args = ["scripts/export-cdn-preheat-list.mjs", "--registry", registryArg, "--cdn-base-url", cdnArg];
+    if (!all && course) args.push("--course", course);
+    return args;
+  }
+  if (job.type === "check-readiness") {
+    return [
+      "scripts/check-media-delivery-readiness.mjs",
+      "--bucket",
+      bucketArg,
+      "--cdn-base-url",
+      cdnArg,
+      "--asset-mode",
+      assetModeArg,
+      "--ffmpeg",
+      p.ffmpeg || ffmpegPath,
+      "--ffprobe",
+      p.ffprobe || ffprobePath,
+      "--ossutil",
+      p.ossutil || ossutilPath,
+    ];
+  }
+  const args = ["scripts/run-media-delivery-pipeline.mjs"];
+  appendCourseArg(args, course, job.type === "publish-all");
+  args.push("--courseware-root", coursewareRootArg);
+  if (p.applyOptimize !== false) args.push("--apply-optimize");
+  if (p.applyOss !== false) args.push("--apply-oss");
+  if (p.skipPreheat) args.push("--skip-preheat");
+  if (p.skipReadiness) args.push("--skip-readiness");
+  args.push(
+    "--bucket",
+    bucketArg,
+    "--cdn-base-url",
+    cdnArg,
+    "--asset-mode",
+    assetModeArg,
+    "--ffmpeg",
+    p.ffmpeg || ffmpegPath,
+    "--ffprobe",
+    p.ffprobe || ffprobePath,
+    "--ossutil",
+    p.ossutil || ossutilPath,
+  );
+  return args;
+}
+
+function createMediaJob({ type, course, actor, params = {} }) {
+  ensureMediaJobsLoaded();
+  assertMediaJobsEnabled();
+  const normalizedType = normalizeMediaJobType(type);
+  const scope = mediaJobScope(normalizedType, course);
+  const writeJobTypes = ["publish-course", "publish-all", "sync-oss", "optimize-videos"];
+  const runningPublish = [...mediaJobs.values()].find((job) => ["queued", "running", "cancelling"].includes(job.status) && writeJobTypes.includes(job.type));
+  if (runningPublish && writeJobTypes.includes(normalizedType)) {
+    throw new Error(`A media publish/sync job is already active (${runningPublish.id}). Wait for it to finish before starting another.`);
+  }
+  const id = `media-${Date.now()}-${randomBytes(4).toString("hex")}`;
+  const now = new Date().toISOString();
+  const job = {
+    schemaVersion: 1,
+    id,
+    type: normalizedType,
+    ...scope,
+    status: "queued",
+    requestedBy: actor || "unknown",
+    requestedAt: now,
+    startedAt: null,
+    finishedAt: null,
+    pid: null,
+    exitCode: null,
+    params: {
+      coursewareRoot: params.coursewareRoot || courseActiveRoot,
+      bucket: params.bucket || ossBucketUri,
+      cdnBaseUrl: params.cdnBaseUrl || coursewareAssetBaseUrl,
+      assetMode: params.assetMode || coursewareAssetMode,
+      registry: params.registry || coursewareAssetRegistryPath,
+      ffmpeg: params.ffmpeg || ffmpegPath,
+      ffprobe: params.ffprobe || ffprobePath,
+      ossutil: params.ossutil || ossutilPath,
+      applyOptimize: params.applyOptimize !== false,
+      applyOss: params.applyOss !== false,
+      skipPreheat: Boolean(params.skipPreheat),
+      skipReadiness: Boolean(params.skipReadiness),
+      audit: params.audit || "",
+    },
+    command: [],
+    summary: null,
+    payload: null,
+    error: null,
+  };
+  job.command = [process.execPath, ...mediaJobCommand(job)];
+  mediaJobs.set(id, job);
+  mediaJobQueue.push(id);
+  persistMediaJob(job);
+  runNextMediaJobs();
+  return publicMediaJob(job);
+}
+
+function tryCreateMediaJob({ type, course, actor, params = {} }) {
+  try {
+    if (!mediaJobsEnabled) return { job: null, warning: "" };
+    return { job: createMediaJob({ type, course, actor, params }), warning: "" };
+  } catch (error) {
+    return { job: null, warning: error instanceof Error ? error.message : String(error) };
+  }
+}
+
+function runNextMediaJobs() {
+  ensureMediaJobsLoaded();
+  while (mediaJobsRunningCount < mediaJobsMaxConcurrency && mediaJobQueue.length) {
+    const id = mediaJobQueue.shift();
+    const job = mediaJobs.get(id);
+    if (!job || job.status !== "queued") continue;
+    runMediaJob(job);
+  }
+}
+
+function runMediaJob(job) {
+  mediaJobsRunningCount += 1;
+  job.status = "running";
+  job.startedAt = new Date().toISOString();
+  job.command = [process.execPath, ...mediaJobCommand(job)];
+  persistMediaJob(job);
+  const stdoutPath = mediaJobPath(job.id, "stdout.log");
+  const stderrPath = mediaJobPath(job.id, "stderr.log");
+  const stdoutStream = createWriteStream(stdoutPath, { flags: "a" });
+  const stderrStream = createWriteStream(stderrPath, { flags: "a" });
+  const child = spawn(process.execPath, job.command.slice(1), {
+    cwd: projectRoot,
+    env: process.env,
+    windowsHide: true,
+  });
+  let settled = false;
+  mediaJobChildren.set(job.id, child);
+  job.pid = child.pid || null;
+  persistMediaJob(job);
+  child.stdout.on("data", (chunk) => stdoutStream.write(chunk));
+  child.stderr.on("data", (chunk) => stderrStream.write(chunk));
+  child.on("error", (error) => {
+    if (settled) return;
+    settled = true;
+    job.status = "failed";
+    job.error = error instanceof Error ? error.message : String(error);
+    job.finishedAt = new Date().toISOString();
+    stdoutStream.end();
+    stderrStream.end();
+    mediaJobChildren.delete(job.id);
+    mediaJobsRunningCount = Math.max(0, mediaJobsRunningCount - 1);
+    persistMediaJob(job);
+    runNextMediaJobs();
+  });
+  child.on("close", (exitCode) => {
+    if (settled) return;
+    settled = true;
+    stdoutStream.end();
+    stderrStream.end();
+    mediaJobChildren.delete(job.id);
+    mediaJobsRunningCount = Math.max(0, mediaJobsRunningCount - 1);
+    job.exitCode = exitCode;
+    job.finishedAt = new Date().toISOString();
+    const stdout = existsSync(stdoutPath) ? readFileSync(stdoutPath, "utf8") : "";
+    const stderr = existsSync(stderrPath) ? readFileSync(stderrPath, "utf8") : "";
+    job.payload = parseJobPayload(stdout) || parseJobPayload(stderr);
+    job.summary = job.payload?.summaries || job.payload?.summary || job.payload || null;
+    if (job.status === "cancelling") {
+      job.status = "cancelled";
+    } else if (exitCode === 0) {
+      job.status = /ready-with-warnings|warning/i.test(String(stdout + stderr)) ? "warning" : "succeeded";
+    } else {
+      job.status = "failed";
+      job.error = stderr.slice(-4000) || stdout.slice(-4000) || `Media job exited ${exitCode}`;
+    }
+    writeJsonFile(mediaJobPath(job.id, "report.json"), publicMediaJob(job));
+    persistMediaJob(job);
+    runNextMediaJobs();
+  });
+}
+
+function cancelMediaJob(id) {
+  ensureMediaJobsLoaded();
+  const job = mediaJobs.get(safeSegment(id));
+  if (!job) throw new Error("Media job not found.");
+  if (job.status === "queued") {
+    job.status = "cancelled";
+    job.finishedAt = new Date().toISOString();
+    persistMediaJob(job);
+    return publicMediaJob(job);
+  }
+  if (job.status !== "running") return publicMediaJob(job);
+  job.status = "cancelling";
+  persistMediaJob(job);
+  const child = mediaJobChildren.get(job.id);
+  if (child) child.kill("SIGTERM");
+  return publicMediaJob(job);
+}
+
+function retryMediaJob(id, actor) {
+  ensureMediaJobsLoaded();
+  const job = mediaJobs.get(safeSegment(id));
+  if (!job) throw new Error("Media job not found.");
+  if (!["failed", "warning", "cancelled", "interrupted"].includes(job.status)) {
+    throw new Error("Only failed, warning, cancelled, or interrupted media jobs can be retried.");
+  }
+  return createMediaJob({ type: job.type, course: job.course, actor, params: job.params });
+}
+
+function readFileTail(path, maxBytes = mediaJobsLogTailBytes) {
+  if (!existsSync(path)) return "";
+  const buffer = readFileSync(path);
+  return buffer.slice(Math.max(0, buffer.length - maxBytes)).toString("utf8");
+}
+
+function mediaJobLog(id, stream, tailLines) {
+  const job = mediaJobs.get(safeSegment(id));
+  if (!job) throw new Error("Media job not found.");
+  const filename = stream === "stderr" ? "stderr.log" : "stdout.log";
+  const text = readFileTail(mediaJobPath(job.id, filename));
+  const lines = Number(tailLines || 0);
+  return lines > 0 ? text.split(/\r?\n/).slice(-lines).join("\n") : text;
+}
+
+function registryAssetSet() {
+  const parsed = readJsonFileSync(coursewareAssetRegistryPath, { assets: [] });
+  const assets = Array.isArray(parsed?.assets) ? parsed.assets : [];
+  return new Set(assets.map((item) => typeof item === "string" ? item : item?.objectKey).filter(Boolean));
+}
+
+function walkCourseFilesSync(root, result = []) {
+  if (!existsSync(root)) return result;
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    if (entry.name === "_admin_uploads" || entry.name.startsWith(".")) continue;
+    const full = join(root, entry.name);
+    if (entry.isDirectory()) walkCourseFilesSync(full, result);
+    else if (entry.isFile()) result.push(full);
+  }
+  return result;
+}
+
+async function mediaCourseStatus(courseEntry, assetSet) {
+  const code = safeSegment(courseEntry.code || courseEntry).toUpperCase();
+  const root = courseRoot(code);
+  const files = walkCourseFilesSync(root);
+  const videoExts = new Set([".mp4", ".webm", ".mov", ".m4v"]);
+  let totalBytes = 0;
+  let videoCount = 0;
+  for (const file of files) {
+    try {
+      const itemStat = await stat(file);
+      totalBytes += itemStat.size;
+      if (videoExts.has(extname(file).toLowerCase())) videoCount += 1;
+    } catch {
+      // Ignore files that change during upload/import.
+    }
+  }
+  const prefix = `${coursewareAssetPrefix}/${code}/`;
+  const published = files.filter((file) => {
+    const objectKey = `${prefix}${toPosixPath(relative(root, file))}`;
+    return assetSet.has(objectKey);
+  }).length;
+  const latestJob = [...mediaJobs.values()]
+    .filter((job) => job.course === code || job.scope === "all")
+    .sort((a, b) => String(b.requestedAt).localeCompare(String(a.requestedAt)))[0] || null;
+  return {
+    code,
+    title: courseEntry.title || "",
+    fileCount: files.length,
+    totalBytes,
+    totalMb: totalBytes / 1024 / 1024,
+    videoCount,
+    publishedCount: published,
+    unpublishedCount: Math.max(0, files.length - published),
+    cdnCoverage: files.length ? published / files.length : 0,
+    latestJob: latestJob ? publicMediaJob(latestJob) : null,
+  };
+}
+
+async function mediaCoursesStatus() {
+  ensureMediaJobsLoaded();
+  const catalog = await readCourseCatalog();
+  const assetSet = registryAssetSet();
+  const courses = await Promise.all((catalog.courses || []).map((courseEntry) => mediaCourseStatus(courseEntry, assetSet)));
+  return {
+    ok: true,
+    generatedAt: new Date().toISOString(),
+    config: mediaConfig(),
+    registry: {
+      file: coursewareAssetRegistryPath,
+      assetCount: assetSet.size,
+      exists: existsSync(coursewareAssetRegistryPath),
+    },
+    courses,
+    summary: {
+      courses: courses.length,
+      files: courses.reduce((sum, course) => sum + course.fileCount, 0),
+      totalBytes: courses.reduce((sum, course) => sum + course.totalBytes, 0),
+      published: courses.reduce((sum, course) => sum + course.publishedCount, 0),
+      unpublished: courses.reduce((sum, course) => sum + course.unpublishedCount, 0),
+      runningJobs: [...mediaJobs.values()].filter((job) => ["queued", "running", "cancelling"].includes(job.status)).length,
+    },
+  };
+}
+
 function runningLifecycleJobForCourse(course) {
   const code = safeSegment(course).toUpperCase();
   return [...lifecycleJobs.values()].find((job) => job.course === code && job.status === "running") || null;
@@ -733,6 +1240,10 @@ function startCourseLifecycleJob({ action, course, actor, deleteActive = false, 
       job.status = "completed";
       const nextStatus = normalizedAction === "activate" ? "active" : setArchived || deleteActive ? "archived" : "active";
       setCourseLifecycleStatus(code, nextStatus, actor, `job ${id} completed`);
+      if (normalizedAction === "activate" && mediaJobsAutoPublishAfterActivate) {
+        const media = tryCreateMediaJob({ type: "publish-course", course: code, actor });
+        job.payload = { ...(job.payload || {}), mediaJob: media.job || null, mediaJobWarning: media.warning || null };
+      }
     } else {
       job.status = "error";
       job.error = job.stderr || job.stdout || `${script} exited ${codeNumber}`;
@@ -3921,6 +4432,88 @@ async function handleAdminApi(req, res) {
       return true;
     }
 
+    if (requestUrl.pathname === "/api/admin/media/config" && req.method === "GET") {
+      ensureMediaJobsLoaded();
+      sendJson(res, 200, {
+        ok: true,
+        config: mediaConfig(),
+        jobs: {
+          running: [...mediaJobs.values()].filter((job) => ["queued", "running", "cancelling"].includes(job.status)).map(publicMediaJob),
+        },
+      });
+      return true;
+    }
+
+    if (requestUrl.pathname === "/api/admin/media/courses" && req.method === "GET") {
+      sendJson(res, 200, await mediaCoursesStatus());
+      return true;
+    }
+
+    if (requestUrl.pathname === "/api/admin/media/jobs" && req.method === "GET") {
+      sendJson(res, 200, {
+        ok: true,
+        config: mediaConfig(),
+        jobs: listMediaJobs({
+          status: requestUrl.searchParams.get("status") || "",
+          course: requestUrl.searchParams.get("course") || "",
+          limit: Number(requestUrl.searchParams.get("limit") || 50),
+        }),
+      });
+      return true;
+    }
+
+    if (requestUrl.pathname === "/api/admin/media/jobs" && req.method === "POST") {
+      const body = await readJsonBody(req, 64 * 1024);
+      const job = createMediaJob({
+        type: body.type,
+        course: body.course,
+        actor: adminActor(req),
+        params: body,
+      });
+      if (job.course) {
+        await appendAdminHistory(job.course, {
+          actor: adminActor(req),
+          action: "media-job-start",
+          jobId: job.id,
+          jobType: job.type,
+          scope: job.scope,
+          course: job.course,
+        });
+      }
+      sendJson(res, 202, { ok: true, job });
+      return true;
+    }
+
+    const mediaJobMatch = /^\/api\/admin\/media\/jobs\/([^/]+)(?:\/([^/]+))?$/.exec(requestUrl.pathname);
+    if (mediaJobMatch) {
+      const jobId = mediaJobMatch[1];
+      const action = mediaJobMatch[2] || "";
+      ensureMediaJobsLoaded();
+      if (!action && req.method === "GET") {
+        const job = mediaJobs.get(safeSegment(jobId));
+        sendJson(res, job ? 200 : 404, job ? { ok: true, job: publicMediaJob(job) } : { ok: false, error: "Media job not found." });
+        return true;
+      }
+      if (action === "log" && req.method === "GET") {
+        const stream = requestUrl.searchParams.get("stream") === "stderr" ? "stderr" : "stdout";
+        sendJson(res, 200, {
+          ok: true,
+          id: safeSegment(jobId),
+          stream,
+          text: mediaJobLog(jobId, stream, requestUrl.searchParams.get("tail") || 200),
+        });
+        return true;
+      }
+      if (action === "cancel" && req.method === "POST") {
+        sendJson(res, 200, { ok: true, job: cancelMediaJob(jobId) });
+        return true;
+      }
+      if (action === "retry" && req.method === "POST") {
+        sendJson(res, 202, { ok: true, job: retryMediaJob(jobId, adminActor(req)) });
+        return true;
+      }
+    }
+
     if (requestUrl.pathname === "/api/admin/readiness" && req.method === "GET") {
       const catalog = await readCourseCatalog();
       const courses = await Promise.all((catalog.courses || []).map((courseEntry) => courseReadinessRecord(courseEntry)));
@@ -4451,7 +5044,14 @@ async function handleAdminApi(req, res) {
       if (!importId) throw new Error("Missing course package importId.");
       await withOperationLock(`course:${requestedCourse}:write`, async () => {
         const result = await commitCoursePackageImport({ course: requestedCourse, importId, actor: adminActor(req) });
-        sendJson(res, 200, result);
+        const media = mediaJobsAutoPublishAfterPackage
+          ? tryCreateMediaJob({ type: "publish-course", course: requestedCourse, actor: adminActor(req) })
+          : { job: null, warning: "" };
+        sendJson(res, 200, {
+          ...result,
+          mediaJob: media.job,
+          mediaJobWarning: media.warning || null,
+        });
       });
       return true;
     }
@@ -4524,6 +5124,9 @@ async function handleAdminApi(req, res) {
           preview: preview?.stdout?.trim() || null,
           previewWarning,
         });
+        const media = mediaJobsAutoPublishAfterUpload
+          ? tryCreateMediaJob({ type: "publish-course", course: upload.course, actor: adminActor(req) })
+          : { job: null, warning: "" };
         sendJson(res, 200, {
           ok: true,
           course: upload.course,
@@ -4536,6 +5139,8 @@ async function handleAdminApi(req, res) {
           lightweightPreviewWarning,
           preview: preview?.stdout?.trim() || null,
           previewWarning,
+          mediaJob: media.job,
+          mediaJobWarning: media.warning || null,
         });
       });
       return true;

@@ -479,6 +479,12 @@
       .upload-status strong {
         color: #123d67;
       }
+      .upload-status pre {
+        max-height: 24rem;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
       .feedback-bar {
         display: grid;
         gap: 6px;
@@ -863,6 +869,7 @@
           <button type="button" data-admin-nav="upload" data-auth-required="1" disabled>单文件上传</button>
           <button type="button" data-admin-nav="package" data-auth-required="1" disabled>整课 ZIP 导入</button>
           <button type="button" data-admin-nav="lifecycle" data-auth-required="1" disabled>启用 / 归档</button>
+          <button type="button" data-admin-nav="media" data-auth-required="1" disabled>媒体发布</button>
           <button type="button" data-admin-nav="maintenance" data-auth-required="1" disabled>维护</button>
           <div class="nav-group-label">全局管理</div>
           <button type="button" data-admin-nav="storage" data-auth-required="1" disabled>存储空间</button>
@@ -1067,6 +1074,31 @@
         <div class="upload-status" id="singleUploadStatus" hidden>
           <strong id="singleUploadStatusTitle">等待上传</strong>
           <div class="meta-line" id="singleUploadStatusDetail"></div>
+        </div>
+      </section>
+
+      <section class="admin-panel auth-required" data-admin-panel="media" hidden>
+        <div class="panel-heading">
+          <div>
+            <h2>媒体发布任务中心</h2>
+            <p class="meta-line">把当前课程或全部课程发布到 OSS/CDN。任务会自动审计视频、压缩候选视频、同步 OSS、更新 registry，并保留日志。</p>
+          </div>
+          <button id="refreshMediaButton" type="button">刷新媒体状态</button>
+        </div>
+        <div class="stats" id="mediaConfigStats" hidden></div>
+        <div class="notice" id="mediaNotice" hidden></div>
+        <div class="actions">
+          <button class="primary" id="publishCurrentCourseButton" type="button">发布当前课程</button>
+          <button id="auditCurrentCourseButton" type="button">审计当前课程</button>
+          <button id="syncCurrentCourseButton" type="button">只上传当前课程</button>
+          <button id="publishAllMediaButton" type="button">全量完整发布</button>
+          <button id="readinessMediaButton" type="button">检查媒体配置</button>
+        </div>
+        <div id="mediaCourseTable" hidden></div>
+        <div id="mediaJobsTable" hidden></div>
+        <div id="mediaJobLogPanel" class="upload-status" hidden>
+          <strong id="mediaJobLogTitle">任务日志</strong>
+          <pre id="mediaJobLogText"></pre>
         </div>
       </section>
 
@@ -1334,6 +1366,13 @@ pm2 restart ossd-course-portal --update-env</pre>
       const courseLifecycleNotice = document.querySelector("#courseLifecycleNotice");
       const selectedCourseBanner = document.querySelector("#selectedCourseBanner");
       const courseLifecycleJobs = document.querySelector("#courseLifecycleJobs");
+      const mediaConfigStats = document.querySelector("#mediaConfigStats");
+      const mediaNotice = document.querySelector("#mediaNotice");
+      const mediaCourseTable = document.querySelector("#mediaCourseTable");
+      const mediaJobsTable = document.querySelector("#mediaJobsTable");
+      const mediaJobLogPanel = document.querySelector("#mediaJobLogPanel");
+      const mediaJobLogTitle = document.querySelector("#mediaJobLogTitle");
+      const mediaJobLogText = document.querySelector("#mediaJobLogText");
       const courseNavigationLinks = [
         document.querySelector("#topCourseLink"),
         document.querySelector("#sidebarCourseLink"),
@@ -1358,6 +1397,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       let portalUsersData = { users: [], courses: [] };
       let courseLifecycleData = { courses: [] };
       let courseLifecycleJobsData = { jobs: [] };
+      let mediaData = { courses: [], jobs: [], config: {} };
       let storageData = null;
       let selectedLifecycleCourse = "";
       let adminAuthenticated = false;
@@ -1541,6 +1581,9 @@ pm2 restart ossd-course-portal --update-env</pre>
         renderAdminPanels();
         if (activeAdminPanel === "storage" && adminAuthenticated) {
           readStorage({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+        }
+        if (activeAdminPanel === "media" && adminAuthenticated) {
+          readMedia({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
         }
       }
 
@@ -1952,6 +1995,133 @@ pm2 restart ossd-course-portal --update-env</pre>
           <p class="meta-line">Active root: ${escapeHtml(data.activeRoot || "")}<br />Archive root: ${escapeHtml(data.archiveRoot || "")}</p>
         `;
         courseLifecycleJobs.hidden = false;
+      }
+
+      function mediaStatusLabel(status) {
+        const value = String(status || "unknown");
+        const className = ["succeeded", "ready"].includes(value)
+          ? "status-ok"
+          : ["failed", "interrupted", "cancelled"].includes(value)
+            ? "status-missing"
+            : "warn";
+        return `<span class="${className}">${escapeHtml(value)}</span>`;
+      }
+
+      function percent(value) {
+        return `${Math.round(Number(value || 0) * 100)}%`;
+      }
+
+      function renderMediaConfig(data) {
+        const config = data.config || {};
+        const summary = data.summary || {};
+        mediaConfigStats.innerHTML = [
+          ["任务中心", config.enabled ? "已启用" : "未启用"],
+          ["Asset mode", config.assetMode || ""],
+          ["OSS", config.bucket || "未配置"],
+          ["CDN", config.cdnBaseUrl || "未配置"],
+          ["Registry", `${data.registry?.assetCount || 0} assets`],
+          ["本地文件", summary.files || 0],
+          ["已发布", summary.published || 0],
+          ["未发布", summary.unpublished || 0],
+          ["运行中任务", summary.runningJobs || 0],
+        ].map(([label, value]) => `<div class="stat"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+        mediaConfigStats.hidden = false;
+        mediaNotice.hidden = Boolean(config.enabled);
+        if (!config.enabled) {
+          mediaNotice.innerHTML = "媒体任务中心当前未启用。现有命令行迁移完成后，在生产环境设置 <strong>MEDIA_JOBS_ENABLED=1</strong> 再允许后台创建任务。";
+        }
+      }
+
+      function renderMediaCourses(data) {
+        const rows = (data.courses || [])
+          .map((course) => `
+            <tr>
+              <td><strong>${escapeHtml(course.code)}</strong></td>
+              <td>${escapeHtml(course.title || "")}</td>
+              <td class="nowrap">${formatBytes(course.totalBytes || 0)}</td>
+              <td>${course.fileCount || 0}</td>
+              <td>${course.videoCount || 0}</td>
+              <td>${course.publishedCount || 0}</td>
+              <td>${course.unpublishedCount || 0}</td>
+              <td>${percent(course.cdnCoverage)}</td>
+              <td>${course.latestJob ? mediaStatusLabel(course.latestJob.status) : '<span class="meta-line">none</span>'}</td>
+              <td class="nowrap">
+                <button class="small" type="button" data-media-course-action="publish" data-course="${escapeHtml(course.code)}">发布</button>
+                <button class="small" type="button" data-media-course-action="audit" data-course="${escapeHtml(course.code)}">审计</button>
+              </td>
+            </tr>
+          `)
+          .join("");
+        mediaCourseTable.innerHTML = `
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Title</th>
+                  <th>Size</th>
+                  <th>Files</th>
+                  <th>Videos</th>
+                  <th>CDN</th>
+                  <th>Local</th>
+                  <th>Coverage</th>
+                  <th>Latest</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>${rows || '<tr><td colspan="10">No media courses found.</td></tr>'}</tbody>
+            </table>
+          </div>
+        `;
+        mediaCourseTable.hidden = false;
+      }
+
+      function renderMediaJobs(data) {
+        const rows = (data.jobs || [])
+          .map((job) => `
+            <tr>
+              <td><strong>${escapeHtml(job.id)}</strong></td>
+              <td>${escapeHtml(job.type)}</td>
+              <td>${escapeHtml(job.course || job.scope || "")}</td>
+              <td>${mediaStatusLabel(job.status)}</td>
+              <td>${escapeHtml(job.requestedAt || "")}</td>
+              <td>${escapeHtml(job.finishedAt || "")}</td>
+              <td>${escapeHtml(job.error || job.summary?.status || job.payload?.status || "")}</td>
+              <td class="nowrap">
+                <button class="small" type="button" data-media-job-action="log" data-job="${escapeHtml(job.id)}">日志</button>
+                ${job.status === "running" ? `<button class="small" type="button" data-media-job-action="cancel" data-job="${escapeHtml(job.id)}">取消</button>` : ""}
+                ${["failed", "warning", "cancelled", "interrupted"].includes(job.status) ? `<button class="small" type="button" data-media-job-action="retry" data-job="${escapeHtml(job.id)}">重试</button>` : ""}
+              </td>
+            </tr>
+          `)
+          .join("");
+        mediaJobsTable.innerHTML = `
+          <h3>媒体任务</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Job</th>
+                  <th>Type</th>
+                  <th>Scope</th>
+                  <th>Status</th>
+                  <th>Started</th>
+                  <th>Finished</th>
+                  <th>Result</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>${rows || '<tr><td colspan="8">No media jobs yet.</td></tr>'}</tbody>
+            </table>
+          </div>
+        `;
+        mediaJobsTable.hidden = false;
+      }
+
+      function renderMedia(data) {
+        mediaData = data;
+        renderMediaConfig(data);
+        renderMediaCourses(data);
       }
 
       function selectedUnitRecord() {
@@ -2736,6 +2906,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           await readCourseLifecycle({ writeOutput: false });
           await readCourseLifecycleJobs({ writeOutput: false });
           await readStorage({ writeOutput: false });
+          await readMedia({ writeOutput: false });
           await restoreCoursePackageTask({ writeOutput: false });
           write(`已登录：${data.username}`);
         }
@@ -2760,6 +2931,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           await readCourseLifecycle({ writeOutput: false });
           await readCourseLifecycleJobs({ writeOutput: false });
           await readStorage({ writeOutput: false });
+          await readMedia({ writeOutput: false });
           await restoreCoursePackageTask({ writeOutput: false });
         }
         write(data);
@@ -2939,6 +3111,103 @@ pm2 restart ossd-course-portal --update-env</pre>
         return data;
       }
 
+      async function readMedia({ writeOutput = true } = {}) {
+        const [coursesResponse, jobsResponse] = await Promise.all([
+          fetch("/api/admin/media/courses", { credentials: "same-origin" }),
+          fetch("/api/admin/media/jobs?limit=50", { credentials: "same-origin" }),
+        ]);
+        const coursesData = await coursesResponse.json();
+        const jobsData = await jobsResponse.json();
+        const data = {
+          ...(coursesData.ok ? coursesData : {}),
+          jobs: jobsData.jobs || [],
+          jobsOk: jobsData.ok,
+          jobsError: jobsData.error || "",
+        };
+        if (coursesData.ok) renderMedia(data);
+        renderMediaJobs({ jobs: jobsData.jobs || [] });
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function createMediaJob(payload) {
+        const response = await fetch("/api/admin/media/jobs", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        write(data);
+        if (!response.ok || !data.ok) throw new Error(responseMessage(data, `媒体任务创建失败：HTTP ${response.status}`));
+        await readMedia({ writeOutput: false });
+        return data;
+      }
+
+      async function publishCurrentCourse() {
+        if (!confirm(`确认发布 ${fields.course.value} 到 OSS/CDN？系统会审计、压缩候选视频并上传该课程资源。`)) {
+          return { canceled: true, message: "已取消发布当前课程。" };
+        }
+        return createMediaJob({ type: "publish-course", course: fields.course.value });
+      }
+
+      async function auditCurrentCourse() {
+        return createMediaJob({ type: "audit-videos", course: fields.course.value });
+      }
+
+      async function syncCurrentCourse() {
+        if (!confirm(`确认只上传 ${fields.course.value} 到 OSS/CDN？不会重新压缩视频。`)) {
+          return { canceled: true, message: "已取消上传当前课程。" };
+        }
+        return createMediaJob({ type: "sync-oss", course: fields.course.value });
+      }
+
+      async function publishAllMedia() {
+        if (!confirm("确认全量完整发布所有课程？这会压缩候选视频并上传全部资源到 OSS/CDN，可能运行很久。")) {
+          return { canceled: true, message: "已取消全量发布。" };
+        }
+        return createMediaJob({ type: "publish-all" });
+      }
+
+      async function checkMediaReadiness() {
+        return createMediaJob({ type: "check-readiness" });
+      }
+
+      async function showMediaJobLog(jobId) {
+        const response = await fetch(`/api/admin/media/jobs/${encodeURIComponent(jobId)}/log?stream=stdout&tail=240`, { credentials: "same-origin" });
+        const data = await response.json();
+        if (!data.ok) throw new Error(responseMessage(data, "读取日志失败。"));
+        mediaJobLogPanel.hidden = false;
+        mediaJobLogTitle.textContent = `任务日志：${jobId}`;
+        mediaJobLogText.textContent = data.text || "(empty)";
+        write(data);
+        return data;
+      }
+
+      async function cancelMediaJob(jobId) {
+        if (!confirm(`确认取消媒体任务 ${jobId}？已经上传到 OSS 的对象不会自动删除。`)) {
+          return { canceled: true, message: "已取消操作。" };
+        }
+        const response = await fetch(`/api/admin/media/jobs/${encodeURIComponent(jobId)}/cancel`, { method: "POST", credentials: "same-origin" });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(responseMessage(data, "取消媒体任务失败。"));
+        await readMedia({ writeOutput: false });
+        write(data);
+        return data;
+      }
+
+      async function retryMediaJob(jobId) {
+        if (!confirm(`确认重试媒体任务 ${jobId}？`)) {
+          return { canceled: true, message: "已取消重试。" };
+        }
+        const response = await fetch(`/api/admin/media/jobs/${encodeURIComponent(jobId)}/retry`, { method: "POST", credentials: "same-origin" });
+        const data = await response.json();
+        if (!response.ok || !data.ok) throw new Error(responseMessage(data, "重试媒体任务失败。"));
+        await readMedia({ writeOutput: false });
+        write(data);
+        return data;
+      }
+
       async function startCourseLifecycleJob(action, options = {}) {
         const payload = {
           course: fields.course.value,
@@ -3099,6 +3368,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           await readStorage({ writeOutput: false });
           await readAllCourseReadiness({ writeOutput: false });
           await readUploadGaps({ writeOutput: false });
+          await readMedia({ writeOutput: false });
           if (data.backups?.length) {
             await readBackups({ writeOutput: false });
           }
@@ -3302,6 +3572,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           await readStorage({ writeOutput: false });
           await readAllCourseReadiness({ writeOutput: false });
           await readUploadGaps({ writeOutput: false });
+          await readMedia({ writeOutput: false });
           if (data.backups?.length) await readBackups({ writeOutput: false });
         }
       }
@@ -3398,6 +3669,49 @@ pm2 restart ossd-course-portal --update-env</pre>
       });
       document.querySelector("#refreshLifecycleJobsButton").addEventListener("click", () => {
         runButtonAction("#refreshLifecycleJobsButton", "正在刷新任务列表...", () => readCourseLifecycleJobs(), "任务列表已更新");
+      });
+      document.querySelector("#refreshMediaButton").addEventListener("click", () => {
+        runButtonAction("#refreshMediaButton", "正在刷新媒体状态...", () => readMedia(), "媒体状态已更新");
+      });
+      document.querySelector("#publishCurrentCourseButton").addEventListener("click", () => {
+        runButtonAction("#publishCurrentCourseButton", `正在发布 ${fields.course.value}...`, () => publishCurrentCourse(), "媒体发布任务已创建");
+      });
+      document.querySelector("#auditCurrentCourseButton").addEventListener("click", () => {
+        runButtonAction("#auditCurrentCourseButton", `正在审计 ${fields.course.value}...`, () => auditCurrentCourse(), "媒体审计任务已创建");
+      });
+      document.querySelector("#syncCurrentCourseButton").addEventListener("click", () => {
+        runButtonAction("#syncCurrentCourseButton", `正在上传 ${fields.course.value}...`, () => syncCurrentCourse(), "媒体上传任务已创建");
+      });
+      document.querySelector("#publishAllMediaButton").addEventListener("click", () => {
+        runButtonAction("#publishAllMediaButton", "正在创建全量发布任务...", () => publishAllMedia(), "全量媒体任务已创建");
+      });
+      document.querySelector("#readinessMediaButton").addEventListener("click", () => {
+        runButtonAction("#readinessMediaButton", "正在创建媒体配置检查任务...", () => checkMediaReadiness(), "媒体配置检查任务已创建");
+      });
+      mediaCourseTable.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-media-course-action]");
+        if (!button) return;
+        const code = button.dataset.course;
+        fields.course.value = code;
+        updateCourseNavigation();
+        if (button.dataset.mediaCourseAction === "publish") {
+          runButtonAction(button, `正在发布 ${code}...`, () => publishCurrentCourse(), "媒体发布任务已创建");
+        } else if (button.dataset.mediaCourseAction === "audit") {
+          runButtonAction(button, `正在审计 ${code}...`, () => auditCurrentCourse(), "媒体审计任务已创建");
+        }
+      });
+      mediaJobsTable.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-media-job-action]");
+        if (!button) return;
+        const jobId = button.dataset.job;
+        const action = button.dataset.mediaJobAction;
+        if (action === "log") {
+          runButtonAction(button, "正在读取媒体任务日志...", () => showMediaJobLog(jobId), "任务日志已读取");
+        } else if (action === "cancel") {
+          runButtonAction(button, "正在取消媒体任务...", () => cancelMediaJob(jobId), "媒体任务已取消");
+        } else if (action === "retry") {
+          runButtonAction(button, "正在重试媒体任务...", () => retryMediaJob(jobId), "媒体任务已重新排队");
+        }
       });
       document.querySelector("#refreshUsersButton").addEventListener("click", () => {
         runButtonAction("#refreshUsersButton", "正在刷新用户列表...", () => readUsers(), "用户列表已更新");
