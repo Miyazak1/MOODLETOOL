@@ -53,6 +53,8 @@ function parseArgs(argv) {
       out.apply = true;
     } else if (arg === "--dry-run") {
       out.apply = false;
+    } else if (arg === "--all") {
+      // Accepted for compatibility with the media delivery pipeline.
     } else if (arg === "--audit") {
       out.audit = argv[++i] || "";
     } else if (arg === "--course") {
@@ -81,6 +83,7 @@ function parseArgs(argv) {
 function printUsage() {
   console.log(`Usage:
   node scripts/optimize-video-bitrate.mjs --dry-run
+  node scripts/optimize-video-bitrate.mjs --all --dry-run
   node scripts/optimize-video-bitrate.mjs --course HFC3M --dry-run
   node scripts/optimize-video-bitrate.mjs --course HFC3M --apply
 
