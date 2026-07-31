@@ -761,7 +761,8 @@
         line-height: 1.35;
       }
       .media-jobs-table {
-        min-width: 980px;
+        width: 100%;
+        min-width: 1120px;
         table-layout: fixed;
       }
       .media-jobs-table th,
@@ -788,6 +789,14 @@
       }
       .media-jobs-table .col-action {
         width: 128px;
+      }
+      .media-jobs-table .col-result {
+        width: 360px;
+      }
+      .media-jobs-table td.media-job-compact {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .media-job-id {
         display: block;
@@ -2262,9 +2271,9 @@ pm2 restart ossd-course-portal --update-env</pre>
             return `
             <tr>
               <td><strong class="media-job-id" title="${jobId}">${jobId}</strong></td>
-              <td>${escapeHtml(job.type)}</td>
-              <td>${escapeHtml(job.course || job.scope || "")}</td>
-              <td>${mediaStatusLabel(job.status)}</td>
+              <td class="media-job-compact" title="${escapeHtml(job.type)}">${escapeHtml(job.type)}</td>
+              <td class="media-job-compact" title="${escapeHtml(job.course || job.scope || "")}">${escapeHtml(job.course || job.scope || "")}</td>
+              <td class="media-job-compact">${mediaStatusLabel(job.status)}</td>
               <td class="nowrap">${escapeHtml(shortDateTime(job.startedAt || job.requestedAt))}</td>
               <td class="nowrap">${escapeHtml(shortDateTime(job.finishedAt))}</td>
               <td>
@@ -2286,6 +2295,16 @@ pm2 restart ossd-course-portal --update-env</pre>
           <h3>媒体任务</h3>
           <div class="table-wrap">
             <table class="media-jobs-table">
+              <colgroup>
+                <col class="col-job">
+                <col class="col-type">
+                <col class="col-scope">
+                <col class="col-status">
+                <col class="col-time">
+                <col class="col-time">
+                <col class="col-result">
+                <col class="col-action">
+              </colgroup>
               <thead>
                 <tr>
                   <th class="col-job">Job</th>
@@ -2294,7 +2313,7 @@ pm2 restart ossd-course-portal --update-env</pre>
                   <th class="col-status">Status</th>
                   <th class="col-time">Started</th>
                   <th class="col-time">Finished</th>
-                  <th>Result</th>
+                  <th class="col-result">Result</th>
                   <th class="col-action">Action</th>
                 </tr>
               </thead>
