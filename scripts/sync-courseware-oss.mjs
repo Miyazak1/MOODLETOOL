@@ -21,8 +21,10 @@ const limit = Number(args.limit || 0);
 const requestedCourses = args.courses;
 const scanAll = args.all || !requestedCourses.length;
 const ossutilPath = args.ossutil || process.env.OSSUTIL_PATH || detectOssutil();
+const assetScope = normalizeAssetScope(args.assetScope || process.env.COURSEWARE_OSS_ASSET_SCOPE || "playable");
 
 const ignoredPathParts = new Set([".git", "_admin_uploads", ".ossutil_checkpoint"]);
+const playableVideoExts = new Set([".mp4", ".webm", ".mov", ".m4v"]);
 
 function parseArgs(argv) {
   const out = {
@@ -37,6 +39,7 @@ function parseArgs(argv) {
     hash: false,
     limit: "",
     ossutil: "",
+    assetScope: "",
   };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -68,6 +71,8 @@ function parseArgs(argv) {
       out.limit = argv[++i] || "";
     } else if (arg === "--ossutil") {
       out.ossutil = argv[++i] || "";
+    } else if (arg === "--asset-scope") {
+      out.assetScope = argv[++i] || "";
     } else {
       throw new Error(`Unknown argument: ${arg}`);
     }
@@ -89,7 +94,14 @@ Options:
   --registry PATH        Asset registry output path. Defaults to deployment/asset-registry.json.
   --hash                 Include sha256 hashes in the registry.
   --limit N              Limit files for smoke checks.
-  --ossutil PATH         ossutil executable path.`);
+  --ossutil PATH         ossutil executable path.
+  --asset-scope SCOPE    playable or all. Default playable only uploads videos, H5P files, and iSpring packages.`);
+}
+
+function normalizeAssetScope(value) {
+  const scope = String(value || "playable").trim().toLowerCase();
+  if (!["playable", "all"].includes(scope)) throw new Error(`Unsupported --asset-scope: ${value}`);
+  return scope;
 }
 
 function stripSlash(value) {
@@ -134,6 +146,17 @@ function shouldIgnore(relPath) {
   return toPosix(relPath)
     .split("/")
     .some((part) => ignoredPathParts.has(part) || part.startsWith("."));
+}
+
+function isIspringPackageAsset(relPath) {
+  const normalized = `/${toPosix(relPath).toLowerCase()}`;
+  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/");
+}
+
+function isPlayableAsset(relPath) {
+  const normalized = toPosix(relPath);
+  const ext = extname(normalized).toLowerCase();
+  return playableVideoExts.has(ext) || ext === ".h5p" || isIspringPackageAsset(normalized);
 }
 
 function walkFiles(root, result = []) {
@@ -278,6 +301,8 @@ CDN base URL: ${report.cdnBaseUrl || "(not set)"}
 
 Object prefix: ${report.objectPrefix}
 
+Asset scope: ${report.assetScope}
+
 Mode: ${report.dryRun ? "dry-run" : "apply"}
 
 ossutil: ${report.ossutil || "(not found)"}
@@ -288,6 +313,7 @@ ossutil: ${report.ossutil || "(not found)"}
 | --- | ---: |
 | Courses | ${report.summary.courses} |
 | Files | ${report.summary.files} |
+| Skipped local files | ${report.summary.skippedFiles} |
 | Total size | ${formatNumber(report.summary.totalGb)} GB |
 | Uploaded | ${report.summary.uploaded} |
 | Failed | ${report.summary.failed} |
@@ -310,10 +336,13 @@ if (missing.length) {
 }
 
 let planned = [];
+let scannedFiles = 0;
 for (const course of courses) {
   const courseRoot = join(coursewareRoot, course);
   const files = walkFiles(courseRoot).sort((a, b) => a.localeCompare(b));
-  planned.push(...files.map((file) => buildItem(course, file)));
+  scannedFiles += files.length;
+  const scopedFiles = assetScope === "all" ? files : files.filter((file) => isPlayableAsset(relative(courseRoot, file)));
+  planned.push(...scopedFiles.map((file) => buildItem(course, file)));
 }
 if (limit > 0) planned = planned.slice(0, limit);
 
@@ -355,11 +384,14 @@ const report = {
   bucket,
   cdnBaseUrl,
   objectPrefix,
+  assetScope,
   ossutil: ossutilPath,
   includeHash,
   summary: {
     courses: courses.length,
     files: items.length,
+    scannedFiles,
+    skippedFiles: Math.max(0, scannedFiles - planned.length),
     totalBytes: items.reduce((sum, item) => sum + item.sizeBytes, 0),
     totalGb: items.reduce((sum, item) => sum + item.sizeBytes, 0) / 1024 / 1024 / 1024,
     uploaded,
@@ -390,6 +422,8 @@ console.log(
       dryRun,
       courses: report.summary.courses,
       files: report.summary.files,
+      scannedFiles: report.summary.scannedFiles,
+      skippedFiles: report.summary.skippedFiles,
       totalGb: Number(report.summary.totalGb.toFixed(2)),
       uploaded,
       failed,

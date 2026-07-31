@@ -2017,6 +2017,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         mediaConfigStats.innerHTML = [
           ["任务中心", config.enabled ? "已启用" : "未启用"],
           ["Asset mode", config.assetMode || ""],
+          ["Asset scope", config.assetScope || "playable"],
           ["OSS", config.bucket || "未配置"],
           ["CDN", config.cdnBaseUrl || "未配置"],
           ["Registry", `${data.registry?.assetCount || 0} assets`],

@@ -31,6 +31,7 @@ function parseArgs(argv) {
     bucket: "",
     cdnBaseUrl: "",
     assetMode: "",
+    assetScope: "",
     prefix: "",
     audit: "",
     registry: "",
@@ -66,6 +67,7 @@ function parseArgs(argv) {
     else if (arg === "--bucket") out.bucket = argv[++i] || "";
     else if (arg === "--cdn-base-url") out.cdnBaseUrl = argv[++i] || "";
     else if (arg === "--asset-mode") out.assetMode = argv[++i] || "";
+    else if (arg === "--asset-scope") out.assetScope = argv[++i] || "";
     else if (arg === "--prefix") out.prefix = argv[++i] || "";
     else if (arg === "--audit") out.audit = argv[++i] || "";
     else if (arg === "--registry") out.registry = argv[++i] || "";
@@ -111,6 +113,7 @@ Options:
   --bucket URI              OSS bucket URI.
   --cdn-base-url URL        CDN asset base URL.
   --asset-mode MODE         local, hybrid, or cdn. Defaults to hybrid when CDN URL is set.
+  --asset-scope SCOPE       playable or all. Default playable uploads videos, H5P, and iSpring packages.
   --apply-optimize          Actually transcode candidate videos.
   --apply-oss               Actually upload to OSS.
   --require-oss             Treat OSS/CDN readiness gaps as blockers.
@@ -245,6 +248,7 @@ try {
     addValue(stepArgs, "--cdn-base-url", args.cdnBaseUrl);
     addValue(stepArgs, "--prefix", args.prefix);
     addValue(stepArgs, "--registry", args.registry);
+    addValue(stepArgs, "--asset-scope", args.assetScope);
     addValue(stepArgs, "--limit", args.limit);
     addValue(stepArgs, "--ossutil", args.ossutil);
     if (args.includeHash) stepArgs.push("--hash");
@@ -325,6 +329,7 @@ function buildReport(status) {
       requireOss: args.requireOss,
       cdnBaseUrl: args.cdnBaseUrl || process.env.COURSEWARE_ASSET_BASE_URL || "",
       bucket: args.bucket || process.env.OSS_BUCKET_URI || "",
+      assetScope: args.assetScope || process.env.COURSEWARE_OSS_ASSET_SCOPE || "playable",
     },
     steps,
     outputs,

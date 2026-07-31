@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
@@ -35,8 +35,12 @@ mkdirSync(dataRoot, { recursive: true });
 
 try {
   const videoPath = join(dataRoot, "tiny.mp4");
+  mkdirSync(join(courseRoot, "previews-html"), { recursive: true });
   writeFileSync(join(courseRoot, "course-manifest.json"), JSON.stringify({ units: [] }, null, 2), "utf8");
   writeFileSync(join(courseRoot, "index.html"), "<!doctype html><title>PIPE</title>", "utf8");
+  writeFileSync(join(courseRoot, "previews-html", "doc.html"), "<!doctype html><title>Preview</title>", "utf8");
+  writeFileSync(join(courseRoot, "activity.h5p"), "h5p", "utf8");
+  writeFileSync(join(courseRoot, "Unit 1", "Lesson 1", "html5-package", "presentation.html"), "<!doctype html><title>iSpring</title>", "utf8");
   writeFileSync(videoPath, "not a real video; pipeline smoke uses a prepared audit", "utf8");
   writeFileSync(
     auditPath,
@@ -98,6 +102,21 @@ try {
   ]);
   if (!stdout.includes('"status": "ready"') && !stdout.includes('"status": "ready-with-warnings"')) {
     throw new Error(`Unexpected pipeline smoke output:\n${stdout}`);
+  }
+  const registry = JSON.parse(readFileSync(registryPath, "utf8"));
+  const assets = new Set(registry.assets || []);
+  for (const expected of [
+    "courseware-active/PIPE/Unit 1/Lesson 1/html5-package/presentation.html",
+    "courseware-active/PIPE/Unit 1/Lesson 1/html5-package/data/tiny.mp4",
+    "courseware-active/PIPE/activity.h5p",
+  ]) {
+    if (!assets.has(expected)) throw new Error(`Expected playable asset in registry: ${expected}`);
+  }
+  for (const unexpected of [
+    "courseware-active/PIPE/index.html",
+    "courseware-active/PIPE/previews-html/doc.html",
+  ]) {
+    if (assets.has(unexpected)) throw new Error(`Expected non-playable asset to be skipped: ${unexpected}`);
   }
   console.log("Media delivery pipeline smoke passed.");
 } finally {

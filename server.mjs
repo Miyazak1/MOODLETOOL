@@ -48,6 +48,9 @@ const coursewareAssetMode = ["local", "hybrid", "cdn"].includes(String(process.e
     : "local";
 const coursewareAssetPrefix = toPosixPath(process.env.COURSEWARE_ASSET_PREFIX || "courseware-active").replace(/\/+$/, "");
 const coursewareAssetRegistryPath = resolve(process.env.COURSEWARE_ASSET_REGISTRY_FILE || join(projectRoot, "deployment", "asset-registry.json"));
+const coursewareOssAssetScope = ["playable", "all"].includes(String(process.env.COURSEWARE_OSS_ASSET_SCOPE || "").toLowerCase())
+  ? String(process.env.COURSEWARE_OSS_ASSET_SCOPE || "").toLowerCase()
+  : "playable";
 const embedTokenSecret = process.env.EMBED_TOKEN_SECRET || adminSessionSecret || portalSessionSecret || "";
 const embedTokenMaxAgeSeconds = Number(process.env.EMBED_TOKEN_MAX_AGE_SECONDS || 3650 * 24 * 60 * 60);
 const embedPublicOrigin = process.env.EMBED_PUBLIC_ORIGIN || "";
@@ -699,6 +702,7 @@ function mediaConfig() {
     maxConcurrency: mediaJobsMaxConcurrency,
     coursewareRoot: courseActiveRoot,
     assetMode: coursewareAssetMode,
+    assetScope: coursewareOssAssetScope,
     bucket: ossBucketUri,
     cdnBaseUrl: coursewareAssetBaseUrl,
     assetPrefix: coursewareAssetPrefix,
@@ -844,6 +848,7 @@ function mediaJobCommand(job) {
   const bucketArg = p.bucket || ossBucketUri;
   const cdnArg = p.cdnBaseUrl || coursewareAssetBaseUrl;
   const assetModeArg = p.assetMode || coursewareAssetMode;
+  const assetScopeArg = p.assetScope || coursewareOssAssetScope;
   const registryArg = p.registry || coursewareAssetRegistryPath;
   if (job.type === "audit-videos") {
     const args = ["scripts/audit-video-bitrate.mjs"];
@@ -861,7 +866,7 @@ function mediaJobCommand(job) {
   if (job.type === "sync-oss") {
     const args = ["scripts/sync-courseware-oss.mjs", p.applyOss === false ? "--dry-run" : "--apply"];
     appendCourseArg(args, course, all);
-    args.push("--courseware-root", coursewareRootArg, "--bucket", bucketArg, "--cdn-base-url", cdnArg, "--registry", registryArg, "--ossutil", p.ossutil || ossutilPath);
+    args.push("--courseware-root", coursewareRootArg, "--bucket", bucketArg, "--cdn-base-url", cdnArg, "--registry", registryArg, "--asset-scope", assetScopeArg, "--ossutil", p.ossutil || ossutilPath);
     return args;
   }
   if (job.type === "export-cdn-preheat") {
@@ -900,6 +905,8 @@ function mediaJobCommand(job) {
     cdnArg,
     "--asset-mode",
     assetModeArg,
+    "--asset-scope",
+    assetScopeArg,
     "--ffmpeg",
     p.ffmpeg || ffmpegPath,
     "--ffprobe",
@@ -939,6 +946,7 @@ function createMediaJob({ type, course, actor, params = {} }) {
       bucket: params.bucket || ossBucketUri,
       cdnBaseUrl: params.cdnBaseUrl || coursewareAssetBaseUrl,
       assetMode: params.assetMode || coursewareAssetMode,
+      assetScope: params.assetScope || coursewareOssAssetScope,
       registry: params.registry || coursewareAssetRegistryPath,
       ffmpeg: params.ffmpeg || ffmpegPath,
       ffprobe: params.ffprobe || ffprobePath,
