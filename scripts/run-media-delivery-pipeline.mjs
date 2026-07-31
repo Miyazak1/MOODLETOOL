@@ -18,7 +18,7 @@ if (args.applyOss && !args.bucket && !process.env.OSS_BUCKET_URI) {
   console.error("--apply-oss requires --bucket or OSS_BUCKET_URI.");
   process.exit(2);
 }
-if ((args.applyOss || args.exportPreheat || args.requireOss) && !args.cdnBaseUrl && !process.env.COURSEWARE_ASSET_BASE_URL) {
+if ((args.applyOss || (!args.skipPreheat && args.exportPreheat) || args.requireOss) && !args.cdnBaseUrl && !process.env.COURSEWARE_ASSET_BASE_URL) {
   console.error("OSS/CDN stages require --cdn-base-url or COURSEWARE_ASSET_BASE_URL.");
   process.exit(2);
 }
