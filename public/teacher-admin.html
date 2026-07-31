@@ -745,6 +745,64 @@
       th.nowrap {
         white-space: nowrap;
       }
+      .media-toolbar {
+        align-items: center;
+      }
+      .media-refresh-state {
+        align-self: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .media-jobs-table {
+        min-width: 980px;
+        table-layout: fixed;
+      }
+      .media-jobs-table th,
+      .media-jobs-table td {
+        vertical-align: top;
+        overflow-wrap: normal;
+        word-break: normal;
+      }
+      .media-jobs-table th {
+        white-space: nowrap;
+      }
+      .media-jobs-table .col-job {
+        width: 220px;
+      }
+      .media-jobs-table .col-type {
+        width: 140px;
+      }
+      .media-jobs-table .col-scope,
+      .media-jobs-table .col-status {
+        width: 86px;
+      }
+      .media-jobs-table .col-time {
+        width: 150px;
+      }
+      .media-jobs-table .col-action {
+        width: 128px;
+      }
+      .media-job-id {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .media-job-result {
+        display: block;
+        max-height: 3.5em;
+        overflow: hidden;
+        color: var(--ink);
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+      .media-job-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
       .status-ok {
         color: #0f6a46;
         font-weight: 700;
@@ -1087,12 +1145,13 @@
         </div>
         <div class="stats" id="mediaConfigStats" hidden></div>
         <div class="notice" id="mediaNotice" hidden></div>
-        <div class="actions">
+        <div class="actions media-toolbar">
           <button class="primary" id="publishCurrentCourseButton" type="button">发布当前课程</button>
           <button id="auditCurrentCourseButton" type="button">审计当前课程</button>
           <button id="syncCurrentCourseButton" type="button">只上传当前课程</button>
           <button id="publishAllMediaButton" type="button">全量完整发布</button>
           <button id="readinessMediaButton" type="button">检查媒体配置</button>
+          <span class="media-refresh-state" id="mediaRefreshState">自动刷新未启动</span>
         </div>
         <div id="mediaCourseTable" hidden></div>
         <div id="mediaJobsTable" hidden></div>
@@ -1373,6 +1432,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       const mediaJobLogPanel = document.querySelector("#mediaJobLogPanel");
       const mediaJobLogTitle = document.querySelector("#mediaJobLogTitle");
       const mediaJobLogText = document.querySelector("#mediaJobLogText");
+      const mediaRefreshState = document.querySelector("#mediaRefreshState");
       const courseNavigationLinks = [
         document.querySelector("#topCourseLink"),
         document.querySelector("#sidebarCourseLink"),
@@ -1398,6 +1458,9 @@ pm2 restart ossd-course-portal --update-env</pre>
       let courseLifecycleData = { courses: [] };
       let courseLifecycleJobsData = { jobs: [] };
       let mediaData = { courses: [], jobs: [], config: {} };
+      let mediaRefreshTimer = null;
+      let mediaRefreshInFlight = false;
+      let mediaLastUpdatedAt = null;
       let storageData = null;
       let selectedLifecycleCourse = "";
       let adminAuthenticated = false;
@@ -1579,11 +1642,15 @@ pm2 restart ossd-course-portal --update-env</pre>
           activeAdminPanel = panelName;
         }
         renderAdminPanels();
+        if (activeAdminPanel !== "media") {
+          stopMediaAutoRefresh();
+        }
         if (activeAdminPanel === "storage" && adminAuthenticated) {
           readStorage({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
         }
         if (activeAdminPanel === "media" && adminAuthenticated) {
           readMedia({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+          startMediaAutoRefresh();
         }
       }
 
@@ -2002,13 +2069,41 @@ pm2 restart ossd-course-portal --update-env</pre>
         const className = ["succeeded", "ready"].includes(value)
           ? "status-ok"
           : ["failed", "interrupted", "cancelled"].includes(value)
-            ? "status-missing"
+            ? "status-risk"
             : "warn";
         return `<span class="${className}">${escapeHtml(value)}</span>`;
       }
 
       function percent(value) {
         return `${Math.round(Number(value || 0) * 100)}%`;
+      }
+
+      function mediaHasActiveJobs(jobs = mediaData.jobs || []) {
+        return jobs.some((job) => ["queued", "running", "cancelling"].includes(job.status));
+      }
+
+      function shortDateTime(value) {
+        if (!value) return "";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return String(value);
+        return date.toLocaleString(undefined, {
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      function mediaJobResult(job) {
+        const raw = job.error || job.summary?.status || job.payload?.status || "";
+        if (!raw) return job.status === "running" ? "正在运行" : "";
+        const text = String(raw).replace(/\s+/g, " ").trim();
+        const lockMatch = /Course\s+([A-Z0-9]+)\s+is locked/i.exec(text);
+        if (lockMatch) return `${lockMatch[1]} 存在旧操作锁，清理锁后重试`;
+        if (/ready-with-warnings/i.test(text)) return "配置可用，但有提示";
+        if (/Video audit report is missing/i.test(text)) return "缺少视频审计报告";
+        if (/ossutil/i.test(text) && /not available|not found/i.test(text)) return "ossutil 不可用";
+        return text.length > 180 ? `${text.slice(0, 180)}...` : text;
       }
 
       function renderMediaConfig(data) {
@@ -2079,37 +2174,43 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       function renderMediaJobs(data) {
         const rows = (data.jobs || [])
-          .map((job) => `
+          .map((job) => {
+            const jobId = escapeHtml(job.id);
+            const result = mediaJobResult(job);
+            return `
             <tr>
-              <td><strong>${escapeHtml(job.id)}</strong></td>
+              <td><strong class="media-job-id" title="${jobId}">${jobId}</strong></td>
               <td>${escapeHtml(job.type)}</td>
               <td>${escapeHtml(job.course || job.scope || "")}</td>
               <td>${mediaStatusLabel(job.status)}</td>
-              <td>${escapeHtml(job.requestedAt || "")}</td>
-              <td>${escapeHtml(job.finishedAt || "")}</td>
-              <td>${escapeHtml(job.error || job.summary?.status || job.payload?.status || "")}</td>
-              <td class="nowrap">
-                <button class="small" type="button" data-media-job-action="log" data-job="${escapeHtml(job.id)}">日志</button>
+              <td class="nowrap">${escapeHtml(shortDateTime(job.startedAt || job.requestedAt))}</td>
+              <td class="nowrap">${escapeHtml(shortDateTime(job.finishedAt))}</td>
+              <td><span class="media-job-result" title="${escapeHtml(String(job.error || result || ""))}">${escapeHtml(result)}</span></td>
+              <td>
+                <div class="media-job-actions">
+                <button class="small" type="button" data-media-job-action="log" data-job="${jobId}">日志</button>
                 ${job.status === "running" ? `<button class="small" type="button" data-media-job-action="cancel" data-job="${escapeHtml(job.id)}">取消</button>` : ""}
                 ${["failed", "warning", "cancelled", "interrupted"].includes(job.status) ? `<button class="small" type="button" data-media-job-action="retry" data-job="${escapeHtml(job.id)}">重试</button>` : ""}
+                </div>
               </td>
             </tr>
-          `)
+          `;
+          })
           .join("");
         mediaJobsTable.innerHTML = `
           <h3>媒体任务</h3>
           <div class="table-wrap">
-            <table>
+            <table class="media-jobs-table">
               <thead>
                 <tr>
-                  <th>Job</th>
-                  <th>Type</th>
-                  <th>Scope</th>
-                  <th>Status</th>
-                  <th>Started</th>
-                  <th>Finished</th>
+                  <th class="col-job">Job</th>
+                  <th class="col-type">Type</th>
+                  <th class="col-scope">Scope</th>
+                  <th class="col-status">Status</th>
+                  <th class="col-time">Started</th>
+                  <th class="col-time">Finished</th>
                   <th>Result</th>
-                  <th>Action</th>
+                  <th class="col-action">Action</th>
                 </tr>
               </thead>
               <tbody>${rows || '<tr><td colspan="8">No media jobs yet.</td></tr>'}</tbody>
@@ -2123,6 +2224,49 @@ pm2 restart ossd-course-portal --update-env</pre>
         mediaData = data;
         renderMediaConfig(data);
         renderMediaCourses(data);
+        updateMediaRefreshState();
+      }
+
+      function updateMediaRefreshState() {
+        if (!mediaRefreshState) return;
+        const active = mediaHasActiveJobs();
+        const time = mediaLastUpdatedAt
+          ? mediaLastUpdatedAt.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+          : "尚未刷新";
+        mediaRefreshState.textContent = `${active ? "任务运行中，每 5 秒自动刷新" : "每 15 秒自动刷新"} · 上次 ${time}`;
+      }
+
+      function stopMediaAutoRefresh() {
+        if (mediaRefreshTimer) clearTimeout(mediaRefreshTimer);
+        mediaRefreshTimer = null;
+        if (mediaRefreshState && activeAdminPanel !== "media") mediaRefreshState.textContent = "自动刷新未启动";
+      }
+
+      function scheduleMediaAutoRefresh(delayMs) {
+        if (mediaRefreshTimer) clearTimeout(mediaRefreshTimer);
+        if (!adminAuthenticated || activeAdminPanel !== "media") return;
+        mediaRefreshTimer = setTimeout(async () => {
+          if (!adminAuthenticated || activeAdminPanel !== "media") return;
+          if (mediaRefreshInFlight) {
+            scheduleMediaAutoRefresh(2000);
+            return;
+          }
+          mediaRefreshInFlight = true;
+          try {
+            await readMedia({ writeOutput: false, fromAutoRefresh: true });
+          } catch (error) {
+            if (mediaRefreshState) mediaRefreshState.textContent = `自动刷新失败：${error.message}`;
+          } finally {
+            mediaRefreshInFlight = false;
+            scheduleMediaAutoRefresh(mediaHasActiveJobs() ? 5000 : 15000);
+          }
+        }, delayMs);
+      }
+
+      function startMediaAutoRefresh() {
+        if (!adminAuthenticated || activeAdminPanel !== "media") return;
+        updateMediaRefreshState();
+        scheduleMediaAutoRefresh(mediaHasActiveJobs() ? 5000 : 15000);
       }
 
       function selectedUnitRecord() {
@@ -2892,6 +3036,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         currentAdminSession = adminAuthenticated ? { ...(currentAdminSession || {}), ...(sessionData || {}) } : null;
         if (!adminAuthenticated && activeAdminPanel !== "output") activeAdminPanel = "login";
         if (adminAuthenticated && activeAdminPanel === "login") activeAdminPanel = "course";
+        if (!adminAuthenticated) stopMediaAutoRefresh();
         document.querySelector("#logoutButton").hidden = !isAuthenticated;
         document.querySelector("#loginButton").hidden = isAuthenticated;
         renderAuthState();
@@ -3112,7 +3257,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         return data;
       }
 
-      async function readMedia({ writeOutput = true } = {}) {
+      async function readMedia({ writeOutput = true, fromAutoRefresh = false } = {}) {
         const [coursesResponse, jobsResponse] = await Promise.all([
           fetch("/api/admin/media/courses", { credentials: "same-origin" }),
           fetch("/api/admin/media/jobs?limit=50", { credentials: "same-origin" }),
@@ -3127,7 +3272,10 @@ pm2 restart ossd-course-portal --update-env</pre>
         };
         if (coursesData.ok) renderMedia(data);
         renderMediaJobs({ jobs: jobsData.jobs || [] });
+        mediaLastUpdatedAt = new Date();
+        updateMediaRefreshState();
         if (writeOutput) write(data);
+        if (!fromAutoRefresh && activeAdminPanel === "media") startMediaAutoRefresh();
         return data;
       }
 
@@ -3142,6 +3290,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         write(data);
         if (!response.ok || !data.ok) throw new Error(responseMessage(data, `媒体任务创建失败：HTTP ${response.status}`));
         await readMedia({ writeOutput: false });
+        startMediaAutoRefresh();
         return data;
       }
 
