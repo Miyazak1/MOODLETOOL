@@ -171,8 +171,8 @@ function registrySummary() {
 }
 
 const checks = {
-  ffmpeg: commandAvailable(ffmpegPath),
-  ffprobe: commandAvailable(ffprobePath),
+  ffmpeg: commandAvailable(ffmpegPath, ["-version"]),
+  ffprobe: commandAvailable(ffprobePath, ["-version"]),
   ossutil: ossutilPath ? commandAvailable(ossutilPath) : { ok: false, error: "ossutil not found" },
   videoAudit: videoAuditSummary(),
   optimizationPlan: optimizationPlanSummary(),
