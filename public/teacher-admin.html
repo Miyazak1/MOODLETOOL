@@ -753,6 +753,13 @@
         color: var(--muted);
         font-size: 12px;
       }
+      .media-oss-stats .stat strong {
+        overflow-wrap: anywhere;
+      }
+      .media-oss-stats .stat strong.small-value {
+        font-size: 14px;
+        line-height: 1.35;
+      }
       .media-jobs-table {
         min-width: 980px;
         table-layout: fixed;
@@ -1168,6 +1175,7 @@
           <button id="refreshMediaButton" type="button">刷新媒体状态</button>
         </div>
         <div class="stats" id="mediaConfigStats" hidden></div>
+        <div class="stats media-oss-stats" id="mediaOssStats" hidden></div>
         <div class="notice" id="mediaNotice" hidden></div>
         <div class="actions media-toolbar">
           <button class="primary" id="publishCurrentCourseButton" type="button">发布当前课程</button>
@@ -1450,6 +1458,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       const selectedCourseBanner = document.querySelector("#selectedCourseBanner");
       const courseLifecycleJobs = document.querySelector("#courseLifecycleJobs");
       const mediaConfigStats = document.querySelector("#mediaConfigStats");
+      const mediaOssStats = document.querySelector("#mediaOssStats");
       const mediaNotice = document.querySelector("#mediaNotice");
       const mediaCourseTable = document.querySelector("#mediaCourseTable");
       const mediaJobsTable = document.querySelector("#mediaJobsTable");
@@ -2150,6 +2159,33 @@ pm2 restart ossd-course-portal --update-env</pre>
         `;
       }
 
+      function renderMediaOss(oss) {
+        if (!mediaOssStats) return;
+        if (!oss) {
+          mediaOssStats.hidden = true;
+          return;
+        }
+        const status = !oss.enabled
+          ? "未配置"
+          : oss.ok
+            ? "正常"
+            : "检查失败";
+        const checkedAt = oss.generatedAt ? shortDateTime(oss.generatedAt) : "";
+        const cacheText = oss.cacheHit ? `缓存 ${oss.cacheSeconds || 60}s` : "刚检查";
+        const rows = [
+          ["OSS 实况", status],
+          ["对象数量", oss.ok ? `${oss.objectCount || 0}` : "-"],
+          ["OSS 占用", oss.ok ? formatBytes(oss.totalBytes || 0) : "-"],
+          ["监控路径", oss.target || oss.bucket || "-"],
+          ["上次检查", checkedAt ? `${checkedAt} · ${cacheText}` : cacheText],
+        ];
+        if (oss.error) rows.push(["提示", oss.error]);
+        mediaOssStats.innerHTML = rows
+          .map(([label, value]) => `<div class="stat"><span>${escapeHtml(label)}</span><strong class="${String(value).length > 24 ? "small-value" : ""}">${escapeHtml(value)}</strong></div>`)
+          .join("");
+        mediaOssStats.hidden = false;
+      }
+
       function renderMediaConfig(data) {
         const config = data.config || {};
         const summary = data.summary || {};
@@ -2170,6 +2206,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         if (!config.enabled) {
           mediaNotice.innerHTML = "媒体任务中心当前未启用。现有命令行迁移完成后，在生产环境设置 <strong>MEDIA_JOBS_ENABLED=1</strong> 再允许后台创建任务。";
         }
+        renderMediaOss(data.oss);
       }
 
       function renderMediaCourses(data) {
@@ -3306,8 +3343,9 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function readMedia({ writeOutput = true, fromAutoRefresh = false } = {}) {
+        const coursesUrl = `/api/admin/media/courses${fromAutoRefresh ? "" : "?refreshOss=1"}`;
         const [coursesResponse, jobsResponse] = await Promise.all([
-          fetch("/api/admin/media/courses", { credentials: "same-origin" }),
+          fetch(coursesUrl, { credentials: "same-origin" }),
           fetch("/api/admin/media/jobs?limit=50", { credentials: "same-origin" }),
         ]);
         const coursesData = await coursesResponse.json();

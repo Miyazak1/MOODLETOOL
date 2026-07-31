@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { appendFile, cp, mkdir, readdir, readFile, rename, rm, stat, statfs } from "node:fs/promises";
 import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, normalize, relative, resolve } from "node:path";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { finished, pipeline } from "node:stream/promises";
 import { Transform } from "node:stream";
 import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
@@ -74,6 +74,8 @@ const ossBucketUri = process.env.OSS_BUCKET_URI || "";
 const ffmpegPath = process.env.FFMPEG_PATH || "ffmpeg";
 const ffprobePath = process.env.FFPROBE_PATH || "ffprobe";
 const ossutilPath = process.env.OSSUTIL_PATH || "ossutil";
+const ossStatsCacheMs = Math.max(10 * 1000, Number(process.env.OSS_STATS_CACHE_SECONDS || 60) * 1000);
+const ossStatsTimeoutMs = Math.max(5 * 1000, Number(process.env.OSS_STATS_TIMEOUT_MS || 30 * 1000));
 const allowedExtensionsByType = {
   "course-outline": new Set([".docx", ".pdf", ".pptx", ".txt", ".md"]),
   "course-introduction": new Set([".docx", ".pdf", ".pptx", ".txt", ".md"]),
@@ -89,6 +91,7 @@ const mediaJobQueue = [];
 const mediaJobChildren = new Map();
 let mediaJobsInitialized = false;
 let mediaJobsRunningCount = 0;
+let ossStorageStatusCache = null;
 const loginFailures = new Map();
 const coursePackageTasks = new Map();
 const coursePackageFinalizeTasks = new Map();
@@ -716,6 +719,96 @@ function mediaConfig() {
   };
 }
 
+function ossStatsTargetUri() {
+  if (!ossBucketUri) return "";
+  const bucket = String(ossBucketUri).replace(/\/+$/, "");
+  const prefix = toPosixPath(coursewareAssetPrefix).replace(/\/+$/, "");
+  return prefix ? `${bucket}/${prefix}/` : `${bucket}/`;
+}
+
+function parseOssListOutput(output) {
+  let objectCount = null;
+  let totalBytes = 0;
+  let listedObjects = 0;
+  for (const line of String(output || "").split(/\r?\n/)) {
+    const countMatch = /Object Number is:\s*(\d+)/i.exec(line);
+    if (countMatch) objectCount = Number(countMatch[1]);
+    const objectMatch = /^\d{4}-\d{2}-\d{2}\s+\S+\s+(?:[+-]\d{4}\s+)?(?:[A-Z]{2,5}\s+)?(\d+)\s+\S+\s+\S+\s+oss:\/\//.exec(line.trim());
+    if (objectMatch) {
+      listedObjects += 1;
+      totalBytes += Number(objectMatch[1]);
+    }
+  }
+  return {
+    objectCount: objectCount ?? listedObjects,
+    totalBytes,
+  };
+}
+
+function readOssStorageStatus({ force = false } = {}) {
+  const now = Date.now();
+  if (!force && ossStorageStatusCache && ossStorageStatusCache.expiresAt > now) {
+    return { ...ossStorageStatusCache.value, cacheHit: true };
+  }
+  const generatedAt = new Date().toISOString();
+  const target = ossStatsTargetUri();
+  const base = {
+    enabled: Boolean(ossBucketUri),
+    ok: false,
+    status: "unconfigured",
+    bucket: ossBucketUri,
+    target,
+    prefix: coursewareAssetPrefix,
+    objectCount: 0,
+    totalBytes: 0,
+    generatedAt,
+    cacheHit: false,
+    cacheSeconds: Math.round(ossStatsCacheMs / 1000),
+    command: "",
+    error: "",
+  };
+  if (!target) {
+    const value = { ...base, error: "OSS_BUCKET_URI is not configured." };
+    ossStorageStatusCache = { expiresAt: now + ossStatsCacheMs, value };
+    return value;
+  }
+
+  const command = `${ossutilPath} ls ${target}`;
+  try {
+    const result = spawnSync(ossutilPath, ["ls", target], {
+      encoding: "utf8",
+      maxBuffer: 64 * 1024 * 1024,
+      timeout: ossStatsTimeoutMs,
+      windowsHide: true,
+    });
+    if (result.error) throw result.error;
+    if (result.status !== 0) {
+      throw new Error((result.stderr || result.stdout || `ossutil exited ${result.status}`).trim());
+    }
+    const parsed = parseOssListOutput(result.stdout || "");
+    const value = {
+      ...base,
+      ok: true,
+      status: "ok",
+      objectCount: parsed.objectCount,
+      totalBytes: parsed.totalBytes,
+      command,
+      error: "",
+    };
+    ossStorageStatusCache = { expiresAt: now + ossStatsCacheMs, value };
+    return value;
+  } catch (error) {
+    const value = {
+      ...base,
+      status: "error",
+      command,
+      error: error instanceof Error ? error.message : String(error),
+    };
+    ossStorageStatusCache = { expiresAt: now + ossStatsCacheMs, value };
+    return value;
+  }
+}
+
 function assertMediaJobsEnabled() {
   if (!mediaJobsEnabled) {
     throw new Error("Media jobs are disabled. Set MEDIA_JOBS_ENABLED=1 after the current command-line migration is complete.");
@@ -1224,11 +1317,12 @@ async function mediaCourseStatus(courseEntry, assetSet) {
   };
 }
 
-async function mediaCoursesStatus() {
+async function mediaCoursesStatus({ refreshOss = false } = {}) {
   ensureMediaJobsLoaded();
   const catalog = await readCourseCatalog();
   const assetSet = registryAssetSet();
   const courses = await Promise.all((catalog.courses || []).map((courseEntry) => mediaCourseStatus(courseEntry, assetSet)));
+  const oss = readOssStorageStatus({ force: refreshOss });
   return {
     ok: true,
     generatedAt: new Date().toISOString(),
@@ -1238,6 +1332,7 @@ async function mediaCoursesStatus() {
       assetCount: assetSet.size,
       exists: existsSync(coursewareAssetRegistryPath),
     },
+    oss,
     courses,
     summary: {
       courses: courses.length,
@@ -4529,7 +4624,7 @@ async function handleAdminApi(req, res) {
     }
 
     if (requestUrl.pathname === "/api/admin/media/courses" && req.method === "GET") {
-      sendJson(res, 200, await mediaCoursesStatus());
+      sendJson(res, 200, await mediaCoursesStatus({ refreshOss: requestUrl.searchParams.get("refreshOss") === "1" }));
       return true;
     }
 
