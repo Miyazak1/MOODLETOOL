@@ -2821,6 +2821,17 @@ pm2 restart ossd-course-portal --update-env</pre>
         return `${(value / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
       }
 
+      function formatDurationSeconds(seconds) {
+        const value = Math.max(0, Math.round(Number(seconds || 0)));
+        if (!value || !Number.isFinite(value)) return "计算中";
+        const hours = Math.floor(value / 3600);
+        const minutes = Math.floor((value % 3600) / 60);
+        const secs = value % 60;
+        if (hours) return `${hours}小时${String(minutes).padStart(2, "0")}分`;
+        if (minutes) return `${minutes}分${String(secs).padStart(2, "0")}秒`;
+        return `${secs}秒`;
+      }
+
       function percentUsed(used, total) {
         if (!total) return 0;
         return Math.max(0, Math.min(100, Math.round((Number(used || 0) / Number(total || 1)) * 100)));
@@ -3503,13 +3514,44 @@ pm2 restart ossd-course-portal --update-env</pre>
         return data;
       }
 
+      function createOssUploadProgressFormatter(file) {
+        const startedAt = Date.now();
+        let lastAt = startedAt;
+        let lastLoaded = 0;
+        let smoothedBytesPerSecond = 0;
+        return ({ percent, loaded, total, objectKey }) => {
+          const now = Date.now();
+          const elapsedMs = Math.max(1, now - lastAt);
+          const deltaBytes = Math.max(0, loaded - lastLoaded);
+          const instantBytesPerSecond = (deltaBytes / elapsedMs) * 1000;
+          if (instantBytesPerSecond > 0) {
+            smoothedBytesPerSecond = smoothedBytesPerSecond
+              ? smoothedBytesPerSecond * 0.7 + instantBytesPerSecond * 0.3
+              : instantBytesPerSecond;
+          }
+          lastAt = now;
+          lastLoaded = loaded;
+          const averageBytesPerSecond = loaded > 0 ? loaded / Math.max(1, (now - startedAt) / 1000) : 0;
+          const bytesPerSecond = smoothedBytesPerSecond || averageBytesPerSecond;
+          const remainingBytes = Math.max(0, total - loaded);
+          const eta = bytesPerSecond > 0 ? remainingBytes / bytesPerSecond : 0;
+          const speedText = bytesPerSecond > 0 ? `${formatBytes(bytesPerSecond)}/s` : "计算中";
+          const totalText = total || file.size || 0;
+          return `${percent}% · ${formatBytes(loaded)} / ${formatBytes(totalText)} · 速度 ${speedText} · 剩余约 ${formatDurationSeconds(eta)} · ${objectKey}`;
+        };
+      }
+
       function uploadOssPostObject(form, file, onProgress) {
         return new Promise((resolve, reject) => {
           const xhr = new XMLHttpRequest();
           xhr.open(form.method || "POST", form.url, true);
           xhr.upload.onprogress = (event) => {
             if (event.lengthComputable && typeof onProgress === "function") {
-              onProgress(Math.round((event.loaded / event.total) * 100), event.loaded, event.total);
+              onProgress({
+                percent: Math.round((event.loaded / event.total) * 100),
+                loaded: event.loaded,
+                total: event.total,
+              });
             }
           };
           xhr.onload = () => {
@@ -3557,8 +3599,15 @@ pm2 restart ossd-course-portal --update-env</pre>
         const initData = await initResponse.json();
         if (!initResponse.ok || !initData.ok) throw new Error(responseMessage(initData, `创建 OSS 上传授权失败：HTTP ${initResponse.status}`));
         setOssDirectStatus("正在直传 OSS", `${initData.upload.objectKey}`, 1);
-        await uploadOssPostObject(initData.form, file, (percent, loaded, total) => {
-          setOssDirectStatus("正在直传 OSS", `${formatBytes(loaded)} / ${formatBytes(total)} · ${initData.upload.objectKey}`, percent);
+        const uploadProgressText = createOssUploadProgressFormatter(file);
+        await uploadOssPostObject(initData.form, file, ({ percent, loaded, total }) => {
+          const detail = uploadProgressText({
+            percent,
+            loaded,
+            total,
+            objectKey: initData.upload.objectKey,
+          });
+          setOssDirectStatus(`正在直传 OSS · ${percent}%`, detail, percent);
         });
         setOssDirectStatus("正在校验 OSS 对象", initData.upload.ossUri, 100);
         const completeResponse = await fetch(`/api/admin/oss/uploads/${encodeURIComponent(initData.upload.id)}/complete`, {
