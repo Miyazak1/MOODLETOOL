@@ -720,6 +720,18 @@
         width: auto;
         min-height: 0;
       }
+      .inline-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 40px;
+        margin: 0;
+        color: var(--ink);
+      }
+      .inline-check input {
+        width: auto;
+        min-height: 0;
+      }
       table {
         width: 100%;
         border-collapse: collapse;
@@ -842,6 +854,22 @@
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
+      }
+      .oss-direct-upload {
+        display: grid;
+        gap: 12px;
+        margin-top: 14px;
+        border: 1px solid #bfd2e8;
+        border-radius: 8px;
+        padding: 12px;
+        background: #f8fbff;
+      }
+      .oss-direct-upload h3 {
+        margin: 0;
+        font-size: 15px;
+      }
+      .oss-direct-upload .upload-status {
+        margin-top: 0;
       }
       .status-ok {
         color: #0f6a46;
@@ -1194,6 +1222,41 @@
           <button id="readinessMediaButton" type="button">检查媒体配置</button>
           <span class="media-refresh-state" id="mediaRefreshState">自动刷新未启动</span>
         </div>
+        <div class="oss-direct-upload">
+          <div>
+            <h3>直传 OSS inbox</h3>
+            <p class="meta-line">大文件会从浏览器直接上传到 OSS，不经过 ECS 公网带宽。完整课件包可在上传后自动导入课程，并继续创建媒体发布任务。</p>
+          </div>
+          <div class="grid compact">
+            <div>
+              <label for="ossDirectKind">上传类型</label>
+              <select id="ossDirectKind">
+                <option value="course-package">完整课件包 ZIP</option>
+                <option value="video">单个视频</option>
+                <option value="h5p">H5P 文件</option>
+                <option value="ispring-package">iSpring 包</option>
+              </select>
+            </div>
+            <div>
+              <label for="ossDirectFile">文件</label>
+              <input id="ossDirectFile" type="file" />
+            </div>
+            <div>
+              <label>完成后动作</label>
+              <label class="inline-check"><input id="ossDirectAutoPublish" type="checkbox" /> 上传后自动创建发布任务</label>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="primary" id="ossDirectUploadButton" type="button">直传到 OSS</button>
+          </div>
+          <div class="upload-status" id="ossDirectStatus" hidden>
+            <strong id="ossDirectStatusTitle">等待上传</strong>
+            <div class="progress" id="ossDirectProgress" hidden>
+              <div class="progress-bar" id="ossDirectProgressBar"></div>
+            </div>
+            <div class="meta-line" id="ossDirectStatusDetail"></div>
+          </div>
+        </div>
         <div id="mediaCourseTable" hidden></div>
         <div id="mediaJobsTable" hidden></div>
         <div id="mediaJobLogPanel" class="upload-status" hidden>
@@ -1475,6 +1538,15 @@ pm2 restart ossd-course-portal --update-env</pre>
       const mediaJobLogTitle = document.querySelector("#mediaJobLogTitle");
       const mediaJobLogText = document.querySelector("#mediaJobLogText");
       const mediaRefreshState = document.querySelector("#mediaRefreshState");
+      const ossDirectKind = document.querySelector("#ossDirectKind");
+      const ossDirectFile = document.querySelector("#ossDirectFile");
+      const ossDirectAutoPublish = document.querySelector("#ossDirectAutoPublish");
+      const ossDirectUploadButton = document.querySelector("#ossDirectUploadButton");
+      const ossDirectStatus = document.querySelector("#ossDirectStatus");
+      const ossDirectStatusTitle = document.querySelector("#ossDirectStatusTitle");
+      const ossDirectStatusDetail = document.querySelector("#ossDirectStatusDetail");
+      const ossDirectProgress = document.querySelector("#ossDirectProgress");
+      const ossDirectProgressBar = document.querySelector("#ossDirectProgressBar");
       const courseNavigationLinks = [
         document.querySelector("#topCourseLink"),
         document.querySelector("#sidebarCourseLink"),
@@ -2195,6 +2267,37 @@ pm2 restart ossd-course-portal --update-env</pre>
         mediaOssStats.hidden = false;
       }
 
+      function setOssDirectStatus(title, detail = "", percent = null, type = "info") {
+        if (!ossDirectStatus) return;
+        ossDirectStatus.hidden = false;
+        ossDirectStatus.classList.toggle("error", type === "error");
+        ossDirectStatusTitle.textContent = title;
+        ossDirectStatusTitle.className = type === "error" ? "error" : "";
+        ossDirectStatusDetail.textContent = detail;
+        if (Number.isFinite(percent)) {
+          ossDirectProgress.hidden = false;
+          ossDirectProgressBar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+        } else {
+          ossDirectProgress.hidden = true;
+          ossDirectProgressBar.style.width = "0%";
+        }
+      }
+
+      function renderOssDirectUploadConfig(config = {}) {
+        if (!ossDirectUploadButton) return;
+        const direct = config.directUpload || {};
+        const ready = Boolean(direct.enabled && direct.configured);
+        ossDirectUploadButton.disabled = !ready;
+        const detail = ready
+          ? `可直传到 ${direct.bucket || "OSS"}，单文件上限 ${direct.maxGb || 0} GB。`
+          : direct.reason || "OSS 直传未配置。";
+        if (!ready) {
+          setOssDirectStatus("OSS 直传暂不可用", detail, null, "error");
+        } else if (!ossDirectStatus.hidden && /暂不可用/.test(ossDirectStatusTitle.textContent || "")) {
+          ossDirectStatus.hidden = true;
+        }
+      }
+
       function renderMediaConfig(data) {
         const config = data.config || {};
         const summary = data.summary || {};
@@ -2215,6 +2318,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         if (!config.enabled) {
           mediaNotice.innerHTML = "媒体任务中心当前未启用。现有命令行迁移完成后，在生产环境设置 <strong>MEDIA_JOBS_ENABLED=1</strong> 再允许后台创建任务。";
         }
+        renderOssDirectUploadConfig(config);
         renderMediaOss(data.oss);
       }
 
@@ -3399,6 +3503,88 @@ pm2 restart ossd-course-portal --update-env</pre>
         return data;
       }
 
+      function uploadOssPostObject(form, file, onProgress) {
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open(form.method || "POST", form.url, true);
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable && typeof onProgress === "function") {
+              onProgress(Math.round((event.loaded / event.total) * 100), event.loaded, event.total);
+            }
+          };
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve({ status: xhr.status, text: xhr.responseText || "" });
+            } else {
+              reject(new Error(`OSS 上传失败：HTTP ${xhr.status} ${xhr.responseText || ""}`.trim()));
+            }
+          };
+          xhr.onerror = () => reject(new Error("OSS 上传网络错误，请检查 CORS、网络或 OSS 域名配置。"));
+          xhr.ontimeout = () => reject(new Error("OSS 上传超时，请重试。"));
+          const data = new FormData();
+          Object.entries(form.fields || {}).forEach(([key, value]) => {
+            data.append(key, value);
+          });
+          data.append("file", file);
+          xhr.send(data);
+        });
+      }
+
+      async function directUploadToOss() {
+        const file = ossDirectFile?.files?.[0];
+        if (!file) throw new Error("请选择要直传到 OSS 的文件。");
+        const course = String(fields.course.value || "").trim().toUpperCase();
+        if (!course) throw new Error("请选择课程。");
+        const kind = ossDirectKind?.value || "course-package";
+        const autoPublish = Boolean(ossDirectAutoPublish?.checked);
+        if (autoPublish && kind === "ispring-package") {
+          const ok = confirm("当前自动发布支持完整课件包 ZIP、单个视频和 H5P。iSpring 单包会先保存到 OSS inbox，暂不会自动覆盖课程。仍然继续上传吗？");
+          if (!ok) return { canceled: true, message: "已取消 OSS 直传。" };
+        }
+        setOssDirectStatus("正在创建 OSS 上传授权", `${course} · ${file.name} · ${formatBytes(file.size)}`, 0);
+        const initResponse = await fetch("/api/admin/oss/uploads/init", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            course,
+            kind,
+            fileName: file.name,
+            fileSize: file.size,
+            contentType: file.type || "",
+          }),
+        });
+        const initData = await initResponse.json();
+        if (!initResponse.ok || !initData.ok) throw new Error(responseMessage(initData, `创建 OSS 上传授权失败：HTTP ${initResponse.status}`));
+        setOssDirectStatus("正在直传 OSS", `${initData.upload.objectKey}`, 1);
+        await uploadOssPostObject(initData.form, file, (percent, loaded, total) => {
+          setOssDirectStatus("正在直传 OSS", `${formatBytes(loaded)} / ${formatBytes(total)} · ${initData.upload.objectKey}`, percent);
+        });
+        setOssDirectStatus("正在校验 OSS 对象", initData.upload.ossUri, 100);
+        const completeResponse = await fetch(`/api/admin/oss/uploads/${encodeURIComponent(initData.upload.id)}/complete`, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            objectKey: initData.upload.objectKey,
+            autoPublish,
+          }),
+        });
+        const completeData = await completeResponse.json();
+        if (!completeResponse.ok || !completeData.ok) throw new Error(responseMessage(completeData, `OSS 上传完成校验失败：HTTP ${completeResponse.status}`));
+        const detail = completeData.job
+          ? `已创建媒体任务 ${completeData.job.id}。`
+          : completeData.coursePackageTask
+            ? `已创建课程导入任务 ${completeData.coursePackageTask.importId || completeData.upload.importId}，导入完成后会自动发布媒体。`
+          : completeData.warning || "文件已保存到 OSS inbox。";
+        setOssDirectStatus("OSS 直传完成", detail, 100, completeData.warning ? "warn" : "info");
+        ossDirectFile.value = "";
+        await readMedia({ writeOutput: false });
+        startMediaAutoRefresh();
+        write(completeData);
+        return completeData;
+      }
+
       async function publishCurrentCourse() {
         if (!confirm(`确认发布 ${fields.course.value} 到 OSS/CDN？系统会审计、压缩候选视频并上传该课程资源。`)) {
           return { canceled: true, message: "已取消发布当前课程。" };
@@ -3943,6 +4129,11 @@ pm2 restart ossd-course-portal --update-env</pre>
       document.querySelector("#readinessMediaButton").addEventListener("click", () => {
         runButtonAction("#readinessMediaButton", "正在创建媒体配置检查任务...", () => checkMediaReadiness(), "媒体配置检查任务已创建");
       });
+      if (ossDirectUploadButton) {
+        ossDirectUploadButton.addEventListener("click", () => {
+          runButtonAction(ossDirectUploadButton, "正在直传 OSS...", () => directUploadToOss(), "OSS 直传流程已完成");
+        });
+      }
       mediaCourseTable.addEventListener("click", (event) => {
         const button = event.target.closest("[data-media-course-action]");
         if (!button) return;

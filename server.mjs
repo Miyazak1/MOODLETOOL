@@ -71,6 +71,17 @@ const mediaJobsAutoPublishAfterUpload = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTE
 const mediaJobsAutoPublishAfterPackage = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_PACKAGE === "1";
 const mediaJobsAutoPublishAfterActivate = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_ACTIVATE === "1";
 const ossBucketUri = process.env.OSS_BUCKET_URI || "";
+const ossDirectUploadEnabled = process.env.OSS_DIRECT_UPLOAD_ENABLED === "1";
+const ossDirectUploadBucket = process.env.OSS_DIRECT_UPLOAD_BUCKET || String(ossBucketUri || "").replace(/^oss:\/\//i, "").split("/")[0] || "";
+const ossDirectUploadEndpoint = String(process.env.OSS_DIRECT_UPLOAD_ENDPOINT || "https://oss-cn-hongkong.aliyuncs.com").replace(/\/+$/, "");
+const ossDirectUploadInboxPrefix = toPosixPath(process.env.OSS_DIRECT_UPLOAD_INBOX_PREFIX || "inbox/uploads").replace(/^\/+|\/+$/g, "");
+const ossDirectUploadMaxBytes = Math.max(1, Number(process.env.OSS_DIRECT_UPLOAD_MAX_GB || 5)) * 1024 * 1024 * 1024;
+const ossDirectUploadTtlSeconds = Math.max(60, Number(process.env.OSS_DIRECT_UPLOAD_TOKEN_TTL_SECONDS || 1800));
+const ossDirectUploadAccessKeyId = process.env.OSS_DIRECT_UPLOAD_ACCESS_KEY_ID || process.env.ALIBABA_CLOUD_ACCESS_KEY_ID || process.env.OSS_ACCESS_KEY_ID || "";
+const ossDirectUploadAccessKeySecret = process.env.OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET || process.env.ALIBABA_CLOUD_ACCESS_KEY_SECRET || process.env.OSS_ACCESS_KEY_SECRET || "";
+const ossDirectUploadSecurityToken = process.env.OSS_DIRECT_UPLOAD_SECURITY_TOKEN || process.env.ALIBABA_CLOUD_SECURITY_TOKEN || "";
+const ossUploadsDataRoot = resolve(process.env.OSS_UPLOADS_DATA_ROOT || join(portalDataRoot, "oss-uploads"));
+const ossUploadsIndexPath = join(ossUploadsDataRoot, "index.json");
 const ffmpegPath = process.env.FFMPEG_PATH || "ffmpeg";
 const ffprobePath = process.env.FFPROBE_PATH || "ffprobe";
 const ossutilPath = process.env.OSSUTIL_PATH || "ossutil";
@@ -741,7 +752,253 @@ function mediaConfig() {
     autoPublishAfterUpload: mediaJobsAutoPublishAfterUpload,
     autoPublishAfterPackage: mediaJobsAutoPublishAfterPackage,
     autoPublishAfterActivate: mediaJobsAutoPublishAfterActivate,
+    directUpload: directUploadPublicConfig(),
   };
+}
+
+function directUploadPublicConfig() {
+  const configured = Boolean(ossDirectUploadBucket && ossDirectUploadEndpoint && ossDirectUploadAccessKeyId && ossDirectUploadAccessKeySecret);
+  return {
+    enabled: ossDirectUploadEnabled,
+    configured,
+    mode: "post-object",
+    bucket: ossDirectUploadBucket,
+    endpoint: ossDirectUploadEndpoint,
+    inboxPrefix: ossDirectUploadInboxPrefix,
+    maxBytes: ossDirectUploadMaxBytes,
+    maxGb: Math.round((ossDirectUploadMaxBytes / 1024 / 1024 / 1024) * 100) / 100,
+    ttlSeconds: ossDirectUploadTtlSeconds,
+    reason: ossDirectUploadEnabled
+      ? configured
+        ? ""
+        : "OSS direct upload credentials are not configured on the server."
+      : "OSS direct upload is disabled. Set OSS_DIRECT_UPLOAD_ENABLED=1.",
+  };
+}
+
+function ossUploadDir(id) {
+  return join(ossUploadsDataRoot, safeSegment(id));
+}
+
+function ossUploadPath(id, name = "upload.json") {
+  return join(ossUploadDir(id), name);
+}
+
+function readOssUploadIndex() {
+  return readJsonFileSync(ossUploadsIndexPath, { schemaVersion: 1, updatedAt: "", uploads: [] });
+}
+
+function writeOssUploadRecord(record) {
+  mkdirSync(ossUploadDir(record.id), { recursive: true });
+  writeJsonFile(ossUploadPath(record.id), record);
+  const index = readOssUploadIndex();
+  const uploads = Array.isArray(index.uploads) ? index.uploads : [];
+  const existingIndex = uploads.findIndex((item) => item.id === record.id);
+  const indexItem = {
+    id: record.id,
+    course: record.course,
+    kind: record.kind,
+    status: record.status,
+    fileName: record.fileName,
+    fileSize: record.fileSize,
+    objectKey: record.objectKey,
+    requestedBy: record.requestedBy,
+    requestedAt: record.requestedAt,
+    completedAt: record.completedAt || null,
+    importId: record.importId || "",
+    jobId: record.jobId || "",
+    error: record.error || "",
+  };
+  if (existingIndex >= 0) uploads[existingIndex] = indexItem;
+  else uploads.unshift(indexItem);
+  writeJsonFile(ossUploadsIndexPath, {
+    schemaVersion: 1,
+    updatedAt: new Date().toISOString(),
+    uploads: uploads.slice(0, 300),
+  });
+}
+
+function readOssUploadRecord(id) {
+  return readJsonFileSync(ossUploadPath(id), null);
+}
+
+function patchOssUploadRecord(id, patch) {
+  const current = readOssUploadRecord(id);
+  if (!current) return null;
+  const next = { ...current, ...patch, updatedAt: new Date().toISOString() };
+  writeOssUploadRecord(next);
+  return next;
+}
+
+function listOssUploadRecords({ course = "", limit = 50 } = {}) {
+  const normalizedCourse = safeSegment(course || "").toUpperCase();
+  const index = readOssUploadIndex();
+  return (index.uploads || [])
+    .filter((item) => !normalizedCourse || item.course === normalizedCourse)
+    .slice(0, Math.max(1, Math.min(200, Number(limit || 50))));
+}
+
+function publicOssUpload(record) {
+  if (!record) return null;
+  return {
+    id: record.id,
+    course: record.course,
+    kind: record.kind,
+    status: record.status,
+    fileName: record.fileName,
+    fileSize: record.fileSize,
+    contentType: record.contentType,
+    bucket: record.bucket,
+    endpoint: record.endpoint,
+    objectKey: record.objectKey,
+    ossUri: record.ossUri,
+    requestedBy: record.requestedBy,
+    requestedAt: record.requestedAt,
+    expiresAt: record.expiresAt,
+    completedAt: record.completedAt || null,
+    importId: record.importId || "",
+    importStatus: record.importStatus || "",
+    jobId: record.jobId || "",
+    mediaJobWarning: record.mediaJobWarning || "",
+    error: record.error || "",
+  };
+}
+
+function directUploadFormUrl(bucket, endpoint) {
+  const parsed = new URL(endpoint);
+  return `${parsed.protocol}//${bucket}.${parsed.host}`;
+}
+
+function normalizeDirectUploadKind(value) {
+  const kind = String(value || "course-package").trim().toLowerCase();
+  const allowed = new Set(["course-package", "video", "h5p", "ispring-package"]);
+  if (!allowed.has(kind)) throw new Error("Unsupported OSS direct upload kind.");
+  return kind;
+}
+
+function directUploadKindCanAutoPublish(kind) {
+  return ["video", "h5p"].includes(String(kind || "").toLowerCase());
+}
+
+function contentTypeForUpload(filename, fallback = "") {
+  const ext = extname(filename || "").toLowerCase();
+  return fallback || mimeTypes[ext] || "application/octet-stream";
+}
+
+function assertDirectUploadReady() {
+  const config = directUploadPublicConfig();
+  if (!config.enabled) throw new Error(config.reason);
+  if (!config.configured) throw new Error(config.reason);
+}
+
+function createDirectUploadPolicy({ course, fileName, fileSize, contentType, kind, actor }) {
+  assertDirectUploadReady();
+  const code = safeSegment(course || "").toUpperCase();
+  if (!code) throw new Error("Course is required.");
+  const safeName = safeSegment(fileName || "upload.bin") || "upload.bin";
+  if (!extname(safeName)) throw new Error("Upload file must have an extension.");
+  const size = Number(fileSize || 0);
+  if (!Number.isFinite(size) || size <= 0) throw new Error("fileSize is required.");
+  if (size > ossDirectUploadMaxBytes) {
+    throw new Error(`Upload is too large. Max direct upload size is ${Math.round(ossDirectUploadMaxBytes / 1024 / 1024 / 1024)} GB.`);
+  }
+  const uploadKind = normalizeDirectUploadKind(kind);
+  const uploadId = `upl-${Date.now()}-${code}-${randomBytes(4).toString("hex")}`;
+  const objectKey = `${ossDirectUploadInboxPrefix}/${code}/${uploadId}/${safeName}`;
+  const expiresAt = new Date(Date.now() + ossDirectUploadTtlSeconds * 1000).toISOString();
+  const policy = {
+    expiration: expiresAt,
+    conditions: [
+      { bucket: ossDirectUploadBucket },
+      ["eq", "$key", objectKey],
+      ["content-length-range", 1, ossDirectUploadMaxBytes],
+      ["starts-with", "$Content-Type", ""],
+    ],
+  };
+  if (ossDirectUploadSecurityToken) {
+    policy.conditions.push({ "x-oss-security-token": ossDirectUploadSecurityToken });
+  }
+  const encodedPolicy = Buffer.from(JSON.stringify(policy), "utf8").toString("base64");
+  const signature = createHmac("sha1", ossDirectUploadAccessKeySecret).update(encodedPolicy).digest("base64");
+  const normalizedContentType = contentTypeForUpload(safeName, contentType);
+  const record = {
+    schemaVersion: 1,
+    id: uploadId,
+    course: code,
+    kind: uploadKind,
+    status: "initialized",
+    fileName: safeName,
+    fileSize: size,
+    contentType: normalizedContentType,
+    bucket: ossDirectUploadBucket,
+    endpoint: ossDirectUploadEndpoint,
+    objectKey,
+    ossUri: `oss://${ossDirectUploadBucket}/${objectKey}`,
+    formUrl: directUploadFormUrl(ossDirectUploadBucket, ossDirectUploadEndpoint),
+    requestedBy: actor || "unknown",
+    requestedAt: new Date().toISOString(),
+    expiresAt,
+    completedAt: null,
+    jobId: "",
+    error: "",
+  };
+  writeOssUploadRecord(record);
+  return {
+    record,
+    form: {
+      method: "POST",
+      url: record.formUrl,
+      fields: {
+        key: objectKey,
+        policy: encodedPolicy,
+        OSSAccessKeyId: ossDirectUploadAccessKeyId,
+        Signature: signature,
+        success_action_status: "200",
+        "Content-Type": normalizedContentType,
+        ...(ossDirectUploadSecurityToken ? { "x-oss-security-token": ossDirectUploadSecurityToken } : {}),
+      },
+    },
+  };
+}
+
+function verifyOssObjectWithOssutil(ossUri) {
+  if (!ossUri) throw new Error("Missing OSS object URI.");
+  if (!ossutilPath) throw new Error("ossutil is not configured.");
+  const result = spawnSync(ossutilPath, ["ls", ossUri], {
+    encoding: "utf8",
+    maxBuffer: 4 * 1024 * 1024,
+    timeout: ossStatsTimeoutMs,
+    windowsHide: true,
+  });
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error((result.stderr || result.stdout || `ossutil exited ${result.status}`).trim());
+  }
+  return parseOssListOutput(result.stdout || "");
+}
+
+function runOssutilCapture(args) {
+  return new Promise((resolvePromise, rejectPromise) => {
+    const child = spawn(ossutilPath, args, {
+      cwd: projectRoot,
+      env: process.env,
+      windowsHide: true,
+    });
+    let stdout = "";
+    let stderr = "";
+    const keepTail = (value, chunk) => `${value}${chunk.toString("utf8")}`.slice(-20000);
+    child.stdout.on("data", (chunk) => {
+      stdout = keepTail(stdout, chunk);
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr = keepTail(stderr, chunk);
+    });
+    child.on("error", rejectPromise);
+    child.on("close", (code) => {
+      if (code === 0) resolvePromise({ stdout, stderr });
+      else rejectPromise(new Error((stderr || stdout || `ossutil exited ${code}`).trim()));
+    });
+  });
 }
 
 function ossStatsTargetUri() {
@@ -850,6 +1107,7 @@ function normalizeMediaJobType(value) {
     "check-readiness",
     "publish-course",
     "publish-all",
+    "publish-upload",
   ]);
   if (!allowed.has(type)) throw new Error("Unsupported media job type.");
   return type;
@@ -1086,6 +1344,11 @@ function mediaJobCommand(job) {
       p.ossutil || ossutilPath,
     ];
   }
+  if (job.type === "publish-upload") {
+    const args = ["scripts/run-oss-upload-media-pipeline.mjs", "--upload", p.uploadId || "", "--uploads-root", ossUploadsDataRoot];
+    args.push("--courseware-root", coursewareRootArg, "--bucket", bucketArg, "--cdn-base-url", cdnArg, "--registry", registryArg, "--asset-scope", assetScopeArg, "--ossutil", p.ossutil || ossutilPath);
+    return args;
+  }
   const args = ["scripts/run-media-delivery-pipeline.mjs"];
   appendCourseArg(args, course, job.type === "publish-all");
   args.push("--courseware-root", coursewareRootArg);
@@ -1117,7 +1380,7 @@ function createMediaJob({ type, course, actor, params = {} }) {
   assertMediaJobsEnabled();
   const normalizedType = normalizeMediaJobType(type);
   const scope = mediaJobScope(normalizedType, course);
-  const writeJobTypes = ["publish-course", "publish-all", "sync-oss", "optimize-videos"];
+  const writeJobTypes = ["publish-course", "publish-all", "publish-upload", "sync-oss", "optimize-videos"];
   const runningPublish = [...mediaJobs.values()].find((job) => ["queued", "running", "cancelling"].includes(job.status) && writeJobTypes.includes(job.type));
   if (runningPublish && writeJobTypes.includes(normalizedType)) {
     throw new Error(`A media publish/sync job is already active (${runningPublish.id}). Wait for it to finish before starting another.`);
@@ -1151,6 +1414,7 @@ function createMediaJob({ type, course, actor, params = {} }) {
       skipPreheat: Boolean(params.skipPreheat),
       skipReadiness: Boolean(params.skipReadiness),
       audit: params.audit || "",
+      uploadId: params.uploadId || "",
     },
     command: [],
     summary: null,
@@ -3824,6 +4088,188 @@ function startCoursePackageFinalize({ course, importId, actor }) {
   });
 }
 
+function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
+  const course = safeSegment(record?.course || "").toUpperCase();
+  const importId = safeSegment(record?.id || coursePackageId());
+  if (!course) throw new Error("Course is required for OSS course package import.");
+  if (!record?.ossUri) throw new Error("OSS upload record is missing ossUri.");
+  const filename = safeSegment(record.fileName || "course-package.zip") || "course-package.zip";
+  if (extname(filename).toLowerCase() !== ".zip") throw new Error("Course package import requires a .zip file.");
+
+  const key = coursePackageTaskKey(course, importId);
+  if (coursePackageFinalizeTasks.has(key)) {
+    return writeCoursePackageTask(course, importId, {
+      status: "processing",
+      phase: "downloading-oss",
+      filename,
+      source: "oss-direct-upload",
+      ossUri: record.ossUri,
+      percent: 5,
+    });
+  }
+
+  const existing = readCoursePackageTask(course, importId);
+  if (existing && ["complete", "committed"].includes(existing.status)) return existing;
+
+  const promise = (async () => {
+    const packageDir = coursePackageDir(course, importId);
+    const sourceZip = ensureInside(packageDir, join(packageDir, filename));
+    await mkdir(dirname(sourceZip), { recursive: true });
+    writeCoursePackageTask(course, importId, {
+      status: "processing",
+      phase: "downloading-oss",
+      filename,
+      source: "oss-direct-upload",
+      ossUri: record.ossUri,
+      totalBytes: record.fileSize || null,
+      percent: 5,
+      startedAt: new Date().toISOString(),
+    });
+    patchOssUploadRecord(record.id, {
+      status: "importing",
+      importId,
+      importStatus: "downloading-oss",
+      error: "",
+    });
+
+    await runOssutilCapture(["cp", record.ossUri, sourceZip]);
+    const downloaded = await stat(sourceZip);
+    writeCoursePackageTask(course, importId, {
+      status: "processing",
+      phase: "extracting",
+      filename,
+      bytesReceived: downloaded.size,
+      totalBytes: record.fileSize || downloaded.size,
+      percent: 35,
+    });
+    patchOssUploadRecord(record.id, {
+      status: "importing",
+      importStatus: "extracting",
+    });
+
+    const review = await createCoursePackageReview({ course, sourceZip, originalFilename: filename, importId });
+    const uploadedZipRemoved = await removeFileIfExists(sourceZip);
+    review.uploadedZipRemoved = uploadedZipRemoved;
+    review.uploadedZipRemovedAt = uploadedZipRemoved ? new Date().toISOString() : null;
+    review.sourceOssUri = record.ossUri;
+    writeJsonFile(coursePackageReviewPath(course, importId), review);
+    writeCoursePackageTask(course, importId, {
+      status: "complete",
+      phase: "ready",
+      percent: 60,
+      summary: review.summary,
+      review,
+    });
+    await appendAdminHistory(course, {
+      actor,
+      action: "oss-course-package-upload-preview",
+      importId,
+      filename,
+      ossUri: record.ossUri,
+      bytes: downloaded.size,
+      summary: review.summary,
+    });
+    patchOssUploadRecord(record.id, {
+      status: autoCommit ? "importing" : "ready",
+      importId,
+      importStatus: autoCommit ? "ready-to-commit" : "ready",
+      reviewSummary: review.summary,
+    });
+
+    if (!autoCommit) return;
+    if (Number(review.summary?.needsReview || 0) > 0) {
+      writeCoursePackageTask(course, importId, {
+        status: "complete",
+        phase: "needs-review",
+        percent: 60,
+        summary: review.summary,
+        review,
+      });
+      patchOssUploadRecord(record.id, {
+        status: "needs-review",
+        importStatus: "needs-review",
+        error: "Package preview contains items that need manual review before commit.",
+      });
+      return;
+    }
+
+    writeCoursePackageTask(course, importId, {
+      status: "processing",
+      phase: "committing",
+      percent: 80,
+      summary: review.summary,
+      review,
+    });
+    patchOssUploadRecord(record.id, {
+      status: "importing",
+      importStatus: "committing",
+    });
+
+    const result = await withOperationLock(`course:${course}:write`, () => commitCoursePackageImport({ course, importId, actor }));
+    const media = tryCreateMediaJob({ type: "publish-course", course, actor });
+    writeCoursePackageTask(course, importId, {
+      status: "committed",
+      phase: media.job ? "media-queued" : "media-not-queued",
+      percent: 100,
+      result,
+      mediaJob: media.job,
+      mediaJobWarning: media.warning || "",
+    });
+    patchOssUploadRecord(record.id, {
+      status: media.job ? "queued" : "imported",
+      importStatus: "committed",
+      jobId: media.job?.id || "",
+      mediaJobWarning: media.warning || "",
+      importResult: {
+        installedCount: Array.isArray(result.installed) ? result.installed.length : null,
+        mode: result.mode || "",
+        manifest: result.manifest || "",
+      },
+      error: "",
+    });
+    await appendAdminHistory(course, {
+      actor,
+      action: "oss-course-package-auto-commit",
+      importId,
+      filename,
+      mediaJobId: media.job?.id || null,
+      mediaJobWarning: media.warning || null,
+    });
+  })()
+    .catch((error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      writeCoursePackageTask(course, importId, {
+        status: "failed",
+        phase: "failed",
+        filename,
+        source: "oss-direct-upload",
+        ossUri: record.ossUri,
+        error: message,
+      });
+      patchOssUploadRecord(record.id, {
+        status: "failed",
+        importId,
+        importStatus: "failed",
+        error: message,
+      });
+    })
+    .finally(() => {
+      coursePackageFinalizeTasks.delete(key);
+    });
+  coursePackageFinalizeTasks.set(key, promise);
+
+  return writeCoursePackageTask(course, importId, {
+    status: "processing",
+    phase: "downloading-oss",
+    filename,
+    source: "oss-direct-upload",
+    ossUri: record.ossUri,
+    totalBytes: record.fileSize || null,
+    percent: 5,
+    startedAt: existing?.startedAt || new Date().toISOString(),
+  });
+}
+
 async function packageContentRoot(extractRoot) {
   const entries = await readdir(extractRoot, { withFileTypes: true });
   const visible = entries.filter((entry) => !entry.name.startsWith("."));
@@ -4647,6 +5093,105 @@ async function handleAdminApi(req, res) {
         },
       });
       return true;
+    }
+
+    if (requestUrl.pathname === "/api/admin/oss/uploads" && req.method === "GET") {
+      sendJson(res, 200, {
+        ok: true,
+        config: directUploadPublicConfig(),
+        uploads: listOssUploadRecords({
+          course: requestUrl.searchParams.get("course") || "",
+          limit: Number(requestUrl.searchParams.get("limit") || 50),
+        }).map(publicOssUpload),
+      });
+      return true;
+    }
+
+    if (requestUrl.pathname === "/api/admin/oss/uploads/init" && req.method === "POST") {
+      const body = await readJsonBody(req, 64 * 1024);
+      const { record, form } = createDirectUploadPolicy({
+        course: body.course,
+        fileName: body.fileName,
+        fileSize: body.fileSize,
+        contentType: body.contentType,
+        kind: body.kind,
+        actor: adminActor(req),
+      });
+      sendJson(res, 200, {
+        ok: true,
+        config: directUploadPublicConfig(),
+        upload: publicOssUpload(record),
+        form,
+      });
+      return true;
+    }
+
+    const ossUploadMatch = /^\/api\/admin\/oss\/uploads\/([^/]+)(?:\/([^/]+))?$/.exec(requestUrl.pathname);
+    if (ossUploadMatch) {
+      const uploadId = safeSegment(ossUploadMatch[1]);
+      const action = ossUploadMatch[2] || "";
+      const record = readOssUploadRecord(uploadId);
+      if (!record) {
+        sendJson(res, 404, { ok: false, error: "OSS upload record not found." });
+        return true;
+      }
+      if (!action && req.method === "GET") {
+        sendJson(res, 200, { ok: true, upload: publicOssUpload(record) });
+        return true;
+      }
+      if (action === "complete" && req.method === "POST") {
+        const body = await readJsonBody(req, 64 * 1024);
+        if (body.objectKey && body.objectKey !== record.objectKey) throw new Error("Completed object key does not match this upload.");
+        const parsed = verifyOssObjectWithOssutil(record.ossUri);
+        record.status = "uploaded";
+        record.completedAt = new Date().toISOString();
+        record.completedBy = adminActor(req);
+        record.verified = {
+          at: record.completedAt,
+          objectCount: parsed.objectCount,
+          totalBytes: parsed.totalBytes,
+        };
+        let job = null;
+        let warning = "";
+        const wantsAutoPublish = body.autoPublish === true || body.autoPublish === "1";
+        let coursePackageTask = null;
+        if (wantsAutoPublish && record.kind === "course-package") {
+          record.status = "importing";
+          record.importId = record.id;
+          record.importStatus = "queued";
+          writeOssUploadRecord(record);
+          coursePackageTask = startOssCoursePackageImport({
+            record: { ...record },
+            actor: adminActor(req),
+            autoCommit: true,
+          });
+          sendJson(res, 200, {
+            ok: true,
+            upload: publicOssUpload(readOssUploadRecord(record.id) || record),
+            coursePackageTask,
+            job: null,
+            warning: "完整课件包已直传到 OSS，后台正在导入课程；导入成功后会自动创建媒体发布任务。",
+          });
+          return true;
+        }
+        if (wantsAutoPublish && directUploadKindCanAutoPublish(record.kind)) {
+          job = createMediaJob({
+            type: "publish-upload",
+            course: record.course,
+            actor: adminActor(req),
+            params: { uploadId: record.id },
+          });
+          record.status = "queued";
+          record.jobId = job.id;
+        } else if (wantsAutoPublish) {
+          warning = record.kind === "ispring-package"
+            ? "iSpring 包已直传到 OSS inbox；当前自动发布只支持完整课件包、单个视频和 H5P。"
+            : "该上传类型已直传到 OSS inbox；当前自动发布只支持完整课件包、单个视频和 H5P。";
+        }
+        writeOssUploadRecord(record);
+        sendJson(res, 200, { ok: true, upload: publicOssUpload(record), job, warning });
+        return true;
+      }
     }
 
     if (requestUrl.pathname === "/api/admin/media/courses" && req.method === "GET") {

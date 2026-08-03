@@ -175,6 +175,35 @@ if (assetMode === "hybrid") {
 }
 if (assetMode === "cdn" && !assetBaseUrl) errors.push("COURSEWARE_ASSET_BASE_URL is required when COURSEWARE_ASSET_MODE=cdn.");
 
+const mediaJobsEnabled = values.MEDIA_JOBS_ENABLED || "";
+if (mediaJobsEnabled === "1") {
+  ok.push("MEDIA_JOBS_ENABLED=1.");
+  const mediaJobsRoot = values.MEDIA_JOBS_DATA_ROOT || "";
+  if (mediaJobsRoot && !mediaJobsRoot.startsWith("/")) errors.push("MEDIA_JOBS_DATA_ROOT should be an absolute Linux path when set.");
+  const mediaConcurrency = Number(values.MEDIA_JOBS_MAX_CONCURRENCY || 1);
+  if (!Number.isFinite(mediaConcurrency) || mediaConcurrency < 1) errors.push("MEDIA_JOBS_MAX_CONCURRENCY should be at least 1.");
+  if (mediaConcurrency > 1) warnings.push("MEDIA_JOBS_MAX_CONCURRENCY > 1 can race over course locks/registry writes; keep it at 1 unless intentionally tested.");
+} else {
+  warnings.push("MEDIA_JOBS_ENABLED is not 1; media task center can display status but cannot create jobs.");
+}
+
+const directUploadEnabled = values.OSS_DIRECT_UPLOAD_ENABLED || "";
+if (directUploadEnabled === "1") {
+  ok.push("OSS_DIRECT_UPLOAD_ENABLED=1.");
+  const directBucket = requireValue("OSS_DIRECT_UPLOAD_BUCKET");
+  const directEndpoint = requireValue("OSS_DIRECT_UPLOAD_ENDPOINT");
+  requireValue("OSS_DIRECT_UPLOAD_ACCESS_KEY_ID");
+  requireValue("OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET");
+  const directRoot = values.OSS_UPLOADS_DATA_ROOT || "";
+  if (directBucket && /^(oss:\/\/|https?:\/\/)/i.test(directBucket)) errors.push("OSS_DIRECT_UPLOAD_BUCKET should be a plain bucket name, for example moodletool.");
+  if (directEndpoint && !/^https:\/\/oss-[a-z0-9-]+\.aliyuncs\.com$/i.test(directEndpoint)) {
+    warnings.push("OSS_DIRECT_UPLOAD_ENDPOINT usually should look like https://oss-cn-hongkong.aliyuncs.com.");
+  }
+  if (directRoot && !directRoot.startsWith("/")) errors.push("OSS_UPLOADS_DATA_ROOT should be an absolute Linux path when set.");
+} else {
+  warnings.push("OSS_DIRECT_UPLOAD_ENABLED is not 1; browser-to-OSS direct upload will be hidden/disabled.");
+}
+
 if ((values.ADMIN_UPLOADS_ENABLED || "") === "1") {
   requireValue("ADMIN_USERNAME");
   requirePassword("ADMIN_PASSWORD");
