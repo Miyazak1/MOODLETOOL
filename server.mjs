@@ -6,6 +6,30 @@ import { spawn, spawnSync } from "node:child_process";
 import { finished, pipeline } from "node:stream/promises";
 import { Transform } from "node:stream";
 import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import {
+  directUploadKindCanAutoPublish,
+  isPlayableCoursewareAsset,
+  playableCoursewareVideoExts,
+} from "./scripts/lib/media-delivery-assets.mjs";
+import {
+  activeMediaJobStatuses,
+  mediaJobDisplay,
+  mediaJobScope,
+  mediaJobSucceededStatus,
+  mediaWriteJobTypes,
+  normalizeMediaJobType,
+  parseMediaJobProgressFromText,
+  retryableMediaJobStatuses,
+} from "./scripts/lib/media-job-model.mjs";
+import { mediaJobCommand as buildMediaJobCommand } from "./scripts/lib/media-job-command.mjs";
+import { createMediaJobStore } from "./scripts/lib/media-job-store.mjs";
+import {
+  createDirectUploadPolicy as buildDirectUploadPolicy,
+  directUploadConfigFromEnv,
+  directUploadPublicConfig as buildDirectUploadPublicConfig,
+} from "./scripts/lib/oss-direct-upload.mjs";
+import { createOssUploadRecordStore } from "./scripts/lib/oss-upload-records.mjs";
+import { listCourseLocks, removeCourseLock } from "./scripts/lib/course-operation-locks.mjs";
 
 const projectRoot = resolve(import.meta.dirname);
 const workspaceRoot = resolve(projectRoot, "..");
@@ -65,23 +89,18 @@ const generatePreviewsAfterUploads = process.env.GENERATE_PREVIEWS_AFTER_UPLOADS
 const mediaJobsEnabled = process.env.MEDIA_JOBS_ENABLED === "1";
 const mediaJobsDataRoot = resolve(process.env.MEDIA_JOBS_DATA_ROOT || join(portalDataRoot, "media-jobs"));
 const mediaJobsIndexPath = join(mediaJobsDataRoot, "index.json");
+const mediaJobStore = createMediaJobStore({ dataRoot: mediaJobsDataRoot, indexPath: mediaJobsIndexPath });
 const mediaJobsMaxConcurrency = Math.max(1, Number(process.env.MEDIA_JOBS_MAX_CONCURRENCY || 1));
 const mediaJobsLogTailBytes = Math.max(16 * 1024, Number(process.env.MEDIA_JOBS_LOG_TAIL_BYTES || 200000));
 const mediaJobsAutoPublishAfterUpload = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_UPLOAD === "1";
 const mediaJobsAutoPublishAfterPackage = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_PACKAGE === "1";
 const mediaJobsAutoPublishAfterActivate = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_ACTIVATE === "1";
+const courseOperationLockRoot = resolve(process.env.COURSE_OPERATION_LOCK_DIR || join(projectRoot, "deployment", "locks"));
 const ossBucketUri = process.env.OSS_BUCKET_URI || "";
-const ossDirectUploadEnabled = process.env.OSS_DIRECT_UPLOAD_ENABLED === "1";
-const ossDirectUploadBucket = process.env.OSS_DIRECT_UPLOAD_BUCKET || String(ossBucketUri || "").replace(/^oss:\/\//i, "").split("/")[0] || "";
-const ossDirectUploadEndpoint = String(process.env.OSS_DIRECT_UPLOAD_ENDPOINT || "https://oss-cn-hongkong.aliyuncs.com").replace(/\/+$/, "");
-const ossDirectUploadInboxPrefix = toPosixPath(process.env.OSS_DIRECT_UPLOAD_INBOX_PREFIX || "inbox/uploads").replace(/^\/+|\/+$/g, "");
-const ossDirectUploadMaxBytes = Math.max(1, Number(process.env.OSS_DIRECT_UPLOAD_MAX_GB || 5)) * 1024 * 1024 * 1024;
-const ossDirectUploadTtlSeconds = Math.max(60, Number(process.env.OSS_DIRECT_UPLOAD_TOKEN_TTL_SECONDS || 1800));
-const ossDirectUploadAccessKeyId = process.env.OSS_DIRECT_UPLOAD_ACCESS_KEY_ID || process.env.ALIBABA_CLOUD_ACCESS_KEY_ID || process.env.OSS_ACCESS_KEY_ID || "";
-const ossDirectUploadAccessKeySecret = process.env.OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET || process.env.ALIBABA_CLOUD_ACCESS_KEY_SECRET || process.env.OSS_ACCESS_KEY_SECRET || "";
-const ossDirectUploadSecurityToken = process.env.OSS_DIRECT_UPLOAD_SECURITY_TOKEN || process.env.ALIBABA_CLOUD_SECURITY_TOKEN || "";
+const ossDirectUploadConfig = directUploadConfigFromEnv(process.env, { ossBucketUri });
 const ossUploadsDataRoot = resolve(process.env.OSS_UPLOADS_DATA_ROOT || join(portalDataRoot, "oss-uploads"));
 const ossUploadsIndexPath = join(ossUploadsDataRoot, "index.json");
+const ossUploadStore = createOssUploadRecordStore({ dataRoot: ossUploadsDataRoot, indexPath: ossUploadsIndexPath });
 const ffmpegPath = process.env.FFMPEG_PATH || "ffmpeg";
 const ffprobePath = process.env.FFPROBE_PATH || "ffprobe";
 const ossutilPath = process.env.OSSUTIL_PATH || "ossutil";
@@ -107,6 +126,18 @@ const loginFailures = new Map();
 const coursePackageTasks = new Map();
 const coursePackageFinalizeTasks = new Map();
 const operationLocks = new Map();
+
+function isExcludedCourseCode(course) {
+  return /C$/i.test(String(course || "").trim());
+}
+
+function visibleCatalogCourses(catalog) {
+  return (catalog.courses || []).filter((course) => !isExcludedCourseCode(course.code));
+}
+
+function visibleRoadmapCourses(roadmap) {
+  return (roadmap.courses || []).filter((course) => !isExcludedCourseCode(course.course));
+}
 
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -398,7 +429,7 @@ function sanitizePublicManifest(manifest) {
 }
 
 function filterCatalogForSession(catalog, session) {
-  const activeCourses = (catalog.courses || []).filter((course) => isCourseActive(course.code));
+  const activeCourses = visibleCatalogCourses(catalog).filter((course) => isCourseActive(course.code));
   if (!portalLoginConfigured() || hasAllCourseAccess(session)) {
     return {
       ...catalog,
@@ -415,7 +446,7 @@ function filterCatalogForSession(catalog, session) {
 }
 
 function filterRoadmapForSession(roadmap, session) {
-  const activeCourses = (roadmap.courses || []).filter((course) => isCourseActive(course.course));
+  const activeCourses = visibleRoadmapCourses(roadmap).filter((course) => isCourseActive(course.course));
   if (!portalLoginConfigured() || hasAllCourseAccess(session)) {
     return {
       ...roadmap,
@@ -615,7 +646,7 @@ function setCourseLifecycleStatus(course, status, actor, note = "") {
 
 async function setLaunchCourseAllowlist(courses, actor, note = "") {
   const catalog = await readCourseCatalog();
-  const catalogCourses = (catalog.courses || []).map((courseEntry) => safeSegment(courseEntry.code).toUpperCase()).filter(Boolean);
+  const catalogCourses = visibleCatalogCourses(catalog).map((courseEntry) => safeSegment(courseEntry.code).toUpperCase()).filter(Boolean);
   const catalogSet = new Set(catalogCourses);
   const activeSet = new Set((courses || []).map((course) => safeSegment(course).toUpperCase()).filter(Boolean));
   const unknown = [...activeSet].filter((course) => !catalogSet.has(course));
@@ -665,21 +696,6 @@ function parseJobPayload(stdout) {
   }
 }
 
-function mediaJobSucceededStatus(job, stdout = "", stderr = "") {
-  const payloadStatus = String(job.payload?.status || "").toLowerCase();
-  if (payloadStatus === "ready-with-warnings" || payloadStatus === "warning") return "warning";
-  if (payloadStatus === "blocked" || payloadStatus === "failed") return "failed";
-  if (payloadStatus === "ready" || payloadStatus === "ok" || payloadStatus === "succeeded") return "succeeded";
-
-  const stepStatuses = Array.isArray(job.payload?.steps) ? job.payload.steps.map((step) => String(step?.status || "").toLowerCase()) : [];
-  if (stepStatuses.includes("failed")) return "failed";
-  if (stepStatuses.includes("warning")) return "warning";
-
-  const output = `${stdout}\n${stderr}`;
-  if (/^Media delivery readiness:\s*ready-with-warnings\b/im.test(output) || /^WARN:/m.test(output)) return "warning";
-  return "succeeded";
-}
-
 function effectiveMediaJobStatus(job) {
   if (job.exitCode !== 0 || !["warning", "succeeded"].includes(job.status)) return job.status;
   const stdoutPath = mediaJobPath(job.id, "stdout.log");
@@ -718,12 +734,8 @@ function listLifecycleJobs() {
     .map(publicLifecycleJob);
 }
 
-function mediaJobDir(id) {
-  return join(mediaJobsDataRoot, safeSegment(id));
-}
-
 function mediaJobPath(id, name) {
-  return join(mediaJobDir(id), name);
+  return mediaJobStore.jobPath(id, name);
 }
 
 function readJsonFileSync(path, fallback = null) {
@@ -757,208 +769,25 @@ function mediaConfig() {
 }
 
 function directUploadPublicConfig() {
-  const configured = Boolean(ossDirectUploadBucket && ossDirectUploadEndpoint && ossDirectUploadAccessKeyId && ossDirectUploadAccessKeySecret);
-  return {
-    enabled: ossDirectUploadEnabled,
-    configured,
-    mode: "post-object",
-    bucket: ossDirectUploadBucket,
-    endpoint: ossDirectUploadEndpoint,
-    inboxPrefix: ossDirectUploadInboxPrefix,
-    maxBytes: ossDirectUploadMaxBytes,
-    maxGb: Math.round((ossDirectUploadMaxBytes / 1024 / 1024 / 1024) * 100) / 100,
-    ttlSeconds: ossDirectUploadTtlSeconds,
-    reason: ossDirectUploadEnabled
-      ? configured
-        ? ""
-        : "OSS direct upload credentials are not configured on the server."
-      : "OSS direct upload is disabled. Set OSS_DIRECT_UPLOAD_ENABLED=1.",
-  };
+  return buildDirectUploadPublicConfig(ossDirectUploadConfig);
 }
 
-function ossUploadDir(id) {
-  return join(ossUploadsDataRoot, safeSegment(id));
-}
-
-function ossUploadPath(id, name = "upload.json") {
-  return join(ossUploadDir(id), name);
-}
-
-function readOssUploadIndex() {
-  return readJsonFileSync(ossUploadsIndexPath, { schemaVersion: 1, updatedAt: "", uploads: [] });
-}
-
-function writeOssUploadRecord(record) {
-  mkdirSync(ossUploadDir(record.id), { recursive: true });
-  writeJsonFile(ossUploadPath(record.id), record);
-  const index = readOssUploadIndex();
-  const uploads = Array.isArray(index.uploads) ? index.uploads : [];
-  const existingIndex = uploads.findIndex((item) => item.id === record.id);
-  const indexItem = {
-    id: record.id,
-    course: record.course,
-    kind: record.kind,
-    status: record.status,
-    fileName: record.fileName,
-    fileSize: record.fileSize,
-    objectKey: record.objectKey,
-    requestedBy: record.requestedBy,
-    requestedAt: record.requestedAt,
-    completedAt: record.completedAt || null,
-    importId: record.importId || "",
-    jobId: record.jobId || "",
-    error: record.error || "",
-  };
-  if (existingIndex >= 0) uploads[existingIndex] = indexItem;
-  else uploads.unshift(indexItem);
-  writeJsonFile(ossUploadsIndexPath, {
-    schemaVersion: 1,
-    updatedAt: new Date().toISOString(),
-    uploads: uploads.slice(0, 300),
+async function createDirectUploadPolicy({ course, fileName, fileSize, contentType, kind, actor }) {
+  const catalog = await readCourseCatalog();
+  const courseCodes = (catalog.courses || []).map((entry) => entry.code);
+  const { record, form } = buildDirectUploadPolicy({
+    config: ossDirectUploadConfig,
+    courseCodes,
+    course,
+    fileName,
+    fileSize,
+    contentType,
+    kind,
+    actor,
+    mimeTypes,
   });
-}
-
-function readOssUploadRecord(id) {
-  return readJsonFileSync(ossUploadPath(id), null);
-}
-
-function patchOssUploadRecord(id, patch) {
-  const current = readOssUploadRecord(id);
-  if (!current) return null;
-  const next = { ...current, ...patch, updatedAt: new Date().toISOString() };
-  writeOssUploadRecord(next);
-  return next;
-}
-
-function listOssUploadRecords({ course = "", limit = 50 } = {}) {
-  const normalizedCourse = safeSegment(course || "").toUpperCase();
-  const index = readOssUploadIndex();
-  return (index.uploads || [])
-    .filter((item) => !normalizedCourse || item.course === normalizedCourse)
-    .slice(0, Math.max(1, Math.min(200, Number(limit || 50))));
-}
-
-function publicOssUpload(record) {
-  if (!record) return null;
-  return {
-    id: record.id,
-    course: record.course,
-    kind: record.kind,
-    status: record.status,
-    fileName: record.fileName,
-    fileSize: record.fileSize,
-    contentType: record.contentType,
-    bucket: record.bucket,
-    endpoint: record.endpoint,
-    objectKey: record.objectKey,
-    ossUri: record.ossUri,
-    requestedBy: record.requestedBy,
-    requestedAt: record.requestedAt,
-    expiresAt: record.expiresAt,
-    completedAt: record.completedAt || null,
-    importId: record.importId || "",
-    importStatus: record.importStatus || "",
-    jobId: record.jobId || "",
-    mediaJobWarning: record.mediaJobWarning || "",
-    error: record.error || "",
-  };
-}
-
-function directUploadFormUrl(bucket, endpoint) {
-  const parsed = new URL(endpoint);
-  return `${parsed.protocol}//${bucket}.${parsed.host}`;
-}
-
-function normalizeDirectUploadKind(value) {
-  const kind = String(value || "course-package").trim().toLowerCase();
-  const allowed = new Set(["course-package", "video", "h5p", "ispring-package"]);
-  if (!allowed.has(kind)) throw new Error("Unsupported OSS direct upload kind.");
-  return kind;
-}
-
-function directUploadKindCanAutoPublish(kind) {
-  return ["video", "h5p"].includes(String(kind || "").toLowerCase());
-}
-
-function contentTypeForUpload(filename, fallback = "") {
-  const ext = extname(filename || "").toLowerCase();
-  return fallback || mimeTypes[ext] || "application/octet-stream";
-}
-
-function assertDirectUploadReady() {
-  const config = directUploadPublicConfig();
-  if (!config.enabled) throw new Error(config.reason);
-  if (!config.configured) throw new Error(config.reason);
-}
-
-function createDirectUploadPolicy({ course, fileName, fileSize, contentType, kind, actor }) {
-  assertDirectUploadReady();
-  const code = safeSegment(course || "").toUpperCase();
-  if (!code) throw new Error("Course is required.");
-  const safeName = safeSegment(fileName || "upload.bin") || "upload.bin";
-  if (!extname(safeName)) throw new Error("Upload file must have an extension.");
-  const size = Number(fileSize || 0);
-  if (!Number.isFinite(size) || size <= 0) throw new Error("fileSize is required.");
-  if (size > ossDirectUploadMaxBytes) {
-    throw new Error(`Upload is too large. Max direct upload size is ${Math.round(ossDirectUploadMaxBytes / 1024 / 1024 / 1024)} GB.`);
-  }
-  const uploadKind = normalizeDirectUploadKind(kind);
-  const uploadId = `upl-${Date.now()}-${code}-${randomBytes(4).toString("hex")}`;
-  const objectKey = `${ossDirectUploadInboxPrefix}/${code}/${uploadId}/${safeName}`;
-  const expiresAt = new Date(Date.now() + ossDirectUploadTtlSeconds * 1000).toISOString();
-  const policy = {
-    expiration: expiresAt,
-    conditions: [
-      { bucket: ossDirectUploadBucket },
-      ["eq", "$key", objectKey],
-      ["content-length-range", 1, ossDirectUploadMaxBytes],
-      ["starts-with", "$Content-Type", ""],
-    ],
-  };
-  if (ossDirectUploadSecurityToken) {
-    policy.conditions.push({ "x-oss-security-token": ossDirectUploadSecurityToken });
-  }
-  const encodedPolicy = Buffer.from(JSON.stringify(policy), "utf8").toString("base64");
-  const signature = createHmac("sha1", ossDirectUploadAccessKeySecret).update(encodedPolicy).digest("base64");
-  const normalizedContentType = contentTypeForUpload(safeName, contentType);
-  const record = {
-    schemaVersion: 1,
-    id: uploadId,
-    course: code,
-    kind: uploadKind,
-    status: "initialized",
-    fileName: safeName,
-    fileSize: size,
-    contentType: normalizedContentType,
-    bucket: ossDirectUploadBucket,
-    endpoint: ossDirectUploadEndpoint,
-    objectKey,
-    ossUri: `oss://${ossDirectUploadBucket}/${objectKey}`,
-    formUrl: directUploadFormUrl(ossDirectUploadBucket, ossDirectUploadEndpoint),
-    requestedBy: actor || "unknown",
-    requestedAt: new Date().toISOString(),
-    expiresAt,
-    completedAt: null,
-    jobId: "",
-    error: "",
-  };
-  writeOssUploadRecord(record);
-  return {
-    record,
-    form: {
-      method: "POST",
-      url: record.formUrl,
-      fields: {
-        key: objectKey,
-        policy: encodedPolicy,
-        OSSAccessKeyId: ossDirectUploadAccessKeyId,
-        Signature: signature,
-        success_action_status: "200",
-        "Content-Type": normalizedContentType,
-        ...(ossDirectUploadSecurityToken ? { "x-oss-security-token": ossDirectUploadSecurityToken } : {}),
-      },
-    },
-  };
+  ossUploadStore.writeRecord(record);
+  return { record, form };
 }
 
 function verifyOssObjectWithOssutil(ossUri) {
@@ -1097,111 +926,20 @@ function assertMediaJobsEnabled() {
   }
 }
 
-function normalizeMediaJobType(value) {
-  const type = String(value || "").trim().toLowerCase();
-  const allowed = new Set([
-    "audit-videos",
-    "optimize-videos",
-    "sync-oss",
-    "export-cdn-preheat",
-    "check-readiness",
-    "publish-course",
-    "publish-all",
-    "publish-upload",
-  ]);
-  if (!allowed.has(type)) throw new Error("Unsupported media job type.");
-  return type;
-}
-
-function mediaJobScope(type, course) {
-  if (type === "publish-all") return { scope: "all", course: "" };
-  if (type === "audit-videos" && !course) return { scope: "all", course: "" };
-  if (type === "optimize-videos" && !course) return { scope: "all", course: "" };
-  if (type === "sync-oss" && !course) return { scope: "all", course: "" };
-  const normalizedCourse = safeSegment(course || "").toUpperCase();
-  if (!normalizedCourse && !["check-readiness", "export-cdn-preheat"].includes(type)) {
-    throw new Error("Course is required for this media job type.");
-  }
-  return { scope: normalizedCourse ? "course" : "all", course: normalizedCourse };
-}
-
 function parseMediaJobProgress(job) {
   const stdoutPath = mediaJobPath(job.id, "stdout.log");
   const stderrPath = mediaJobPath(job.id, "stderr.log");
   const stdout = readFileTail(stdoutPath, Math.min(mediaJobsLogTailBytes, 300000));
   const stderr = readFileTail(stderrPath, Math.min(mediaJobsLogTailBytes, 120000));
-  const lines = `${stdout}\n${stderr}`.split(/\r?\n/).filter(Boolean);
-  const progress = {
-    phase: "",
-    current: 0,
-    total: 0,
-    percent: null,
-    failed: 0,
-    currentFile: "",
-    message: "",
-  };
-  for (const line of lines) {
-    const phaseMatch = /^==\s+(.+?)\s+==$/.exec(line.trim());
-    if (phaseMatch) {
-      progress.phase = phaseMatch[1];
-      progress.message = phaseMatch[1];
-      continue;
-    }
-    let match = /^OSS sync uploading:\s+(\d+)\/(\d+)\s+([0-9.]+)\s+MB\s+(.+)$/i.exec(line);
-    if (match) {
-      progress.phase = "OSS upload";
-      progress.current = Number(match[1]);
-      progress.total = Number(match[2]);
-      progress.percent = progress.total ? Math.max(0, Math.min(99, Math.round(((progress.current - 1) / progress.total) * 100))) : null;
-      progress.currentFile = match[4];
-      progress.message = `正在上传 ${match[1]}/${match[2]} · ${match[3]} MB`;
-      continue;
-    }
-    match = /^OSS sync progress:\s+(\d+)\/(\d+)\s+uploaded,\s+failed\s+(\d+)$/i.exec(line);
-    if (match) {
-      progress.phase = "OSS upload";
-      progress.current = Number(match[1]);
-      progress.total = Number(match[2]);
-      progress.failed = Number(match[3]);
-      progress.percent = progress.total ? Math.round((progress.current / progress.total) * 100) : null;
-      progress.message = `已上传 ${match[1]}/${match[2]}，失败 ${match[3]}`;
-      continue;
-    }
-    match = /^Video optimization processing:\s+(\d+)\/(\d+)\s+([0-9.]+)\s+MB\s+(.+)$/i.exec(line);
-    if (match) {
-      progress.phase = "Video optimization";
-      progress.current = Number(match[1]);
-      progress.total = Number(match[2]);
-      progress.percent = progress.total ? Math.max(0, Math.min(99, Math.round(((progress.current - 1) / progress.total) * 100))) : null;
-      progress.currentFile = match[4];
-      progress.message = `正在压缩 ${match[1]}/${match[2]} · ${match[3]} MB`;
-      continue;
-    }
-    match = /^Video optimization progress:\s+(\d+)\/(\d+)\s+optimized,\s+failed\s+(\d+)$/i.exec(line);
-    if (match) {
-      progress.phase = "Video optimization";
-      progress.current = Number(match[1]);
-      progress.total = Number(match[2]);
-      progress.failed = Number(match[3]);
-      progress.percent = progress.total ? Math.round((progress.current / progress.total) * 100) : null;
-      progress.message = `已压缩 ${match[1]}/${match[2]}，失败 ${match[3]}`;
-    }
-  }
-  if (job.status === "succeeded" || job.status === "warning") {
-    progress.percent = 100;
-    progress.message = job.status === "warning" ? "已完成，有提示" : "已完成";
-  } else if (job.status === "failed") {
-    progress.message = progress.message || "任务失败";
-  } else if (job.status === "queued") {
-    progress.message = "等待执行";
-  } else if (!progress.message && job.status === "running") {
-    progress.message = "正在运行";
-  }
-  return progress;
+  return parseMediaJobProgressFromText(job, `${stdout}\n${stderr}`);
 }
 
 function publicMediaJob(job) {
   const status = effectiveMediaJobStatus(job);
+  const progress = parseMediaJobProgress({ ...job, status });
+  const stdoutTail = readFileTail(mediaJobPath(job.id, "stdout.log"), Math.min(mediaJobsLogTailBytes, 80000));
+  const stderrTail = readFileTail(mediaJobPath(job.id, "stderr.log"), Math.min(mediaJobsLogTailBytes, 80000));
+  const displayJob = { ...job, status, progress, stdoutTail, stderrTail };
   return {
     id: job.id,
     type: job.type,
@@ -1215,7 +953,8 @@ function publicMediaJob(job) {
     pid: job.pid || null,
     exitCode: job.exitCode ?? null,
     params: job.params || {},
-    progress: parseMediaJobProgress({ ...job, status }),
+    progress,
+    display: mediaJobDisplay(displayJob),
     summary: job.summary || null,
     payload: job.payload || null,
     error: job.error || null,
@@ -1227,48 +966,90 @@ function publicMediaJob(job) {
   };
 }
 
+function publicCourseOperationLock(lock) {
+  const activeJob = [...mediaJobs.values()]
+    .filter((job) => activeMediaJobStatuses.has(job.status) && mediaWriteJobTypes.has(job.type))
+    .find((job) => job.course === lock.course || job.scope === "all") || null;
+  return {
+    course: lock.course,
+    operation: lock.operation,
+    pid: lock.pid,
+    pidAlive: lock.pidAlive,
+    startedAt: lock.startedAt,
+    ageSeconds: lock.ageSeconds,
+    stale: lock.stale,
+    activeJob: activeJob ? publicMediaJob(activeJob) : null,
+    canClear: lock.stale && !activeJob,
+  };
+}
+
+function mediaLockStatus() {
+  ensureMediaJobsLoaded();
+  const locks = listCourseLocks({ lockRoot: courseOperationLockRoot }).map(publicCourseOperationLock);
+  return {
+    root: courseOperationLockRoot,
+    count: locks.length,
+    staleCount: locks.filter((lock) => lock.stale).length,
+    clearableCount: locks.filter((lock) => lock.canClear).length,
+    locks,
+  };
+}
+
+function clearStaleCourseOperationLock(course) {
+  ensureMediaJobsLoaded();
+  const safeCourse = safeSegment(course || "").toUpperCase();
+  if (!safeCourse) throw new Error("Course is required.");
+  const activeJob = [...mediaJobs.values()]
+    .filter((job) => activeMediaJobStatuses.has(job.status))
+    .find((job) => job.course === safeCourse || job.scope === "all");
+  if (activeJob) throw new Error(`Course ${safeCourse} has an active media job (${activeJob.id}); refusing to clear its lock.`);
+  const removed = removeCourseLock(safeCourse, { lockRoot: courseOperationLockRoot, requireStale: true });
+  return publicCourseOperationLock(removed);
+}
+
+function clearAllStaleCourseOperationLocks() {
+  ensureMediaJobsLoaded();
+  const before = mediaLockStatus();
+  const removed = [];
+  const skipped = [];
+  const failed = [];
+  for (const lock of before.locks) {
+    if (!lock.canClear) {
+      skipped.push({
+        course: lock.course,
+        reason: lock.activeJob ? `active media job ${lock.activeJob.id}` : lock.stale ? "not clearable" : "not stale",
+      });
+      continue;
+    }
+    try {
+      removed.push(clearStaleCourseOperationLock(lock.course));
+    } catch (error) {
+      failed.push({
+        course: lock.course,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+  return {
+    removed,
+    skipped,
+    failed,
+    locks: mediaLockStatus(),
+  };
+}
+
 function persistMediaJobsIndex() {
-  const jobs = [...mediaJobs.values()]
-    .sort((a, b) => String(b.requestedAt).localeCompare(String(a.requestedAt)))
-    .map((job) => ({
-      id: job.id,
-      type: job.type,
-      scope: job.scope,
-      course: job.course || "",
-      status: job.status,
-      requestedBy: job.requestedBy,
-      requestedAt: job.requestedAt,
-      startedAt: job.startedAt || null,
-      finishedAt: job.finishedAt || null,
-      pid: job.pid || null,
-      exitCode: job.exitCode ?? null,
-      summary: job.summary || null,
-      error: job.error || null,
-    }))
-    .slice(0, 200);
-  writeJsonFile(mediaJobsIndexPath, { schemaVersion: 1, updatedAt: new Date().toISOString(), jobs });
+  mediaJobStore.writeIndex(mediaJobs.values());
 }
 
 function persistMediaJob(job) {
-  mkdirSync(mediaJobDir(job.id), { recursive: true });
-  writeJsonFile(mediaJobPath(job.id, "job.json"), job);
-  persistMediaJobsIndex();
+  mediaJobStore.writeJobAndIndex(job, mediaJobs.values());
 }
 
 function ensureMediaJobsLoaded() {
   if (mediaJobsInitialized) return;
   mediaJobsInitialized = true;
-  mkdirSync(mediaJobsDataRoot, { recursive: true });
-  const index = readJsonFileSync(mediaJobsIndexPath, { jobs: [] });
-  for (const item of index.jobs || []) {
-    const job = readJsonFileSync(mediaJobPath(item.id, "job.json"), null) || item;
-    if (!job?.id) continue;
-    if (job.status === "running" || job.status === "cancelling") {
-      job.status = "interrupted";
-      job.finishedAt = new Date().toISOString();
-      job.error = "The server restarted while this media job was running. Check OSS/CDN manually before retrying.";
-      job.pid = null;
-    }
+  for (const job of mediaJobStore.loadJobs()) {
     mediaJobs.set(job.id, job);
   }
   for (const job of mediaJobs.values()) {
@@ -1288,91 +1069,19 @@ function listMediaJobs({ status = "", course = "", limit = 50 } = {}) {
     .map(publicMediaJob);
 }
 
-function appendCourseArg(commandArgs, course, all) {
-  if (all) commandArgs.push("--all");
-  else commandArgs.push("--course", course);
-}
-
 function mediaJobCommand(job) {
-  const p = job.params || {};
-  const all = job.scope === "all";
-  const course = job.course;
-  const coursewareRootArg = p.coursewareRoot || courseActiveRoot;
-  const bucketArg = p.bucket || ossBucketUri;
-  const cdnArg = p.cdnBaseUrl || coursewareAssetBaseUrl;
-  const assetModeArg = p.assetMode || coursewareAssetMode;
-  const assetScopeArg = p.assetScope || coursewareOssAssetScope;
-  const registryArg = p.registry || coursewareAssetRegistryPath;
-  if (job.type === "audit-videos") {
-    const args = ["scripts/audit-video-bitrate.mjs"];
-    appendCourseArg(args, course, all);
-    args.push("--courseware-root", coursewareRootArg, "--ffprobe", p.ffprobe || ffprobePath);
-    return args;
-  }
-  if (job.type === "optimize-videos") {
-    const args = ["scripts/optimize-video-bitrate.mjs", p.applyOptimize === false ? "--dry-run" : "--apply"];
-    appendCourseArg(args, course, all);
-    args.push("--ffmpeg", p.ffmpeg || ffmpegPath, "--ffprobe", p.ffprobe || ffprobePath);
-    if (p.audit) args.push("--audit", p.audit);
-    return args;
-  }
-  if (job.type === "sync-oss") {
-    const args = ["scripts/sync-courseware-oss.mjs", p.applyOss === false ? "--dry-run" : "--apply"];
-    appendCourseArg(args, course, all);
-    args.push("--courseware-root", coursewareRootArg, "--bucket", bucketArg, "--cdn-base-url", cdnArg, "--registry", registryArg, "--asset-scope", assetScopeArg, "--ossutil", p.ossutil || ossutilPath);
-    return args;
-  }
-  if (job.type === "export-cdn-preheat") {
-    const args = ["scripts/export-cdn-preheat-list.mjs", "--registry", registryArg, "--cdn-base-url", cdnArg];
-    if (!all && course) args.push("--course", course);
-    return args;
-  }
-  if (job.type === "check-readiness") {
-    return [
-      "scripts/check-media-delivery-readiness.mjs",
-      "--bucket",
-      bucketArg,
-      "--cdn-base-url",
-      cdnArg,
-      "--asset-mode",
-      assetModeArg,
-      "--ffmpeg",
-      p.ffmpeg || ffmpegPath,
-      "--ffprobe",
-      p.ffprobe || ffprobePath,
-      "--ossutil",
-      p.ossutil || ossutilPath,
-    ];
-  }
-  if (job.type === "publish-upload") {
-    const args = ["scripts/run-oss-upload-media-pipeline.mjs", "--upload", p.uploadId || "", "--uploads-root", ossUploadsDataRoot];
-    args.push("--courseware-root", coursewareRootArg, "--bucket", bucketArg, "--cdn-base-url", cdnArg, "--registry", registryArg, "--asset-scope", assetScopeArg, "--ossutil", p.ossutil || ossutilPath);
-    return args;
-  }
-  const args = ["scripts/run-media-delivery-pipeline.mjs"];
-  appendCourseArg(args, course, job.type === "publish-all");
-  args.push("--courseware-root", coursewareRootArg);
-  if (p.applyOptimize !== false) args.push("--apply-optimize");
-  if (p.applyOss !== false) args.push("--apply-oss");
-  if (p.skipPreheat) args.push("--skip-preheat");
-  if (p.skipReadiness) args.push("--skip-readiness");
-  args.push(
-    "--bucket",
-    bucketArg,
-    "--cdn-base-url",
-    cdnArg,
-    "--asset-mode",
-    assetModeArg,
-    "--asset-scope",
-    assetScopeArg,
-    "--ffmpeg",
-    p.ffmpeg || ffmpegPath,
-    "--ffprobe",
-    p.ffprobe || ffprobePath,
-    "--ossutil",
-    p.ossutil || ossutilPath,
-  );
-  return args;
+  return buildMediaJobCommand(job, {
+    coursewareRoot: courseActiveRoot,
+    bucket: ossBucketUri,
+    cdnBaseUrl: coursewareAssetBaseUrl,
+    assetMode: coursewareAssetMode,
+    assetScope: coursewareOssAssetScope,
+    registry: coursewareAssetRegistryPath,
+    ffmpeg: ffmpegPath,
+    ffprobe: ffprobePath,
+    ossutil: ossutilPath,
+    uploadsRoot: ossUploadsDataRoot,
+  });
 }
 
 function createMediaJob({ type, course, actor, params = {} }) {
@@ -1380,9 +1089,8 @@ function createMediaJob({ type, course, actor, params = {} }) {
   assertMediaJobsEnabled();
   const normalizedType = normalizeMediaJobType(type);
   const scope = mediaJobScope(normalizedType, course);
-  const writeJobTypes = ["publish-course", "publish-all", "publish-upload", "sync-oss", "optimize-videos"];
-  const runningPublish = [...mediaJobs.values()].find((job) => ["queued", "running", "cancelling"].includes(job.status) && writeJobTypes.includes(job.type));
-  if (runningPublish && writeJobTypes.includes(normalizedType)) {
+  const runningPublish = [...mediaJobs.values()].find((job) => activeMediaJobStatuses.has(job.status) && mediaWriteJobTypes.has(job.type));
+  if (runningPublish && mediaWriteJobTypes.has(normalizedType)) {
     throw new Error(`A media publish/sync job is already active (${runningPublish.id}). Wait for it to finish before starting another.`);
   }
   const id = `media-${Date.now()}-${randomBytes(4).toString("hex")}`;
@@ -1503,7 +1211,7 @@ function runMediaJob(job) {
       job.status = "failed";
       job.error = stderr.slice(-4000) || stdout.slice(-4000) || `Media job exited ${exitCode}`;
     }
-    writeJsonFile(mediaJobPath(job.id, "report.json"), publicMediaJob(job));
+    mediaJobStore.writeReport(job, publicMediaJob(job));
     persistMediaJob(job);
     runNextMediaJobs();
   });
@@ -1531,7 +1239,7 @@ function retryMediaJob(id, actor) {
   ensureMediaJobsLoaded();
   const job = mediaJobs.get(safeSegment(id));
   if (!job) throw new Error("Media job not found.");
-  if (!["failed", "warning", "cancelled", "interrupted"].includes(job.status)) {
+  if (!retryableMediaJobStatuses.has(job.status)) {
     throw new Error("Only failed, warning, cancelled, or interrupted media jobs can be retried.");
   }
   return createMediaJob({ type: job.type, course: job.course, actor, params: job.params });
@@ -1573,10 +1281,13 @@ async function mediaCourseStatus(courseEntry, assetSet) {
   const code = safeSegment(courseEntry.code || courseEntry).toUpperCase();
   const root = courseRoot(code);
   const files = walkCourseFilesSync(root);
-  const videoExts = new Set([".mp4", ".webm", ".mov", ".m4v"]);
+  const mediaFiles = coursewareOssAssetScope === "all"
+    ? files
+    : files.filter((file) => isPlayableCoursewareAsset(relative(root, file)));
+  const videoExts = playableCoursewareVideoExts;
   let totalBytes = 0;
   let videoCount = 0;
-  for (const file of files) {
+  for (const file of mediaFiles) {
     try {
       const itemStat = await stat(file);
       totalBytes += itemStat.size;
@@ -1586,23 +1297,43 @@ async function mediaCourseStatus(courseEntry, assetSet) {
     }
   }
   const prefix = `${coursewareAssetPrefix}/${code}/`;
-  const published = files.filter((file) => {
+  const published = mediaFiles.filter((file) => {
     const objectKey = `${prefix}${toPosixPath(relative(root, file))}`;
     return assetSet.has(objectKey);
   }).length;
-  const latestJob = [...mediaJobs.values()]
+  const relatedJobs = [...mediaJobs.values()]
     .filter((job) => job.course === code || job.scope === "all")
-    .sort((a, b) => String(b.requestedAt).localeCompare(String(a.requestedAt)))[0] || null;
+    .sort((a, b) => String(b.requestedAt).localeCompare(String(a.requestedAt)));
+  const courseJobs = relatedJobs.filter((job) => job.course === code);
+  const activeJob = relatedJobs.find((job) =>
+    activeMediaJobStatuses.has(job.status)
+    && (job.course === code || (job.scope === "all" && mediaWriteJobTypes.has(job.type)))
+  ) || null;
+  const latestJob = courseJobs[0] || null;
+  const publishState = activeJob
+    ? "publishing"
+    : mediaFiles.length === 0
+      ? "empty"
+      : published === mediaFiles.length
+        ? "published"
+        : published > 0
+          ? "partial"
+          : "unpublished";
   return {
     code,
     title: courseEntry.title || "",
-    fileCount: files.length,
+    fileCount: mediaFiles.length,
+    localFileCount: files.length,
+    skippedLocalFileCount: Math.max(0, files.length - mediaFiles.length),
     totalBytes,
     totalMb: totalBytes / 1024 / 1024,
     videoCount,
     publishedCount: published,
-    unpublishedCount: Math.max(0, files.length - published),
-    cdnCoverage: files.length ? published / files.length : 0,
+    unpublishedCount: Math.max(0, mediaFiles.length - published),
+    cdnCoverage: mediaFiles.length ? published / mediaFiles.length : 0,
+    assetScope: coursewareOssAssetScope,
+    publishState,
+    activeJob: activeJob ? publicMediaJob(activeJob) : null,
     latestJob: latestJob ? publicMediaJob(latestJob) : null,
   };
 }
@@ -1611,8 +1342,9 @@ async function mediaCoursesStatus({ refreshOss = false } = {}) {
   ensureMediaJobsLoaded();
   const catalog = await readCourseCatalog();
   const assetSet = registryAssetSet();
-  const courses = await Promise.all((catalog.courses || []).map((courseEntry) => mediaCourseStatus(courseEntry, assetSet)));
+  const courses = await Promise.all(visibleCatalogCourses(catalog).map((courseEntry) => mediaCourseStatus(courseEntry, assetSet)));
   const oss = readOssStorageStatus({ force: refreshOss });
+  const locks = mediaLockStatus();
   return {
     ok: true,
     generatedAt: new Date().toISOString(),
@@ -1623,14 +1355,19 @@ async function mediaCoursesStatus({ refreshOss = false } = {}) {
       exists: existsSync(coursewareAssetRegistryPath),
     },
     oss,
+    locks,
     courses,
     summary: {
       courses: courses.length,
       files: courses.reduce((sum, course) => sum + course.fileCount, 0),
+      localFiles: courses.reduce((sum, course) => sum + course.localFileCount, 0),
+      skippedFiles: courses.reduce((sum, course) => sum + course.skippedLocalFileCount, 0),
       totalBytes: courses.reduce((sum, course) => sum + course.totalBytes, 0),
       published: courses.reduce((sum, course) => sum + course.publishedCount, 0),
       unpublished: courses.reduce((sum, course) => sum + course.unpublishedCount, 0),
-      runningJobs: [...mediaJobs.values()].filter((job) => ["queued", "running", "cancelling"].includes(job.status)).length,
+      runningJobs: [...mediaJobs.values()].filter((job) => activeMediaJobStatuses.has(job.status)).length,
+      locks: locks.count,
+      staleLocks: locks.staleCount,
     },
   };
 }
@@ -2877,6 +2614,7 @@ async function ensureCourseCatalogEntry(course, manifest) {
   return withOperationLock("course-catalog", async () => {
     const code = safeSegment(course).toUpperCase();
     if (!code) throw new Error("Course is required.");
+    if (isExcludedCourseCode(code)) throw new Error(`Course ${code} is excluded by policy.`);
     const catalog = await readCourseCatalog();
     catalog.courses = Array.isArray(catalog.courses) ? catalog.courses : [];
     const index = catalog.courses.findIndex((entry) => String(entry.code || "").toUpperCase() === code);
@@ -3107,7 +2845,7 @@ function normalizePortalCourses(courses) {
 
 async function availablePortalCourses() {
   const catalog = await readCourseCatalog();
-  return (catalog.courses || []).map((course) => ({
+  return visibleCatalogCourses(catalog).map((course) => ({
     code: course.code,
     title: course.title,
     status: course.status,
@@ -3323,13 +3061,16 @@ async function courseStorageRecord(courseCode, catalogEntry = null) {
 
 async function storageOverview() {
   const catalog = await readCourseCatalog();
-  const catalogMap = new Map((catalog.courses || []).map((course) => [String(course.code || "").toUpperCase(), course]));
+  const catalogCourses = visibleCatalogCourses(catalog);
+  const catalogMap = new Map(catalogCourses.map((course) => [String(course.code || "").toUpperCase(), course]));
   const activeDirs = await listDirectoryNames(courseActiveRoot);
   const archiveDirs = await listDirectoryNames(courseArchiveRoot);
   const courseCodes = new Set([
-    ...(catalog.courses || []).map((course) => String(course.code || "").toUpperCase()).filter(Boolean),
-    ...activeDirs.map((name) => String(name || "").toUpperCase()).filter(Boolean),
-    ...archiveDirs.map((name) => String(name || "").replace(/\.(tar\.gz|zip)$/i, "").toUpperCase()).filter(Boolean),
+    ...catalogCourses.map((course) => String(course.code || "").toUpperCase()).filter(Boolean),
+    ...activeDirs.map((name) => String(name || "").toUpperCase()).filter((name) => name && !isExcludedCourseCode(name)),
+    ...archiveDirs
+      .map((name) => String(name || "").replace(/\.(tar\.gz|zip)$/i, "").toUpperCase())
+      .filter((name) => name && !isExcludedCourseCode(name)),
   ]);
   const courses = (await Promise.all([...courseCodes].map((course) => courseStorageRecord(course, catalogMap.get(course)))))
     .sort((a, b) => b.totalBytes - a.totalBytes || a.course.localeCompare(b.course));
@@ -4125,7 +3866,7 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
       percent: 5,
       startedAt: new Date().toISOString(),
     });
-    patchOssUploadRecord(record.id, {
+    ossUploadStore.patchRecord(record.id, {
       status: "importing",
       importId,
       importStatus: "downloading-oss",
@@ -4142,7 +3883,7 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
       totalBytes: record.fileSize || downloaded.size,
       percent: 35,
     });
-    patchOssUploadRecord(record.id, {
+    ossUploadStore.patchRecord(record.id, {
       status: "importing",
       importStatus: "extracting",
     });
@@ -4169,7 +3910,7 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
       bytes: downloaded.size,
       summary: review.summary,
     });
-    patchOssUploadRecord(record.id, {
+    ossUploadStore.patchRecord(record.id, {
       status: autoCommit ? "importing" : "ready",
       importId,
       importStatus: autoCommit ? "ready-to-commit" : "ready",
@@ -4185,7 +3926,7 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
         summary: review.summary,
         review,
       });
-      patchOssUploadRecord(record.id, {
+      ossUploadStore.patchRecord(record.id, {
         status: "needs-review",
         importStatus: "needs-review",
         error: "Package preview contains items that need manual review before commit.",
@@ -4200,7 +3941,7 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
       summary: review.summary,
       review,
     });
-    patchOssUploadRecord(record.id, {
+    ossUploadStore.patchRecord(record.id, {
       status: "importing",
       importStatus: "committing",
     });
@@ -4215,7 +3956,7 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
       mediaJob: media.job,
       mediaJobWarning: media.warning || "",
     });
-    patchOssUploadRecord(record.id, {
+    ossUploadStore.patchRecord(record.id, {
       status: media.job ? "queued" : "imported",
       importStatus: "committed",
       jobId: media.job?.id || "",
@@ -4246,7 +3987,7 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
         ossUri: record.ossUri,
         error: message,
       });
-      patchOssUploadRecord(record.id, {
+      ossUploadStore.patchRecord(record.id, {
         status: "failed",
         importId,
         importStatus: "failed",
@@ -5089,7 +4830,7 @@ async function handleAdminApi(req, res) {
         ok: true,
         config: mediaConfig(),
         jobs: {
-          running: [...mediaJobs.values()].filter((job) => ["queued", "running", "cancelling"].includes(job.status)).map(publicMediaJob),
+          running: [...mediaJobs.values()].filter((job) => activeMediaJobStatuses.has(job.status)).map(publicMediaJob),
         },
       });
       return true;
@@ -5099,17 +4840,17 @@ async function handleAdminApi(req, res) {
       sendJson(res, 200, {
         ok: true,
         config: directUploadPublicConfig(),
-        uploads: listOssUploadRecords({
+        uploads: ossUploadStore.listRecords({
           course: requestUrl.searchParams.get("course") || "",
           limit: Number(requestUrl.searchParams.get("limit") || 50),
-        }).map(publicOssUpload),
+        }).map(ossUploadStore.publicRecord),
       });
       return true;
     }
 
     if (requestUrl.pathname === "/api/admin/oss/uploads/init" && req.method === "POST") {
       const body = await readJsonBody(req, 64 * 1024);
-      const { record, form } = createDirectUploadPolicy({
+      const { record, form } = await createDirectUploadPolicy({
         course: body.course,
         fileName: body.fileName,
         fileSize: body.fileSize,
@@ -5120,7 +4861,7 @@ async function handleAdminApi(req, res) {
       sendJson(res, 200, {
         ok: true,
         config: directUploadPublicConfig(),
-        upload: publicOssUpload(record),
+        upload: ossUploadStore.publicRecord(record),
         form,
       });
       return true;
@@ -5130,13 +4871,13 @@ async function handleAdminApi(req, res) {
     if (ossUploadMatch) {
       const uploadId = safeSegment(ossUploadMatch[1]);
       const action = ossUploadMatch[2] || "";
-      const record = readOssUploadRecord(uploadId);
+      const record = ossUploadStore.readRecord(uploadId);
       if (!record) {
         sendJson(res, 404, { ok: false, error: "OSS upload record not found." });
         return true;
       }
       if (!action && req.method === "GET") {
-        sendJson(res, 200, { ok: true, upload: publicOssUpload(record) });
+        sendJson(res, 200, { ok: true, upload: ossUploadStore.publicRecord(record) });
         return true;
       }
       if (action === "complete" && req.method === "POST") {
@@ -5159,7 +4900,7 @@ async function handleAdminApi(req, res) {
           record.status = "importing";
           record.importId = record.id;
           record.importStatus = "queued";
-          writeOssUploadRecord(record);
+          ossUploadStore.writeRecord(record);
           coursePackageTask = startOssCoursePackageImport({
             record: { ...record },
             actor: adminActor(req),
@@ -5167,7 +4908,7 @@ async function handleAdminApi(req, res) {
           });
           sendJson(res, 200, {
             ok: true,
-            upload: publicOssUpload(readOssUploadRecord(record.id) || record),
+            upload: ossUploadStore.publicRecord(ossUploadStore.readRecord(record.id) || record),
             coursePackageTask,
             job: null,
             warning: "完整课件包已直传到 OSS，后台正在导入课程；导入成功后会自动创建媒体发布任务。",
@@ -5188,8 +4929,8 @@ async function handleAdminApi(req, res) {
             ? "iSpring 包已直传到 OSS inbox；当前自动发布只支持完整课件包、单个视频和 H5P。"
             : "该上传类型已直传到 OSS inbox；当前自动发布只支持完整课件包、单个视频和 H5P。";
         }
-        writeOssUploadRecord(record);
-        sendJson(res, 200, { ok: true, upload: publicOssUpload(record), job, warning });
+        ossUploadStore.writeRecord(record);
+        sendJson(res, 200, { ok: true, upload: ossUploadStore.publicRecord(record), job, warning });
         return true;
       }
     }
@@ -5234,6 +4975,23 @@ async function handleAdminApi(req, res) {
       return true;
     }
 
+    if (requestUrl.pathname === "/api/admin/media/locks" && req.method === "GET") {
+      sendJson(res, 200, { ok: true, locks: mediaLockStatus() });
+      return true;
+    }
+
+    if (requestUrl.pathname === "/api/admin/media/locks/clear-stale" && req.method === "POST") {
+      sendJson(res, 200, { ok: true, ...clearAllStaleCourseOperationLocks() });
+      return true;
+    }
+
+    const mediaLockMatch = /^\/api\/admin\/media\/locks\/([^/]+)\/clear$/.exec(requestUrl.pathname);
+    if (mediaLockMatch && req.method === "POST") {
+      const removed = clearStaleCourseOperationLock(mediaLockMatch[1]);
+      sendJson(res, 200, { ok: true, removed, locks: mediaLockStatus() });
+      return true;
+    }
+
     const mediaJobMatch = /^\/api\/admin\/media\/jobs\/([^/]+)(?:\/([^/]+))?$/.exec(requestUrl.pathname);
     if (mediaJobMatch) {
       const jobId = mediaJobMatch[1];
@@ -5266,7 +5024,7 @@ async function handleAdminApi(req, res) {
 
     if (requestUrl.pathname === "/api/admin/readiness" && req.method === "GET") {
       const catalog = await readCourseCatalog();
-      const courses = await Promise.all((catalog.courses || []).map((courseEntry) => courseReadinessRecord(courseEntry)));
+      const courses = await Promise.all(visibleCatalogCourses(catalog).map((courseEntry) => courseReadinessRecord(courseEntry)));
       sendJson(res, 200, {
         ok: true,
         generatedAt: new Date().toISOString(),
@@ -5291,7 +5049,7 @@ async function handleAdminApi(req, res) {
 
     if (requestUrl.pathname === "/api/admin/upload-gaps" && req.method === "GET") {
       const catalog = await readCourseCatalog();
-      const courses = await Promise.all((catalog.courses || []).map((courseEntry) => courseUploadGapRecord(courseEntry)));
+      const courses = await Promise.all(visibleCatalogCourses(catalog).map((courseEntry) => courseUploadGapRecord(courseEntry)));
       const uploadItems = courses.flatMap((courseEntry) => courseEntry.uploadItems);
       const reviewItems = courses.flatMap((courseEntry) => courseEntry.reviewItems);
       const externalItems = courses.flatMap((courseEntry) => courseEntry.externalItems);
@@ -5413,7 +5171,7 @@ async function handleAdminApi(req, res) {
     if (requestUrl.pathname === "/api/admin/course-status" && req.method === "GET") {
       const catalog = await readCourseCatalog();
       const store = readCourseStatusStore();
-      const courses = (catalog.courses || []).map((courseEntry) => ({
+      const courses = visibleCatalogCourses(catalog).map((courseEntry) => ({
         code: courseEntry.code,
         title: courseEntry.title,
         catalogStatus: courseEntry.status,

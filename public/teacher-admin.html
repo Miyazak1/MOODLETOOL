@@ -476,8 +476,22 @@
         padding: 12px;
         background: #f7fbff;
       }
+      .upload-status.warn {
+        border-color: #e4c687;
+        background: #fff8eb;
+      }
+      .upload-status.error {
+        border-color: #efb4b4;
+        background: #fff1f1;
+      }
       .upload-status strong {
         color: #123d67;
+      }
+      .upload-status.warn strong {
+        color: #735014;
+      }
+      .upload-status.error strong {
+        color: var(--red);
       }
       .upload-status pre {
         max-height: 24rem;
@@ -772,43 +786,70 @@
         font-size: 14px;
         line-height: 1.35;
       }
-      .media-jobs-table {
-        width: 100%;
+      .media-section-title {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 18px 0 8px;
+      }
+      .media-section-title h3 {
+        margin: 0;
+        font-size: 16px;
+      }
+      .media-course-controls {
+        display: grid;
+        grid-template-columns: minmax(170px, 220px) minmax(240px, 1fr) minmax(170px, 220px);
+        gap: 10px;
+        margin: 12px 0;
+      }
+      .media-course-table-wrap {
+        scrollbar-gutter: stable;
+      }
+      .media-course-table {
         min-width: 1120px;
-        table-layout: fixed;
+        table-layout: auto;
       }
-      .media-jobs-table th,
-      .media-jobs-table td {
-        vertical-align: top;
+      .media-course-table th,
+      .media-course-table td {
+        white-space: nowrap;
         overflow-wrap: normal;
-        word-break: normal;
       }
-      .media-jobs-table th {
-        white-space: nowrap;
+      .media-course-table td:nth-child(2),
+      .media-course-table td:nth-child(10) {
+        min-width: 180px;
+        white-space: normal;
+        overflow-wrap: break-word;
       }
-      .media-jobs-table .col-job {
-        width: 220px;
+      .media-course-table td:nth-child(10) {
+        min-width: 220px;
       }
-      .media-jobs-table .col-type {
-        width: 140px;
+      .media-course-status {
+        display: grid;
+        gap: 3px;
       }
-      .media-jobs-table .col-scope,
-      .media-jobs-table .col-status {
-        width: 86px;
+      .media-course-status strong {
+        font-size: 13px;
       }
-      .media-jobs-table .col-time {
-        width: 150px;
+      .media-course-status small {
+        color: var(--muted);
+        font-size: 12px;
       }
-      .media-jobs-table .col-action {
-        width: 128px;
+      .media-course-row-current td {
+        background: #f1fbf7;
       }
-      .media-jobs-table .col-result {
-        width: 360px;
-      }
-      .media-jobs-table td.media-job-compact {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+      .media-course-current-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 20px;
+        margin-left: 8px;
+        border: 1px solid #98d0bf;
+        border-radius: 999px;
+        padding: 1px 7px;
+        background: #fff;
+        color: #0f6a46;
+        font-size: 12px;
+        font-weight: 700;
       }
       .media-job-id {
         display: block;
@@ -820,7 +861,7 @@
       }
       .media-job-result {
         display: block;
-        max-height: 3.5em;
+        max-height: 4.8em;
         overflow: hidden;
         color: var(--ink);
         line-height: 1.45;
@@ -842,6 +883,12 @@
         color: var(--muted);
         font-size: 12px;
       }
+      .media-job-progress-message {
+        color: var(--ink);
+        font-size: 12px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+      }
       .media-job-current {
         max-width: 100%;
         overflow: hidden;
@@ -854,6 +901,261 @@
         display: flex;
         flex-wrap: wrap;
         gap: 6px;
+      }
+      .media-job-card-list {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+      }
+      .media-job-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(120px, auto);
+        gap: 12px;
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        background: #fff;
+      }
+      .media-job-card > div,
+      .media-upload-card > div,
+      .media-lock-card > div {
+        min-width: 0;
+      }
+      .media-job-card.active {
+        border-left: 4px solid #3f7dbb;
+      }
+      .media-job-card.issue {
+        border-left: 4px solid #c44;
+      }
+      .media-job-card.warning {
+        border-left: 4px solid #c47f00;
+      }
+      .media-job-card header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .media-job-card header strong {
+        font-size: 14px;
+      }
+      .media-job-card .media-job-id {
+        max-width: 260px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .media-job-card .media-job-result {
+        margin-top: 8px;
+        max-height: none;
+        overflow-wrap: anywhere;
+      }
+      .media-job-result details {
+        margin-top: 6px;
+      }
+      .media-job-result summary {
+        color: var(--blue);
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .media-job-result pre {
+        max-height: 180px;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 8px;
+        background: #f7fafc;
+        white-space: pre-wrap;
+      }
+      .media-job-resolution {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: baseline;
+        margin-top: 8px;
+        border-left: 3px solid #7aa7d9;
+        padding: 6px 0 6px 9px;
+        color: #335b7e;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+      .media-job-resolution strong {
+        color: #123d67;
+      }
+      .media-job-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .media-job-metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+      .media-job-metrics span {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 3px 8px;
+        background: #f8fafc;
+        color: var(--ink);
+        font-size: 12px;
+      }
+      .media-job-card-actions {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-width: 112px;
+      }
+      .media-job-empty {
+        margin: 0;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        color: var(--muted);
+        background: #fbfdff;
+      }
+      .media-upload-card-list {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+      }
+      .media-lock-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .media-lock-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: #fff;
+      }
+      .media-lock-card header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+      .media-lock-card.issue {
+        border-left: 4px solid #c47f00;
+      }
+      .media-upload-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        background: #fff;
+      }
+      .media-upload-card header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .media-upload-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .media-upload-object {
+        max-width: 100%;
+        overflow: hidden;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .media-upload-timeline {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .media-upload-step {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px;
+        background: #f8fafc;
+      }
+      .media-upload-step strong {
+        display: block;
+        margin-bottom: 2px;
+        font-size: 12px;
+      }
+      .media-upload-step span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .media-upload-step.done {
+        border-color: #98d0bf;
+        background: #f1fbf7;
+      }
+      .media-upload-step.active {
+        border-color: #7aa7d9;
+        background: #f2f7ff;
+      }
+      .media-upload-step.issue {
+        border-color: #efb0b0;
+        background: #fff5f5;
+      }
+      .media-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 8px;
+        margin: 10px 0;
+      }
+      .media-detail-item {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px;
+        background: #fff;
+      }
+      .media-detail-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .media-detail-item strong {
+        display: block;
+        overflow-wrap: anywhere;
+      }
+      .media-detail-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .media-detail-panel {
+        max-width: 100%;
+        overflow-x: auto;
+      }
+      .media-detail-panel pre {
+        max-width: 100%;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .media-job-card-actions button,
+      .media-toolbar button,
+      .oss-direct-upload button {
+        white-space: nowrap;
       }
       .oss-direct-upload {
         display: grid;
@@ -868,8 +1170,114 @@
         margin: 0;
         font-size: 15px;
       }
+      .oss-direct-hint {
+        margin: -2px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+      }
       .oss-direct-upload .upload-status {
         margin-top: 0;
+      }
+      .oss-direct-queue {
+        display: grid;
+        gap: 8px;
+      }
+      .oss-direct-queue-summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .oss-direct-queue-summary span {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 3px 8px;
+        background: #fff;
+      }
+      .oss-direct-overall-progress {
+        height: 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #dce8f5;
+      }
+      .oss-direct-overall-progress span {
+        display: block;
+        height: 100%;
+        background: var(--blue);
+      }
+      .oss-direct-queue-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(90px, auto);
+        gap: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px;
+        background: #fff;
+      }
+      .oss-direct-queue-heading {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        min-width: 0;
+      }
+      .oss-direct-course {
+        flex: 0 0 auto;
+        border: 1px solid #9fc2e3;
+        border-radius: 999px;
+        padding: 2px 7px;
+        background: #eef7ff;
+        color: #164f7a;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .oss-direct-queue-item strong {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .oss-direct-queue-item small {
+        display: block;
+        overflow-wrap: anywhere;
+      }
+      .oss-direct-queue-item small {
+        color: var(--muted);
+      }
+      .oss-direct-queue-detail {
+        margin-top: 3px;
+      }
+      .oss-direct-queue-metrics {
+        display: block;
+        margin-top: 3px;
+        color: #335b7e !important;
+        font-weight: 700;
+      }
+      .oss-direct-queue-progress {
+        height: 6px;
+        margin-top: 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #dce8f5;
+      }
+      .oss-direct-queue-progress span {
+        display: block;
+        height: 100%;
+        background: var(--green);
+      }
+      .oss-direct-queue-item.failed .oss-direct-queue-progress span {
+        background: var(--red);
+      }
+      .oss-direct-queue-item.uploading .oss-direct-queue-progress span,
+      .oss-direct-queue-item.authorizing .oss-direct-queue-progress span,
+      .oss-direct-queue-item.verifying .oss-direct-queue-progress span {
+        background: var(--blue);
+      }
+      .oss-direct-queue-status {
+        text-align: right;
+        white-space: nowrap;
       }
       .status-ok {
         color: #0f6a46;
@@ -882,6 +1290,23 @@
       .status-risk {
         color: var(--red);
         font-weight: 700;
+      }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 22px;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .status-badge.status-running {
+        background: #eaf5ff;
+        color: #185c8d;
+      }
+      .status-badge.status-warning {
+        background: #fff4dc;
+        color: #9a5a00;
       }
       .toolbar-grid {
         display: grid;
@@ -954,6 +1379,13 @@
         .task-card {
           grid-template-columns: 1fr;
         }
+        .media-course-controls,
+        .media-job-card {
+          grid-template-columns: 1fr;
+        }
+        .media-job-card-actions {
+          justify-content: flex-start;
+        }
       }
       [hidden] {
         display: none !important;
@@ -992,10 +1424,10 @@
           <div class="nav-group-label">课程上下文</div>
           <button type="button" data-admin-nav="course" data-auth-required="1" disabled>选择当前课程</button>
           <div class="nav-group-label">当前课程操作</div>
-          <button type="button" data-admin-nav="upload" data-auth-required="1" disabled>单文件上传</button>
-          <button type="button" data-admin-nav="package" data-auth-required="1" disabled>整课 ZIP 导入</button>
-          <button type="button" data-admin-nav="lifecycle" data-auth-required="1" disabled>启用 / 归档</button>
           <button type="button" data-admin-nav="media" data-auth-required="1" disabled>媒体发布</button>
+          <button type="button" data-admin-nav="upload" data-auth-required="1" disabled>本地维护上传</button>
+          <button type="button" data-admin-nav="package" data-auth-required="1" disabled>本地 ZIP 导入</button>
+          <button type="button" data-admin-nav="lifecycle" data-auth-required="1" disabled>启用 / 归档</button>
           <button type="button" data-admin-nav="maintenance" data-auth-required="1" disabled>维护</button>
           <div class="nav-group-label">全局管理</div>
           <button type="button" data-admin-nav="storage" data-auth-required="1" disabled>存储空间</button>
@@ -1065,7 +1497,7 @@
         <div class="panel-heading">
           <div>
             <h2>选择当前课程</h2>
-            <p class="meta-line">先在这里确定要操作哪一门课。选择后，上传、整课 ZIP 导入、启用/归档、当前课程维护都会同步作用于这门课程。</p>
+            <p class="meta-line">先在这里确定要操作哪一门课。选择后，启用/归档、当前课程维护、本地维护上传都会同步作用于这门课程。完整课件包优先走媒体发布里的 OSS 直传。</p>
           </div>
           <a class="button-link subtle" id="coursePanelLink" href="/?course=ENG3U">返回当前课程页面</a>
         </div>
@@ -1094,8 +1526,9 @@
         </div>
         <div class="actions">
           <button id="statusButton" type="button">读取状态</button>
-          <button class="primary" type="button" data-switch-panel="package">去整课 ZIP 导入</button>
-          <button type="button" data-switch-panel="upload">去单文件上传</button>
+          <button class="primary" type="button" data-switch-panel="media">去媒体发布</button>
+          <button type="button" data-switch-panel="package">去本地 ZIP 导入</button>
+          <button type="button" data-switch-panel="upload">去本地维护上传</button>
         </div>
         <div class="stats" id="statusStats" hidden></div>
         <div class="readiness" id="readinessPanel" hidden></div>
@@ -1147,8 +1580,11 @@
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="upload" hidden>
-        <h2>当前课程单文件上传</h2>
-        <p class="meta-line">文件会进入当前课程对应的目录。需要换课时先点上方“更换课程”。</p>
+        <h2>当前课程本地维护上传</h2>
+        <p class="meta-line">这个入口会先上传到 ECS，再写入当前课程目录，适合少量文本、iSpring 修补和维护性替换。大视频和完整课件包请优先使用“媒体发布”的 OSS 直传。</p>
+        <div class="notice">
+          常规新课件包上传请走 <button class="small" type="button" data-switch-panel="media">媒体发布 / 直传 OSS</button>，这样使用本地网络直传 OSS，不占用 ECS 5M 公网带宽。
+        </div>
         <div class="storage-mini" id="uploadStorageMini" hidden></div>
         <div id="courseUploadTasks" hidden></div>
         <div class="grid compact">
@@ -1213,19 +1649,20 @@
         </div>
         <div class="stats" id="mediaConfigStats" hidden></div>
         <div class="stats media-oss-stats" id="mediaOssStats" hidden></div>
+        <div id="mediaLocksPanel" hidden></div>
         <div class="notice" id="mediaNotice" hidden></div>
         <div class="actions media-toolbar">
           <button class="primary" id="publishCurrentCourseButton" type="button">发布当前课程</button>
           <button id="auditCurrentCourseButton" type="button">审计当前课程</button>
           <button id="syncCurrentCourseButton" type="button">只上传当前课程</button>
-          <button id="publishAllMediaButton" type="button">全量完整发布</button>
+          <button id="publishAllMediaButton" type="button">发布全部可播放资源</button>
           <button id="readinessMediaButton" type="button">检查媒体配置</button>
           <span class="media-refresh-state" id="mediaRefreshState">自动刷新未启动</span>
         </div>
         <div class="oss-direct-upload">
           <div>
             <h3>直传 OSS inbox</h3>
-            <p class="meta-line">大文件会从浏览器直接上传到 OSS，不经过 ECS 公网带宽。完整课件包可在上传后自动导入课程，并继续创建媒体发布任务。</p>
+            <p class="meta-line">大文件会从浏览器直接上传到 OSS，不经过 ECS 公网带宽。完整课件包会按文件名自动识别课程，上传后可自动导入课程并继续创建媒体发布任务。</p>
           </div>
           <div class="grid compact">
             <div>
@@ -1239,15 +1676,17 @@
             </div>
             <div>
               <label for="ossDirectFile">文件</label>
-              <input id="ossDirectFile" type="file" />
+              <input id="ossDirectFile" type="file" multiple />
             </div>
             <div>
               <label>完成后动作</label>
               <label class="inline-check"><input id="ossDirectAutoPublish" type="checkbox" /> 上传后自动创建发布任务</label>
             </div>
           </div>
+          <p class="oss-direct-hint">完整课件包支持一次选择多个 ZIP，系统会从文件名识别课程码，例如 ESLDO-course-package-20260803.zip。视频、H5P 和 iSpring 单包仍按当前课程保存。</p>
           <div class="actions">
-            <button class="primary" id="ossDirectUploadButton" type="button">直传到 OSS</button>
+            <button class="primary" id="ossDirectUploadButton" type="button">自动识别并直传 OSS</button>
+            <button id="ossDirectCancelButton" type="button" hidden>取消当前上传</button>
           </div>
           <div class="upload-status" id="ossDirectStatus" hidden>
             <strong id="ossDirectStatusTitle">等待上传</strong>
@@ -1256,18 +1695,49 @@
             </div>
             <div class="meta-line" id="ossDirectStatusDetail"></div>
           </div>
+          <div class="oss-direct-queue" id="ossDirectQueue" hidden></div>
+        </div>
+        <div class="media-course-controls">
+          <div>
+            <label for="mediaCourseFilter">课程显示</label>
+            <select id="mediaCourseFilter">
+              <option value="all">全部课程</option>
+              <option value="current">当前课程</option>
+              <option value="active">发布中</option>
+              <option value="unpublished">未发布 / 部分发布</option>
+              <option value="published">已发布</option>
+              <option value="has-media">有可发布媒体</option>
+            </select>
+          </div>
+          <div>
+            <label for="mediaCourseSearch">搜索课程</label>
+            <input id="mediaCourseSearch" placeholder="ENG4U / English / Biology" />
+          </div>
+          <div>
+            <label for="mediaJobFilter">任务显示</label>
+            <select id="mediaJobFilter">
+              <option value="all">全部任务</option>
+              <option value="active">运行中 / 排队</option>
+              <option value="attention">失败 / 警告</option>
+              <option value="current">当前课程</option>
+            </select>
+          </div>
         </div>
         <div id="mediaCourseTable" hidden></div>
+        <div id="mediaUploadsTable" hidden></div>
         <div id="mediaJobsTable" hidden></div>
-        <div id="mediaJobLogPanel" class="upload-status" hidden>
-          <strong id="mediaJobLogTitle">任务日志</strong>
-          <pre id="mediaJobLogText"></pre>
+        <div id="mediaJobLogPanel" class="upload-status media-detail-panel" hidden>
+          <strong id="mediaJobLogTitle">媒体详情</strong>
+          <div id="mediaJobLogText"></div>
         </div>
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="package" hidden>
-        <h2>当前课程整课 ZIP 导入</h2>
-        <p class="meta-line">上传一门课的完整压缩包后，系统会先解压到临时区并自动识别 Course Outline、Unit Plan、Lesson Plan、lesson book、iSpring、视频和资源文件。确认导入前不会覆盖正式课程。</p>
+        <h2>当前课程本地 ZIP 导入</h2>
+        <p class="meta-line">这个入口会把 ZIP 先传到 ECS 再解压分析，只建议用于小包、补救或测试。大课件包请走“媒体发布”的 OSS 直传，上传后可自动创建导入和媒体发布任务。</p>
+        <div class="notice">
+          新课程包建议使用 <button class="small" type="button" data-switch-panel="media">媒体发布 / 直传 OSS</button>。这里保留为本地维护通道，避免需要 SSH 时没有后门。
+        </div>
         <div class="storage-mini" id="packageStorageMini" hidden></div>
         <div>
           <label for="coursePackageFile">课程压缩包</label>
@@ -1468,6 +1938,28 @@ pm2 restart ossd-course-portal --update-env</pre>
       </section>
       </main>
     </div>
+    <script src="/admin-media-view.js"></script>
+    <script src="/admin-media-state.js"></script>
+    <script src="/admin-api-client.js"></script>
+    <script src="/admin-course-data-client.js"></script>
+    <script src="/admin-media-panel.js"></script>
+    <script src="/admin-media-direct-panel.js"></script>
+    <script src="/admin-course-package-panel.js"></script>
+    <script src="/admin-course-package-action.js"></script>
+    <script src="/admin-storage-panel.js"></script>
+    <script src="/admin-course-lifecycle-panel.js"></script>
+    <script src="/admin-readiness-panel.js"></script>
+    <script src="/admin-upload-form-panel.js"></script>
+    <script src="/admin-local-upload-action.js"></script>
+    <script src="/admin-upload-transport.js"></script>
+    <script src="/admin-upload-gap-panel.js"></script>
+    <script src="/admin-content-workbench-panel.js"></script>
+    <script src="/admin-shell-panel.js"></script>
+    <script src="/admin-maintenance-panel.js"></script>
+    <script src="/admin-users-panel.js"></script>
+    <script src="/admin-media-actions.js"></script>
+    <script src="/admin-media-api.js"></script>
+    <script src="/admin-media-upload.js"></script>
     <script>
       const output = document.querySelector("#output");
       const adminPanels = Array.from(document.querySelectorAll("[data-admin-panel]"));
@@ -1531,22 +2023,34 @@ pm2 restart ossd-course-portal --update-env</pre>
       const courseLifecycleJobs = document.querySelector("#courseLifecycleJobs");
       const mediaConfigStats = document.querySelector("#mediaConfigStats");
       const mediaOssStats = document.querySelector("#mediaOssStats");
+      const mediaLocksPanel = document.querySelector("#mediaLocksPanel");
       const mediaNotice = document.querySelector("#mediaNotice");
       const mediaCourseTable = document.querySelector("#mediaCourseTable");
+      const mediaUploadsTable = document.querySelector("#mediaUploadsTable");
       const mediaJobsTable = document.querySelector("#mediaJobsTable");
       const mediaJobLogPanel = document.querySelector("#mediaJobLogPanel");
       const mediaJobLogTitle = document.querySelector("#mediaJobLogTitle");
       const mediaJobLogText = document.querySelector("#mediaJobLogText");
       const mediaRefreshState = document.querySelector("#mediaRefreshState");
+      const mediaCourseFilter = document.querySelector("#mediaCourseFilter");
+      const mediaCourseSearch = document.querySelector("#mediaCourseSearch");
+      const mediaJobFilter = document.querySelector("#mediaJobFilter");
+      const publishCurrentCourseButton = document.querySelector("#publishCurrentCourseButton");
+      const auditCurrentCourseButton = document.querySelector("#auditCurrentCourseButton");
+      const syncCurrentCourseButton = document.querySelector("#syncCurrentCourseButton");
+      const publishAllMediaButton = document.querySelector("#publishAllMediaButton");
+      const readinessMediaButton = document.querySelector("#readinessMediaButton");
       const ossDirectKind = document.querySelector("#ossDirectKind");
       const ossDirectFile = document.querySelector("#ossDirectFile");
       const ossDirectAutoPublish = document.querySelector("#ossDirectAutoPublish");
       const ossDirectUploadButton = document.querySelector("#ossDirectUploadButton");
+      const ossDirectCancelButton = document.querySelector("#ossDirectCancelButton");
       const ossDirectStatus = document.querySelector("#ossDirectStatus");
       const ossDirectStatusTitle = document.querySelector("#ossDirectStatusTitle");
       const ossDirectStatusDetail = document.querySelector("#ossDirectStatusDetail");
       const ossDirectProgress = document.querySelector("#ossDirectProgress");
       const ossDirectProgressBar = document.querySelector("#ossDirectProgressBar");
+      const ossDirectQueue = document.querySelector("#ossDirectQueue");
       const courseNavigationLinks = [
         document.querySelector("#topCourseLink"),
         document.querySelector("#sidebarCourseLink"),
@@ -1565,15 +2069,31 @@ pm2 restart ossd-course-portal --update-env</pre>
       const loginForm = document.querySelector("#loginForm");
       const isLocalAccess = ["localhost", "127.0.0.1"].includes(window.location.hostname);
       let currentManifest = null;
-      let currentUploadGapData = null;
-      let currentDirectUploadItems = [];
       let currentCoursePackageImport = null;
-      let portalUsersData = { users: [], courses: [] };
       let courseLifecycleData = { courses: [] };
       let courseLifecycleJobsData = { jobs: [] };
       let mediaData = { courses: [], jobs: [], config: {} };
-      let mediaRefreshTimer = null;
-      let mediaRefreshInFlight = false;
+      let adminApi = null;
+      let courseDataApi = null;
+      let mediaApi = null;
+      let mediaActions = null;
+      let shellPanel = null;
+      let mediaPanel = null;
+      let mediaAutoRefresh = null;
+      let ossDirectPanel = null;
+      let ossDirectUploadController = null;
+      let coursePackageUi = null;
+      let coursePackageAction = null;
+      let storagePanel = null;
+      let lifecyclePanel = null;
+      let readinessUi = null;
+      let uploadFormPanel = null;
+      let localUploadAction = null;
+      let uploadTransport = null;
+      let uploadGapPanel = null;
+      let contentWorkbenchPanel = null;
+      let maintenancePanel = null;
+      let usersPanel = null;
       let mediaLastUpdatedAt = null;
       let storageData = null;
       let selectedLifecycleCourse = "";
@@ -1617,6 +2137,270 @@ pm2 restart ossd-course-portal --update-env</pre>
         if (!data || typeof data !== "object") return fallback;
         return data.message || data.error || data.warning || data.previewWarning || fallback;
       }
+
+      adminApi = window.AdminApiClient.createClient({ responseMessage });
+      courseDataApi = window.AdminCourseDataClient.createClient();
+      mediaApi = window.AdminMediaApi.createClient({ responseMessage });
+      shellPanel = window.AdminShellPanel.createPanel({
+        elements: {
+          adminNavButtons,
+          adminPanels,
+          adminSessionStatus,
+          courseContextBar,
+          courseNavigationLinks,
+          contextCourseCode,
+          contextCourseNote,
+          contextCourseTitle,
+          loginForm,
+          sidebarCourseCode,
+          sidebarCourseTitle,
+          sidebarSessionStatus,
+          topAuthStatus,
+        },
+        escapeHtml,
+      });
+      storagePanel = window.AdminStoragePanel.createPanel({
+        elements: {
+          courseTable: storageCourseTable,
+          packageMini: packageStorageMini,
+          summary: storageSummary,
+          uploadMini: uploadStorageMini,
+        },
+        escapeHtml,
+        formatBytes,
+      });
+      readinessUi = window.AdminReadinessPanel.createPanel({
+        elements: {
+          readiness: readinessPanel,
+          statusStats,
+        },
+        escapeHtml,
+        formatBytes,
+        percentUsed,
+      });
+      uploadFormPanel = window.AdminUploadFormPanel.createPanel({
+        elements: {
+          lesson: fields.lesson,
+          lessonField,
+          textIdField,
+          typeHelp,
+          unit: fields.unit,
+          unitField,
+        },
+        createOption: option,
+      });
+      localUploadAction = window.AdminLocalUploadAction.createAction({
+        fields,
+        responseMessage,
+        setStatus: setSingleUploadStatus,
+        unitLessonText,
+        uploadTypeLabel,
+        write,
+        afterSuccess: async (data) => {
+          await loadSelectedCourseManifest();
+          await readStatus({ writeOutput: false });
+          await readStorage({ writeOutput: false });
+          await readAllCourseReadiness({ writeOutput: false });
+          await readUploadGaps({ writeOutput: false });
+          await readMedia({ writeOutput: false });
+          if (data.backups?.length) {
+            await readBackups({ writeOutput: false });
+          }
+        },
+      });
+      uploadTransport = window.AdminUploadTransport.createTransport({
+        XMLHttpRequestImpl: window.XMLHttpRequest,
+        chunkMaxRetries: coursePackageChunkMaxRetries,
+      });
+      uploadGapPanel = window.AdminUploadGapPanel.createPanel({
+        elements: {
+          courseTasks: courseUploadTasks,
+          table: uploadGapTable,
+        },
+        escapeHtml,
+        uploadTypeLabel,
+        unitLessonText,
+      });
+      contentWorkbenchPanel = window.AdminContentWorkbenchPanel.createPanel({
+        elements: {
+          readinessSummary: readinessSummaryStats,
+          readinessTable: courseReadinessTable,
+          workbenchTable: contentWorkbenchTable,
+        },
+        escapeHtml,
+      });
+      maintenancePanel = window.AdminMaintenancePanel.createPanel({
+        elements: {
+          backupList,
+        },
+        escapeHtml,
+        formatBytes,
+      });
+      lifecyclePanel = window.AdminCourseLifecyclePanel.createPanel({
+        elements: {
+          jobs: courseLifecycleJobs,
+          notice: courseLifecycleNotice,
+          selectedBanner: selectedCourseBanner,
+          summary: courseLifecycleSummary,
+          table: courseLifecycleTable,
+        },
+        escapeHtml,
+        getFilter: () => fields.lifecycleFilter.value,
+        getQuery: () => fields.lifecycleSearch.value,
+        getSelectedCourse: () => fields.course.value,
+        sortCourses: sortCoursesByCode,
+      });
+      usersPanel = window.AdminUsersPanel.createPanel({
+        elements: {
+          coursesContainer: userCourseCheckboxes,
+          password: fields.portalPassword,
+          role: fields.portalRole,
+          status: fields.portalStatus,
+          table: userTable,
+          username: fields.portalUsername,
+        },
+        escapeHtml,
+        sortCourses: sortCoursesByCode,
+      });
+      coursePackageUi = window.AdminCoursePackagePanel.createPanel({
+        elements: {
+          commitButton: coursePackageCommitButton,
+          panel: coursePackagePanel,
+          progress: coursePackageProgress,
+          progressBar: coursePackageProgressBar,
+          status: coursePackageStatus,
+          statusDetail: coursePackageStatusDetail,
+          statusTitle: coursePackageStatusTitle,
+        },
+        escapeHtml,
+        formatBytes,
+        getSelectedCourse: () => fields.course.value,
+      });
+      coursePackageAction = window.AdminCoursePackageAction.createAction({
+        fields,
+        chunkBytes: coursePackageChunkBytes,
+        chunkMaxRetries: coursePackageChunkMaxRetries,
+        formatBytes,
+        uploadChunk: uploadCoursePackageChunkWithRetry,
+        restoreTask: restoreCoursePackageTask,
+        waitForReview: waitForCoursePackageReview,
+        rememberTask: rememberCoursePackageTask,
+        setStatus: setCoursePackageStatus,
+        clearPreview: () => coursePackageUi.hidePreview(),
+        clearCommitState: () => {
+          currentCoursePackageImport = null;
+          updateCoursePackageCommitState(null);
+        },
+        reusableImportId: reusableCoursePackageImportId,
+        renderPreview: renderCoursePackagePreview,
+        write,
+        afterSuccess: async () => {
+          await readStorage({ writeOutput: false });
+        },
+        getCurrentImport: () => currentCoursePackageImport,
+        setUploadDisabled: (disabled) => {
+          coursePackageUploadButton.disabled = disabled;
+        },
+        updateCommitState: updateCoursePackageCommitState,
+        commitPackage: ({ course, importId }) => adminApi.coursePackageCommit({ course, importId }),
+        confirmCommit: (message) => confirm(message),
+        clearPackageFile: () => {
+          fields.coursePackageFile.value = "";
+        },
+        afterCommitSuccess: async (data) => {
+          await loadSelectedCourseManifest();
+          await readStatus({ writeOutput: false });
+          await readStorage({ writeOutput: false });
+          await readAllCourseReadiness({ writeOutput: false });
+          await readUploadGaps({ writeOutput: false });
+          await readMedia({ writeOutput: false });
+          if (data.backups?.length) await readBackups({ writeOutput: false });
+        },
+      });
+      ossDirectPanel = window.AdminMediaDirectPanel.createPanel({
+        elements: {
+          cancelButton: ossDirectCancelButton,
+          fileInput: ossDirectFile,
+          progress: ossDirectProgress,
+          progressBar: ossDirectProgressBar,
+          queue: ossDirectQueue,
+          status: ossDirectStatus,
+          statusDetail: ossDirectStatusDetail,
+          statusTitle: ossDirectStatusTitle,
+          uploadButton: ossDirectUploadButton,
+        },
+        formatBytes,
+        getController: () => ossDirectUploadController,
+      });
+      mediaPanel = window.AdminMediaPanel.createPanel({
+        elements: {
+          auditCurrentCourseButton,
+          configStats: mediaConfigStats,
+          courseFilter: mediaCourseFilter,
+          courseSearch: mediaCourseSearch,
+          courseTable: mediaCourseTable,
+          jobFilter: mediaJobFilter,
+          jobsTable: mediaJobsTable,
+          locksPanel: mediaLocksPanel,
+          notice: mediaNotice,
+          ossStats: mediaOssStats,
+          publishAllMediaButton,
+          publishCurrentCourseButton,
+          readinessMediaButton,
+          refreshState: mediaRefreshState,
+          syncCurrentCourseButton,
+          uploadsTable: mediaUploadsTable,
+        },
+        getSelectedCourse: () => fields.course.value,
+        jobTypeLabel: window.AdminMediaView.jobTypeLabel,
+        renderOssDirectUploadConfig: (config) => ossDirectPanel.renderConfig(config),
+      });
+      mediaAutoRefresh = window.AdminMediaApi.createAutoRefresh({
+        isEnabled: () => Boolean(adminAuthenticated && activeAdminPanel === "media"),
+        read: () => readMedia({ writeOutput: false, fromAutoRefresh: true }),
+        hasActive: () => mediaPanel.hasActive(),
+        onStatus: (status, meta = {}) => {
+          if (status === "stopped" && mediaRefreshState && activeAdminPanel !== "media") {
+            mediaRefreshState.textContent = "自动刷新未启动";
+          } else if (status === "refreshing") {
+            mediaPanel.updateRefreshState({ refreshing: true });
+          } else if (status === "scheduled") {
+            mediaPanel.updateRefreshState({ nextDelayMs: meta.delayMs });
+          }
+        },
+        onError: (error) => {
+          if (mediaRefreshState) mediaRefreshState.textContent = `自动刷新失败：${error.message}`;
+        },
+      });
+      mediaActions = window.AdminMediaActions.createController({
+        api: mediaApi,
+        getData: () => mediaPanel.getData(),
+        getSelectedCourse: () => fields.course.value,
+        jobTypeLabel: window.AdminMediaView.jobTypeLabel,
+        refresh: (options) => readMedia(options),
+        renderDetail: renderMediaDetail,
+        startAutoRefresh: startMediaAutoRefresh,
+        write,
+        confirm: (message) => confirm(message),
+      });
+      ossDirectUploadController = window.AdminMediaUpload.createDirectUploadController({
+        api: mediaApi,
+        getKind: () => ossDirectKind?.value || "course-package",
+        getFiles: () => Array.from(ossDirectFile?.files || []),
+        getSelectedCourse: () => String(fields.course.value || "").trim().toUpperCase(),
+        getCourseCodes: () => knownAdminCourseCodes(),
+        getAutoPublish: () => Boolean(ossDirectAutoPublish?.checked),
+        hasActiveWriteJob: () => mediaPanel.activeWriteJob(),
+        jobTypeLabel: window.AdminMediaView.jobTypeLabel,
+        confirm: (message) => confirm(message),
+        formatProgress: (file) => window.AdminMediaView.uploadProgressFormatter(file),
+        onActiveUploadChange: (xhr) => ossDirectPanel.setActiveUpload(xhr),
+        onStatus: ({ title, detail, percent, type }) => ossDirectPanel.setStatus(title, detail, percent, type),
+        onQueueChange: (items) => ossDirectPanel.renderQueue(items),
+        onRefresh: () => readMedia({ writeOutput: false }),
+        onStartRefresh: () => startMediaAutoRefresh(),
+        onWrite: (data) => write(data),
+      });
 
       function showFeedback(title, type = "info", detail = "") {
         if (!adminFeedback) return;
@@ -1693,63 +2477,27 @@ pm2 restart ossd-course-portal --update-env</pre>
         const code = String(fields.course.value || "ENG3U").trim().toUpperCase();
         const href = portalCourseUrl(code);
         const title = selectedCourseLabel() || "课程资料";
-        courseNavigationLinks.forEach((link) => {
-          if (!link) return;
-          link.href = href;
-          link.title = `打开前台课程 ${code}`;
-        });
-        if (sidebarCourseCode) sidebarCourseCode.textContent = code;
-        if (sidebarCourseTitle) sidebarCourseTitle.textContent = title;
-        if (contextCourseCode) contextCourseCode.textContent = code;
-        if (contextCourseTitle) contextCourseTitle.textContent = title;
-        if (contextCourseNote) {
-          contextCourseNote.textContent = `${code} 是当前课程。上传、整课导入、归档和当前课程维护都会作用于这门课。`;
-        }
+        shellPanel.renderCourseNavigation({ code, href, title });
       }
 
       function renderAuthState() {
-        const username = currentAdminSession?.username || "admin";
-        if (topAuthStatus) {
-          topAuthStatus.textContent = adminAuthenticated ? `已登录：${username}` : "未登录";
-          topAuthStatus.classList.toggle("signed-out", !adminAuthenticated);
-        }
-        if (sidebarSessionStatus) {
-          sidebarSessionStatus.innerHTML = adminAuthenticated
-            ? `<span>登录状态</span><strong>已登录 · ${escapeHtml(username)}</strong>`
-            : "<span>登录状态</span><strong>未登录</strong>";
-        }
-        if (adminSessionStatus) {
-          adminSessionStatus.classList.toggle("signed-out", !adminAuthenticated);
-          adminSessionStatus.innerHTML = adminAuthenticated
-            ? `
-              <strong>已登录</strong>
-              <span>当前管理员：${escapeHtml(username)}${currentAdminSession?.authSource ? ` · ${escapeHtml(currentAdminSession.authSource)}` : ""}。左侧功能已解锁，可以继续上传、导入、管理课程。</span>
-            `
-            : `
-              <strong>未登录</strong>
-              <span>请输入管理员账号。登录后会开放左侧所有后台功能。</span>
-            `;
-        }
-        if (loginForm) loginForm.hidden = adminAuthenticated;
-        if (courseContextBar) courseContextBar.hidden = !adminAuthenticated;
+        shellPanel.renderAuthState({
+          authenticated: adminAuthenticated,
+          session: currentAdminSession,
+        });
       }
 
       function renderAdminPanels() {
-        adminPanels.forEach((panel) => {
-          const requiresAuth = panel.classList.contains("auth-required");
-          panel.hidden = panel.dataset.adminPanel !== activeAdminPanel || (requiresAuth && !adminAuthenticated);
-        });
-        adminNavButtons.forEach((button) => {
-          const requiresAuth = button.dataset.authRequired === "1";
-          button.disabled = requiresAuth && !adminAuthenticated;
-          button.classList.toggle("active", button.dataset.adminNav === activeAdminPanel);
+        shellPanel.renderAdminPanels({
+          authenticated: adminAuthenticated,
+          activePanel: activeAdminPanel,
         });
       }
 
       function switchAdminPanel(panelName) {
-        const target = adminPanels.find((panel) => panel.dataset.adminPanel === panelName);
-        if (!target) return;
-        if (target.classList.contains("auth-required") && !adminAuthenticated) {
+        const access = shellPanel.panelAccess(panelName);
+        if (!access.exists) return;
+        if (access.requiresAuth && !adminAuthenticated) {
           activeAdminPanel = "login";
           showFeedback("请先登录管理员账号", "warn", "登录后才能使用后台管理功能。");
         } else {
@@ -1768,18 +2516,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         }
       }
 
-      function formatBytes(bytes) {
-        if (!bytes) return "0 B";
-        const units = ["B", "KB", "MB", "GB", "TB"];
-        let size = bytes;
-        let index = 0;
-        while (size >= 1024 && index < units.length - 1) {
-          size /= 1024;
-          index += 1;
-        }
-        return `${size.toFixed(size >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
-      }
-
       function escapeHtml(value) {
         return String(value ?? "")
           .replaceAll("&", "&amp;")
@@ -1790,140 +2526,23 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       function uploadTypeLabel(type) {
-        return {
-          "course-outline": "Course Outline",
-          "course-introduction": "Introduction",
-          "unit-plan": "Unit Plan",
-          "lesson-plan": "Lesson Plan",
-          "text-material": "Literary Text",
-          "ispring-zip": "iSpring ZIP",
-          "ispring-batch-zip": "iSpring ZIP Batch",
-        }[type] || type;
+        return uploadFormPanel.uploadTypeLabel(type);
       }
 
       function unitLessonText(item) {
-        const parts = [];
-        if (item.unit) parts.push(`Unit ${item.unit}`);
-        if (item.lesson) parts.push(`Lesson ${item.lesson}`);
-        return parts.join(" · ") || "Course level";
+        return uploadFormPanel.unitLessonText(item);
       }
 
       function renderStatusStats(data) {
-        const disk = data.storage?.disk;
-        const stats = [
-          ["Units", data.units],
-          ["Lessons", data.lessons],
-          ["Courseware", formatBytes(data.storage?.coursewareBytes || 0)],
-          ["Admin uploads", formatBytes(data.storage?.adminUploadBytes || 0)],
-        ];
-        if (disk) {
-          stats.push(["Disk used", `${formatBytes(disk.usedBytes || 0)} (${percentUsed(disk.usedBytes || 0, disk.totalBytes || 0)}%)`]);
-          stats.push(["Disk free", formatBytes(disk.freeBytes)]);
-          stats.push(["Disk total", formatBytes(disk.totalBytes)]);
-        }
-        statusStats.innerHTML = stats
-          .map(([label, value]) => `<div class="stat"><span>${label}</span><strong>${value}</strong></div>`)
-          .join("");
-        statusStats.hidden = false;
-      }
-
-      function readinessCard(label, value, ok) {
-        return `<div class="readiness-card ${ok ? "ok" : "warn-card"}"><span>${label}</span><strong>${value}</strong></div>`;
-      }
-
-      function shortGapList(items, formatter, emptyText) {
-        if (!items.length) return `<li>${emptyText}</li>`;
-        return items.slice(0, 8).map((item) => `<li>${formatter(item)}</li>`).join("");
-      }
-
-      function directUploadTaskCard(item, index) {
-        return `
-          <div class="task-card">
-            <div>
-              <strong>${escapeHtml(uploadTypeLabel(item.uploadType))}</strong>
-              <div class="task-meta">
-                <span class="chip">${escapeHtml(item.course)}</span>
-                <span>${escapeHtml(unitLessonText(item))}</span>
-                <span class="filename">${escapeHtml(item.suggestedFilename || "")}</span>
-              </div>
-              ${item.note ? `<p class="meta-line">${escapeHtml(item.note)}</p>` : ""}
-            </div>
-            <button class="small" type="button" data-gap-action="fill" data-gap-index="${index}">填入表单</button>
-          </div>
-        `;
+        readinessUi.renderStatusStats(data);
       }
 
       function renderCurrentCourseUploadTasks() {
-        if (!currentUploadGapData) {
-          courseUploadTasks.hidden = true;
-          return;
-        }
-        const course = fields.course.value;
-        const direct = currentDirectUploadItems
-          .map((item, index) => ({ item, index }))
-          .filter(({ item }) => item.course === course);
-        const reviews = (currentUploadGapData.reviewItems || []).filter((item) => item.course === course);
-        const external = (currentUploadGapData.externalItems || []).filter((item) => item.course === course);
-
-        if (!direct.length && !reviews.length && !external.length) {
-          courseUploadTasks.innerHTML = '<p class="meta-line">当前课程没有待上传文件。若要补 iSpring，请先确认是否有对应 ZIP 包。</p>';
-          courseUploadTasks.hidden = false;
-          return;
-        }
-
-        const directHtml = direct.map(({ item, index }) => directUploadTaskCard(item, index)).join("");
-        const reviewHtml = reviews
-          .map((item) => `<li>${escapeHtml(item.textTitle)} · ${escapeHtml(item.author)}${item.note ? `：${escapeHtml(item.note)}` : ""}</li>`)
-          .join("");
-        const externalHtml = external
-          .map((item) => `<li>${escapeHtml(uploadTypeLabel(item.uploadType))}：${item.connectedCount || 0}/${item.lessonCount || 0} connected. ${escapeHtml(item.note || "")}</li>`)
-          .join("");
-
-        courseUploadTasks.innerHTML = `
-          <h3>当前课程待处理</h3>
-          ${directHtml ? `<div class="task-list">${directHtml}</div>` : '<p class="meta-line">当前课程没有直接待上传文件。</p>'}
-          ${reviewHtml ? `<ul class="gap-list">${reviewHtml}</ul>` : ""}
-          ${externalHtml ? `<ul class="gap-list">${externalHtml}</ul>` : ""}
-        `;
-        courseUploadTasks.hidden = false;
+        uploadGapPanel.renderCurrentCourseTasks(fields.course.value);
       }
 
       function renderReadiness(data) {
-        const readiness = data.readiness;
-        if (!readiness) {
-          readinessPanel.hidden = true;
-          return;
-        }
-        const unitMissing = readiness.unitPlans.missing || [];
-        const lessonMissing = readiness.lessonPlans.missing || [];
-        const textReview = readiness.texts.needsReview || [];
-        const missingDownloads = readiness.texts.missingDownloads || [];
-        readinessPanel.innerHTML = `
-          <div class="readiness-grid">
-            ${readinessCard("Course Outline", readiness.courseOutline.ok ? "OK" : "Missing", readiness.courseOutline.ok)}
-            ${readinessCard("Introduction", readiness.introduction.ok ? "OK" : "Missing", readiness.introduction.ok)}
-            ${readinessCard("Unit Plans", `${readiness.unitPlans.count}/${readiness.unitPlans.expected}`, unitMissing.length === 0)}
-            ${readinessCard("Lesson Plans", `${readiness.lessonPlans.count}/${readiness.lessonPlans.expected}`, lessonMissing.length === 0)}
-            ${readinessCard("iSpring", readiness.ispring.connected ? `${readiness.ispring.count} connected` : "Not connected", readiness.ispring.connected)}
-            ${readinessCard("Missing Text Downloads", missingDownloads.length ? `${missingDownloads.length} item(s)` : "OK", missingDownloads.length === 0)}
-          </div>
-          <ul class="gap-list">
-            ${shortGapList(unitMissing, (item) => `Missing unit plan: Unit ${item.unit} · ${item.title}`, "No missing unit plans.")}
-            ${shortGapList(lessonMissing, (item) => `Missing lesson plan: ${item.id} · ${item.title}`, "No missing lesson plans.")}
-            ${shortGapList(missingDownloads, (item) => `Missing text download: ${item.title} · ${item.author}`, "No missing text downloads.")}
-            ${shortGapList(textReview, (item) => `Text needs review: ${item.title} · ${item.author}`, "No text review items.")}
-          </ul>
-        `;
-        readinessPanel.hidden = false;
-      }
-
-      function okText(ok) {
-        return ok ? '<span class="status-ok">OK</span>' : '<span class="status-missing">Missing</span>';
-      }
-
-      function countText(count, expected) {
-        const ok = count === expected;
-        return `<span class="${ok ? "status-ok" : "status-missing"}">${count}/${expected}</span>`;
+        readinessUi.renderReadiness(data);
       }
 
       function option(label, value) {
@@ -1946,595 +2565,138 @@ pm2 restart ossd-course-portal --update-env</pre>
         );
       }
 
-      function renderUserCourseCheckboxes(selectedCourses = []) {
-        const selected = new Set(selectedCourses);
-        const courses = sortCoursesByCode(portalUsersData.courses || []);
-        userCourseCheckboxes.innerHTML = `
-          <label><input type="checkbox" value="*" ${selected.has("*") ? "checked" : ""} /> 全部课程</label>
-          ${courses
-            .map(
-              (course) =>
-                `<label><input type="checkbox" value="${escapeHtml(course.code)}" ${selected.has(course.code) ? "checked" : ""} /> ${escapeHtml(course.code)}</label>`,
-            )
-            .join("")}
-        `;
-      }
-
-      function selectedUserCourses() {
-        const values = [...userCourseCheckboxes.querySelectorAll("input:checked")].map((input) => input.value);
-        return values.includes("*") ? ["*"] : values;
-      }
-
       function clearUserForm() {
-        fields.portalUsername.value = "";
-        fields.portalPassword.value = "";
-        fields.portalRole.value = "teacher";
-        fields.portalStatus.value = "active";
-        renderUserCourseCheckboxes([]);
+        usersPanel.clearForm();
       }
 
       function fillUserForm(username) {
-        const user = portalUsersData.users.find((item) => item.username === username);
+        const user = usersPanel.fillForm(username);
         if (!user) return;
-        fields.portalUsername.value = user.username;
-        fields.portalPassword.value = "";
-        fields.portalRole.value = user.role || "teacher";
-        fields.portalStatus.value = user.status || "active";
-        renderUserCourseCheckboxes(user.courses || []);
         write(`已载入用户：${user.username}`);
       }
 
       function renderUsers(data) {
-        portalUsersData = data;
-        renderUserCourseCheckboxes(selectedUserCourses());
-        const rows = (data.users || [])
-          .map(
-            (user) => `
-              <tr>
-                <td><strong>${escapeHtml(user.username)}</strong></td>
-                <td>${escapeHtml(user.role)}</td>
-                <td>${escapeHtml(user.status)}</td>
-                <td>${escapeHtml((user.courses || []).join(", "))}</td>
-                <td>${escapeHtml(user.passwordStored || "")}</td>
-                <td class="nowrap"><button class="small" type="button" data-user-action="edit" data-username="${escapeHtml(user.username)}">编辑</button></td>
-              </tr>
-            `,
-          )
-          .join("");
-        userTable.innerHTML = `
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Username</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Courses</th>
-                  <th>Password</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>${rows || '<tr><td colspan="6">No users configured.</td></tr>'}</tbody>
-            </table>
-          </div>
-          <p class="meta-line">Users file: ${escapeHtml(data.usersFile || "")}</p>
-        `;
-        userTable.hidden = false;
+        usersPanel.render(data);
       }
 
       function lifecycleLabel(status) {
-        const value = String(status || "active");
-        const className = value === "active" ? "status-ok" : value === "archived" ? "status-missing" : "warn";
-        return `<span class="${className}">${escapeHtml(value)}</span>`;
+        return lifecyclePanel.lifecycleLabel(status);
       }
 
       function isPlanningActive(course) {
-        return course.status === "active" && course.catalogStatus && course.catalogStatus !== "ready";
+        return lifecyclePanel.isPlanningActive(course);
       }
 
       function lifecycleStatusCounts(courses) {
-        return {
-          total: courses.length,
-          active: courses.filter((course) => course.status === "active").length,
-          archived: courses.filter((course) => course.status === "archived").length,
-          risk: courses.filter(isPlanningActive).length,
-        };
+        return lifecyclePanel.statusCounts(courses);
       }
 
       function renderCourseLifecycleSummary(courses, visibleCourses) {
-        const counts = lifecycleStatusCounts(courses);
-        courseLifecycleSummary.innerHTML = [
-          ["全部", counts.total],
-          ["当前显示", visibleCourses.length],
-          ["Active", counts.active],
-          ["Archived", counts.archived],
-          ["未完成但 Active", counts.risk],
-        ]
-          .map(([label, value]) => `<div class="stat"><span>${label}</span><strong>${value}</strong></div>`)
-          .join("");
-        courseLifecycleSummary.hidden = false;
-
-        if (counts.risk) {
-          courseLifecycleNotice.innerHTML = `有 <strong>${counts.risk}</strong> 门 catalog 仍是 planning-only 但 lifecycle 是 active。首批上线前建议点击“应用首批上线状态”，只开放首批课程，其余课程先隐藏。`;
-          courseLifecycleNotice.hidden = false;
-        } else {
-          courseLifecycleNotice.hidden = true;
-        }
+        lifecyclePanel.renderSummary(courses, visibleCourses);
       }
 
       function filteredLifecycleCourses(courses) {
-        const filter = fields.lifecycleFilter.value;
-        const query = fields.lifecycleSearch.value.trim().toLowerCase();
-        return courses.filter((course) => {
-          if (filter === "risk" && !isPlanningActive(course)) return false;
-          if (filter === "active" && course.status !== "active") return false;
-          if (filter === "archived" && course.status !== "archived") return false;
-          if (filter === "ready" && course.catalogStatus !== "ready") return false;
-          if (filter === "planning" && course.catalogStatus === "ready") return false;
-          if (!query) return true;
-          return `${course.code} ${course.title} ${course.catalogStatus} ${course.status}`.toLowerCase().includes(query);
-        });
+        return lifecyclePanel.filteredCourses(courses);
       }
 
       function renderSelectedCourseBanner(course) {
-        if (!course) {
-          selectedCourseBanner.hidden = true;
-          return;
-        }
-        selectedCourseBanner.innerHTML = `
-          当前操作课程：<strong>${escapeHtml(course.code)}</strong> · ${escapeHtml(course.title || "")}
-          · ${lifecycleLabel(course.status)}
-          · Catalog: ${escapeHtml(course.catalogStatus || "")}
-        `;
-        selectedCourseBanner.hidden = false;
+        lifecyclePanel.renderSelectedBanner(course);
       }
 
       function renderCourseLifecycle(data) {
         const courses = sortCoursesByCode(data.courses || []);
         courseLifecycleData = { ...data, courses };
-        const visibleCourses = filteredLifecycleCourses(courses);
-        renderCourseLifecycleSummary(courses, visibleCourses);
-        const selectedRecord = courses.find((course) => course.code === selectedLifecycleCourse || course.code === fields.course.value);
-        renderSelectedCourseBanner(selectedRecord);
-        const rows = visibleCourses
-          .map(
-            (course) => {
-              const risk = isPlanningActive(course);
-              const selected = course.code === (selectedLifecycleCourse || fields.course.value);
-              return `
-              <tr class="${selected ? "selected-row" : ""}">
-                <td><strong>${escapeHtml(course.code)}</strong></td>
-                <td>${escapeHtml(course.title)}</td>
-                <td>${lifecycleLabel(course.status)}</td>
-                <td>${escapeHtml(course.catalogStatus || "")}${risk ? ' <span class="badge risk">需隐藏</span>' : ""}</td>
-                <td>${escapeHtml(course.updatedAt || "")}</td>
-                <td>${escapeHtml(course.updatedBy || "")}</td>
-                <td>${escapeHtml(course.note || "")}</td>
-                <td class="nowrap"><button class="small ${selected ? "primary" : ""}" type="button" data-course-action="select" data-course="${escapeHtml(course.code)}">${selected ? "已选择" : "选择"}</button></td>
-              </tr>
-            `;
-            },
-          )
-          .join("");
-        courseLifecycleTable.innerHTML = `
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Title</th>
-                  <th>Lifecycle</th>
-                  <th>Catalog</th>
-                  <th>Updated</th>
-                  <th>By</th>
-                  <th>Note</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>${rows || '<tr><td colspan="8">No courses found.</td></tr>'}</tbody>
-            </table>
-          </div>
-          <p class="meta-line">Status file: ${escapeHtml(data.statusFile || "")}</p>
-        `;
-        courseLifecycleTable.hidden = false;
+        lifecyclePanel.renderCourses(courseLifecycleData, selectedLifecycleCourse);
       }
 
       function renderCourseLifecycleJobs(data) {
         courseLifecycleJobsData = data;
-        const rows = (data.jobs || [])
-          .map(
-            (job) => `
-              <tr>
-                <td><strong>${escapeHtml(job.course)}</strong></td>
-                <td>${escapeHtml(job.action)}</td>
-                <td>${lifecycleLabel(job.status)}</td>
-                <td>${job.deleteActive ? "yes" : "no"}</td>
-                <td>${escapeHtml(job.requestedAt || "")}</td>
-                <td>${escapeHtml(job.finishedAt || "")}</td>
-                <td>${escapeHtml(job.error || job.payload?.archivePath || job.payload?.targetCourseRoot || "")}</td>
-              </tr>
-            `,
-          )
-          .join("");
-        courseLifecycleJobs.innerHTML = `
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Action</th>
-                  <th>Status</th>
-                  <th>Delete active</th>
-                  <th>Started</th>
-                  <th>Finished</th>
-                  <th>Result</th>
-                </tr>
-              </thead>
-              <tbody>${rows || '<tr><td colspan="7">No lifecycle jobs yet.</td></tr>'}</tbody>
-            </table>
-          </div>
-          <p class="meta-line">Active root: ${escapeHtml(data.activeRoot || "")}<br />Archive root: ${escapeHtml(data.archiveRoot || "")}</p>
-        `;
-        courseLifecycleJobs.hidden = false;
-      }
-
-      function mediaStatusLabel(status) {
-        const value = String(status || "unknown");
-        const className = ["succeeded", "ready"].includes(value)
-          ? "status-ok"
-          : ["failed", "interrupted", "cancelled"].includes(value)
-            ? "status-risk"
-            : "warn";
-        return `<span class="${className}">${escapeHtml(value)}</span>`;
-      }
-
-      function percent(value) {
-        return `${Math.round(Number(value || 0) * 100)}%`;
-      }
-
-      function mediaHasActiveJobs(jobs = mediaData.jobs || []) {
-        return jobs.some((job) => ["queued", "running", "cancelling"].includes(job.status));
+        lifecyclePanel.renderJobs(data);
       }
 
       function shortDateTime(value) {
-        if (!value) return "";
-        const date = new Date(value);
-        if (Number.isNaN(date.getTime())) return String(value);
-        return date.toLocaleString(undefined, {
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+        return window.AdminMediaView.shortDateTime(value);
       }
 
-      function mediaJobResult(job) {
-        const raw = job.error || job.summary?.status || job.payload?.status || "";
-        if (!raw) return job.progress?.message || (job.status === "running" ? "正在运行" : "");
-        const text = String(raw).replace(/\s+/g, " ").trim();
-        const lockMatch = /Course\s+([A-Z0-9]+)\s+is locked/i.exec(text);
-        if (lockMatch) return `${lockMatch[1]} 存在旧操作锁，清理锁后重试`;
-        if (/ready-with-warnings/i.test(text)) return "配置可用，但有提示";
-        if (/Video audit report is missing/i.test(text)) return "缺少视频审计报告";
-        if (/ossutil/i.test(text) && /not available|not found/i.test(text)) return "ossutil 不可用";
-        return text.length > 180 ? `${text.slice(0, 180)}...` : text;
+      function renderMediaDetail(title, html) {
+        mediaJobLogPanel.hidden = false;
+        mediaJobLogTitle.textContent = title;
+        mediaJobLogText.innerHTML = html;
+        mediaJobLogPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
 
-      function renderMediaJobProgress(job) {
-        const progress = job.progress || {};
-        const hasProgress = progress.percent !== null && progress.percent !== undefined;
-        const active = ["queued", "running", "cancelling"].includes(job.status);
-        if (!hasProgress && !active && !progress.message) return "";
-        const percentValue = hasProgress ? Math.max(0, Math.min(100, Number(progress.percent || 0))) : 0;
-        const count = progress.total ? `${progress.current || 0}/${progress.total}` : "";
-        const phase = progress.phase || job.type;
-        return `
-          <div class="media-job-progress">
-            <div class="media-job-progress-meta">
-              <span>${escapeHtml(phase)}</span>
-              <span>${escapeHtml(count || (hasProgress ? `${percentValue}%` : ""))}</span>
-            </div>
-            ${hasProgress ? `<div class="progress"><div class="progress-bar" style="width: ${percentValue}%"></div></div>` : ""}
-            ${progress.currentFile ? `<div class="media-job-current" title="${escapeHtml(progress.currentFile)}">${escapeHtml(progress.currentFile)}</div>` : ""}
-          </div>
-        `;
+      function updateMediaActionControls(data = mediaData) {
+        return mediaPanel.updateActionControls(data);
       }
 
-      function renderMediaOss(oss) {
-        if (!mediaOssStats) return;
-        if (!oss) {
-          mediaOssStats.hidden = true;
-          return;
-        }
-        const status = !oss.enabled
-          ? "未配置"
-          : oss.ok
-            ? "正常"
-            : "检查失败";
-        const checkedAt = oss.generatedAt ? shortDateTime(oss.generatedAt) : "";
-        const cacheText = oss.cacheHit ? `缓存 ${oss.cacheSeconds || 60}s` : "刚检查";
-        const rows = [
-          ["OSS 实况", status],
-          ["对象数量", oss.ok ? `${oss.objectCount || 0}` : "-"],
-          ["OSS 占用", oss.ok ? formatBytes(oss.totalBytes || 0) : "-"],
-          ["监控路径", oss.target || oss.bucket || "-"],
-          ["上次检查", checkedAt ? `${checkedAt} · ${cacheText}` : cacheText],
-        ];
-        if (oss.error) rows.push(["提示", oss.error]);
-        mediaOssStats.innerHTML = rows
-          .map(([label, value]) => `<div class="stat"><span>${escapeHtml(label)}</span><strong class="${String(value).length > 24 ? "small-value" : ""}">${escapeHtml(value)}</strong></div>`)
-          .join("");
-        mediaOssStats.hidden = false;
-      }
-
-      function setOssDirectStatus(title, detail = "", percent = null, type = "info") {
-        if (!ossDirectStatus) return;
-        ossDirectStatus.hidden = false;
-        ossDirectStatus.classList.toggle("error", type === "error");
-        ossDirectStatusTitle.textContent = title;
-        ossDirectStatusTitle.className = type === "error" ? "error" : "";
-        ossDirectStatusDetail.textContent = detail;
-        if (Number.isFinite(percent)) {
-          ossDirectProgress.hidden = false;
-          ossDirectProgressBar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
-        } else {
-          ossDirectProgress.hidden = true;
-          ossDirectProgressBar.style.width = "0%";
-        }
-      }
-
-      function renderOssDirectUploadConfig(config = {}) {
-        if (!ossDirectUploadButton) return;
-        const direct = config.directUpload || {};
-        const ready = Boolean(direct.enabled && direct.configured);
-        ossDirectUploadButton.disabled = !ready;
-        const detail = ready
-          ? `可直传到 ${direct.bucket || "OSS"}，单文件上限 ${direct.maxGb || 0} GB。`
-          : direct.reason || "OSS 直传未配置。";
-        if (!ready) {
-          setOssDirectStatus("OSS 直传暂不可用", detail, null, "error");
-        } else if (!ossDirectStatus.hidden && /暂不可用/.test(ossDirectStatusTitle.textContent || "")) {
-          ossDirectStatus.hidden = true;
-        }
+      function knownAdminCourseCodes() {
+        const codes = Array.from(fields.course.options || [])
+          .map((option) => String(option.value || "").trim().toUpperCase())
+          .filter(Boolean);
+        return [...new Set(codes)].sort((left, right) => right.length - left.length || left.localeCompare(right));
       }
 
       function renderMediaConfig(data) {
-        const config = data.config || {};
-        const summary = data.summary || {};
-        mediaConfigStats.innerHTML = [
-          ["任务中心", config.enabled ? "已启用" : "未启用"],
-          ["Asset mode", config.assetMode || ""],
-          ["Asset scope", config.assetScope || "playable"],
-          ["OSS", config.bucket || "未配置"],
-          ["CDN", config.cdnBaseUrl || "未配置"],
-          ["Registry", `${data.registry?.assetCount || 0} assets`],
-          ["本地文件", summary.files || 0],
-          ["已发布", summary.published || 0],
-          ["未发布", summary.unpublished || 0],
-          ["运行中任务", summary.runningJobs || 0],
-        ].map(([label, value]) => `<div class="stat"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
-        mediaConfigStats.hidden = false;
-        mediaNotice.hidden = Boolean(config.enabled);
-        if (!config.enabled) {
-          mediaNotice.innerHTML = "媒体任务中心当前未启用。现有命令行迁移完成后，在生产环境设置 <strong>MEDIA_JOBS_ENABLED=1</strong> 再允许后台创建任务。";
-        }
-        renderOssDirectUploadConfig(config);
-        renderMediaOss(data.oss);
+        mediaPanel.renderConfig(data);
       }
 
       function renderMediaCourses(data) {
-        const rows = (data.courses || [])
-          .map((course) => `
-            <tr>
-              <td><strong>${escapeHtml(course.code)}</strong></td>
-              <td>${escapeHtml(course.title || "")}</td>
-              <td class="nowrap">${formatBytes(course.totalBytes || 0)}</td>
-              <td>${course.fileCount || 0}</td>
-              <td>${course.videoCount || 0}</td>
-              <td>${course.publishedCount || 0}</td>
-              <td>${course.unpublishedCount || 0}</td>
-              <td>${percent(course.cdnCoverage)}</td>
-              <td>${course.latestJob ? mediaStatusLabel(course.latestJob.status) : '<span class="meta-line">none</span>'}</td>
-              <td class="nowrap">
-                <button class="small" type="button" data-media-course-action="publish" data-course="${escapeHtml(course.code)}">发布</button>
-                <button class="small" type="button" data-media-course-action="audit" data-course="${escapeHtml(course.code)}">审计</button>
-              </td>
-            </tr>
-          `)
-          .join("");
-        mediaCourseTable.innerHTML = `
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Title</th>
-                  <th>Size</th>
-                  <th>Files</th>
-                  <th>Videos</th>
-                  <th>CDN</th>
-                  <th>Local</th>
-                  <th>Coverage</th>
-                  <th>Latest</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>${rows || '<tr><td colspan="10">No media courses found.</td></tr>'}</tbody>
-            </table>
-          </div>
-        `;
-        mediaCourseTable.hidden = false;
+        mediaPanel.renderCourses(data);
       }
 
       function renderMediaJobs(data) {
-        const rows = (data.jobs || [])
-          .map((job) => {
-            const jobId = escapeHtml(job.id);
-            const result = mediaJobResult(job);
-            const progress = renderMediaJobProgress(job);
-            return `
-            <tr>
-              <td><strong class="media-job-id" title="${jobId}">${jobId}</strong></td>
-              <td class="media-job-compact" title="${escapeHtml(job.type)}">${escapeHtml(job.type)}</td>
-              <td class="media-job-compact" title="${escapeHtml(job.course || job.scope || "")}">${escapeHtml(job.course || job.scope || "")}</td>
-              <td class="media-job-compact">${mediaStatusLabel(job.status)}</td>
-              <td class="nowrap">${escapeHtml(shortDateTime(job.startedAt || job.requestedAt))}</td>
-              <td class="nowrap">${escapeHtml(shortDateTime(job.finishedAt))}</td>
-              <td>
-                <span class="media-job-result" title="${escapeHtml(String(job.error || result || ""))}">${escapeHtml(result)}</span>
-                ${progress}
-              </td>
-              <td>
-                <div class="media-job-actions">
-                <button class="small" type="button" data-media-job-action="log" data-job="${jobId}">日志</button>
-                ${job.status === "running" ? `<button class="small" type="button" data-media-job-action="cancel" data-job="${escapeHtml(job.id)}">取消</button>` : ""}
-                ${["failed", "warning", "cancelled", "interrupted"].includes(job.status) ? `<button class="small" type="button" data-media-job-action="retry" data-job="${escapeHtml(job.id)}">重试</button>` : ""}
-                </div>
-              </td>
-            </tr>
-          `;
-          })
-          .join("");
-        mediaJobsTable.innerHTML = `
-          <h3>媒体任务</h3>
-          <div class="table-wrap">
-            <table class="media-jobs-table">
-              <colgroup>
-                <col class="col-job">
-                <col class="col-type">
-                <col class="col-scope">
-                <col class="col-status">
-                <col class="col-time">
-                <col class="col-time">
-                <col class="col-result">
-                <col class="col-action">
-              </colgroup>
-              <thead>
-                <tr>
-                  <th class="col-job">Job</th>
-                  <th class="col-type">Type</th>
-                  <th class="col-scope">Scope</th>
-                  <th class="col-status">Status</th>
-                  <th class="col-time">Started</th>
-                  <th class="col-time">Finished</th>
-                  <th class="col-result">Result</th>
-                  <th class="col-action">Action</th>
-                </tr>
-              </thead>
-              <tbody>${rows || '<tr><td colspan="8">No media jobs yet.</td></tr>'}</tbody>
-            </table>
-          </div>
-        `;
-        mediaJobsTable.hidden = false;
+        mediaPanel.renderJobs(data);
+      }
+
+      function renderMediaUploads(data) {
+        mediaPanel.renderUploads(data);
       }
 
       function renderMedia(data) {
-        mediaData = data;
-        renderMediaConfig(data);
-        renderMediaCourses(data);
-        updateMediaRefreshState();
+        mediaData = mediaPanel.setData(data);
+        mediaPanel.render(mediaData);
       }
 
       function updateMediaRefreshState() {
-        if (!mediaRefreshState) return;
-        const active = mediaHasActiveJobs();
-        const time = mediaLastUpdatedAt
-          ? mediaLastUpdatedAt.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })
-          : "尚未刷新";
-        mediaRefreshState.textContent = `${active ? "任务运行中，每 5 秒自动刷新" : "每 15 秒自动刷新"} · 上次 ${time}`;
+        mediaPanel.updateRefreshState({ updatedAt: mediaLastUpdatedAt });
       }
 
       function stopMediaAutoRefresh() {
-        if (mediaRefreshTimer) clearTimeout(mediaRefreshTimer);
-        mediaRefreshTimer = null;
-        if (mediaRefreshState && activeAdminPanel !== "media") mediaRefreshState.textContent = "自动刷新未启动";
+        mediaAutoRefresh?.stop();
       }
 
       function scheduleMediaAutoRefresh(delayMs) {
-        if (mediaRefreshTimer) clearTimeout(mediaRefreshTimer);
-        if (!adminAuthenticated || activeAdminPanel !== "media") return;
-        mediaRefreshTimer = setTimeout(async () => {
-          if (!adminAuthenticated || activeAdminPanel !== "media") return;
-          if (mediaRefreshInFlight) {
-            scheduleMediaAutoRefresh(2000);
-            return;
-          }
-          mediaRefreshInFlight = true;
-          try {
-            await readMedia({ writeOutput: false, fromAutoRefresh: true });
-          } catch (error) {
-            if (mediaRefreshState) mediaRefreshState.textContent = `自动刷新失败：${error.message}`;
-          } finally {
-            mediaRefreshInFlight = false;
-            scheduleMediaAutoRefresh(mediaHasActiveJobs() ? 5000 : 15000);
-          }
-        }, delayMs);
+        mediaAutoRefresh?.schedule(delayMs);
       }
 
       function startMediaAutoRefresh() {
         if (!adminAuthenticated || activeAdminPanel !== "media") return;
         updateMediaRefreshState();
-        scheduleMediaAutoRefresh(mediaHasActiveJobs() ? 5000 : 15000);
+        mediaAutoRefresh?.start();
       }
 
       function selectedUnitRecord() {
-        const unitNumber = Number(fields.unit.value || 1);
-        return (currentManifest?.units || []).find((unit) => unit.unit === unitNumber) || null;
+        return uploadFormPanel.selectedUnitRecord(currentManifest);
       }
 
       function populateLessonOptions() {
-        const type = fields.type.value;
-        const unit = selectedUnitRecord();
-        const lessons = unit?.lessons || [];
-        fields.lesson.innerHTML = "";
-
-        if (lessons.length) {
-          lessons.forEach((lesson) => {
-            fields.lesson.append(option(`Lesson ${lesson.lesson} · ${lesson.title}`, lesson.lesson));
-          });
-        }
-
-        if (type === "lesson-plan") {
-          const nextLesson = lessons.length ? Math.max(...lessons.map((lesson) => lesson.lesson)) + 1 : 1;
-          fields.lesson.append(option(`New Lesson ${nextLesson}`, nextLesson));
-        } else if (!lessons.length) {
-          fields.lesson.append(option("No lessons indexed", 1));
-          fields.lesson.disabled = true;
-          return;
-        }
-
-        fields.lesson.disabled = false;
+        uploadFormPanel.populateLessonOptions({
+          manifest: currentManifest,
+          type: fields.type.value,
+        });
       }
 
       function populateUnitOptions() {
-        const type = fields.type.value;
-        const units = currentManifest?.units || [];
-        fields.unit.innerHTML = "";
-
-        if (units.length) {
-          units.forEach((unit) => {
-            fields.unit.append(option(`Unit ${unit.unit} · ${unit.title}`, unit.unit));
-          });
-        }
-
-        if (type === "unit-plan" || type === "lesson-plan") {
-          const nextUnit = units.length ? Math.max(...units.map((unit) => unit.unit)) + 1 : 1;
-          fields.unit.append(option(`New Unit ${nextUnit}`, nextUnit));
-        } else if (!units.length) {
-          fields.unit.append(option("Unit 1", 1));
-        }
-
-        fields.unit.disabled = false;
-        populateLessonOptions();
+        uploadFormPanel.populateUnitOptions({
+          manifest: currentManifest,
+          type: fields.type.value,
+        });
       }
 
       async function loadSelectedCourseManifest() {
         currentManifest = null;
-        const course = encodeURIComponent(fields.course.value || "ENG3U");
         try {
-          const response = await fetch(`/courseware/${course}/course-manifest.json`, { cache: "no-store" });
-          if (!response.ok) throw new Error(`Manifest request failed: ${response.status}`);
-          currentManifest = await response.json();
+          currentManifest = await courseDataApi.courseManifest(fields.course.value);
         } catch (error) {
           fields.unit.innerHTML = "";
           fields.lesson.innerHTML = "";
@@ -2547,278 +2709,32 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       function renderAllCourseReadiness(data) {
-        const summary = data.summary || {};
-        const stats = [
-          ["Courses", data.courseCount],
-          ["Missing outlines", summary.missingCourseOutlines || 0],
-          ["Unit gaps", summary.unitPlanGapCourses || 0],
-          ["Lesson gaps", summary.lessonPlanGapCourses || 0],
-          ["No iSpring", summary.ispringMissingCourses || 0],
-          ["Text review", summary.textReviewCourses || 0],
-        ];
-        readinessSummaryStats.innerHTML = stats
-          .map(([label, value]) => `<div class="stat"><span>${label}</span><strong>${value}</strong></div>`)
-          .join("");
-        readinessSummaryStats.hidden = false;
-
-        const rows = (data.courses || [])
-          .map((course) => {
-            const readiness = course.readiness;
-            return `
-              <tr>
-                <td><strong>${course.code}</strong></td>
-                <td>${course.title}</td>
-                <td>${okText(readiness.courseOutline.ok)}</td>
-                <td>${okText(readiness.introduction.ok)}</td>
-                <td>${countText(readiness.unitPlans.count, readiness.unitPlans.expected)}</td>
-                <td>${countText(readiness.lessonPlans.count, readiness.lessonPlans.expected)}</td>
-                <td>${readiness.ispring.connected ? `<span class="status-ok">${readiness.ispring.count}</span>` : '<span class="status-missing">0</span>'}</td>
-                <td>${readiness.texts.needsReview.length ? `<span class="status-missing">${readiness.texts.needsReview.length}</span>` : '<span class="status-ok">0</span>'}</td>
-              </tr>
-            `;
-          })
-          .join("");
-        courseReadinessTable.innerHTML = `
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Title</th>
-                  <th>Outline</th>
-                  <th>Intro</th>
-                  <th>Unit Plans</th>
-                  <th>Lesson Plans</th>
-                  <th>iSpring</th>
-                  <th>Text Review</th>
-                </tr>
-              </thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>
-        `;
-        courseReadinessTable.hidden = false;
+        contentWorkbenchPanel.renderCourseReadiness(data);
       }
 
       function renderBackupList(data) {
-        const backups = data.backups || [];
-        if (!backups.length) {
-          backupList.innerHTML = '<p class="meta-line">当前课程暂无覆盖备份。</p>';
-          backupList.hidden = false;
-          return;
-        }
-        const rows = backups
-          .map((backup) => {
-            const files = (backup.files || []).map((file) => file.path).join("<br />") || "No files";
-            return `
-              <tr>
-                <td><strong>${backup.id}</strong></td>
-                <td>${formatBytes(backup.bytes || 0)}</td>
-                <td>${backup.path}</td>
-                <td>${files}</td>
-              </tr>
-            `;
-          })
-          .join("");
-        backupList.innerHTML = `
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Backup</th>
-                  <th>Size</th>
-                  <th>Folder</th>
-                  <th>Files</th>
-                </tr>
-              </thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>
-        `;
-        backupList.hidden = false;
+        maintenancePanel.renderBackupList(data);
       }
 
       function renderUploadGaps(data) {
-        currentUploadGapData = data;
-        currentDirectUploadItems = [...(data.uploadItems || []), ...(data.reviewItems || [])];
-        renderCurrentCourseUploadTasks();
-
-        const directRows = currentDirectUploadItems
-          .map(
-            (item, index) => `
-              <tr>
-                <td class="nowrap"><strong>${escapeHtml(item.course)}</strong></td>
-                <td>${escapeHtml(uploadTypeLabel(item.uploadType))}</td>
-                <td class="nowrap">${item.unit || ""}</td>
-                <td class="nowrap">${item.lesson || ""}</td>
-                <td class="filename">${escapeHtml(item.suggestedFilename || "")}</td>
-                <td>${escapeHtml(item.note || "")}</td>
-                <td class="nowrap"><button class="small" type="button" data-gap-action="fill" data-gap-index="${index}">填入表单</button></td>
-              </tr>
-            `,
-          )
-          .join("");
-        const reviewRows = (data.reviewItems || [])
-          .map(
-            (item) => `
-              <tr>
-                <td class="nowrap"><strong>${escapeHtml(item.course)}</strong></td>
-                <td class="nowrap">${escapeHtml(item.textId || "")}</td>
-                <td>${escapeHtml(item.textTitle)}</td>
-                <td>${escapeHtml(item.author)}</td>
-                <td class="filename">${escapeHtml(item.suggestedFilename || "")}</td>
-                <td>${escapeHtml(item.note || "")}</td>
-              </tr>
-            `,
-          )
-          .join("");
-        const externalRows = (data.externalItems || [])
-          .map(
-            (item) => `
-              <tr>
-                <td class="nowrap"><strong>${escapeHtml(item.course)}</strong></td>
-                <td>${escapeHtml(uploadTypeLabel(item.uploadType))}</td>
-                <td class="nowrap">${item.lessonCount}</td>
-                <td class="nowrap">${item.connectedCount}</td>
-                <td>${escapeHtml(item.note || "")}</td>
-              </tr>
-            `,
-          )
-          .join("");
-
-        uploadGapTable.innerHTML = `
-          <div class="stats">
-            <div class="stat"><span>Direct uploads</span><strong>${data.summary?.directUploads || 0}</strong></div>
-            <div class="stat"><span>Text reviews</span><strong>${data.summary?.textReviews || 0}</strong></div>
-            <div class="stat"><span>iSpring decisions</span><strong>${data.summary?.externalDecisions || 0}</strong></div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Upload Type</th>
-                  <th>Unit</th>
-                  <th>Lesson</th>
-                  <th>Suggested Filename</th>
-                  <th>Note</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>${directRows || '<tr><td colspan="7">No direct uploads pending.</td></tr>'}</tbody>
-            </table>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Text ID</th>
-                  <th>Text</th>
-                  <th>Author</th>
-                  <th>Suggested Filename</th>
-                  <th>Note</th>
-                </tr>
-              </thead>
-              <tbody>${reviewRows || '<tr><td colspan="6">No text review items.</td></tr>'}</tbody>
-            </table>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Upload Type</th>
-                  <th>Lessons</th>
-                  <th>Connected</th>
-                  <th>Note</th>
-                </tr>
-              </thead>
-              <tbody>${externalRows || '<tr><td colspan="5">No external iSpring decisions.</td></tr>'}</tbody>
-            </table>
-          </div>
-        `;
-        uploadGapTable.hidden = false;
+        uploadGapPanel.render(data, { currentCourse: fields.course.value });
       }
 
       function coursePackageReviewCourse(data) {
-        return String(data?.course || data?.packageCourse || data?.review?.course || data?.review?.packageCourse || "").trim().toUpperCase();
+        return coursePackageUi.reviewCourse(data);
       }
 
       function updateCoursePackageCommitState(data = currentCoursePackageImport) {
-        const selected = String(fields.course.value || "").trim().toUpperCase();
-        const previewCourse = coursePackageReviewCourse(data);
-        const hasReady = Boolean(data?.summary?.ready > 0);
-        const courseMatches = Boolean(data) && (!previewCourse || previewCourse === selected);
-        const canCommit = Boolean(data) && hasReady && courseMatches;
-        coursePackageCommitButton.disabled = !canCommit;
-        coursePackageCommitButton.textContent = selected ? `确认导入到 ${selected}` : "确认导入到当前课程";
-        coursePackageCommitButton.title = !data
-          ? "请先上传整课 ZIP 并生成预览"
-          : !hasReady
-            ? "预览里没有可导入的资源"
-            : !courseMatches
-              ? `这次预览属于 ${previewCourse}，当前课程是 ${selected}`
-              : `确认导入到 ${selected}`;
-        return { selected, previewCourse, hasReady, courseMatches, canCommit };
+        currentCoursePackageImport = coursePackageUi.setCurrentImport(data);
+        return coursePackageUi.commitState(data);
       }
 
       function renderCoursePackagePreview(data) {
-        currentCoursePackageImport = data.ok ? data : null;
-        const commitState = updateCoursePackageCommitState(currentCoursePackageImport);
-        const rows = (data.operations || [])
-          .slice(0, 200)
-          .map((item) => {
-            const statusClass = item.status === "ready" ? "status-ok" : item.status === "needs-review" ? "status-missing" : "meta-line";
-            return `
-              <tr>
-                <td class="nowrap"><strong>${escapeHtml(item.kind || "")}</strong></td>
-                <td class="${statusClass}">${escapeHtml(item.status || "")}</td>
-                <td>${escapeHtml(item.lessonId || (item.unit ? `U${item.unit}${item.lesson ? `L${item.lesson}` : ""}` : ""))}</td>
-                <td>${escapeHtml(item.sourcePath || "")}</td>
-                <td>${escapeHtml(item.targetPath || item.reason || "")}</td>
-              </tr>
-            `;
-          })
-          .join("");
-        const mismatchNotice = currentCoursePackageImport && !commitState.courseMatches
-          ? `<p class="error">这次预览属于 ${escapeHtml(commitState.previewCourse || "未知课程")}，当前课程是 ${escapeHtml(commitState.selected || "未选择")}。请先切回正确课程，或重新上传当前课程的课包。</p>`
-          : "";
-        coursePackagePanel.innerHTML = `
-          <div class="stats">
-            <div class="stat"><span>Ready</span><strong>${data.summary?.ready || 0}</strong></div>
-            <div class="stat"><span>Need Review</span><strong>${data.summary?.needsReview || 0}</strong></div>
-            <div class="stat"><span>Skipped</span><strong>${data.summary?.skipped || 0}</strong></div>
-            <div class="stat"><span>iSpring</span><strong>${data.summary?.ispring || 0}</strong></div>
-            <div class="stat"><span>Book Sections</span><strong>${data.summary?.bookSections || 0}</strong></div>
-            <div class="stat"><span>Resources</span><strong>${data.summary?.resources || 0}</strong></div>
-          </div>
-          <p class="meta-line">Import ID: ${escapeHtml(data.importId || "")} · Package Course: ${escapeHtml(commitState.previewCourse || data.course || "")} · Current Course: ${escapeHtml(commitState.selected || "")}</p>
-          ${mismatchNotice}
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Kind</th>
-                  <th>Status</th>
-                  <th>Lesson</th>
-                  <th>Source</th>
-                  <th>Target / Reason</th>
-                </tr>
-              </thead>
-              <tbody>${rows || '<tr><td colspan="5">No files found in this package.</td></tr>'}</tbody>
-            </table>
-          </div>
-        `;
-        coursePackagePanel.hidden = false;
+        currentCoursePackageImport = coursePackageUi.renderPreview(data);
       }
 
       function formatBytes(bytes) {
-        const value = Number(bytes || 0);
-        if (!value) return "0 B";
-        const units = ["B", "KB", "MB", "GB", "TB"];
-        const index = Math.min(Math.floor(Math.log(value) / Math.log(1024)), units.length - 1);
-        return `${(value / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+        return window.AdminMediaView.formatBytes(bytes);
       }
 
       function formatDurationSeconds(seconds) {
@@ -2833,207 +2749,43 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       function percentUsed(used, total) {
-        if (!total) return 0;
-        return Math.max(0, Math.min(100, Math.round((Number(used || 0) / Number(total || 1)) * 100)));
+        return storagePanel.percentUsed(used, total);
       }
 
       function meterHtml(label, used, total) {
-        const percent = percentUsed(used, total);
-        const fillClass = percent >= 90 ? "danger-fill" : percent >= 75 ? "warn-fill" : "";
-        return `
-          <div class="meter">
-            <div class="meter-head">
-              <span>${escapeHtml(label)}</span>
-              <span>${formatBytes(used)} / ${formatBytes(total)} · ${percent}%</span>
-            </div>
-            <div class="meter-track"><div class="meter-fill ${fillClass}" style="width:${percent}%"></div></div>
-          </div>
-        `;
+        return storagePanel.meterHtml(label, used, total);
       }
 
       function renderStorageMini(target, data, label = "数据盘") {
-        if (!target || !data?.disk) return;
-        target.innerHTML = `
-          <div class="stat">
-            ${meterHtml(label, data.disk.usedBytes || 0, data.disk.totalBytes || 0)}
-            <p class="meta-line">可用 ${formatBytes(data.disk.freeBytes || 0)} · 课程目录 ${formatBytes(data.summary?.activeRootBytes || 0)} · 后台临时 ${formatBytes(data.summary?.adminUploadBytes || 0)}</p>
-          </div>
-        `;
-        target.hidden = false;
+        storagePanel.renderMini(target, data, label);
       }
 
       function renderStorageOverview(data) {
         storageData = data;
-        const disk = data.disk || {};
-        storageSummary.innerHTML = `
-          <div class="stats">
-            <div class="stat">${meterHtml("数据盘", disk.usedBytes || 0, disk.totalBytes || 0)}</div>
-            <div class="stat"><span>剩余空间</span><strong>${formatBytes(disk.freeBytes || 0)}</strong></div>
-            <div class="stat"><span>Active 课程目录</span><strong>${formatBytes(data.summary?.activeRootBytes || 0)}</strong></div>
-            <div class="stat"><span>后台临时文件</span><strong>${formatBytes(data.summary?.adminUploadBytes || 0)}</strong></div>
-            <div class="stat"><span>Archive 目录</span><strong>${formatBytes(data.summary?.archiveRootBytes || 0)}</strong></div>
-          </div>
-          <p class="meta-line">Active root: ${escapeHtml(data.activeRoot || "")}<br />Archive root: ${escapeHtml(data.archiveRoot || "")}<br />Updated: ${escapeHtml(data.generatedAt || "")}</p>
-        `;
-        storageSummary.hidden = false;
-        renderStorageMini(uploadStorageMini, data);
-        renderStorageMini(packageStorageMini, data, "导入可用空间");
-
-        const rows = (data.courses || [])
-          .map(
-            (course) => `
-              <tr>
-                <td><strong>${escapeHtml(course.course)}</strong></td>
-                <td>${escapeHtml(course.title || "")}</td>
-                <td>${escapeHtml(course.status || "")}</td>
-                <td class="nowrap">${formatBytes(course.activeBytes || 0)}</td>
-                <td class="nowrap">${formatBytes(course.adminUploadBytes || 0)}</td>
-                <td class="nowrap">${formatBytes(course.archiveBytes || 0)}</td>
-                <td class="nowrap"><strong>${formatBytes(course.totalBytes || 0)}</strong></td>
-              </tr>
-            `,
-          )
-          .join("");
-        storageCourseTable.innerHTML = `
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Title</th>
-                  <th>Status</th>
-                  <th>Active</th>
-                  <th>Admin temp</th>
-                  <th>Archive</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>${rows || '<tr><td colspan="7">No course storage found.</td></tr>'}</tbody>
-            </table>
-          </div>
-        `;
-        storageCourseTable.hidden = false;
-      }
-
-      function coursePackageTaskKey(course = fields.course.value) {
-        return `ossd-course-package-task:${String(course || "").toUpperCase()}`;
-      }
-
-      function createCoursePackageTaskId() {
-        const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-        const random = window.crypto?.randomUUID ? window.crypto.randomUUID().slice(0, 8) : Math.random().toString(16).slice(2, 10);
-        return `${stamp}-${random}`;
+        storagePanel.renderOverview(data);
       }
 
       function rememberCoursePackageTask(task) {
-        if (!task?.course || !task?.importId) return;
-        localStorage.setItem(
-          coursePackageTaskKey(task.course),
-          JSON.stringify({
-            course: task.course,
-            importId: task.importId,
-            filename: task.filename || "",
-            totalBytes: task.totalBytes || 0,
-            chunkTotal: task.chunkTotal || 0,
-            chunksReceived: task.chunksReceived || 0,
-            status: task.status || "",
-            updatedAt: task.updatedAt || new Date().toISOString(),
-          }),
-        );
+        coursePackageUi.rememberTask(task);
       }
 
       function readRememberedCoursePackageTask(course = fields.course.value) {
-        try {
-          return JSON.parse(localStorage.getItem(coursePackageTaskKey(course)) || "null");
-        } catch {
-          return null;
-        }
+        return coursePackageUi.readRememberedTask(course);
       }
 
       function setCoursePackageStatus({ title, detail = "", percent = null, showProgress = false, error = false }) {
-        coursePackageStatus.hidden = false;
-        coursePackageStatusTitle.textContent = title;
-        coursePackageStatusTitle.className = error ? "error" : "";
-        coursePackageStatusDetail.textContent = detail;
-        coursePackageProgress.hidden = !showProgress;
-        if (percent === null) {
-          coursePackageProgressBar.style.width = "0%";
-        } else {
-          coursePackageProgressBar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
-        }
+        coursePackageUi.setStatus({ title, detail, percent, showProgress, error });
       }
 
       function renderCoursePackageTaskStatus(task) {
-        if (!task) return;
-        rememberCoursePackageTask(task);
-        const total = task.totalBytes || 0;
-        const loaded = task.bytesReceived || 0;
-        const tempText = task.packageBytes ? ` 临时目录 ${formatBytes(task.packageBytes)}。` : "";
-        if (task.status === "uploading") {
-          const chunkText = task.chunkTotal ? ` 分片 ${task.chunksReceived || 0}/${task.chunkTotal}。` : "";
-          setCoursePackageStatus({
-            title: `正在上传 ${task.filename || "整课 ZIP"}`,
-            detail: total
-              ? `服务器已收到 ${formatBytes(loaded)} / ${formatBytes(total)} (${task.percent || 0}%)。${chunkText}${tempText}刷新页面会中断浏览器正在发送的上传。`
-              : `服务器已收到 ${formatBytes(loaded)}。${chunkText}${tempText}刷新页面会中断浏览器正在发送的上传。`,
-            percent: task.percent || 0,
-            showProgress: true,
-          });
-          return;
-        }
-        if (task.status === "processing") {
-          const phase = task.phase === "merging" ? "合并分片" : task.phase === "extracting" ? "解压和扫描" : "处理";
-          const mergeText = task.mergeIndex && task.chunkTotal ? ` 合并 ${task.mergeIndex}/${task.chunkTotal}。` : "";
-          const chunkText = task.chunkTotal ? ` 分片 ${task.chunksReceived || task.chunkTotal}/${task.chunkTotal}。` : "";
-          setCoursePackageStatus({
-            title: `服务器正在处理 ${task.filename || "整课 ZIP"}`,
-            detail: `上传已到服务器，正在${phase}。${mergeText || chunkText}${tempText}大课包可能需要几分钟，请保持服务运行。`,
-            percent: 100,
-            showProgress: true,
-          });
-          return;
-        }
-        if (task.status === "complete") {
-          setCoursePackageStatus({
-            title: "最近一次上传已生成预览",
-            detail: `已扫描 ${task.summary?.total || task.review?.operations?.length || 0} 个导入项。确认无误后点击“确认导入到当前课程”。`,
-            percent: 100,
-            showProgress: true,
-          });
-          if (task.review) {
-            currentCoursePackageImport = task.review;
-            renderCoursePackagePreview(task.review);
-          } else {
-            currentCoursePackageImport = null;
-            updateCoursePackageCommitState(null);
-            coursePackagePanel.hidden = true;
-            setCoursePackageStatus({
-              title: "最近一次上传预览记录不完整",
-              detail: "服务器有上传完成记录，但没有找到可恢复的预览详情。请点击“读取状态”或重新上传生成预览。",
-              percent: 100,
-              showProgress: true,
-            });
-          }
-          return;
-        }
-        if (task.status === "failed") {
-          setCoursePackageStatus({
-            title: "最近一次上传未完成",
-            detail: task.error || "上传连接已中断或服务器处理失败，请重新选择文件上传。",
-            error: true,
-          });
-        }
+        coursePackageUi.renderTaskStatus(task);
+        currentCoursePackageImport = coursePackageUi.getCurrentImport();
       }
 
       async function restoreCoursePackageTask({ writeOutput = false } = {}) {
         const remembered = readRememberedCoursePackageTask();
         if (!remembered?.importId || !adminAuthenticated) return null;
-        const params = new URLSearchParams({
-          course: fields.course.value,
-          importId: remembered.importId,
-        });
-        const response = await fetch(`/api/admin/course-package/status?${params.toString()}`, { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.coursePackageStatus(fields.course.value, remembered.importId);
         if (data.ok && data.task) {
           renderCoursePackageTaskStatus(data.task);
           if (writeOutput) write(data);
@@ -3045,12 +2797,7 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       async function waitForCoursePackageReview(importId) {
         for (let attempt = 0; attempt < 360; attempt += 1) {
-          const params = new URLSearchParams({
-            course: fields.course.value,
-            importId,
-          });
-          const response = await fetch(`/api/admin/course-package/status?${params.toString()}`, { credentials: "same-origin" });
-          const data = await response.json();
+          const data = await adminApi.coursePackageStatus(fields.course.value, importId);
           if (data.ok && data.task) {
             renderCoursePackageTaskStatus(data.task);
             if (data.task.status === "complete" && data.task.review) return data.task.review;
@@ -3061,121 +2808,24 @@ pm2 restart ossd-course-portal --update-env</pre>
         throw new Error("服务器仍在处理整课包，请稍后刷新后台查看任务状态。");
       }
 
-      function uploadBinaryWithProgress(url, file, onProgress) {
-        return new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open("POST", url);
-          xhr.withCredentials = true;
-          xhr.timeout = 0;
-          xhr.setRequestHeader("Content-Type", "application/octet-stream");
-          xhr.upload.addEventListener("progress", (event) => {
-            if (event.lengthComputable) onProgress(event.loaded, event.total);
-          });
-          xhr.addEventListener("load", () => {
-            let data = null;
-            try {
-              data = JSON.parse(xhr.responseText || "{}");
-            } catch {
-              reject(new Error(xhr.responseText || `Upload failed with HTTP ${xhr.status}.`));
-              return;
-            }
-            if (xhr.status >= 200 && xhr.status < 300) {
-              resolve(data);
-            } else {
-              reject(new Error(data.error || `Upload failed with HTTP ${xhr.status}.`));
-            }
-          });
-          xhr.addEventListener("error", () => reject(new Error("上传连接失败，请检查网络、Nginx 限制或登录状态。")));
-          xhr.addEventListener("abort", () => reject(new Error("上传已取消。")));
-          xhr.send(file);
-        });
-      }
-
       function sleep(ms) {
         return new Promise((resolvePromise) => setTimeout(resolvePromise, ms));
       }
 
       async function uploadCoursePackageChunkWithRetry({ url, blob, onProgress, onRetry }) {
-        let lastError = null;
-        for (let attempt = 1; attempt <= coursePackageChunkMaxRetries; attempt += 1) {
-          try {
-            return await uploadBinaryWithProgress(url, blob, onProgress);
-          } catch (error) {
-            lastError = error;
-            if (attempt >= coursePackageChunkMaxRetries) break;
-            onRetry?.(attempt, error);
-            await sleep(Math.min(30000, 2000 * attempt));
-          }
-        }
-        throw lastError || new Error("分片上传失败。");
+        return uploadTransport.uploadWithRetry({ url, blob, onProgress, onRetry });
       }
 
       function reusableCoursePackageImportId(file) {
-        const remembered = readRememberedCoursePackageTask();
-        if (
-          remembered?.importId &&
-          remembered.filename === file.name &&
-          Number(remembered.totalBytes || 0) === file.size &&
-          remembered.status !== "complete"
-        ) {
-          return remembered.importId;
-        }
-        return createCoursePackageTaskId();
+        return coursePackageUi.reusableImportId(file);
       }
 
       function renderContentWorkbench(data) {
-        const rows = (data.rows || [])
-          .slice(0, 27)
-          .map(
-            (row) => `
-              <tr>
-                <td class="nowrap"><strong>${escapeHtml(row.course)}</strong></td>
-                <td>${escapeHtml(row.status)}</td>
-                <td class="nowrap">${row.priorityScore}</td>
-                <td class="nowrap">${row.units}</td>
-                <td class="nowrap">${row.lessons}</td>
-                <td>${row.missingCourseOutline ? '<span class="status-missing">Missing</span>' : '<span class="status-ok">OK</span>'}</td>
-                <td>${row.iSpringMissing ? '<span class="status-missing">Missing</span>' : '<span class="status-ok">OK</span>'}</td>
-                <td class="nowrap">${row.previewQueue || 0}</td>
-                <td class="nowrap">${row.textReviewItems || 0}</td>
-                <td>${escapeHtml((row.nextActions || [])[0] || "")}</td>
-              </tr>
-            `,
-          )
-          .join("");
-        contentWorkbenchTable.innerHTML = `
-          <div class="stats">
-            <div class="stat"><span>Courses</span><strong>${data.totals?.courses || 0}</strong></div>
-            <div class="stat"><span>Missing outlines</span><strong>${data.totals?.missingCourseOutlines || 0}</strong></div>
-            <div class="stat"><span>iSpring missing</span><strong>${data.totals?.iSpringMissingCourses || 0}</strong></div>
-            <div class="stat"><span>Preview queue</span><strong>${data.totals?.previewQueue || 0}</strong></div>
-            <div class="stat"><span>Text review</span><strong>${data.totals?.textReviewItems || 0}</strong></div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Course</th>
-                  <th>Status</th>
-                  <th>Priority</th>
-                  <th>Units</th>
-                  <th>Lessons</th>
-                  <th>Outline</th>
-                  <th>iSpring</th>
-                  <th>Preview</th>
-                  <th>Text</th>
-                  <th>Next Action</th>
-                </tr>
-              </thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>
-        `;
-        contentWorkbenchTable.hidden = false;
+        contentWorkbenchPanel.renderContentWorkbench(data);
       }
 
       async function fillUploadFormFromGap(index) {
-        const item = currentDirectUploadItems[Number(index)];
+        const item = uploadGapPanel.itemAt(index);
         if (!item) return;
 
         if (fields.course.value !== item.course) {
@@ -3206,9 +2856,7 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       async function loadCourses() {
         try {
-          const response = await fetch("/admin-course-options.json", { cache: "no-store" });
-          if (!response.ok) throw new Error(`Course options request failed: ${response.status}`);
-          const data = await response.json();
+          const data = await courseDataApi.courseOptions();
           const courses = sortCoursesByCode(data.courses || []);
           fields.course.innerHTML = "";
           courses.forEach((course) => {
@@ -3229,25 +2877,10 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       function updateTypeFields() {
-        const type = fields.type.value;
-        const needsUnit = type === "unit-plan" || type === "lesson-plan" || type === "ispring-zip";
-        const needsLesson = type === "lesson-plan" || type === "ispring-zip";
-        const needsTextId = type === "text-material";
-        unitField.hidden = !needsUnit;
-        lessonField.hidden = !needsLesson;
-        textIdField.hidden = !needsTextId;
-
-        const help = {
-          "course-outline": "课程级资料：上传后进入课程文件区，不绑定 Unit/Lesson。",
-          "course-introduction": "课程级资料：上传后进入课程文件区，不绑定 Unit/Lesson。",
-          "unit-plan": "Unit Plan：请选择课程和 Unit。",
-          "lesson-plan": "Lesson Plan：请选择课程、Unit 和 Lesson。",
-          "text-material": "Literary Text：请选择课程并填写 Text ID，文件会进入 courseware/课程/texts/Text ID/。",
-          "ispring-zip": "iSpring ZIP：请选择课程、Unit 和 Lesson；ZIP 内需要包含 presentation.html。",
-          "ispring-batch-zip": "iSpring ZIP Batch：请选择课程；外层 ZIP 内放多个 iSpring ZIP，文件名用 U01_L01.zip 或 课程_U01_L01.zip。",
-        };
-        typeHelp.textContent = help[type] || "";
-        populateUnitOptions();
+        uploadFormPanel.updateTypeFields({
+          manifest: currentManifest,
+          type: fields.type.value,
+        });
       }
 
       function setAuthenticated(isAuthenticated, sessionData = null) {
@@ -3263,8 +2896,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function checkSession() {
-        const response = await fetch("/api/admin/session", { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.session();
         setAuthenticated(Boolean(data.authenticated), data);
         if (data.authenticated) {
           await readUsers({ writeOutput: false });
@@ -3279,17 +2911,10 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function login() {
-        const response = await fetch("/api/admin/login", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: fields.username.value,
-            password: fields.password.value,
-          }),
+        const data = await adminApi.login({
+          username: fields.username.value,
+          password: fields.password.value,
         });
-        const data = await response.json();
-        if (!response.ok || !data.ok) throw new Error(responseMessage(data, `登录失败：HTTP ${response.status}`));
         setAuthenticated(Boolean(data.ok), data);
         if (data.ok) {
           await readUsers({ writeOutput: false });
@@ -3304,11 +2929,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function logout() {
-        const response = await fetch("/api/admin/logout", {
-          method: "POST",
-          credentials: "same-origin",
-        });
-        const data = await response.json();
+        const data = await adminApi.logout();
         setAuthenticated(false);
         fields.password.value = "";
         write(data);
@@ -3316,9 +2937,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function readStatus({ writeOutput = true } = {}) {
-        const url = `/api/admin/status?course=${encodeURIComponent(fields.course.value)}`;
-        const response = await fetch(url, { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.status(fields.course.value);
         if (data.ok) {
           renderStatusStats(data);
           renderReadiness(data);
@@ -3328,65 +2947,55 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function readStorage({ writeOutput = true } = {}) {
-        const response = await fetch("/api/admin/storage", { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.storage();
         if (data.ok) renderStorageOverview(data);
         if (writeOutput) write(data);
         return data;
       }
 
       async function readHistory() {
-        const url = `/api/admin/history?course=${encodeURIComponent(fields.course.value)}&limit=30`;
-        const response = await fetch(url, { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.history(fields.course.value, 30);
         write(data);
         return data;
       }
 
       async function readBackups({ writeOutput = true } = {}) {
-        const url = `/api/admin/backups?course=${encodeURIComponent(fields.course.value)}&limit=30`;
-        const response = await fetch(url, { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.backups(fields.course.value, 30);
         if (data.ok) renderBackupList(data);
         if (writeOutput) write(data);
         return data;
       }
 
       async function readAllCourseReadiness({ writeOutput = true } = {}) {
-        const response = await fetch("/api/admin/readiness", { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.readiness();
         if (data.ok) renderAllCourseReadiness(data);
         if (writeOutput) write(data);
         return data;
       }
 
       async function readUploadGaps({ writeOutput = true } = {}) {
-        const response = await fetch("/api/admin/upload-gaps", { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.uploadGaps();
         if (data.ok) renderUploadGaps(data);
         if (writeOutput) write(data);
         return data;
       }
 
       async function readContentWorkbench({ writeOutput = true } = {}) {
-        const response = await fetch("/api/admin/content-workbench", { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.contentWorkbench();
         if (data.ok) renderContentWorkbench(data);
         if (writeOutput) write(data);
         return data;
       }
 
       async function readUsers({ writeOutput = true } = {}) {
-        const response = await fetch("/api/admin/users", { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.users();
         if (data.ok) renderUsers(data);
         if (writeOutput) write(data);
         return data;
       }
 
       async function readCourseLifecycle({ writeOutput = true } = {}) {
-        const response = await fetch("/api/admin/course-status", { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.courseLifecycle();
         if (data.ok) renderCourseLifecycle(data);
         if (writeOutput) write(data);
         return data;
@@ -3421,13 +3030,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           status,
           note: fields.courseStatusNote.value.trim(),
         };
-        const response = await fetch("/api/admin/course-status", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const data = await response.json();
+        const data = await adminApi.setCourseLifecycle(payload);
         write(data);
         if (data.ok) {
           await readCourseLifecycle({ writeOutput: false });
@@ -3449,16 +3052,10 @@ pm2 restart ossd-course-portal --update-env</pre>
         }
         const message = `确认只开放 ${courses.join(", ")}？其他 catalog 课程会设为 archived，在前台隐藏并拦截直链。`;
         if (!confirm(message)) return { canceled: true, message: "已取消应用首批上线状态。" };
-        const response = await fetch("/api/admin/course-status/launch-allowlist", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            courses,
-            note: fields.courseStatusNote.value.trim() || "Initial launch course; visible to assigned teachers.",
-          }),
+        const data = await adminApi.applyLaunchCourseAllowlist({
+          courses,
+          note: fields.courseStatusNote.value.trim() || "Initial launch course; visible to assigned teachers.",
         });
-        const data = await response.json();
         write(data);
         if (data.ok) {
           fields.lifecycleFilter.value = "all";
@@ -3469,29 +3066,16 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function readCourseLifecycleJobs({ writeOutput = true } = {}) {
-        const response = await fetch("/api/admin/course-lifecycle-jobs", { credentials: "same-origin" });
-        const data = await response.json();
+        const data = await adminApi.courseLifecycleJobs();
         if (data.ok) renderCourseLifecycleJobs(data);
         if (writeOutput) write(data);
         return data;
       }
 
       async function readMedia({ writeOutput = true, fromAutoRefresh = false } = {}) {
-        const coursesUrl = `/api/admin/media/courses${fromAutoRefresh ? "" : "?refreshOss=1"}`;
-        const [coursesResponse, jobsResponse] = await Promise.all([
-          fetch(coursesUrl, { credentials: "same-origin" }),
-          fetch("/api/admin/media/jobs?limit=50", { credentials: "same-origin" }),
-        ]);
-        const coursesData = await coursesResponse.json();
-        const jobsData = await jobsResponse.json();
-        const data = {
-          ...(coursesData.ok ? coursesData : {}),
-          jobs: jobsData.jobs || [],
-          jobsOk: jobsData.ok,
-          jobsError: jobsData.error || "",
-        };
-        if (coursesData.ok) renderMedia(data);
-        renderMediaJobs({ jobs: jobsData.jobs || [] });
+        const data = await mediaApi.read({ refreshOss: !fromAutoRefresh });
+        if (data.coursesOk) renderMedia(data);
+        else renderMediaJobs({ jobs: data.jobs || [] });
         mediaLastUpdatedAt = new Date();
         updateMediaRefreshState();
         if (writeOutput) write(data);
@@ -3499,203 +3083,8 @@ pm2 restart ossd-course-portal --update-env</pre>
         return data;
       }
 
-      async function createMediaJob(payload) {
-        const response = await fetch("/api/admin/media/jobs", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const data = await response.json();
-        write(data);
-        if (!response.ok || !data.ok) throw new Error(responseMessage(data, `媒体任务创建失败：HTTP ${response.status}`));
-        await readMedia({ writeOutput: false });
-        startMediaAutoRefresh();
-        return data;
-      }
-
-      function createOssUploadProgressFormatter(file) {
-        const startedAt = Date.now();
-        let lastAt = startedAt;
-        let lastLoaded = 0;
-        let smoothedBytesPerSecond = 0;
-        return ({ percent, loaded, total, objectKey }) => {
-          const now = Date.now();
-          const elapsedMs = Math.max(1, now - lastAt);
-          const deltaBytes = Math.max(0, loaded - lastLoaded);
-          const instantBytesPerSecond = (deltaBytes / elapsedMs) * 1000;
-          if (instantBytesPerSecond > 0) {
-            smoothedBytesPerSecond = smoothedBytesPerSecond
-              ? smoothedBytesPerSecond * 0.7 + instantBytesPerSecond * 0.3
-              : instantBytesPerSecond;
-          }
-          lastAt = now;
-          lastLoaded = loaded;
-          const averageBytesPerSecond = loaded > 0 ? loaded / Math.max(1, (now - startedAt) / 1000) : 0;
-          const bytesPerSecond = smoothedBytesPerSecond || averageBytesPerSecond;
-          const remainingBytes = Math.max(0, total - loaded);
-          const eta = bytesPerSecond > 0 ? remainingBytes / bytesPerSecond : 0;
-          const speedText = bytesPerSecond > 0 ? `${formatBytes(bytesPerSecond)}/s` : "计算中";
-          const totalText = total || file.size || 0;
-          return `${percent}% · ${formatBytes(loaded)} / ${formatBytes(totalText)} · 速度 ${speedText} · 剩余约 ${formatDurationSeconds(eta)} · ${objectKey}`;
-        };
-      }
-
-      function uploadOssPostObject(form, file, onProgress) {
-        return new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open(form.method || "POST", form.url, true);
-          xhr.upload.onprogress = (event) => {
-            if (event.lengthComputable && typeof onProgress === "function") {
-              onProgress({
-                percent: Math.round((event.loaded / event.total) * 100),
-                loaded: event.loaded,
-                total: event.total,
-              });
-            }
-          };
-          xhr.onload = () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              resolve({ status: xhr.status, text: xhr.responseText || "" });
-            } else {
-              reject(new Error(`OSS 上传失败：HTTP ${xhr.status} ${xhr.responseText || ""}`.trim()));
-            }
-          };
-          xhr.onerror = () => reject(new Error("OSS 上传网络错误，请检查 CORS、网络或 OSS 域名配置。"));
-          xhr.ontimeout = () => reject(new Error("OSS 上传超时，请重试。"));
-          const data = new FormData();
-          Object.entries(form.fields || {}).forEach(([key, value]) => {
-            data.append(key, value);
-          });
-          data.append("file", file);
-          xhr.send(data);
-        });
-      }
-
-      async function directUploadToOss() {
-        const file = ossDirectFile?.files?.[0];
-        if (!file) throw new Error("请选择要直传到 OSS 的文件。");
-        const course = String(fields.course.value || "").trim().toUpperCase();
-        if (!course) throw new Error("请选择课程。");
-        const kind = ossDirectKind?.value || "course-package";
-        const autoPublish = Boolean(ossDirectAutoPublish?.checked);
-        if (autoPublish && kind === "ispring-package") {
-          const ok = confirm("当前自动发布支持完整课件包 ZIP、单个视频和 H5P。iSpring 单包会先保存到 OSS inbox，暂不会自动覆盖课程。仍然继续上传吗？");
-          if (!ok) return { canceled: true, message: "已取消 OSS 直传。" };
-        }
-        setOssDirectStatus("正在创建 OSS 上传授权", `${course} · ${file.name} · ${formatBytes(file.size)}`, 0);
-        const initResponse = await fetch("/api/admin/oss/uploads/init", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            course,
-            kind,
-            fileName: file.name,
-            fileSize: file.size,
-            contentType: file.type || "",
-          }),
-        });
-        const initData = await initResponse.json();
-        if (!initResponse.ok || !initData.ok) throw new Error(responseMessage(initData, `创建 OSS 上传授权失败：HTTP ${initResponse.status}`));
-        setOssDirectStatus("正在直传 OSS", `${initData.upload.objectKey}`, 1);
-        const uploadProgressText = createOssUploadProgressFormatter(file);
-        await uploadOssPostObject(initData.form, file, ({ percent, loaded, total }) => {
-          const detail = uploadProgressText({
-            percent,
-            loaded,
-            total,
-            objectKey: initData.upload.objectKey,
-          });
-          setOssDirectStatus(`正在直传 OSS · ${percent}%`, detail, percent);
-        });
-        setOssDirectStatus("正在校验 OSS 对象", initData.upload.ossUri, 100);
-        const completeResponse = await fetch(`/api/admin/oss/uploads/${encodeURIComponent(initData.upload.id)}/complete`, {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            objectKey: initData.upload.objectKey,
-            autoPublish,
-          }),
-        });
-        const completeData = await completeResponse.json();
-        if (!completeResponse.ok || !completeData.ok) throw new Error(responseMessage(completeData, `OSS 上传完成校验失败：HTTP ${completeResponse.status}`));
-        const detail = completeData.job
-          ? `已创建媒体任务 ${completeData.job.id}。`
-          : completeData.coursePackageTask
-            ? `已创建课程导入任务 ${completeData.coursePackageTask.importId || completeData.upload.importId}，导入完成后会自动发布媒体。`
-          : completeData.warning || "文件已保存到 OSS inbox。";
-        setOssDirectStatus("OSS 直传完成", detail, 100, completeData.warning ? "warn" : "info");
-        ossDirectFile.value = "";
-        await readMedia({ writeOutput: false });
-        startMediaAutoRefresh();
-        write(completeData);
-        return completeData;
-      }
-
-      async function publishCurrentCourse() {
-        if (!confirm(`确认发布 ${fields.course.value} 到 OSS/CDN？系统会审计、压缩候选视频并上传该课程资源。`)) {
-          return { canceled: true, message: "已取消发布当前课程。" };
-        }
-        return createMediaJob({ type: "publish-course", course: fields.course.value });
-      }
-
-      async function auditCurrentCourse() {
-        return createMediaJob({ type: "audit-videos", course: fields.course.value });
-      }
-
-      async function syncCurrentCourse() {
-        if (!confirm(`确认只上传 ${fields.course.value} 到 OSS/CDN？不会重新压缩视频。`)) {
-          return { canceled: true, message: "已取消上传当前课程。" };
-        }
-        return createMediaJob({ type: "sync-oss", course: fields.course.value });
-      }
-
-      async function publishAllMedia() {
-        if (!confirm("确认全量完整发布所有课程？这会压缩候选视频并上传全部资源到 OSS/CDN，可能运行很久。")) {
-          return { canceled: true, message: "已取消全量发布。" };
-        }
-        return createMediaJob({ type: "publish-all" });
-      }
-
-      async function checkMediaReadiness() {
-        return createMediaJob({ type: "check-readiness" });
-      }
-
-      async function showMediaJobLog(jobId) {
-        const response = await fetch(`/api/admin/media/jobs/${encodeURIComponent(jobId)}/log?stream=stdout&tail=240`, { credentials: "same-origin" });
-        const data = await response.json();
-        if (!data.ok) throw new Error(responseMessage(data, "读取日志失败。"));
-        mediaJobLogPanel.hidden = false;
-        mediaJobLogTitle.textContent = `任务日志：${jobId}`;
-        mediaJobLogText.textContent = data.text || "(empty)";
-        write(data);
-        return data;
-      }
-
-      async function cancelMediaJob(jobId) {
-        if (!confirm(`确认取消媒体任务 ${jobId}？已经上传到 OSS 的对象不会自动删除。`)) {
-          return { canceled: true, message: "已取消操作。" };
-        }
-        const response = await fetch(`/api/admin/media/jobs/${encodeURIComponent(jobId)}/cancel`, { method: "POST", credentials: "same-origin" });
-        const data = await response.json();
-        if (!response.ok || !data.ok) throw new Error(responseMessage(data, "取消媒体任务失败。"));
-        await readMedia({ writeOutput: false });
-        write(data);
-        return data;
-      }
-
-      async function retryMediaJob(jobId) {
-        if (!confirm(`确认重试媒体任务 ${jobId}？`)) {
-          return { canceled: true, message: "已取消重试。" };
-        }
-        const response = await fetch(`/api/admin/media/jobs/${encodeURIComponent(jobId)}/retry`, { method: "POST", credentials: "same-origin" });
-        const data = await response.json();
-        if (!response.ok || !data.ok) throw new Error(responseMessage(data, "重试媒体任务失败。"));
-        await readMedia({ writeOutput: false });
-        write(data);
-        return data;
+      function handleMediaJobAction(button) {
+        mediaActions.handleJobAction(button, runButtonAction);
       }
 
       async function startCourseLifecycleJob(action, options = {}) {
@@ -3704,13 +3093,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           action,
           ...options,
         };
-        const response = await fetch("/api/admin/course-lifecycle-jobs", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const data = await response.json();
+        const data = await adminApi.createCourseLifecycleJob(payload);
         write(data);
         if (data.ok) {
           await readCourseLifecycle({ writeOutput: false });
@@ -3727,27 +3110,14 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function saveUser() {
-        const payload = {
-          course: fields.course.value,
-          username: fields.portalUsername.value.trim(),
-          password: fields.portalPassword.value,
-          role: fields.portalRole.value,
-          status: fields.portalStatus.value,
-          courses: selectedUserCourses(),
-        };
+        const payload = usersPanel.formData({ course: fields.course.value });
         if (!payload.username) {
           throw new Error("请填写 Username。");
         }
         if (!payload.courses.length) {
           throw new Error("请至少选择一门课程，或选择全部课程。");
         }
-        const response = await fetch("/api/admin/users", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const data = await response.json();
+        const data = await adminApi.saveUser(payload);
         if (data.ok) {
           fields.portalPassword.value = "";
           renderUsers(data);
@@ -3762,15 +3132,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           throw new Error("请先选择或填写要删除的用户。");
         }
         if (!confirm(`确认删除用户 ${username}？`)) return { canceled: true, message: `已取消删除用户 ${username}。` };
-        const params = new URLSearchParams({
-          username,
-          course: fields.course.value,
-        });
-        const response = await fetch(`/api/admin/users?${params.toString()}`, {
-          method: "DELETE",
-          credentials: "same-origin",
-        });
-        const data = await response.json();
+        const data = await adminApi.deleteUser(username, fields.course.value);
         if (data.ok) {
           clearUserForm();
           renderUsers(data);
@@ -3780,12 +3142,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function cleanup(mode) {
-        const params = new URLSearchParams({ course: fields.course.value, mode });
-        const response = await fetch(`/api/admin/cleanup?${params.toString()}`, {
-          method: "POST",
-          credentials: "same-origin",
-        });
-        const data = await response.json();
+        const data = await adminApi.cleanup(fields.course.value, mode);
         write(data);
         if (data.ok) {
           readStatus().catch((error) => write(`Error: ${error.message}`));
@@ -3794,13 +3151,8 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function generatePreviews() {
-        const params = new URLSearchParams({ course: fields.course.value });
         write(`正在生成 ${fields.course.value} 的 Office 在线预览...`);
-        const response = await fetch(`/api/admin/generate-previews?${params.toString()}`, {
-          method: "POST",
-          credentials: "same-origin",
-        });
-        const data = await response.json();
+        const data = await adminApi.generatePreviews(fields.course.value);
         write(data);
         if (data.previewWarning) {
           write(`预览生成未完成：${data.previewWarning}\n\n服务器需要安装 LibreOffice，并设置 LIBREOFFICE_BIN。文件仍然可以下载。`);
@@ -3813,258 +3165,15 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function upload() {
-        const file = fields.file.files[0];
-        if (!file) {
-          setSingleUploadStatus("请选择文件", "", "error");
-          throw new Error("请选择文件。");
-        }
-        if (fields.type.value === "ispring-zip" && fields.lesson.disabled) {
-          setSingleUploadStatus("当前 Unit 没有可绑定的 Lesson", "不能上传 iSpring。请先上传或生成对应 Lesson Plan。", "error");
-          throw new Error("当前 Unit 没有可绑定的 Lesson，不能上传 iSpring。请先上传或生成对应 Lesson Plan。");
-        }
-        if (fields.type.value === "text-material" && !fields.textId.value.trim()) {
-          setSingleUploadStatus("请填写 Text ID", "例如 sunday-park。", "error");
-          throw new Error("请填写 Text ID，例如 sunday-park。");
-        }
-        const params = new URLSearchParams({
-          course: fields.course.value,
-          type: fields.type.value,
-          filename: file.name,
-          unit: fields.unit.value,
-          lesson: fields.lesson.value,
-          textId: fields.textId.value.trim(),
-        });
-        write(`Uploading ${file.name}...`);
-        setSingleUploadStatus(`正在上传 ${file.name}`, `${uploadTypeLabel(fields.type.value)} · ${unitLessonText({ unit: fields.unit.value, lesson: fields.lesson.value })}`);
-        const response = await fetch(`/api/admin/upload?${params.toString()}`, {
-          method: "POST",
-          credentials: "same-origin",
-          headers: {
-            "Content-Type": "application/octet-stream",
-          },
-          body: file,
-        });
-        const data = await response.json();
-        write(data);
-        if (!response.ok || !data.ok) {
-          setSingleUploadStatus("上传失败", responseMessage(data, `HTTP ${response.status}`), "error");
-          throw new Error(responseMessage(data, `上传失败：HTTP ${response.status}`));
-        }
-        if (data.ok) {
-          fields.file.value = "";
-          setSingleUploadStatus("上传完成", `${file.name} 已进入 ${fields.course.value}，manifest 和容量信息已刷新。`);
-          await loadSelectedCourseManifest();
-          await readStatus({ writeOutput: false });
-          await readStorage({ writeOutput: false });
-          await readAllCourseReadiness({ writeOutput: false });
-          await readUploadGaps({ writeOutput: false });
-          await readMedia({ writeOutput: false });
-          if (data.backups?.length) {
-            await readBackups({ writeOutput: false });
-          }
-        }
-        return data;
+        return localUploadAction.upload();
       }
 
       async function uploadCoursePackage() {
-        const file = fields.coursePackageFile.files[0];
-        if (!file) {
-          setCoursePackageStatus({ title: "请选择整课 ZIP 压缩包", error: true });
-          write("请选择整课 ZIP 压缩包。");
-          return;
-        }
-        if (!file.name.toLowerCase().endsWith(".zip")) {
-          setCoursePackageStatus({ title: "整课包必须是 .zip 文件", detail: file.name, error: true });
-          write("整课包必须是 .zip 文件。");
-          return;
-        }
-        currentCoursePackageImport = null;
-        updateCoursePackageCommitState(null);
-        coursePackageUploadButton.disabled = true;
-        coursePackagePanel.hidden = true;
-        const importId = reusableCoursePackageImportId(file);
-        const chunkTotal = Math.ceil(file.size / coursePackageChunkBytes);
-        const restoredTask = await restoreCoursePackageTask({ writeOutput: false });
-        let startChunk = 0;
-        if (restoredTask?.importId === importId && restoredTask.filename === file.name && Number(restoredTask.totalBytes || 0) === file.size) {
-          startChunk = Math.max(0, Math.min(chunkTotal, Number(restoredTask.chunksReceived || 0)));
-        }
-        rememberCoursePackageTask({
-          course: fields.course.value,
-          importId,
-          filename: file.name,
-          totalBytes: file.size,
-          chunkTotal,
-          chunksReceived: startChunk,
-          status: "uploading",
-        });
-        setCoursePackageStatus({
-          title: startChunk ? `继续上传 ${file.name}` : `正在上传 ${file.name}`,
-          detail: startChunk
-            ? `已恢复 ${startChunk}/${chunkTotal} 个分片，约 ${Math.round((startChunk / chunkTotal) * 100)}%。系统会自动续传和重试。`
-            : `准备分片上传：${chunkTotal} 个分片，每片约 ${formatBytes(coursePackageChunkBytes)}。系统会自动续传和重试。`,
-          percent: Math.round((startChunk / chunkTotal) * 100),
-          showProgress: true,
-        });
-        write(`正在分片上传整课包：${file.name}，共 ${chunkTotal} 个分片...`);
-        try {
-          let finalData = null;
-          for (let index = startChunk; index < chunkTotal; index += 1) {
-            const start = index * coursePackageChunkBytes;
-            const end = Math.min(file.size, start + coursePackageChunkBytes);
-            const blob = file.slice(start, end);
-            const params = new URLSearchParams({
-              course: fields.course.value,
-              filename: file.name,
-              importId,
-              chunkIndex: String(index),
-              chunkTotal: String(chunkTotal),
-              totalBytes: String(file.size),
-            });
-            const data = await uploadCoursePackageChunkWithRetry({
-              url: `/api/admin/course-package/chunk?${params.toString()}`,
-              blob,
-              onProgress: (loaded) => {
-                const totalLoaded = Math.min(file.size, start + loaded);
-                const percent = Math.round((totalLoaded / file.size) * 100);
-                setCoursePackageStatus({
-                  title: `正在上传 ${file.name}`,
-                  detail: `分片 ${index + 1}/${chunkTotal}，已上传 ${formatBytes(totalLoaded)} / ${formatBytes(file.size)} (${percent}%)。断线会自动重试。`,
-                  percent,
-                  showProgress: true,
-                });
-              },
-              onRetry: (attempt, error) => {
-                setCoursePackageStatus({
-                  title: `网络中断，正在自动重试`,
-                  detail: `分片 ${index + 1}/${chunkTotal} 第 ${attempt + 1}/${coursePackageChunkMaxRetries} 次尝试。${error instanceof Error ? error.message : String(error)}`,
-                  percent: Math.round((start / file.size) * 100),
-                  showProgress: true,
-                  error: true,
-                });
-              },
-            });
-            const chunksReceived = data.chunksReceived || index + 1;
-            rememberCoursePackageTask({
-              course: fields.course.value,
-              importId,
-              filename: file.name,
-              totalBytes: file.size,
-              chunkTotal,
-              chunksReceived,
-              status: "uploading",
-            });
-            setCoursePackageStatus({
-              title: `正在上传 ${file.name}`,
-              detail: data.complete
-                ? "所有分片已上传，服务器正在合并、解压并生成预览。"
-                : `已完成 ${chunksReceived}/${chunkTotal} 个分片，服务器已收到 ${formatBytes(data.bytesReceived || end)} / ${formatBytes(file.size)}。`,
-              percent: data.percent ?? Math.round((Math.min(file.size, end) / file.size) * 100),
-              showProgress: true,
-            });
-            if (data.complete) {
-              finalData = data.processing ? await waitForCoursePackageReview(importId) : data;
-              break;
-            }
-          }
-          if (!finalData) {
-            const task = await restoreCoursePackageTask({ writeOutput: false });
-            finalData = task?.review || currentCoursePackageImport;
-          }
-          if (finalData?.processing || !finalData?.operations) {
-            finalData = await waitForCoursePackageReview(importId);
-          }
-          if (!finalData?.ok) throw new Error("所有分片已上传，但服务器没有返回导入预览。请刷新任务状态。");
-          setCoursePackageStatus({
-            title: "上传完成，服务器已生成预览",
-            detail: `已扫描 ${finalData.operations?.length || 0} 个导入项。确认无误后点击“确认导入到当前课程”。`,
-            percent: 100,
-            showProgress: true,
-          });
-          rememberCoursePackageTask({
-            course: fields.course.value,
-            importId: finalData.importId || importId,
-            filename: file.name,
-            totalBytes: file.size,
-            chunkTotal,
-            chunksReceived: chunkTotal,
-            status: "complete",
-          });
-          write(finalData);
-          renderCoursePackagePreview(finalData);
-          await readStorage({ writeOutput: false });
-        } catch (error) {
-          const latest = await restoreCoursePackageTask({ writeOutput: false }).catch(() => null);
-          rememberCoursePackageTask({
-            course: fields.course.value,
-            importId,
-            filename: file.name,
-            totalBytes: file.size,
-            chunkTotal,
-            chunksReceived: latest?.chunksReceived || startChunk,
-            status: "failed",
-          });
-          setCoursePackageStatus({
-            title: "上传失败",
-            detail: `${error instanceof Error ? error.message : String(error)}。重新点“上传并生成预览”会从服务器已有分片继续。`,
-            percent: null,
-            showProgress: false,
-            error: true,
-          });
-          write(`Error: ${error instanceof Error ? error.message : String(error)}`);
-        } finally {
-          coursePackageUploadButton.disabled = false;
-        }
+        return coursePackageAction.uploadCoursePackage();
       }
 
       async function commitCoursePackage() {
-        if (!currentCoursePackageImport?.importId) {
-          write("请先上传整课 ZIP 并生成预览。");
-          return { canceled: true, message: "请先上传整课 ZIP 并生成预览。" };
-        }
-        const commitState = updateCoursePackageCommitState(currentCoursePackageImport);
-        if (!commitState.hasReady) {
-          setCoursePackageStatus({
-            title: "无法导入",
-            detail: "这次预览里没有可导入的资源，请重新上传正确的整课 ZIP。",
-            showProgress: false,
-          });
-          write("这次预览里没有可导入的资源。");
-          return { canceled: true, message: "这次预览里没有可导入的资源。" };
-        }
-        if (!commitState.courseMatches) {
-          const message = `这次预览属于 ${commitState.previewCourse || "未知课程"}，当前课程是 ${commitState.selected || "未选择"}。请先切回正确课程，或重新上传当前课程的课包。`;
-          setCoursePackageStatus({ title: "课程不匹配，无法导入", detail: message, showProgress: false });
-          write(message);
-          return { canceled: true, message };
-        }
-        if (!confirm(`确认把 ${currentCoursePackageImport.summary?.ready || 0} 个资源导入 ${fields.course.value}？现有同名文件会先备份。`)) {
-          return { canceled: true, message: "已取消整课 ZIP 导入。" };
-        }
-        write(`正在导入整课包：${currentCoursePackageImport.importId}...`);
-        const response = await fetch("/api/admin/course-package/commit", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            course: fields.course.value,
-            importId: currentCoursePackageImport.importId,
-          }),
-        });
-        const data = await response.json();
-        write(data);
-        if (data.ok) {
-          fields.coursePackageFile.value = "";
-          currentCoursePackageImport = null;
-          updateCoursePackageCommitState(null);
-          await loadSelectedCourseManifest();
-          await readStatus({ writeOutput: false });
-          await readStorage({ writeOutput: false });
-          await readAllCourseReadiness({ writeOutput: false });
-          await readUploadGaps({ writeOutput: false });
-          await readMedia({ writeOutput: false });
-          if (data.backups?.length) await readBackups({ writeOutput: false });
-        }
+        return coursePackageAction.commitCoursePackage();
       }
 
       document.querySelector("#statusButton").addEventListener("click", () => {
@@ -4164,24 +3273,44 @@ pm2 restart ossd-course-portal --update-env</pre>
         runButtonAction("#refreshMediaButton", "正在刷新媒体状态...", () => readMedia(), "媒体状态已更新");
       });
       document.querySelector("#publishCurrentCourseButton").addEventListener("click", () => {
-        runButtonAction("#publishCurrentCourseButton", `正在发布 ${fields.course.value}...`, () => publishCurrentCourse(), "媒体发布任务已创建");
+        runButtonAction("#publishCurrentCourseButton", `正在发布 ${fields.course.value}...`, () => mediaActions.publishCurrentCourse(), "媒体发布任务已创建");
       });
       document.querySelector("#auditCurrentCourseButton").addEventListener("click", () => {
-        runButtonAction("#auditCurrentCourseButton", `正在审计 ${fields.course.value}...`, () => auditCurrentCourse(), "媒体审计任务已创建");
+        runButtonAction("#auditCurrentCourseButton", `正在审计 ${fields.course.value}...`, () => mediaActions.auditCurrentCourse(), "媒体审计任务已创建");
       });
       document.querySelector("#syncCurrentCourseButton").addEventListener("click", () => {
-        runButtonAction("#syncCurrentCourseButton", `正在上传 ${fields.course.value}...`, () => syncCurrentCourse(), "媒体上传任务已创建");
+        runButtonAction("#syncCurrentCourseButton", `正在上传 ${fields.course.value}...`, () => mediaActions.syncCurrentCourse(), "媒体上传任务已创建");
       });
       document.querySelector("#publishAllMediaButton").addEventListener("click", () => {
-        runButtonAction("#publishAllMediaButton", "正在创建全量发布任务...", () => publishAllMedia(), "全量媒体任务已创建");
+        runButtonAction("#publishAllMediaButton", "正在创建全量发布任务...", () => mediaActions.publishAllMedia(), "全量媒体任务已创建");
       });
       document.querySelector("#readinessMediaButton").addEventListener("click", () => {
-        runButtonAction("#readinessMediaButton", "正在创建媒体配置检查任务...", () => checkMediaReadiness(), "媒体配置检查任务已创建");
+        runButtonAction("#readinessMediaButton", "正在创建媒体配置检查任务...", () => mediaActions.checkReadiness(), "媒体配置检查任务已创建");
       });
       if (ossDirectUploadButton) {
         ossDirectUploadButton.addEventListener("click", () => {
-          runButtonAction(ossDirectUploadButton, "正在直传 OSS...", () => directUploadToOss(), "OSS 直传流程已完成");
+          runButtonAction(ossDirectUploadButton, "正在直传 OSS...", () => ossDirectPanel.uploadSelected(), "OSS 直传流程已完成");
         });
+      }
+      if (ossDirectFile) {
+        ossDirectFile.addEventListener("change", () => ossDirectPanel.refreshPreview());
+      }
+      if (ossDirectKind) {
+        ossDirectKind.addEventListener("change", () => ossDirectPanel.refreshPreview());
+      }
+      if (ossDirectCancelButton) {
+        ossDirectCancelButton.addEventListener("click", () => {
+          ossDirectPanel.cancelActiveUpload();
+        });
+      }
+      if (mediaCourseFilter) {
+        mediaCourseFilter.addEventListener("change", () => renderMediaCourses(mediaData));
+      }
+      if (mediaCourseSearch) {
+        mediaCourseSearch.addEventListener("input", () => renderMediaCourses(mediaData));
+      }
+      if (mediaJobFilter) {
+        mediaJobFilter.addEventListener("change", () => renderMediaJobs(mediaData));
       }
       mediaCourseTable.addEventListener("click", (event) => {
         const button = event.target.closest("[data-media-course-action]");
@@ -4190,24 +3319,39 @@ pm2 restart ossd-course-portal --update-env</pre>
         fields.course.value = code;
         updateCourseNavigation();
         if (button.dataset.mediaCourseAction === "publish") {
-          runButtonAction(button, `正在发布 ${code}...`, () => publishCurrentCourse(), "媒体发布任务已创建");
+          runButtonAction(button, `正在发布 ${code}...`, () => mediaActions.publishCurrentCourse(code), "媒体发布任务已创建");
         } else if (button.dataset.mediaCourseAction === "audit") {
-          runButtonAction(button, `正在审计 ${code}...`, () => auditCurrentCourse(), "媒体审计任务已创建");
+          runButtonAction(button, `正在审计 ${code}...`, () => mediaActions.auditCurrentCourse(code), "媒体审计任务已创建");
         }
       });
       mediaJobsTable.addEventListener("click", (event) => {
         const button = event.target.closest("[data-media-job-action]");
         if (!button) return;
-        const jobId = button.dataset.job;
-        const action = button.dataset.mediaJobAction;
-        if (action === "log") {
-          runButtonAction(button, "正在读取媒体任务日志...", () => showMediaJobLog(jobId), "任务日志已读取");
-        } else if (action === "cancel") {
-          runButtonAction(button, "正在取消媒体任务...", () => cancelMediaJob(jobId), "媒体任务已取消");
-        } else if (action === "retry") {
-          runButtonAction(button, "正在重试媒体任务...", () => retryMediaJob(jobId), "媒体任务已重新排队");
-        }
+        handleMediaJobAction(button);
       });
+      mediaUploadsTable.addEventListener("click", (event) => {
+        const uploadButton = event.target.closest("[data-media-upload-action]");
+        if (uploadButton) {
+          const action = uploadButton.dataset.mediaUploadAction;
+          if (action === "detail") {
+            runButtonAction(uploadButton, "正在打开 OSS 直传详情...", () => mediaActions.showUploadDetail(uploadButton.dataset.upload), "直传详情已打开");
+          }
+          return;
+        }
+        const jobButton = event.target.closest("[data-media-job-action]");
+        if (jobButton) handleMediaJobAction(jobButton);
+      });
+      if (mediaLocksPanel) {
+        mediaLocksPanel.addEventListener("click", (event) => {
+          const button = event.target.closest("[data-media-lock-action]");
+          if (!button) return;
+          if (button.dataset.mediaLockAction === "clear") {
+            runButtonAction(button, `正在清理 ${button.dataset.course} 的课程锁...`, () => mediaActions.clearLock(button.dataset.course), "课程锁已清理");
+          } else if (button.dataset.mediaLockAction === "clear-stale") {
+            runButtonAction(button, "正在批量清理遗留课程锁...", () => mediaActions.clearStaleLocks(), "遗留课程锁已清理");
+          }
+        });
+      }
       document.querySelector("#refreshUsersButton").addEventListener("click", () => {
         runButtonAction("#refreshUsersButton", "正在刷新用户列表...", () => readUsers(), "用户列表已更新");
       });
@@ -4241,8 +3385,13 @@ pm2 restart ossd-course-portal --update-env</pre>
         updateCourseNavigation();
         currentCoursePackageImport = null;
         updateCoursePackageCommitState(null);
-        coursePackagePanel.hidden = true;
+        coursePackageUi.hidePreview();
         renderCourseLifecycle(courseLifecycleData);
+        if (activeAdminPanel === "media") {
+          renderMediaCourses(mediaData);
+          updateMediaActionControls(mediaData);
+          ossDirectPanel.refreshPreview();
+        }
         loadSelectedCourseManifest()
           .then(renderCurrentCourseUploadTasks)
           .then(() => restoreCoursePackageTask({ writeOutput: false }))
