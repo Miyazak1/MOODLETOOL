@@ -213,9 +213,19 @@
     });
   }
 
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function isAbortError(error) {
+    return /取消|中止|abort/i.test(error?.message || "");
+  }
+
   async function uploadOssMultipartObject(multipart, file, {
     onActiveUploadChange,
     onProgress,
+    onRetry,
+    maxAttempts = 5,
   } = {}) {
     const parts = Array.isArray(multipart?.parts) ? multipart.parts : [];
     if (!parts.length) throw new Error("OSS 分片上传授权缺少 parts。");
@@ -223,24 +233,46 @@
     let completedBytes = 0;
     for (const part of parts) {
       const blob = file.slice(part.start, part.end);
-      const uploaded = await uploadOssPutPart(part, blob, {
-        onActiveUploadChange,
-        onProgress: ({ loaded, total }) => {
-          const loadedBytes = completedBytes + Number(loaded || 0);
-          const totalBytes = file.size || multipart.totalBytes || 0;
-          if (typeof onProgress === "function") {
-            onProgress({
-              percent: totalBytes ? Math.max(0, Math.min(100, Math.round((loadedBytes / totalBytes) * 100))) : 0,
-              loaded: loadedBytes,
-              total: totalBytes,
+      let uploaded = null;
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        try {
+          uploaded = await uploadOssPutPart(part, blob, {
+            onActiveUploadChange,
+            onProgress: ({ loaded, total }) => {
+              const loadedBytes = completedBytes + Number(loaded || 0);
+              const totalBytes = file.size || multipart.totalBytes || 0;
+              if (typeof onProgress === "function") {
+                onProgress({
+                  percent: totalBytes ? Math.max(0, Math.min(100, Math.round((loadedBytes / totalBytes) * 100))) : 0,
+                  loaded: loadedBytes,
+                  total: totalBytes,
+                  partNumber: part.partNumber,
+                  partCount: multipart.partCount || parts.length,
+                  partLoaded: loaded,
+                  partTotal: total,
+                  retryAttempt: attempt > 1 ? attempt : 0,
+                  retryMaxAttempts: maxAttempts,
+                });
+              }
+            },
+          });
+          break;
+        } catch (error) {
+          if (isAbortError(error) || attempt >= maxAttempts) throw error;
+          const delayMs = Math.min(15000, 1000 * (2 ** (attempt - 1)));
+          if (typeof onRetry === "function") {
+            onRetry({
+              error,
+              delayMs,
               partNumber: part.partNumber,
               partCount: multipart.partCount || parts.length,
-              partLoaded: loaded,
-              partTotal: total,
+              retryAttempt: attempt + 1,
+              retryMaxAttempts: maxAttempts,
             });
           }
-        },
-      });
+          await sleep(delayMs);
+        }
+      }
       uploadedParts.push(uploaded);
       completedBytes += blob.size;
     }
@@ -406,7 +438,8 @@
       setStatus(isMultipart ? "正在分片直传 OSS" : "正在直传 OSS", `${batchText}${initData.upload.course || course} · ${initData.upload.objectKey}`, 1);
       const progressText = typeof formatProgress === "function" ? formatProgress(file) : null;
       let multipartParts = null;
-      const handleUploadProgress = ({ percent, loaded, total, partNumber, partCount }) => {
+      const uploadTitle = isMultipart ? "正在分片直传 OSS" : "正在直传 OSS";
+      const handleUploadProgress = ({ percent, loaded, total, partNumber, partCount, retryAttempt, retryMaxAttempts }) => {
           const overall = typeof batchProgress === "function"
             ? batchProgress(index, loaded, total || file.size || 0)
             : { percent: Math.round(((index + percent / 100) / totalFiles) * 100), loaded, total };
@@ -422,11 +455,12 @@
             ? `${window.AdminMediaView?.formatBytes(overall.loaded) || overall.loaded} / ${window.AdminMediaView?.formatBytes(overall.total) || overall.total}`
             : "";
           const partText = partNumber && partCount ? ` · 分片 ${partNumber}/${partCount}` : "";
+          const retryText = retryAttempt ? ` · 重试 ${retryAttempt}/${retryMaxAttempts}` : "";
           const batchDetail = totalFiles > 1 && overall?.total
-            ? `${batchText}${detail}${partText} · 总进度 ${overallText}`
-            : `${batchText}${detail}${partText}`;
+            ? `${batchText}${detail}${partText}${retryText} · 总进度 ${overallText}`
+            : `${batchText}${detail}${partText}${retryText}`;
           updateQueueItem(queueItem, {
-            detail: `${detail}${partText}`,
+            detail: `${detail}${partText}${retryText}`,
             etaText: progressInfo?.etaText || "",
             loaded,
             overallText,
@@ -435,12 +469,20 @@
             status: "uploading",
             total,
           });
-          setStatus(`正在直传 OSS · ${overall.percent}%`, batchDetail, overall.percent);
+          setStatus(`${uploadTitle} · ${overall.percent}%`, batchDetail, overall.percent);
       };
       if (isMultipart) {
         const result = await uploadMultipartObject(initData.multipart, file, {
           onActiveUploadChange: setActiveUpload,
           onProgress: handleUploadProgress,
+          onRetry: ({ delayMs, partNumber, partCount, retryAttempt, retryMaxAttempts, error }) => {
+            const retryDetail = `${batchText}${initData.upload.objectKey} · 分片 ${partNumber}/${partCount} 上传中断，${Math.round(delayMs / 1000)} 秒后重试 ${retryAttempt}/${retryMaxAttempts}。${error.message || ""}`;
+            updateQueueItem(queueItem, {
+              detail: retryDetail,
+              status: "uploading",
+            });
+            setStatus(`${uploadTitle} · 正在重试`, retryDetail, queueItem?.percent || 0, "warn");
+          },
         });
         multipartParts = result.parts;
       } else {
