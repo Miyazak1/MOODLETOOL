@@ -201,17 +201,16 @@
     function updateRefreshState({ updatedAt = lastUpdatedAt, refreshing = false, nextDelayMs = null } = {}) {
       lastUpdatedAt = updatedAt || lastUpdatedAt;
       if (!elements.refreshState) return;
+      elements.refreshState.dataset.refreshing = refreshing ? "1" : "0";
       const time = lastUpdatedAt
         ? lastUpdatedAt.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })
         : "尚未刷新";
       if (refreshing) {
-        elements.refreshState.textContent = `正在刷新媒体状态... · 上次 ${time}`;
         return;
       }
       const cadence = hasActive() ? "任务运行中，每 5 秒自动刷新" : "每 15 秒自动刷新";
-      const next = Number.isFinite(nextDelayMs) ? ` · 下次约 ${Math.max(1, Math.round(nextDelayMs / 1000))} 秒后` : "";
       const change = lastChangeText ? ` · ${lastChangeText}` : "";
-      elements.refreshState.textContent = `${cadence}${next} · 上次 ${time}${change}`;
+      elements.refreshState.textContent = `${cadence} · 上次 ${time}${change}`;
     }
 
     function render(nextData = {}) {
