@@ -29,6 +29,8 @@ import {
   createDirectUploadPolicy as buildDirectUploadPolicy,
   directUploadConfigFromEnv,
   directUploadPublicConfig as buildDirectUploadPublicConfig,
+  resolveDirectUploadCourse,
+  resumeDirectMultipartUpload,
 } from "./scripts/lib/oss-direct-upload.mjs";
 import { createOssUploadRecordStore } from "./scripts/lib/oss-upload-records.mjs";
 import { listCourseLocks, removeCourseLock } from "./scripts/lib/course-operation-locks.mjs";
@@ -779,6 +781,27 @@ async function createDirectUploadPolicy({ course, fileName, fileSize, contentTyp
   const courseCodes = (catalog.courses || []).map((entry) => entry.code);
   const size = Number(fileSize || 0);
   if (size > ossDirectUploadConfig.simpleMaxBytes) {
+    const resolved = resolveDirectUploadCourse({ course, fileName, kind, courseCodes });
+    const reusable = findReusableMultipartUpload({
+      course: resolved.course,
+      kind: resolved.kind,
+      fileName,
+      fileSize: size,
+    });
+    if (reusable) {
+      try {
+        const { record, multipart } = await resumeDirectMultipartUpload({
+          config: ossDirectUploadConfig,
+          record: reusable,
+        });
+        ossUploadStore.writeRecord(record);
+        return { record, multipart };
+      } catch (error) {
+        reusable.resumeError = error.message || String(error);
+        reusable.resumeFailedAt = new Date().toISOString();
+        ossUploadStore.writeRecord(reusable);
+      }
+    }
     const { record, multipart } = await createDirectMultipartUpload({
       config: ossDirectUploadConfig,
       courseCodes,
@@ -806,6 +829,27 @@ async function createDirectUploadPolicy({ course, fileName, fileSize, contentTyp
   });
   ossUploadStore.writeRecord(record);
   return { record, form };
+}
+
+function findReusableMultipartUpload({ course, kind, fileName, fileSize }) {
+  const normalizedCourse = safeSegment(course || "").toUpperCase();
+  const normalizedKind = String(kind || "");
+  const normalizedFileName = String(fileName || "");
+  const normalizedSize = Number(fileSize || 0);
+  const reusableStatuses = new Set(["initialized", "failed"]);
+  return ossUploadStore.listRecords({ course: normalizedCourse, limit: 200 })
+    .map((item) => ossUploadStore.readRecord(item.id))
+    .find((record) =>
+      record?.uploadMode === "multipart"
+      && record?.multipartUploadId
+      && reusableStatuses.has(record.status)
+      && !record.completedAt
+      && !record.importId
+      && record.course === normalizedCourse
+      && record.kind === normalizedKind
+      && record.fileName === normalizedFileName
+      && Number(record.fileSize || 0) === normalizedSize
+    ) || null;
 }
 
 function verifyOssObjectWithOssutil(ossUri) {

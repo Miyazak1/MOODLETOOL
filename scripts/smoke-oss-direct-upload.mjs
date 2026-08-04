@@ -6,6 +6,7 @@ import {
   directUploadConfigFromEnv,
   directUploadPublicConfig,
   resolveDirectUploadCourse,
+  resumeDirectMultipartUpload,
 } from "./lib/oss-direct-upload.mjs";
 
 const env = {
@@ -139,5 +140,33 @@ await completeDirectMultipartUpload({
 assert.match(completeCalls[0].url, /\?uploadId=mock-upload-id$/);
 assert.match(String(completeCalls[0].options.body), /<PartNumber>1<\/PartNumber><ETag>etag-one<\/ETag>/);
 assert.match(String(completeCalls[0].options.body), /<PartNumber>2<\/PartNumber><ETag>etag-two<\/ETag>/);
+
+const resumeCalls = [];
+const resumed = await resumeDirectMultipartUpload({
+  config: multipartConfig,
+  record: multipart.record,
+  fetchImpl: async (url, options = {}) => {
+    resumeCalls.push({ url: String(url), options });
+    return {
+      ok: true,
+      status: 200,
+      async text() {
+        return [
+          "<ListPartsResult>",
+          "<IsTruncated>false</IsTruncated>",
+          "<Part><PartNumber>1</PartNumber><ETag>etag-one</ETag><Size>536870912</Size></Part>",
+          "<Part><PartNumber>2</PartNumber><ETag>etag-two</ETag><Size>536870912</Size></Part>",
+          "</ListPartsResult>",
+        ].join("");
+      },
+    };
+  },
+});
+assert.equal(resumed.record.resumeCount, 1);
+assert.equal(resumed.multipart.resume, true);
+assert.equal(resumed.multipart.uploadedParts.length, 2);
+assert.equal(resumed.multipart.uploadedBytes, 1024 * 1024 * 1024);
+assert.equal(resumed.multipart.parts.length, 12);
+assert.match(resumeCalls[0].url, /\?uploadId=mock-upload-id$/);
 
 console.log("oss direct upload smoke ok");

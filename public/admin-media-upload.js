@@ -229,10 +229,33 @@
   } = {}) {
     const parts = Array.isArray(multipart?.parts) ? multipart.parts : [];
     if (!parts.length) throw new Error("OSS 分片上传授权缺少 parts。");
+    const resumedPartMap = new Map((Array.isArray(multipart.uploadedParts) ? multipart.uploadedParts : [])
+      .map((part) => [Number(part.partNumber), part])
+      .filter(([partNumber, part]) => Number.isInteger(partNumber) && partNumber > 0 && part?.etag));
     const uploadedParts = [];
     let completedBytes = 0;
     for (const part of parts) {
       const blob = file.slice(part.start, part.end);
+      const resumedPart = resumedPartMap.get(Number(part.partNumber));
+      if (resumedPart) {
+        uploadedParts.push({
+          partNumber: Number(part.partNumber),
+          etag: String(resumedPart.etag || "").replace(/^"|"$/g, ""),
+        });
+        completedBytes += blob.size;
+        if (typeof onProgress === "function") {
+          const totalBytes = file.size || multipart.totalBytes || 0;
+          onProgress({
+            percent: totalBytes ? Math.max(0, Math.min(100, Math.round((completedBytes / totalBytes) * 100))) : 0,
+            loaded: completedBytes,
+            total: totalBytes,
+            partNumber: part.partNumber,
+            partCount: multipart.partCount || parts.length,
+            resumedParts: resumedPartMap.size,
+          });
+        }
+        continue;
+      }
       let uploaded = null;
       for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
         try {
@@ -434,12 +457,16 @@
         contentType: file.type || "",
       });
       const isMultipart = Boolean(initData.multipart);
+      const resumedParts = isMultipart && Array.isArray(initData.multipart.uploadedParts)
+        ? initData.multipart.uploadedParts.length
+        : 0;
+      const resumeDetail = resumedParts ? ` · 已恢复 ${resumedParts} 个分片` : "";
       updateQueueItem(queueItem, { detail: initData.upload.objectKey, percent: 1, status: "uploading" });
-      setStatus(isMultipart ? "正在分片直传 OSS" : "正在直传 OSS", `${batchText}${initData.upload.course || course} · ${initData.upload.objectKey}`, 1);
+      setStatus(isMultipart ? (resumedParts ? "正在续传分片到 OSS" : "正在分片直传 OSS") : "正在直传 OSS", `${batchText}${initData.upload.course || course} · ${initData.upload.objectKey}${resumeDetail}`, 1);
       const progressText = typeof formatProgress === "function" ? formatProgress(file) : null;
       let multipartParts = null;
-      const uploadTitle = isMultipart ? "正在分片直传 OSS" : "正在直传 OSS";
-      const handleUploadProgress = ({ percent, loaded, total, partNumber, partCount, retryAttempt, retryMaxAttempts }) => {
+      const uploadTitle = isMultipart ? (resumedParts ? "正在续传分片到 OSS" : "正在分片直传 OSS") : "正在直传 OSS";
+      const handleUploadProgress = ({ percent, loaded, total, partNumber, partCount, retryAttempt, retryMaxAttempts, resumedParts: currentResumedParts }) => {
           const overall = typeof batchProgress === "function"
             ? batchProgress(index, loaded, total || file.size || 0)
             : { percent: Math.round(((index + percent / 100) / totalFiles) * 100), loaded, total };
@@ -456,11 +483,12 @@
             : "";
           const partText = partNumber && partCount ? ` · 分片 ${partNumber}/${partCount}` : "";
           const retryText = retryAttempt ? ` · 重试 ${retryAttempt}/${retryMaxAttempts}` : "";
+          const resumeText = currentResumedParts ? ` · 已续传 ${currentResumedParts} 个` : "";
           const batchDetail = totalFiles > 1 && overall?.total
-            ? `${batchText}${detail}${partText}${retryText} · 总进度 ${overallText}`
-            : `${batchText}${detail}${partText}${retryText}`;
+            ? `${batchText}${detail}${partText}${retryText}${resumeText} · 总进度 ${overallText}`
+            : `${batchText}${detail}${partText}${retryText}${resumeText}`;
           updateQueueItem(queueItem, {
-            detail: `${detail}${partText}${retryText}`,
+            detail: `${detail}${partText}${retryText}${resumeText}`,
             etaText: progressInfo?.etaText || "",
             loaded,
             overallText,
@@ -611,6 +639,7 @@
     createDirectUploadPreview,
     inferCourseCodeFromFilename,
     resolveDirectUploadCourse,
+    uploadOssMultipartObject,
     uploadOssPostObject,
   };
 })();

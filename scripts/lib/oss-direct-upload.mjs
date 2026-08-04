@@ -159,6 +159,29 @@ function parseUploadId(xml) {
   return match ? match[1] : "";
 }
 
+function parseXmlTag(xml, tagName) {
+  const match = String(xml || "").match(new RegExp(`<${tagName}>([\\s\\S]*?)<\\/${tagName}>`, "i"));
+  return match ? match[1] : "";
+}
+
+function parseUploadedMultipartParts(xml) {
+  const parts = [];
+  for (const match of String(xml || "").matchAll(/<Part>([\s\S]*?)<\/Part>/gi)) {
+    const block = match[1] || "";
+    const partNumber = Number(parseXmlTag(block, "PartNumber"));
+    const etag = parseXmlTag(block, "ETag").replace(/^"|"$/g, "");
+    const size = Number(parseXmlTag(block, "Size") || 0);
+    if (Number.isInteger(partNumber) && partNumber > 0 && etag) {
+      parts.push({ partNumber, etag, size });
+    }
+  }
+  return {
+    parts,
+    truncated: /^true$/i.test(parseXmlTag(xml, "IsTruncated").trim()),
+    nextPartNumberMarker: parseXmlTag(xml, "NextPartNumberMarker").trim(),
+  };
+}
+
 function assertDirectUploadReady(config) {
   const publicConfig = directUploadPublicConfig(config);
   if (!publicConfig.enabled) throw new Error(publicConfig.reason);
@@ -277,7 +300,6 @@ export async function createDirectMultipartUpload({ config, courseCodes, course,
   const partCount = Math.ceil(size / partSize);
   if (partCount > 10000) throw new Error("Upload has too many parts. Increase OSS_DIRECT_UPLOAD_PART_MB.");
   const expiresAt = new Date(Date.now() + config.ttlSeconds * 1000).toISOString();
-  const expires = Math.floor(Date.now() / 1000) + config.ttlSeconds;
   const record = {
     schemaVersion: 1,
     id: uploadId,
@@ -304,6 +326,17 @@ export async function createDirectMultipartUpload({ config, courseCodes, course,
     jobId: "",
     error: "",
   };
+  const multipart = createMultipartPlan({ config, record, uploadedParts: [] });
+  return { record, multipart };
+}
+
+function createMultipartPlan({ config, record, uploadedParts = [] }) {
+  const size = Number(record.fileSize || 0);
+  const partSize = Math.max(5 * 1024 * 1024, Number(record.multipartPartBytes || config.multipartPartBytes || defaultMultipartPartBytes));
+  const partCount = Math.ceil(size / partSize);
+  if (partCount > 10000) throw new Error("Upload has too many parts. Increase OSS_DIRECT_UPLOAD_PART_MB.");
+  const expiresAt = new Date(Date.now() + config.ttlSeconds * 1000).toISOString();
+  const expires = Math.floor(Date.now() / 1000) + config.ttlSeconds;
   const parts = Array.from({ length: partCount }, (_, index) => {
     const partNumber = index + 1;
     return {
@@ -313,23 +346,62 @@ export async function createDirectMultipartUpload({ config, courseCodes, course,
       url: ossSignedUrl({
         config,
         method: "PUT",
-        objectKey,
+        objectKey: record.objectKey,
         expires,
-        subresources: { partNumber, uploadId: multipartUploadId },
+        subresources: { partNumber, uploadId: record.multipartUploadId },
       }),
     };
   });
   return {
-    record,
-    multipart: {
-      method: "PUT",
-      uploadId: multipartUploadId,
-      partSize,
-      partCount,
-      expiresAt,
-      parts,
-    },
+    method: "PUT",
+    uploadId: record.multipartUploadId,
+    partSize,
+    partCount,
+    expiresAt,
+    resume: uploadedParts.length > 0,
+    uploadedParts,
+    uploadedBytes: uploadedParts.reduce((sum, part) => sum + Math.max(0, Number(part.size || 0)), 0),
+    parts,
   };
+}
+
+export async function listDirectMultipartUploadedParts({ config, record, fetchImpl = fetch }) {
+  assertDirectUploadReady(config);
+  if (!record?.objectKey || !record?.multipartUploadId) throw new Error("Multipart upload record is incomplete.");
+  const parts = [];
+  let marker = "";
+  for (let page = 0; page < 100; page += 1) {
+    const { text } = await ossApiFetch({
+      config,
+      method: "GET",
+      objectKey: record.objectKey,
+      subresources: {
+        uploadId: record.multipartUploadId,
+        ...(marker ? { "part-number-marker": marker } : {}),
+      },
+      fetchImpl,
+    });
+    const parsed = parseUploadedMultipartParts(text);
+    parts.push(...parsed.parts);
+    if (!parsed.truncated || !parsed.nextPartNumberMarker) break;
+    marker = parsed.nextPartNumberMarker;
+  }
+  return parts.sort((left, right) => left.partNumber - right.partNumber);
+}
+
+export async function resumeDirectMultipartUpload({ config, record, fetchImpl = fetch }) {
+  assertDirectUploadReady(config);
+  if (record?.uploadMode !== "multipart") throw new Error("Upload record is not multipart.");
+  const uploadedParts = await listDirectMultipartUploadedParts({ config, record, fetchImpl });
+  const multipart = createMultipartPlan({ config, record, uploadedParts });
+  record.expiresAt = multipart.expiresAt;
+  record.multipartPartBytes = multipart.partSize;
+  record.multipartPartCount = multipart.partCount;
+  record.resumeCount = Number(record.resumeCount || 0) + 1;
+  record.resumedAt = new Date().toISOString();
+  record.status = "initialized";
+  record.error = "";
+  return { record, multipart };
 }
 
 export async function completeDirectMultipartUpload({ config, record, parts = [], fetchImpl = fetch }) {
