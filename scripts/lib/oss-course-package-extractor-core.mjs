@@ -109,8 +109,17 @@ export function parseCourseUploadFromObjectKey(objectKey, { inboxPrefix = "inbox
   return { course, uploadId, fileName, objectKey: key };
 }
 
+function parseJsonPayload(value) {
+  if (!value) return {};
+  if (typeof value === "string") return value.trim() ? JSON.parse(value) : {};
+  if (value instanceof ArrayBuffer) return parseJsonPayload(Buffer.from(value).toString("utf8"));
+  if (ArrayBuffer.isView(value)) return parseJsonPayload(Buffer.from(value.buffer, value.byteOffset, value.byteLength).toString("utf8"));
+  if (typeof value === "object" && typeof value.body === "string") return parseJsonPayload(value.body);
+  return value;
+}
+
 export function extractOssEventObject(event) {
-  const payload = typeof event === "string" ? JSON.parse(event || "{}") : event || {};
+  const payload = parseJsonPayload(event);
   const item = Array.isArray(payload.events) ? payload.events[0] : payload;
   const bucket = item?.oss?.bucket?.name || item?.bucket || item?.bucketName || "";
   const objectKey = item?.oss?.object?.key || item?.objectKey || item?.object || "";
