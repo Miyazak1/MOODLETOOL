@@ -42,6 +42,17 @@
       elements.queue.hidden = false;
     }
 
+    if (elements.queue) {
+      elements.queue.addEventListener("click", (event) => {
+        const button = event.target?.closest?.("[data-oss-direct-action='cancel-item']");
+        if (!button) return;
+        const id = button.getAttribute("data-oss-direct-id") || "";
+        const activeController = controller();
+        if (!activeController?.cancelQueueItem?.(id)) return;
+        setStatus("已取消队列文件", "这个文件已从本次 OSS 直传队列中取消，其他文件会继续。", null, "warn");
+      });
+    }
+
     function previewCourseText(preview = {}) {
       const courses = Array.isArray(preview.courses) ? preview.courses : [];
       if (!courses.length) return "未识别课程";

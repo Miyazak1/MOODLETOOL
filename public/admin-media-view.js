@@ -735,6 +735,9 @@
       item?.etaText ? `剩余约 ${item.etaText}` : "",
       item?.overallText ? `总进度 ${item.overallText}` : "",
     ].filter(Boolean);
+    const cancelButton = item?.cancelable
+      ? `<button class="small" type="button" data-oss-direct-action="cancel-item" data-oss-direct-id="${escapeHtml(item.id || "")}">取消</button>`
+      : "";
     return `
       <div class="oss-direct-queue-item ${escapeHtml(status)}">
         <div>
@@ -750,6 +753,7 @@
         <div class="oss-direct-queue-status">
           <strong>${escapeHtml(ossDirectQueueStatusText(status))}</strong>
           <small>${Math.round(percentValue)}%</small>
+          ${cancelButton}
         </div>
       </div>
     `;
@@ -766,6 +770,7 @@
     const courses = [...new Set(items.map((item) => item?.course).filter(Boolean))];
     const failed = items.filter((item) => item?.status === "failed").length;
     const skipped = items.filter((item) => item?.status === "skipped").length;
+    const cancelled = items.filter((item) => item?.status === "cancelled").length;
     const uploading = items.filter((item) => ["authorizing", "uploading", "verifying"].includes(item?.status)).length;
     const done = items.filter((item) => ["done", "warning"].includes(item?.status)).length;
     const summary = `
@@ -777,6 +782,7 @@
         ${uploading ? `<span>${uploading} 个处理中</span>` : ""}
         ${done ? `<span>${done} 个完成</span>` : ""}
         ${skipped ? `<span>${skipped} 个跳过</span>` : ""}
+        ${cancelled ? `<span>${cancelled} 个取消</span>` : ""}
         ${failed ? `<span class="status-risk">${failed} 个失败</span>` : ""}
       </div>
       <div class="oss-direct-overall-progress" aria-label="OSS 直传总进度">

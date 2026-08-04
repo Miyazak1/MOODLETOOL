@@ -371,6 +371,9 @@
     let activeXhr = null;
     let queue = [];
     let cancelRequested = false;
+    let activeQueueItemId = "";
+    let lastPreviewSignature = "";
+    const cancelledQueueItemIds = new Set();
 
     function setActiveUpload(xhr) {
       activeXhr = xhr;
@@ -387,6 +390,7 @@
         course: item.course,
         detail: item.detail,
         id: item.id,
+        cancelable: ["ready", "queued", "authorizing", "uploading", "verifying"].includes(item.status),
         loaded: item.loaded,
         name: item.name,
         percent: item.percent,
@@ -409,7 +413,7 @@
     function markRemainingQueueCancelled(startIndex, detail = "已取消 OSS 直传。") {
       let changed = false;
       for (let index = Math.max(0, Number(startIndex || 0)); index < queue.length; index += 1) {
-        if (["done", "warning", "failed", "cancelled"].includes(queue[index]?.status)) continue;
+        if (["done", "warning", "failed", "cancelled", "skipped"].includes(queue[index]?.status)) continue;
         Object.assign(queue[index], { detail, status: "cancelled" });
         changed = true;
       }
@@ -420,6 +424,16 @@
       return queue.some((item) =>
         ["authorizing", "queued", "uploading", "verifying"].includes(item?.status)
       );
+    }
+
+    function stableQueueItemId(file, index) {
+      return `direct-${index}-${file?.name || "file"}-${file?.size || 0}-${file?.lastModified || 0}`;
+    }
+
+    function fileSelectionSignature(files) {
+      return files
+        .map((file, index) => `${index}:${file?.name || ""}:${file?.size || 0}:${file?.lastModified || 0}`)
+        .join("|");
     }
 
     function createQueueItems(files, kind, previewItems = null) {
@@ -446,19 +460,21 @@
       return sourceItems.map((sourceItem, index) => {
         const file = sourceItem.file;
         const resolvedCourse = sourceItem.resolvedCourse || { course: sourceItem.course || "", source: sourceItem.source || "" };
-        const canUpload = sourceItem.valid !== false && sourceItem.uploadable !== false;
+        const itemId = sourceItem.id || stableQueueItemId(file, sourceItem.index ?? index);
+        const manuallyCancelled = cancelledQueueItemIds.has(itemId);
+        const canUpload = sourceItem.valid !== false && sourceItem.uploadable !== false && !manuallyCancelled;
         return {
           course: resolvedCourse.course || "",
           detail: canUpload ? "等待上传" : sourceItem.detail || "已跳过",
           file,
-          id: `${Date.now()}-${index}-${file?.name || "file"}`,
+          id: itemId,
           index: sourceItem.index ?? index,
           name: file?.name || "",
           percent: 0,
           resolvedCourse,
           size: file?.size || 0,
           source: resolvedCourse.source || sourceItem.source || "",
-          status: canUpload ? sourceItem.status || "queued" : sourceItem.status || "skipped",
+          status: manuallyCancelled ? "cancelled" : canUpload ? sourceItem.status || "queued" : sourceItem.status || "skipped",
           uploadable: canUpload,
         };
       });
@@ -472,6 +488,11 @@
         return createDirectUploadPreview();
       }
       const kind = typeof getKind === "function" ? getKind() : "course-package";
+      const signature = `${kind}:${fileSelectionSignature(files)}`;
+      if (signature !== lastPreviewSignature) {
+        cancelledQueueItemIds.clear();
+        lastPreviewSignature = signature;
+      }
       const preview = createDirectUploadPreview({
         kind,
         files,
@@ -483,8 +504,27 @@
       return preview;
     }
 
-    async function uploadSingle(file, { index = 0, totalFiles = 1, queueItem = null, resolvedCourse = null, batchProgress = null } = {}) {
+    function queueItemIsCancelled(item) {
+      return Boolean(item?.id && cancelledQueueItemIds.has(item.id));
+    }
+
+    function throwIfQueueItemCancelled(item) {
+      if (queueItemIsCancelled(item)) throw new Error("已取消这个文件的 OSS 直传。");
+    }
+
+    async function uploadSingle(file, options = {}) {
+      const activeId = options.queueItem?.id || "";
+      if (activeId) activeQueueItemId = activeId;
+      try {
+        return await uploadSingleImpl(file, options);
+      } finally {
+        if (activeId && activeQueueItemId === activeId) activeQueueItemId = "";
+      }
+    }
+
+    async function uploadSingleImpl(file, { index = 0, totalFiles = 1, queueItem = null, resolvedCourse = null, batchProgress = null } = {}) {
       if (!file) throw new Error("请选择要直传到 OSS 的文件。");
+      throwIfQueueItemCancelled(queueItem);
       const kind = typeof getKind === "function" ? getKind() : "course-package";
       const courseInfo = resolvedCourse || resolveDirectUploadCourse({
         kind,
@@ -511,6 +551,7 @@
       const fileSizeText = window.AdminMediaView?.formatBytes ? window.AdminMediaView.formatBytes(file.size) : `${file.size || 0} B`;
       updateQueueItem(queueItem, { detail: "创建 OSS 上传授权", percent: 0, status: "authorizing" });
       setStatus("正在创建 OSS 上传授权", `${batchText}${course} · ${courseSourceText} · ${file.name} · ${fileSizeText}`, 0);
+      throwIfQueueItemCancelled(queueItem);
       const initData = await api.initOssUpload({
         course,
         kind,
@@ -525,6 +566,7 @@
       const resumeDetail = resumedParts ? ` · 已恢复 ${resumedParts} 个分片` : "";
       updateQueueItem(queueItem, { detail: initData.upload.objectKey, percent: 1, status: "uploading" });
       setStatus(isMultipart ? (resumedParts ? "正在续传分片到 OSS" : "正在分片直传 OSS") : "正在直传 OSS", `${batchText}${initData.upload.course || course} · ${initData.upload.objectKey}${resumeDetail}`, 1);
+      throwIfQueueItemCancelled(queueItem);
       const progressText = typeof formatProgress === "function" ? formatProgress(file) : null;
       let multipartParts = null;
       const uploadTitle = isMultipart ? (resumedParts ? "正在续传分片到 OSS" : "正在分片直传 OSS") : "正在直传 OSS";
@@ -583,6 +625,7 @@
       }
       updateQueueItem(queueItem, { detail: initData.upload.ossUri, percent: 100, status: "verifying" });
       setStatus("正在校验 OSS 对象", `${batchText}${initData.upload.ossUri}`, Math.round(((index + 1) / totalFiles) * 100));
+      throwIfQueueItemCancelled(queueItem);
       const completeData = await api.completeOssUpload(initData.upload.id, {
         objectKey: initData.upload.objectKey,
         autoPublish,
@@ -605,6 +648,11 @@
       if (!files.length) throw new Error("请选择要直传到 OSS 的文件。");
       cancelRequested = false;
       const kind = typeof getKind === "function" ? getKind() : "course-package";
+      const signature = `${kind}:${fileSelectionSignature(files)}`;
+      if (signature !== lastPreviewSignature) {
+        cancelledQueueItemIds.clear();
+        lastPreviewSignature = signature;
+      }
       if (files.length > 1 && kind !== "course-package") {
         throw new Error("批量直传目前只支持完整课件包 ZIP。视频、H5P 和 iSpring 单包请一次传一个。");
       }
@@ -642,6 +690,10 @@
       }
       for (let index = 0; index < uploadQueue.length; index += 1) {
         const queueItem = uploadQueue[index];
+        if (queueItemIsCancelled(queueItem) || queueItem.uploadable === false) {
+          updateQueueItem(queueItem, { detail: queueItem.detail || "已取消这个文件的 OSS 直传。", status: queueItem.status === "skipped" ? "skipped" : "cancelled" });
+          continue;
+        }
         try {
           results.push(await uploadSingle(queueItem.file, {
             index,
@@ -651,25 +703,30 @@
             batchProgress: updateBatchProgress,
           }));
         } catch (error) {
-          const wasCancelled = cancelRequested || /取消|中止|abort/i.test(error.message || "");
+          const wasCancelled = cancelRequested || queueItemIsCancelled(queueItem) || /取消|中止|abort/i.test(error.message || "");
           updateQueueItem(queueItem, {
             detail: error.message,
             status: wasCancelled ? "cancelled" : "failed",
           });
           if (wasCancelled) {
-            markRemainingQueueCancelled(0);
-            setStatus("OSS 直传已取消", "已经完成的 OSS 对象不会被删除，未开始的文件已停止上传。", null, "warn");
-            if (typeof onRefresh === "function") await onRefresh();
-            if (typeof onStartRefresh === "function") onStartRefresh();
-            return { canceled: true, uploads: results };
+            if (cancelRequested) {
+              markRemainingQueueCancelled(0);
+              setStatus("OSS 直传已取消", "已经完成的 OSS 对象不会被删除，未开始的文件已停止上传。", null, "warn");
+              if (typeof onRefresh === "function") await onRefresh();
+              if (typeof onStartRefresh === "function") onStartRefresh();
+              return { canceled: true, uploads: results };
+            }
+            setStatus("已取消队列文件", `${queueItem.name} 已取消，后续文件会继续上传。`, null, "warn");
+            continue;
           }
           throw error;
         }
       }
       const createdJobs = results.filter((item) => item?.job || item?.coursePackageTask).length;
       const skippedCount = queue.filter((item) => item.status === "skipped").length;
+      const cancelledCount = queue.filter((item) => item.status === "cancelled").length;
       const detail = uploadQueue.length > 1 || skippedCount
-        ? `已上传 ${uploadQueue.length} 个文件，跳过 ${skippedCount} 个重复文件，创建 ${createdJobs} 个后续任务。`
+        ? `已上传 ${results.length} 个文件，跳过 ${skippedCount} 个重复文件，取消 ${cancelledCount} 个文件，创建 ${createdJobs} 个后续任务。`
         : (results[0]?.job
           ? `已创建媒体任务 ${results[0].job.id}。`
           : results[0]?.coursePackageTask
@@ -688,8 +745,22 @@
       return true;
     }
 
+    function cancelQueueItem(id) {
+      const item = queue.find((entry) => entry.id === id);
+      if (!item || ["done", "warning", "failed", "cancelled", "skipped"].includes(item.status)) return false;
+      cancelledQueueItemIds.add(id);
+      updateQueueItem(item, {
+        detail: activeQueueItemId === id ? "正在取消这个文件的 OSS 直传。" : "已取消这个文件的 OSS 直传。",
+        status: "cancelled",
+        uploadable: false,
+      });
+      if (activeQueueItemId === id && activeXhr) activeXhr.abort();
+      return true;
+    }
+
     return {
       cancelActiveUpload,
+      cancelQueueItem,
       previewSelected,
       inferCourseCodeFromFilename,
       isUploading: () => Boolean(activeXhr) || hasActiveQueueItem(),

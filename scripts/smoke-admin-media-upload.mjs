@@ -188,6 +188,61 @@ assert.ok(queueSnapshots.some((items) => items[0].speedText === "2 MB/s" && item
 assert.ok(queueSnapshots.some((items) => items[0].overallText === "500 B / 2.9 KB"));
 assert.ok(queueSnapshots.at(-1).every((item) => item.status === "done"));
 
+const singleCancelApiCalls = [];
+const singleCancelApi = {
+  async initOssUpload(payload) {
+    singleCancelApiCalls.push(["init", payload]);
+    return {
+      ok: true,
+      upload: {
+        id: `single-${payload.course}`,
+        course: payload.course,
+        objectKey: `inbox/uploads/${payload.course}/${payload.fileName}`,
+        ossUri: `oss://moodletool/inbox/uploads/${payload.course}/${payload.fileName}`,
+      },
+      form: {
+        method: "POST",
+        url: "https://oss.example.test",
+        fields: { key: `inbox/uploads/${payload.course}/${payload.fileName}` },
+      },
+    };
+  },
+  async completeOssUpload(uploadId, payload) {
+    singleCancelApiCalls.push(["complete", uploadId, payload]);
+    return {
+      ok: true,
+      upload: { id: uploadId, objectKey: payload.objectKey },
+    };
+  },
+};
+const singleCancelSnapshots = [];
+const singleCancelController = upload.createDirectUploadController({
+  api: singleCancelApi,
+  getKind: () => "course-package",
+  getFiles: () => [
+    { name: "ENG4U-course-package.zip", size: 1000, type: "application/zip" },
+    { name: "ESLDO-course-package.zip", size: 1000, type: "application/zip" },
+  ],
+  getSelectedCourse: () => "ENG3U",
+  getCourseCodes: () => ["ENG4U", "ESLDO", "ENG3U"],
+  getAutoPublish: () => false,
+  confirm: () => true,
+  onQueueChange: (items) => singleCancelSnapshots.push(items),
+  uploadObject: async (_form, _file, { onProgress }) => {
+    onProgress?.({ percent: 100, loaded: 1000, total: 1000 });
+  },
+});
+singleCancelController.previewSelected();
+const cancelId = singleCancelSnapshots.at(-1)[1].id;
+assert.equal(singleCancelController.cancelQueueItem(cancelId), true);
+assert.equal(singleCancelSnapshots.at(-1)[1].status, "cancelled");
+const singleCancelResult = await singleCancelController.uploadSelected();
+assert.equal(singleCancelResult.uploads.length, 1);
+assert.equal(singleCancelApiCalls.filter(([kind]) => kind === "init").length, 1);
+assert.equal(singleCancelApiCalls.find(([kind]) => kind === "init")[1].course, "ENG4U");
+assert.equal(singleCancelSnapshots.at(-1)[0].status, "done");
+assert.equal(singleCancelSnapshots.at(-1)[1].status, "cancelled");
+
 class FakeFormData {
   constructor() {
     this.entries = [];
@@ -243,7 +298,8 @@ assert.equal(activeChanges, 2);
 assert.equal(FakeXhr.last.data.entries.at(-1)[0], "file");
 
 const cancelledQueueSnapshots = [];
-const cancelledController = upload.createDirectUploadController({
+let cancelledController = null;
+cancelledController = upload.createDirectUploadController({
   api,
   getKind: () => "course-package",
   getFiles: () => [
@@ -256,6 +312,7 @@ const cancelledController = upload.createDirectUploadController({
   onStatus: (status) => statuses.push(status),
   onQueueChange: (items) => cancelledQueueSnapshots.push(items),
   uploadObject: async () => {
+    cancelledController.cancelActiveUpload();
     throw new Error("已取消 OSS 直传。");
   },
 });
