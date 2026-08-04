@@ -270,6 +270,8 @@ assert.match(ossQueue, /3 个文件/);
 assert.match(ossQueue, /2 门课程/);
 assert.match(ossQueue, /总进度 33%/);
 assert.match(ossQueue, /oss-direct-overall-progress/);
+assert.match(ossQueue, /oss-direct-overall-progress" value="33"/);
+assert.match(ossQueue, /oss-direct-queue-progress" value="50"/);
 assert.match(ossQueue, /速度 2 MB\/s/);
 assert.match(ossQueue, /剩余约 10秒/);
 assert.match(ossQueue, /总进度 2 KB \/ 5 KB/);

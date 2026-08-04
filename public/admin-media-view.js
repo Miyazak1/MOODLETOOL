@@ -748,7 +748,7 @@
           <small>${escapeHtml(formatBytes(item?.size || 0))}${escapeHtml(progressMeta)} · ${escapeHtml(ossDirectQueueSourceText(item?.source))}</small>
           ${item?.detail ? `<small class="oss-direct-queue-detail" title="${escapeHtml(item.detail)}">${escapeHtml(item.detail)}</small>` : ""}
           ${metrics.length ? `<small class="oss-direct-queue-metrics">${metrics.map(escapeHtml).join(" · ")}</small>` : ""}
-          <div class="oss-direct-queue-progress"><span style="width:${percentValue}%"></span></div>
+          <progress class="oss-direct-queue-progress" value="${percentValue}" max="100" aria-label="${escapeHtml(course)} 上传进度"></progress>
         </div>
         <div class="oss-direct-queue-status">
           <strong>${escapeHtml(ossDirectQueueStatusText(status))}</strong>
@@ -785,9 +785,7 @@
         ${cancelled ? `<span>${cancelled} 个取消</span>` : ""}
         ${failed ? `<span class="status-risk">${failed} 个失败</span>` : ""}
       </div>
-      <div class="oss-direct-overall-progress" aria-label="OSS 直传总进度">
-        <span style="width:${totalPercent}%"></span>
-      </div>
+      <progress class="oss-direct-overall-progress" value="${totalPercent}" max="100" aria-label="OSS 直传总进度"></progress>
     `;
     return `${summary}${items.map(renderOssDirectQueueItem).join("")}`;
   }
