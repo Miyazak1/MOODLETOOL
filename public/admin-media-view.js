@@ -759,23 +759,25 @@
   }
 
   function renderOssDirectQueue(items = []) {
-    const totalBytes = items.reduce((sum, item) => sum + Number(item?.size || 0), 0);
-    const loadedBytes = items.reduce((sum, item) => {
+    const batchItems = items.filter((item) => !["cancelled", "skipped"].includes(item?.status));
+    const summaryItems = batchItems.length ? batchItems : items;
+    const totalBytes = summaryItems.reduce((sum, item) => sum + Number(item?.size || 0), 0);
+    const loadedBytes = summaryItems.reduce((sum, item) => {
       if (["done", "warning"].includes(item?.status)) return sum + Number(item?.size || 0);
       if (!["authorizing", "uploading", "verifying"].includes(item?.status)) return sum;
       return sum + Math.min(Number(item?.loaded || 0), Number(item?.total || item?.size || 0));
     }, 0);
     const totalPercent = totalBytes ? Math.max(0, Math.min(100, Math.round((loadedBytes / totalBytes) * 100))) : 0;
-    const courses = [...new Set(items.map((item) => item?.course).filter(Boolean))];
+    const courses = [...new Set(summaryItems.map((item) => item?.course).filter(Boolean))];
     const failed = items.filter((item) => item?.status === "failed").length;
     const skipped = items.filter((item) => item?.status === "skipped").length;
     const cancelled = items.filter((item) => item?.status === "cancelled").length;
-    const uploading = items.filter((item) => ["authorizing", "uploading", "verifying"].includes(item?.status)).length;
-    const done = items.filter((item) => ["done", "warning"].includes(item?.status)).length;
-    if (items.length <= 1) return items.map(renderOssDirectQueueItem).join("");
+    const uploading = summaryItems.filter((item) => ["authorizing", "uploading", "verifying"].includes(item?.status)).length;
+    const done = summaryItems.filter((item) => ["done", "warning"].includes(item?.status)).length;
+    if (summaryItems.length <= 1) return items.map(renderOssDirectQueueItem).join("");
     const summary = `
       <div class="oss-direct-queue-summary">
-        <span>${items.length} 个文件</span>
+        <span>${summaryItems.length} 个可上传文件</span>
         <span>${courses.length} 门课程</span>
         <span>${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}</span>
         <span>批量总进度 ${totalPercent}%</span>

@@ -188,6 +188,34 @@ assert.ok(queueSnapshots.some((items) => items[0].speedText === "2 MB/s" && item
 assert.ok(queueSnapshots.some((items) => items[0].overallText === "500 B / 2.9 KB"));
 assert.ok(queueSnapshots.at(-1).every((item) => item.status === "done"));
 
+const singleStatuses = [];
+const singleSnapshots = [];
+const singleController = upload.createDirectUploadController({
+  api,
+  getKind: () => "course-package",
+  getFiles: () => [
+    { name: "MCR3U-course-package.zip", size: 1000, type: "application/zip" },
+  ],
+  getSelectedCourse: () => "MCR3U",
+  getCourseCodes: () => ["MCR3U"],
+  getAutoPublish: () => false,
+  formatProgress: (file) => ({ percent, loaded, total, objectKey }) => ({
+    detail: `${file.name}:${percent}:${loaded}/${total}:${objectKey}`,
+    etaText: "10秒",
+    speedText: "2 MB/s",
+  }),
+  onStatus: (status) => singleStatuses.push(status),
+  onQueueChange: (items) => singleSnapshots.push(items),
+  uploadObject: async (_form, _file, { onProgress }) => {
+    onProgress?.({ percent: 50, loaded: 500, total: 1000 });
+  },
+});
+await singleController.uploadSelected();
+assert.ok(singleSnapshots.some((items) => items[0].status === "uploading" && items[0].percent === 50));
+assert.ok(singleSnapshots.some((items) => items[0].speedText === "2 MB/s" && items[0].etaText === "10秒"));
+assert.doesNotMatch(singleStatuses.map((item) => item.title).join("\n"), /正在.*OSS/);
+assert.ok(singleStatuses.some((item) => item.title === "OSS 直传完成"));
+
 const singleCancelApiCalls = [];
 const singleCancelApi = {
   async initOssUpload(payload) {

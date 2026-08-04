@@ -266,11 +266,11 @@ assert.match(ossQueue, /上传中/);
 assert.match(ossQueue, /未识别/);
 assert.match(ossQueue, /失败/);
 assert.match(ossQueue, /已取消/);
-assert.match(ossQueue, /3 个文件/);
-assert.match(ossQueue, /2 门课程/);
-assert.match(ossQueue, /批量总进度 33%/);
+assert.match(ossQueue, /2 个可上传文件/);
+assert.match(ossQueue, /1 门课程/);
+assert.match(ossQueue, /批量总进度 40%/);
 assert.match(ossQueue, /oss-direct-overall-progress/);
-assert.match(ossQueue, /oss-direct-overall-progress" value="33"/);
+assert.match(ossQueue, /oss-direct-overall-progress" value="40"/);
 assert.match(ossQueue, /oss-direct-queue-progress" value="50"/);
 assert.match(ossQueue, /速度 2 MB\/s/);
 assert.match(ossQueue, /剩余约 10秒/);
@@ -297,6 +297,43 @@ assert.match(singleOssQueue, /2\.0 KB \/ 4\.0 KB/);
 assert.doesNotMatch(singleOssQueue, /oss-direct-overall-progress/);
 assert.doesNotMatch(singleOssQueue, /批量总进度/);
 assert.doesNotMatch(singleOssQueue, /22 GB/);
+
+const singleUploadableQueue = view.renderOssDirectQueue([
+  {
+    course: "MCR3U",
+    name: "MCR3U-course-package.zip",
+    size: 4096,
+    source: "filename",
+    detail: "上传中",
+    loaded: 2048,
+    status: "uploading",
+    percent: 50,
+    total: 4096,
+  },
+  {
+    course: "MPM1D",
+    name: "MPM1D-course-package-old.zip",
+    size: 1024,
+    source: "filename",
+    detail: "本次选择里已有更新课件包",
+    status: "skipped",
+    percent: 0,
+  },
+  {
+    course: "MHF4U",
+    name: "MHF4U-course-package.zip",
+    size: 1024,
+    source: "filename",
+    detail: "已取消这个文件的 OSS 直传。",
+    status: "cancelled",
+    percent: 0,
+  },
+]);
+assert.match(singleUploadableQueue, /MCR3U-course-package\.zip/);
+assert.match(singleUploadableQueue, /MPM1D-course-package-old\.zip/);
+assert.match(singleUploadableQueue, /MHF4U-course-package\.zip/);
+assert.doesNotMatch(singleUploadableQueue, /oss-direct-overall-progress/);
+assert.doesNotMatch(singleUploadableQueue, /批量总进度/);
 
 const progressInfo = view.uploadProgressFormatter({ name: "big.zip", size: 1024 })({
   percent: 50,

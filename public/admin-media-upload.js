@@ -522,7 +522,7 @@
       }
     }
 
-    async function uploadSingleImpl(file, { index = 0, totalFiles = 1, queueItem = null, resolvedCourse = null, batchProgress = null } = {}) {
+    async function uploadSingleImpl(file, { index = 0, totalFiles = 1, queueItem = null, resolvedCourse = null, batchProgress = null, showUploadStatus = true } = {}) {
       if (!file) throw new Error("请选择要直传到 OSS 的文件。");
       throwIfQueueItemCancelled(queueItem);
       const kind = typeof getKind === "function" ? getKind() : "course-package";
@@ -549,8 +549,11 @@
       const courseSourceText = courseInfo.source === "filename" ? "文件名自动识别" : "当前课程";
       const batchText = totalFiles > 1 ? `第 ${index + 1}/${totalFiles} 个 · ` : "";
       const fileSizeText = window.AdminMediaView?.formatBytes ? window.AdminMediaView.formatBytes(file.size) : `${file.size || 0} B`;
+      const setUploadStatus = (...args) => {
+        if (showUploadStatus) setStatus(...args);
+      };
       updateQueueItem(queueItem, { detail: "创建 OSS 上传授权", percent: 0, status: "authorizing" });
-      setStatus("正在创建 OSS 上传授权", `${batchText}${course} · ${courseSourceText} · ${file.name} · ${fileSizeText}`, 0);
+      setUploadStatus("正在创建 OSS 上传授权", `${batchText}${course} · ${courseSourceText} · ${file.name} · ${fileSizeText}`, 0);
       throwIfQueueItemCancelled(queueItem);
       const initData = await api.initOssUpload({
         course,
@@ -565,7 +568,7 @@
         : 0;
       const resumeDetail = resumedParts ? ` · 已恢复 ${resumedParts} 个分片` : "";
       updateQueueItem(queueItem, { detail: initData.upload.objectKey, percent: 1, status: "uploading" });
-      setStatus(isMultipart ? (resumedParts ? "正在续传分片到 OSS" : "正在分片直传 OSS") : "正在直传 OSS", `${batchText}${initData.upload.course || course} · ${initData.upload.objectKey}${resumeDetail}`, 1);
+      setUploadStatus(isMultipart ? (resumedParts ? "正在续传分片到 OSS" : "正在分片直传 OSS") : "正在直传 OSS", `${batchText}${initData.upload.course || course} · ${initData.upload.objectKey}${resumeDetail}`, 1);
       throwIfQueueItemCancelled(queueItem);
       const progressText = typeof formatProgress === "function" ? formatProgress(file) : null;
       let multipartParts = null;
@@ -601,7 +604,7 @@
             status: "uploading",
             total,
           });
-          setStatus(`${uploadTitle} · ${overall.percent}%`, batchDetail, overall.percent);
+          setUploadStatus(`${uploadTitle} · ${overall.percent}%`, batchDetail, overall.percent);
       };
       if (isMultipart) {
         const result = await uploadMultipartObject(initData.multipart, file, {
@@ -613,7 +616,7 @@
               detail: retryDetail,
               status: "uploading",
             });
-            setStatus(`${uploadTitle} · 正在重试`, retryDetail, queueItem?.percent || 0, "warn");
+            setUploadStatus(`${uploadTitle} · 正在重试`, retryDetail, queueItem?.percent || 0, "warn");
           },
         });
         multipartParts = result.parts;
@@ -624,7 +627,7 @@
         });
       }
       updateQueueItem(queueItem, { detail: initData.upload.ossUri, percent: 100, status: "verifying" });
-      setStatus("正在校验 OSS 对象", `${batchText}${initData.upload.ossUri}`, Math.round(((index + 1) / totalFiles) * 100));
+      setUploadStatus("正在校验 OSS 对象", `${batchText}${initData.upload.ossUri}`, Math.round(((index + 1) / totalFiles) * 100));
       throwIfQueueItemCancelled(queueItem);
       const completeData = await api.completeOssUpload(initData.upload.id, {
         objectKey: initData.upload.objectKey,
@@ -675,6 +678,7 @@
       notifyQueue();
       const uploadQueue = queue.filter((item) => item.uploadable !== false);
       if (!uploadQueue.length) throw new Error("本次选择没有可上传的完整课件包。请检查文件名和重复课程。");
+      const showBatchUploadStatus = uploadQueue.length > 1;
       const results = [];
       const fileSizes = uploadQueue.map((item) => Number(item.file?.size || 0));
       const totalBytes = fileSizes.reduce((sum, size) => sum + size, 0);
@@ -701,6 +705,7 @@
             queueItem,
             resolvedCourse: queueItem.resolvedCourse,
             batchProgress: updateBatchProgress,
+            showUploadStatus: showBatchUploadStatus,
           }));
         } catch (error) {
           const wasCancelled = cancelRequested || queueItemIsCancelled(queueItem) || /取消|中止|abort/i.test(error.message || "");
