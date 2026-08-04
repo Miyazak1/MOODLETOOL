@@ -80,7 +80,13 @@ function isPlayableDirectKind(kind) {
   return ["video", "h5p"].includes(String(kind || "").toLowerCase());
 }
 
-function updateRegistryAsset(objectKey) {
+function assetKindForUpload(upload) {
+  const kind = String(upload?.kind || "").toLowerCase();
+  if (kind === "video" || kind === "h5p") return kind;
+  return "other";
+}
+
+function updateRegistryAsset(objectKey, record = null) {
   const existing = existsSync(registryPath)
     ? readJson(registryPath)
     : {
@@ -90,9 +96,14 @@ function updateRegistryAsset(objectKey) {
         objectPrefix: "courseware-active",
         assetCount: 0,
         assets: [],
+        assetRecords: [],
       };
   const assets = new Set(Array.isArray(existing.assets) ? existing.assets : []);
   assets.add(objectKey);
+  const assetRecords = new Map((Array.isArray(existing.assetRecords) ? existing.assetRecords : [])
+    .filter((item) => item?.objectKey)
+    .map((item) => [item.objectKey, item]));
+  if (record?.objectKey) assetRecords.set(record.objectKey, record);
   const next = {
     ...existing,
     generatedAt: new Date().toISOString(),
@@ -100,6 +111,7 @@ function updateRegistryAsset(objectKey) {
     cdnBaseUrl: existing.cdnBaseUrl || cdnBaseUrl,
     assetCount: assets.size,
     assets: [...assets].sort(),
+    assetRecords: [...assetRecords.values()].sort((a, b) => String(a.objectKey).localeCompare(String(b.objectKey))),
   };
   writeFileSync(registryPath, `${JSON.stringify(next, null, 2)}\n`, "utf8");
   return next;
@@ -162,11 +174,22 @@ if (!blockers.length && needsLocalPublish) {
   if (result.status !== 0) {
     throw new Error((result.stderr || result.stdout || `ossutil exited ${result.status}`).trim());
   }
-  const registry = updateRegistryAsset(activeObjectKey);
+  const cdnUrl = `${cdnBaseUrl}/${course}/direct-uploads/${safeSegment(upload.id)}/${encodeURIComponent(filename)}`;
+  const registry = updateRegistryAsset(activeObjectKey, {
+    course,
+    kind: assetKindForUpload(upload),
+    source: "cdn",
+    objectKey: activeObjectKey,
+    relativePath: `direct-uploads/${safeSegment(upload.id)}/${filename}`,
+    ossUri: targetUri,
+    url: cdnUrl,
+    cdnUrl,
+    bytes: upload.fileSize || 0,
+  });
   published = {
     objectKey: activeObjectKey,
     ossUri: targetUri,
-    cdnUrl: `${cdnBaseUrl}/${course}/direct-uploads/${safeSegment(upload.id)}/${encodeURIComponent(filename)}`,
+    cdnUrl,
     registryAssetCount: registry.assetCount,
   };
   ok.push("Uploaded playable asset was copied to courseware-active and registry was updated.");

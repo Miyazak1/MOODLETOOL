@@ -17,7 +17,10 @@ if (!coreModulePath) {
 const {
   buildExtractCallbackPayload,
   contentTypeForObjectKey,
+  coursePackageEntryKind,
+  courseRelativePathFromZipEntry,
   extractOssEventObject,
+  isLightweightCourseContentAsset,
   parseCourseUploadFromObjectKey,
   safeCourse,
   stripSlash,
@@ -127,6 +130,35 @@ async function putEntryStream(client, objectKey, entry) {
   });
 }
 
+async function putLightweightEntryStream(client, objectKey, entry) {
+  return client.putStream(objectKey, entry, {
+    headers: {
+      "Content-Type": contentTypeForObjectKey(objectKey),
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
+async function putJsonObject(client, objectKey, data) {
+  const body = Readable.from([`${JSON.stringify(data, null, 2)}\n`]);
+  return client.putStream(objectKey, body, {
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
+function safeManifestSegment(value) {
+  return String(value || "").replace(/[^A-Za-z0-9._-]/g, "-").replace(/^-+|-+$/g, "") || `manual-${Date.now()}`;
+}
+
+function lightweightObjectKeyForEntry(relativePath, course, uploadId) {
+  const normalized = String(relativePath || "").replace(/^\/+/, "");
+  if (!normalized) return "";
+  return `inbox/lightweight/${safeCourse(course)}/${safeManifestSegment(uploadId)}/${normalized}`.replace(/\/+/g, "/");
+}
+
 async function notifyPortal({ config, uploadId, payload, fetchImpl = fetch }) {
   const callbackUrl = config.portalCallback
     || (config.portalCallbackBase && uploadId
@@ -151,51 +183,130 @@ async function notifyPortal({ config, uploadId, payload, fetchImpl = fetch }) {
   }
 }
 
-export async function extractEntries({ entries, client, bucket, objectKey, course, targetPrefix, config }) {
+export async function extractEntries({ entries, client, bucket, objectKey, course, uploadId = "", targetPrefix, config }) {
   const code = safeCourse(course);
   if (!code) throw new Error("Course is required.");
   const finalTargetPrefix = stripSlash(targetPrefix || `${config.objectPrefix}/${code}`);
+  const manifestObjectKey = `inbox/manifests/${code}/${safeManifestSegment(uploadId)}/import-manifest.json`;
+  const manifest = {
+    schemaVersion: 1,
+    course: code,
+    uploadId,
+    sourceObjectKey: objectKey,
+    targetPrefix: `${finalTargetPrefix}/`,
+    manifestObjectKey,
+    generatedAt: "",
+    lightweightFiles: [],
+    mediaFiles: [],
+    skippedFiles: [],
+    summary: null,
+  };
   const summary = {
     bucket,
     sourceObjectKey: objectKey,
     course: code,
     targetPrefix: `${finalTargetPrefix}/`,
+    manifestObjectKey,
     assetScope: config.assetScope,
     entries: 0,
     extracted: 0,
+    mediaExtracted: 0,
+    lightweightCandidates: 0,
     skipped: 0,
     uploadedBytes: 0,
+    lightweightBytes: 0,
     skippedBytes: 0,
+    status: "failed",
     startedAt: new Date().toISOString(),
     finishedAt: "",
   };
 
   for await (const entry of entries) {
     summary.entries += 1;
+    const size = Number(entry.vars?.uncompressedSize || entry.vars?.compressedSize || 0);
+    const relativePath = courseRelativePathFromZipEntry(entry.path, code, { objectPrefix: config.objectPrefix });
     const targetKey = targetObjectKeyForEntry(entry.path, {
       course: code,
       targetPrefix: finalTargetPrefix,
       objectPrefix: config.objectPrefix,
       assetScope: config.assetScope,
     });
-    const size = Number(entry.vars?.uncompressedSize || entry.vars?.compressedSize || 0);
     if (!targetKey || entry.type === "Directory") {
-      summary.skipped += 1;
-      summary.skippedBytes += Number.isFinite(size) ? size : 0;
+      if (entry.type !== "Directory" && isLightweightCourseContentAsset(relativePath, { size })) {
+        const lightweightObjectKey = lightweightObjectKeyForEntry(relativePath, code, uploadId);
+        summary.lightweightCandidates += 1;
+        summary.lightweightBytes += Number.isFinite(size) ? size : 0;
+        manifest.lightweightFiles.push({
+          path: relativePath,
+          objectKey: lightweightObjectKey,
+          bytes: Number.isFinite(size) ? size : 0,
+          kind: coursePackageEntryKind(relativePath),
+          source: "oss-inbox",
+        });
+        if (!config.dryRun) {
+          await putLightweightEntryStream(client, lightweightObjectKey, entry);
+        } else {
+          entry.autodrain();
+        }
+        continue;
+      } else {
+        if (entry.type !== "Directory") {
+          summary.skipped += 1;
+          summary.skippedBytes += Number.isFinite(size) ? size : 0;
+          manifest.skippedFiles.push({
+            path: relativePath || entry.path,
+            bytes: Number.isFinite(size) ? size : 0,
+            reason: relativePath ? "unsupported-or-excluded" : "invalid-path",
+          });
+        }
+      }
       entry.autodrain();
       continue;
     }
     if (config.dryRun) {
       summary.extracted += 1;
+      summary.mediaExtracted += 1;
       summary.uploadedBytes += Number.isFinite(size) ? size : 0;
+      manifest.mediaFiles.push({
+        path: relativePath,
+        objectKey: targetKey,
+        bytes: Number.isFinite(size) ? size : 0,
+        kind: coursePackageEntryKind(relativePath),
+        source: "oss",
+      });
       entry.autodrain();
       continue;
     }
     await putEntryStream(client, targetKey, entry);
     summary.extracted += 1;
+    summary.mediaExtracted += 1;
     summary.uploadedBytes += Number.isFinite(size) ? size : 0;
+    manifest.mediaFiles.push({
+      path: relativePath,
+      objectKey: targetKey,
+      bytes: Number.isFinite(size) ? size : 0,
+      kind: coursePackageEntryKind(relativePath),
+      source: "oss",
+    });
   }
   summary.finishedAt = new Date().toISOString();
+  summary.status = summary.mediaExtracted > 0
+    ? "media-ready"
+    : summary.lightweightCandidates > 0
+      ? "no-media"
+      : "no-media";
+  manifest.generatedAt = summary.finishedAt;
+  manifest.summary = {
+    entries: summary.entries,
+    media: summary.mediaExtracted,
+    lightweight: summary.lightweightCandidates,
+    skipped: summary.skipped,
+    uploadedBytes: summary.uploadedBytes,
+    lightweightBytes: summary.lightweightBytes,
+    skippedBytes: summary.skippedBytes,
+    status: summary.status,
+  };
+  if (!config.dryRun) await putJsonObject(client, manifestObjectKey, manifest);
   return summary;
 }
 
@@ -213,6 +324,7 @@ export async function extractCoursePackage({ client, bucket, objectKey, course, 
     bucket,
     objectKey,
     course: code,
+    uploadId,
     targetPrefix,
     config,
   });
@@ -222,6 +334,7 @@ export async function extractCoursePackage({ client, bucket, objectKey, course, 
     course: code,
     sourceObjectKey: objectKey,
     targetPrefix: summary.targetPrefix,
+    manifestObjectKey: summary.manifestObjectKey,
     summary,
   });
   const callback = config.dryRun ? { skipped: true, reason: "dry-run" } : await notifyPortal({ config, uploadId, payload: callbackPayload, fetchImpl });

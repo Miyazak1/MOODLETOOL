@@ -82,6 +82,8 @@ type LinkableResource = {
   url?: string;
   previewPath?: string;
   previewUrl?: string;
+  downloadPath?: string;
+  downloadUrl?: string;
   source?: string;
   bytes?: number;
 };
@@ -117,7 +119,8 @@ function resourceKey(item: LinkableResource): string {
 }
 
 function hasLocalResource(item: LinkableResource): boolean {
-  return Boolean(item.path || item.previewPath);
+  const trustedRemote = item.source === "cdn" || item.source === "oss";
+  return Boolean(item.path || item.previewPath || item.downloadPath || (trustedRemote && (item.url || item.previewUrl)));
 }
 
 function isExternalOnlyResource(item: LinkableResource): boolean {
@@ -339,7 +342,8 @@ function ISpringActions({
   moodleEmbed?: MoodleEmbedRow;
 }) {
   const externalOnly = item.mode === "external" || Boolean(item.url && !item.path);
-  if (externalOnly) return null;
+  const trustedRemote = item.source === "cdn" || item.source === "oss";
+  if (externalOnly && !trustedRemote) return null;
   const downloadItem = item.downloadUrl || item.downloadPath
     ? {
         label,
@@ -1595,6 +1599,11 @@ function App() {
                 texts={manifest.texts}
               />
             </>
+          ) : null}
+          {manifest && !unit ? (
+            <section className="course-overview panel">
+              <div className="empty-state">课程已建立，暂无可展示的单元资源或可播放媒体。</div>
+            </section>
           ) : null}
         </section>
       </main>

@@ -133,11 +133,11 @@
         detail: `${course?.publishedCount || 0}/${course?.fileCount || 0} 可播放资源`,
       };
     }
-    if (state === "empty") {
+    if (state === "no-media" || state === "empty" || course?.mediaStatus === "not-required") {
       return {
-        className: "meta-line",
-        label: "无可发布媒体",
-        detail: course?.localFileCount ? `${course.localFileCount} local files` : "0 local files",
+        className: "status-ok",
+        label: "暂无可发布媒体",
+        detail: course?.localFileCount ? `课程壳已建立 · ${course.localFileCount} local files` : "课程壳已建立",
       };
     }
     return {
@@ -581,7 +581,8 @@
     const uploadDone = ["uploaded", "importing", "ready", "needs-review", "imported", "queued"].includes(upload?.status);
     const uploadFailed = ["failed", "expired", "cancelled"].includes(upload?.status);
     const importStarted = Boolean(upload?.importId || upload?.importStatus);
-    const importDone = ["committed", "ready", "imported", "indexed", "indexed-with-warnings"].includes(upload?.importStatus) || ["imported", "queued"].includes(upload?.status);
+    const noMedia = upload?.importStatus === "no-media" || upload?.mediaStatus === "not-required";
+    const importDone = ["committed", "ready", "imported", "indexed", "indexed-with-warnings", "no-media"].includes(upload?.importStatus) || ["imported", "queued"].includes(upload?.status);
     const importFailed = upload?.status === "needs-review" || upload?.importStatus === "needs-review" || uploadFailed;
     const ossOnlyPackage = upload?.kind === "course-package" && (upload?.importMode === "oss-only" || String(upload?.importStatus || "").startsWith("oss-") || upload?.ossOnly === true);
     const ossExtractWaiting = ossOnlyPackage && upload?.importStatus === "oss-extract-required";
@@ -600,17 +601,17 @@
       {
         label: "导入课程",
         state: importFailed ? "issue" : importDone ? "done" : importStarted ? "active" : "",
-        detail: importFailed ? "需要处理" : importDone ? "课程已导入" : importStarted ? upload.importStatus || "导入中" : "等待导入",
+        detail: importFailed ? "需要处理" : noMedia ? "课程壳已导入" : importDone ? "课程已导入" : importStarted ? upload.importStatus || "导入中" : "等待导入",
       },
       {
         label: "发布媒体",
-        state: publishIssue ? "issue" : publishDone ? "done" : publishStarted ? "active" : "",
-        detail: publishIssue ? "有提示或失败" : publishDone ? "媒体已发布" : publishStarted ? (relatedJob?.progress?.message || relatedJob?.status || "任务排队中") : "等待任务",
+        state: noMedia ? "done" : publishIssue ? "issue" : publishDone ? "done" : publishStarted ? "active" : "",
+        detail: noMedia ? "无媒体，不需要发布" : publishIssue ? "有提示或失败" : publishDone ? "媒体已发布" : publishStarted ? (relatedJob?.progress?.message || relatedJob?.status || "任务排队中") : "等待任务",
       },
       {
         label: "可播放",
-        state: publishIssue ? "issue" : publishDone ? "done" : "",
-        detail: publishIssue ? "请看日志" : publishDone ? "CDN/OSS 就绪" : "等待完成",
+        state: noMedia ? "done" : publishIssue ? "issue" : publishDone ? "done" : "",
+        detail: noMedia ? "暂无可播放媒体" : publishIssue ? "请看日志" : publishDone ? "CDN/OSS 就绪" : "等待完成",
       },
     ];
 
@@ -628,13 +629,13 @@
       };
       steps[2] = {
         label: "索引 Registry",
-        state: publishIssue && !ossExtractWaiting ? "issue" : importDone ? "done" : ossIndexing || publishStarted ? "active" : "",
-        detail: ossExtractWaiting ? "等待 OSS 解压" : publishIssue ? "有提示或失败" : importDone ? "OSS/CDN 已登记" : ossIndexing ? "索引排队中" : publishStarted ? (relatedJob?.progress?.message || relatedJob?.status || "任务排队中") : "等待索引",
+        state: noMedia ? "done" : publishIssue && !ossExtractWaiting ? "issue" : importDone ? "done" : ossIndexing || publishStarted ? "active" : "",
+        detail: noMedia ? "无媒体，不需要索引" : ossExtractWaiting ? "等待 OSS 解压" : publishIssue ? "有提示或失败" : importDone ? "OSS/CDN 已登记" : ossIndexing ? "索引排队中" : publishStarted ? (relatedJob?.progress?.message || relatedJob?.status || "任务排队中") : "等待索引",
       };
       steps[3] = {
         label: "可播放",
-        state: publishIssue && !ossExtractWaiting ? "issue" : importDone || publishDone ? "done" : "",
-        detail: ossExtractWaiting ? "等待 OSS 解压" : publishIssue ? "请看日志" : importDone || publishDone ? "CDN/OSS 就绪" : "等待完成",
+        state: noMedia ? "done" : publishIssue && !ossExtractWaiting ? "issue" : importDone || publishDone ? "done" : "",
+        detail: noMedia ? "暂无可播放媒体" : ossExtractWaiting ? "等待 OSS 解压" : publishIssue ? "请看日志" : importDone || publishDone ? "CDN/OSS 就绪" : "等待完成",
       };
     }
 
@@ -709,6 +710,9 @@
       ["导入模式", upload?.importMode || ""],
       ["导入任务", upload?.importId || ""],
       ["导入状态", upload?.importStatus || ""],
+      ["媒体状态", upload?.mediaStatus || ""],
+      ["本地内容", upload?.localContentStatus || ""],
+      ["可播放媒体", upload?.hasPlayableMedia ? "是" : "否"],
       ["OSS-only", upload?.ossOnly ? "是" : ""],
       ["目标前缀", upload?.targetPrefix || ""],
       ["解压确认", shortDateTime(upload?.extractedAt) || ""],

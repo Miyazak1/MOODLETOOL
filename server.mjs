@@ -32,6 +32,10 @@ import {
   resolveDirectUploadCourse,
   resumeDirectMultipartUpload,
 } from "./scripts/lib/oss-direct-upload.mjs";
+import {
+  coursePackageEntryKind,
+  isLightweightCourseContentAsset,
+} from "./scripts/lib/oss-course-package-extractor-core.mjs";
 import { createOssUploadRecordStore } from "./scripts/lib/oss-upload-records.mjs";
 import { listCourseLocks, removeCourseLock } from "./scripts/lib/course-operation-locks.mjs";
 
@@ -103,6 +107,9 @@ const mediaJobsAutoPublishAfterActivate = process.env.MEDIA_JOBS_AUTO_PUBLISH_AF
 const coursePackageImportMode = ["oss-only", "legacy-local"].includes(String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase())
   ? String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase()
   : "oss-only";
+const courseLocalContentEnabled = process.env.COURSE_LOCAL_CONTENT_ENABLED !== "0";
+const courseLocalMaxFileBytes = Math.max(1, Number(process.env.COURSE_LOCAL_MAX_FILE_MB || 50)) * 1024 * 1024;
+const courseLocalMaxCourseBytes = Math.max(1, Number(process.env.COURSE_LOCAL_MAX_COURSE_MB || 1024)) * 1024 * 1024;
 const courseOperationLockRoot = resolve(process.env.COURSE_OPERATION_LOCK_DIR || join(projectRoot, "deployment", "locks"));
 const ossBucketUri = process.env.OSS_BUCKET_URI || "";
 const ossDirectUploadConfig = directUploadConfigFromEnv(process.env, { ossBucketUri });
@@ -368,15 +375,19 @@ function sendRateLimitJson(res, retryAfterSeconds) {
 }
 
 function hasLocalResource(item) {
-  return Boolean(item?.path || item?.previewPath || item?.downloadPath);
+  const source = String(item?.source || "").toLowerCase();
+  const trustedRemote = ["cdn", "oss"].includes(source);
+  return Boolean(item?.path || item?.previewPath || item?.downloadPath || (trustedRemote && (item?.url || item?.previewUrl || item?.downloadUrl)));
 }
 
 function sanitizePublicResource(item) {
   if (!item || typeof item !== "object") return null;
   const sanitized = { ...item };
-  if (!sanitized.path) delete sanitized.url;
-  if (!sanitized.previewPath) delete sanitized.previewUrl;
-  if (!sanitized.downloadPath) delete sanitized.downloadUrl;
+  const source = String(sanitized.source || "").toLowerCase();
+  const trustedRemote = ["cdn", "oss"].includes(source);
+  if (!sanitized.path && !trustedRemote) delete sanitized.url;
+  if (!sanitized.previewPath && !trustedRemote) delete sanitized.previewUrl;
+  if (!sanitized.downloadPath && !trustedRemote) delete sanitized.downloadUrl;
   if (String(sanitized.source || "").toLowerCase().includes("moodle")) delete sanitized.source;
   return hasLocalResource(sanitized) ? sanitized : null;
 }
@@ -1237,14 +1248,17 @@ function syncOssUploadFromMediaJob(job) {
     Object.assign(patch, {
       status: "imported",
       importStatus: job.status === "warning" ? "indexed-with-warnings" : "indexed",
+      mediaStatus: job.status === "warning" ? "warning" : "ready",
+      hasPlayableMedia: true,
       importedAt: now,
-      ingestMessage: "OSS 资源已索引，播放和下载将使用 OSS/CDN；ECS 未保存课件副本。",
+      ingestMessage: "OSS 资源已索引，播放和下载将使用 OSS/CDN；课程壳由 ECS 提供。",
       error: "",
     });
   } else {
     Object.assign(patch, {
       status: "uploaded",
       importStatus: `oss-index-${job.status}`,
+      mediaStatus: "failed",
       ingestMessage: "OSS 资源索引任务未完成，请查看媒体任务日志后重试索引。",
       error: job.error || "",
     });
@@ -1388,6 +1402,7 @@ function walkCourseFilesSync(root, result = []) {
 async function mediaCourseStatus(courseEntry, assetSet) {
   const code = safeSegment(courseEntry.code || courseEntry).toUpperCase();
   const root = courseRoot(code);
+  const manifest = readJsonFileSync(join(root, "course-manifest.json"), null);
   const files = walkCourseFilesSync(root);
   const mediaFiles = coursewareOssAssetScope === "all"
     ? files
@@ -1421,7 +1436,7 @@ async function mediaCourseStatus(courseEntry, assetSet) {
   const publishState = activeJob
     ? "publishing"
     : mediaFiles.length === 0
-      ? "empty"
+      ? "no-media"
       : published === mediaFiles.length
         ? "published"
         : published > 0
@@ -1441,6 +1456,10 @@ async function mediaCourseStatus(courseEntry, assetSet) {
     cdnCoverage: mediaFiles.length ? published / mediaFiles.length : 0,
     assetScope: coursewareOssAssetScope,
     publishState,
+    importStatus: manifest?.sourceAudit?.importStatus || (existsSync(join(root, "course-manifest.json")) ? "course-created" : ""),
+    mediaStatus: mediaFiles.length ? (published === mediaFiles.length ? "ready" : published > 0 ? "warning" : "pending") : "not-required",
+    localContentStatus: files.length ? "available" : "missing",
+    hasPlayableMedia: mediaFiles.length > 0,
     activeJob: activeJob ? publicMediaJob(activeJob) : null,
     latestJob: latestJob ? publicMediaJob(latestJob) : null,
   };
@@ -2695,21 +2714,29 @@ function emptyCourseManifest(course) {
   const code = safeSegment(course).toUpperCase();
   return {
     schemaVersion: 1,
+    generatedAt: new Date().toISOString(),
     course: {
       code,
       title: code,
-      grade: "",
+      audience: "",
+      source: "oss-hybrid-course-shell",
       description: "",
+    },
+    navigation: {
+      primary: "Units",
+      secondary: "Activities",
     },
     courseDownloads: [],
     units: [],
-    textMaterials: [],
+    texts: [],
     sourceAudit: {
-      generatedFrom: "empty-admin-import",
+      generatedFrom: "oss-hybrid-course-shell",
       lessonCount: 0,
       ispringComplete: 0,
+      importStatus: "course-created",
+      mediaStatus: "not-required",
+      hasPlayableMedia: false,
     },
-    generatedAt: new Date().toISOString(),
   };
 }
 
@@ -2720,6 +2747,330 @@ async function readManifestOrEmpty(course) {
     if (error?.code !== "ENOENT") throw error;
     return emptyCourseManifest(course);
   }
+}
+
+function normalizedOssExtractSummary(body = {}) {
+  const summary = body.summary || {};
+  const mediaExtracted = Number(body.mediaExtracted ?? summary.mediaExtracted ?? summary.extracted ?? 0);
+  const lightweightCandidates = Number(body.lightweightCandidates ?? summary.lightweightCandidates ?? summary.lightweight ?? 0);
+  const entries = Number(body.entries ?? summary.entries ?? 0);
+  const skipped = Number(body.skipped ?? summary.skipped ?? 0);
+  const status = String(body.status || summary.status || (mediaExtracted > 0 ? "media-ready" : "no-media")).toLowerCase();
+  return {
+    entries: Number.isFinite(entries) ? entries : 0,
+    mediaExtracted: Number.isFinite(mediaExtracted) ? mediaExtracted : 0,
+    lightweightCandidates: Number.isFinite(lightweightCandidates) ? lightweightCandidates : 0,
+    skipped: Number.isFinite(skipped) ? skipped : 0,
+    status,
+    manifestObjectKey: String(body.manifestObjectKey || summary.manifestObjectKey || ""),
+  };
+}
+
+async function ensureHybridCourseShell({ course, actor, extractSummary = {}, sourceObjectKey = "", uploadId = "" }) {
+  const code = safeSegment(course).toUpperCase();
+  if (!code) throw new Error("Course is required.");
+  const root = courseRoot(code);
+  const manifestPath = join(root, "course-manifest.json");
+  await mkdir(root, { recursive: true });
+  let manifest = null;
+  let created = false;
+  if (existsSync(manifestPath)) {
+    manifest = await readManifestOrEmpty(code);
+  } else {
+    manifest = emptyCourseManifest(code);
+    manifest.sourceAudit = {
+      ...(manifest.sourceAudit || {}),
+      generatedFrom: "oss-hybrid-course-shell",
+      sourceObjectKey,
+      latestUploadId: uploadId,
+      importStatus: "course-created",
+      mediaStatus: extractSummary.mediaExtracted > 0 ? "pending" : "not-required",
+      hasPlayableMedia: extractSummary.mediaExtracted > 0,
+      lightweightCandidates: extractSummary.lightweightCandidates || 0,
+    };
+    writeJsonFile(manifestPath, manifest);
+    created = true;
+  }
+  const catalogEntry = await ensureCourseCatalogEntry(code, manifest);
+  const lifecycle = setCourseLifecycleStatus(code, "active", actor, "Activated automatically after OSS course package shell import.");
+  try {
+    await appendAdminHistory(code, {
+      actor,
+      action: "oss-course-shell-import",
+      uploadId,
+      sourceObjectKey,
+      created,
+      entries: extractSummary.entries || 0,
+      mediaExtracted: extractSummary.mediaExtracted || 0,
+      lightweightCandidates: extractSummary.lightweightCandidates || 0,
+      status: extractSummary.status || "",
+      lifecycleStatus: lifecycle.status,
+    });
+  } catch {
+    // History is helpful for audits, but shell creation should not fail because of it.
+  }
+  return { manifest, catalogEntry, lifecycle, created };
+}
+
+async function createPortalOssClient() {
+  if (!ossDirectUploadConfig.bucket || !ossDirectUploadConfig.accessKeyId || !ossDirectUploadConfig.accessKeySecret) {
+    throw new Error("OSS credentials are not configured for lightweight course content import.");
+  }
+  const module = await import("ali-oss");
+  const OSS = module.default || module;
+  const options = {
+    bucket: ossDirectUploadConfig.bucket,
+    secure: true,
+    accessKeyId: ossDirectUploadConfig.accessKeyId,
+    accessKeySecret: ossDirectUploadConfig.accessKeySecret,
+  };
+  if (ossDirectUploadConfig.endpoint) options.endpoint = ossDirectUploadConfig.endpoint;
+  if (ossDirectUploadConfig.securityToken) options.stsToken = ossDirectUploadConfig.securityToken;
+  return new OSS(options);
+}
+
+async function ossObjectStream(client, objectKey) {
+  const result = await client.getStream(objectKey);
+  return result.stream || result.res || result;
+}
+
+async function readOssJsonObject(client, objectKey) {
+  const stream = await ossObjectStream(client, objectKey);
+  const chunks = [];
+  for await (const chunk of stream) chunks.push(Buffer.from(chunk));
+  return JSON.parse(Buffer.concat(chunks).toString("utf8").replace(/^\uFEFF/, ""));
+}
+
+function safeLightweightRelativePath(value) {
+  const normalized = normalizeImportPath(value).replace(/^\/+/, "");
+  if (!normalized || normalized.includes("\0")) return "";
+  const parts = normalized.split("/");
+  if (parts.some((part) => !part || part === "." || part === "..")) return "";
+  return normalized;
+}
+
+function lightweightStagingRoot(course, uploadId) {
+  const root = courseRoot(course);
+  return ensureInside(root, join(root, "_admin_uploads", "lightweight-staging", safeSegment(uploadId || `manual-${Date.now()}`)));
+}
+
+async function downloadOssObjectToFile(client, objectKey, targetPath) {
+  await mkdir(dirname(targetPath), { recursive: true });
+  const stream = await ossObjectStream(client, objectKey);
+  await pipeline(stream, createWriteStream(targetPath));
+}
+
+async function copyLightweightStagingContent(stagingRoot, targetRoot) {
+  const entries = await readdir(stagingRoot, { withFileTypes: true });
+  let copied = 0;
+  for (const entry of entries) {
+    if (entry.name === "_admin_uploads") continue;
+    const source = join(stagingRoot, entry.name);
+    const target = ensureInside(targetRoot, join(targetRoot, entry.name));
+    await cp(source, target, { recursive: true });
+    copied += 1;
+  }
+  return copied;
+}
+
+function activityTitleFromPath(relativePath) {
+  const parts = normalizeImportPath(relativePath).split("/");
+  const folder = parts.length > 1 ? parts[parts.length - 2] : fileStem(parts[0] || "");
+  return cleanImportLabel(folder.replace(/^[A-Z]\d{2}L\d{2}[-_ ]*/i, "")) || "Moodle Activity";
+}
+
+function lessonKeyFromPath(relativePath, fallbackIndex) {
+  const detected = detectUnitLesson(relativePath);
+  if (detected?.unit && detected?.lesson) return detected;
+  return { unit: 1, lesson: fallbackIndex };
+}
+
+function buildManifestFromLightweightFiles(course, lightweightFiles = []) {
+  const code = safeSegment(course).toUpperCase();
+  const manifest = emptyCourseManifest(code);
+  manifest.sourceAudit = {
+    ...(manifest.sourceAudit || {}),
+    generatedFrom: "oss-lightweight-import",
+    importStatus: "lightweight-imported",
+    mediaStatus: "not-required",
+    hasPlayableMedia: false,
+  };
+  const files = lightweightFiles
+    .map((item) => ({ ...item, path: safeLightweightRelativePath(item.path) }))
+    .filter((item) => item.path);
+  const indexFiles = files.filter((item) => /(?:^|\/)localized-moodle-activities\/.+\/index\.html$/i.test(item.path));
+  const indexDirs = new Map(indexFiles.map((item, index) => {
+    const key = lessonKeyFromPath(item.path, index + 1);
+    return [dirname(item.path).replaceAll("\\", "/"), { item, unit: key.unit, lesson: key.lesson }];
+  }));
+  if (!indexDirs.size) {
+    for (const item of files.filter((file) => file.path !== "course-manifest.json")) {
+      const ext = extname(item.path).toLowerCase().replace(".", "") || "file";
+      upsertResource(manifest.courseDownloads, {
+        label: cleanImportLabel(fileStem(basename(item.path))),
+        type: ext,
+        category: "course_resource",
+        role: "course_resource",
+        path: item.path,
+        bytes: Number(item.bytes || 0),
+        source: "local",
+      });
+    }
+    recomputeManifestSummaries(manifest);
+    return manifest;
+  }
+
+  for (const { item, unit, lesson } of indexDirs.values()) {
+    const lessonRecord = ensureManifestLesson(manifest, unit, lesson, activityTitleFromPath(item.path));
+    lessonRecord.path = dirname(item.path).replaceAll("\\", "/");
+    lessonRecord.downloads = lessonRecord.downloads || [];
+    upsertResource(lessonRecord.downloads, {
+      label: "Activity page",
+      type: "html",
+      category: "moodle_activity",
+      role: "lesson_resource",
+      path: item.path,
+      bytes: Number(item.bytes || 0),
+      source: "local",
+    });
+  }
+
+  for (const item of files) {
+    if (item.path === "course-manifest.json" || item.path.endsWith("/index.html")) continue;
+    const parent = [...indexDirs.keys()].find((dir) => item.path.startsWith(`${dir}/`));
+    const ext = extname(item.path).toLowerCase().replace(".", "") || "file";
+    const record = {
+      label: cleanImportLabel(fileStem(basename(item.path))),
+      type: ext,
+      category: coursePackageEntryKind(item.path) === "document" ? "course_document" : "moodle_activity",
+      role: "lesson_resource",
+      path: item.path,
+      bytes: Number(item.bytes || 0),
+      source: "local",
+    };
+    if (parent && indexDirs.has(parent)) {
+      const owner = indexDirs.get(parent);
+      const lessonRecord = ensureManifestLesson(manifest, owner.unit, owner.lesson, activityTitleFromPath(owner.item.path));
+      lessonRecord.downloads = lessonRecord.downloads || [];
+      upsertResource(lessonRecord.downloads, record);
+    } else {
+      upsertResource(manifest.courseDownloads, { ...record, role: "course_resource" });
+    }
+  }
+  recomputeManifestSummaries(manifest);
+  return manifest;
+}
+
+function shouldUseCdnForManifestPath(path) {
+  const kind = coursePackageEntryKind(path);
+  return ["video", "audio", "h5p", "ispring"].includes(kind);
+}
+
+function rewriteResourceForHybridStorage(course, item) {
+  if (!item || typeof item !== "object") return item;
+  const path = item.path || item.previewPath || "";
+  if (!path || !shouldUseCdnForManifestPath(path)) return item;
+  const cdnUrl = generatedCoursewareAssetUrl(course, path);
+  if (!cdnUrl) return item;
+  const next = { ...item, source: "cdn" };
+  if (item.path) {
+    next.url = cdnUrl;
+    delete next.path;
+  }
+  if (item.previewPath) {
+    next.previewUrl = generatedCoursewareAssetUrl(course, item.previewPath);
+    delete next.previewPath;
+  }
+  if (item.downloadPath) {
+    next.downloadUrl = generatedCoursewareAssetUrl(course, item.downloadPath);
+    delete next.downloadPath;
+  }
+  return next;
+}
+
+function rewriteManifestForHybridStorage(manifest, course) {
+  const code = safeSegment(course).toUpperCase();
+  const rewriteList = (items = []) => items.map((item) => rewriteResourceForHybridStorage(code, item));
+  manifest.courseDownloads = rewriteList(manifest.courseDownloads || []);
+  manifest.texts = (manifest.texts || []).map((text) => ({
+    ...text,
+    materials: rewriteList(text.materials || []),
+  }));
+  for (const unit of manifest.units || []) {
+    if (unit.unitPlan) unit.unitPlan = rewriteResourceForHybridStorage(code, unit.unitPlan);
+    for (const lesson of unit.lessons || []) {
+      if (lesson.lessonPlan) lesson.lessonPlan = rewriteResourceForHybridStorage(code, lesson.lessonPlan);
+      lesson.downloads = rewriteList(lesson.downloads || []);
+      lesson.textExports = rewriteList(lesson.textExports || []);
+      lesson.bookSections = rewriteList(lesson.bookSections || []);
+      lesson.ispring = rewriteList(lesson.ispring || []);
+    }
+  }
+  return manifest;
+}
+
+async function importLightweightContentFromOssManifest({ course, manifestObjectKey, uploadId, actor }) {
+  const code = safeSegment(course).toUpperCase();
+  if (!courseLocalContentEnabled) return { status: "skipped", reason: "COURSE_LOCAL_CONTENT_ENABLED=0" };
+  if (!manifestObjectKey) return { status: "skipped", reason: "No import manifest object key." };
+  const client = await createPortalOssClient();
+  const importManifest = await readOssJsonObject(client, manifestObjectKey);
+  const lightweightFiles = Array.isArray(importManifest.lightweightFiles) ? importManifest.lightweightFiles : [];
+  const selectedFiles = lightweightFiles
+    .map((item) => ({
+      ...item,
+      path: safeLightweightRelativePath(item.path),
+      objectKey: String(item.objectKey || ""),
+      bytes: Number(item.bytes || 0),
+    }))
+    .filter((item) => item.path && item.objectKey && isLightweightCourseContentAsset(item.path, { size: item.bytes, maxBytes: courseLocalMaxFileBytes }));
+  const totalBytes = selectedFiles.reduce((sum, item) => sum + Math.max(0, Number(item.bytes || 0)), 0);
+  if (totalBytes > courseLocalMaxCourseBytes) {
+    throw new Error(`Lightweight content exceeds course limit: ${Math.round(totalBytes / 1024 / 1024)} MB.`);
+  }
+  const stagingRoot = lightweightStagingRoot(code, uploadId);
+  await rm(stagingRoot, { recursive: true, force: true });
+  await mkdir(stagingRoot, { recursive: true });
+  for (const item of selectedFiles) {
+    const target = ensureInside(stagingRoot, join(stagingRoot, item.path));
+    await downloadOssObjectToFile(client, item.objectKey, target);
+  }
+
+  const root = courseRoot(code);
+  await mkdir(root, { recursive: true });
+  const copiedTopLevelEntries = await copyLightweightStagingContent(stagingRoot, root);
+  const stagedManifestPath = join(stagingRoot, "course-manifest.json");
+  let manifest = null;
+  if (existsSync(stagedManifestPath)) {
+    manifest = normalizeManifestCourse(JSON.parse(await readFile(stagedManifestPath, "utf8")), code);
+  } else {
+    manifest = buildManifestFromLightweightFiles(code, selectedFiles);
+  }
+  rewriteManifestForHybridStorage(manifest, code);
+  manifest.sourceAudit = {
+    ...(manifest.sourceAudit || {}),
+    generatedFrom: manifest.sourceAudit?.generatedFrom || "oss-lightweight-import",
+    importStatus: "lightweight-imported",
+    mediaStatus: (manifest.sourceAudit?.hasPlayableMedia || false) ? "pending" : "not-required",
+    hasPlayableMedia: Boolean(manifest.sourceAudit?.hasPlayableMedia),
+    latestUploadId: uploadId,
+    lightweightFilesImported: selectedFiles.length,
+    lightweightBytes: totalBytes,
+    importManifestObjectKey: manifestObjectKey,
+  };
+  recomputeManifestSummaries(manifest);
+  writeJsonFile(join(root, "course-manifest.json"), manifest);
+  const catalogEntry = await ensureCourseCatalogEntry(code, manifest);
+  const lifecycle = setCourseLifecycleStatus(code, "active", actor, "Activated automatically after OSS lightweight course content import.");
+  await rm(stagingRoot, { recursive: true, force: true });
+  return {
+    status: "imported",
+    files: selectedFiles.length,
+    bytes: totalBytes,
+    copiedTopLevelEntries,
+    catalogEntry,
+    lifecycle,
+  };
 }
 
 async function readCourseCatalog() {
@@ -4185,6 +4536,7 @@ async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
   }
   const now = new Date().toISOString();
   const targetPrefix = toPosixPath(body.targetPrefix || record.targetPrefix || `${coursewareAssetPrefix}/${course}/`).replace(/^\/+/, "").replace(/\/?$/, "/");
+  const extractSummary = normalizedOssExtractSummary(body);
   const extractReport = {
     schemaVersion: 1,
     uploadId: record.id,
@@ -4196,9 +4548,77 @@ async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
     targetPrefix,
     extractor: safeSegment(body.extractor || "external"),
     summary: body.summary || null,
+    entries: extractSummary.entries,
+    mediaExtracted: extractSummary.mediaExtracted,
+    lightweightCandidates: extractSummary.lightweightCandidates,
+    skipped: extractSummary.skipped,
+    status: extractSummary.status,
+    manifestObjectKey: extractSummary.manifestObjectKey,
     note: String(body.note || ""),
   };
   writeJsonFile(ossUploadStore.uploadPath(record.id, "oss-extract-result.json"), extractReport);
+
+  const shell = await ensureHybridCourseShell({
+    course,
+    actor,
+    extractSummary,
+    sourceObjectKey: record.objectKey || "",
+    uploadId: record.id,
+  });
+  let lightweightImport = null;
+  let lightweightWarning = "";
+  if (extractSummary.manifestObjectKey) {
+    try {
+      lightweightImport = await importLightweightContentFromOssManifest({
+        course,
+        manifestObjectKey: extractSummary.manifestObjectKey,
+        uploadId: record.id,
+        actor,
+      });
+    } catch (error) {
+      lightweightWarning = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  if (extractSummary.mediaExtracted <= 0) {
+    const next = ossUploadStore.patchRecord(record.id, {
+      status: "imported",
+      importStatus: "no-media",
+      mediaStatus: "not-required",
+      localContentStatus: lightweightImport?.status === "imported"
+        ? "lightweight-imported"
+        : extractSummary.lightweightCandidates > 0
+          ? "pending-lightweight-import"
+          : "course-shell-only",
+      hasPlayableMedia: false,
+      latestUploadId: record.id,
+      latestImportSummary: {
+        entries: extractSummary.entries,
+        mediaExtracted: extractSummary.mediaExtracted,
+        lightweightCandidates: extractSummary.lightweightCandidates,
+        lightweightImported: lightweightImport?.files || 0,
+        skipped: extractSummary.skipped,
+        status: extractSummary.status,
+        manifestObjectKey: extractSummary.manifestObjectKey,
+      },
+      importMode: "oss-only",
+      ossOnly: true,
+      importedAt: now,
+      extractedAt: now,
+      extractedBy: actor,
+      extractReport: "oss-extract-result.json",
+      targetPrefix,
+      jobId: "",
+      mediaJobWarning: lightweightWarning,
+      ingestMessage: lightweightImport?.status === "imported"
+        ? `课程壳和轻量内容已导入（${lightweightImport.files || 0} files）；未发现视频/H5P/iSpring。媒体发布不需要执行。`
+        : extractSummary.lightweightCandidates > 0
+          ? "课程壳已创建；未发现视频/H5P/iSpring，轻量内容等待导入。媒体发布不需要执行。"
+          : "课程壳已创建；未发现可发布媒体。媒体发布不需要执行。",
+      error: "",
+    });
+    return { upload: next, job: null, warning: lightweightWarning, shell, lightweightImport };
+  }
 
   const { job, warning } = tryCreateMediaJob({
     type: "index-oss",
@@ -4209,6 +4629,23 @@ async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
   const next = ossUploadStore.patchRecord(record.id, {
     status: job ? "queued" : "uploaded",
     importStatus: job ? "oss-index-queued" : "oss-extracted",
+    mediaStatus: job ? "pending" : "warning",
+    localContentStatus: lightweightImport?.status === "imported"
+      ? "lightweight-imported"
+      : extractSummary.lightweightCandidates > 0
+        ? "pending-lightweight-import"
+        : "course-shell-only",
+    hasPlayableMedia: true,
+    latestUploadId: record.id,
+    latestImportSummary: {
+      entries: extractSummary.entries,
+      mediaExtracted: extractSummary.mediaExtracted,
+      lightweightCandidates: extractSummary.lightweightCandidates,
+      lightweightImported: lightweightImport?.files || 0,
+      skipped: extractSummary.skipped,
+      status: extractSummary.status,
+      manifestObjectKey: extractSummary.manifestObjectKey,
+    },
     importMode: "oss-only",
     ossOnly: true,
     extractedAt: now,
@@ -4216,13 +4653,13 @@ async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
     extractReport: "oss-extract-result.json",
     targetPrefix,
     jobId: job?.id || record.jobId || "",
-    mediaJobWarning: warning || "",
+    mediaJobWarning: warning || lightweightWarning || "",
     ingestMessage: job
-      ? "OSS-side 解压已确认，正在索引 OSS 资源；不会下载到 ECS。"
+      ? `课程壳已创建；${lightweightImport?.status === "imported" ? "轻量内容已导入；" : ""}OSS-side 媒体解压已确认，正在索引 OSS 资源。`
       : `OSS-side 解压已确认，但索引任务未创建：${warning || "任务中心未启用"}`,
     error: "",
   });
-  return { upload: next, job, warning };
+  return { upload: next, job, warning: warning || lightweightWarning, shell, lightweightImport };
 }
 
 async function packageContentRoot(extractRoot) {
