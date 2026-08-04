@@ -1,7 +1,20 @@
 #!/usr/bin/env node
+import { existsSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { Readable } from "node:stream";
-import { fileURLToPath } from "node:url";
-import {
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const moduleDir = dirname(fileURLToPath(import.meta.url));
+const coreModulePath = [
+  resolve(moduleDir, "scripts/lib/oss-course-package-extractor-core.mjs"),
+  resolve(moduleDir, "../../scripts/lib/oss-course-package-extractor-core.mjs"),
+].find((candidate) => existsSync(candidate));
+
+if (!coreModulePath) {
+  throw new Error("Cannot find oss-course-package-extractor-core.mjs. Package scripts/lib with the function code.");
+}
+
+const {
   buildExtractCallbackPayload,
   contentTypeForObjectKey,
   extractOssEventObject,
@@ -9,7 +22,7 @@ import {
   safeCourse,
   stripSlash,
   targetObjectKeyForEntry,
-} from "../../scripts/lib/oss-course-package-extractor-core.mjs";
+} = await import(pathToFileURL(coreModulePath).href);
 
 function parseArgs(argv) {
   const out = {
