@@ -1285,35 +1285,20 @@
         border: 0;
         border-radius: 999px;
         background: #dce8f5;
-        appearance: none;
-        -webkit-appearance: none;
       }
-      .oss-direct-queue-progress::-webkit-progress-bar {
-        border-radius: 999px;
-        background: #dce8f5;
-      }
-      .oss-direct-queue-progress::-webkit-progress-value {
+      .oss-direct-queue-progress-bar {
+        width: 0;
+        height: 100%;
         border-radius: 999px;
         background: var(--green);
+        transition: width 0.2s ease;
       }
-      .oss-direct-queue-progress::-moz-progress-bar {
-        border-radius: 999px;
-        background: var(--green);
-      }
-      .oss-direct-queue-item.failed .oss-direct-queue-progress::-webkit-progress-value {
+      .oss-direct-queue-item.failed .oss-direct-queue-progress-bar {
         background: var(--red);
       }
-      .oss-direct-queue-item.failed .oss-direct-queue-progress::-moz-progress-bar {
-        background: var(--red);
-      }
-      .oss-direct-queue-item.uploading .oss-direct-queue-progress::-webkit-progress-value,
-      .oss-direct-queue-item.authorizing .oss-direct-queue-progress::-webkit-progress-value,
-      .oss-direct-queue-item.verifying .oss-direct-queue-progress::-webkit-progress-value {
-        background: var(--blue);
-      }
-      .oss-direct-queue-item.uploading .oss-direct-queue-progress::-moz-progress-bar,
-      .oss-direct-queue-item.authorizing .oss-direct-queue-progress::-moz-progress-bar,
-      .oss-direct-queue-item.verifying .oss-direct-queue-progress::-moz-progress-bar {
+      .oss-direct-queue-item.uploading .oss-direct-queue-progress-bar,
+      .oss-direct-queue-item.authorizing .oss-direct-queue-progress-bar,
+      .oss-direct-queue-item.verifying .oss-direct-queue-progress-bar {
         background: var(--blue);
       }
       .oss-direct-queue-status {

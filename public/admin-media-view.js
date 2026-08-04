@@ -747,7 +747,9 @@
           <small>${escapeHtml(formatBytes(item?.size || 0))}${escapeHtml(progressMeta)} · ${escapeHtml(ossDirectQueueSourceText(item?.source))}</small>
           ${item?.detail ? `<small class="oss-direct-queue-detail" title="${escapeHtml(item.detail)}">${escapeHtml(item.detail)}</small>` : ""}
           ${metrics.length ? `<small class="oss-direct-queue-metrics">${metrics.map(escapeHtml).join(" · ")}</small>` : ""}
-          <progress class="oss-direct-queue-progress" value="${percentValue}" max="100" aria-label="${escapeHtml(course)} 上传进度"></progress>
+          <div class="oss-direct-queue-progress" role="progressbar" aria-label="${escapeHtml(course)} 上传进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percentValue}">
+            <div class="oss-direct-queue-progress-bar" style="width: ${percentValue}%"></div>
+          </div>
         </div>
         <div class="oss-direct-queue-status">
           <strong>${escapeHtml(ossDirectQueueStatusText(status))}</strong>
