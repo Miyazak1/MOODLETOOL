@@ -79,16 +79,24 @@ export function isIspringPackageAsset(relativePath) {
   return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/");
 }
 
-export function isExcludedCoursePackageEntry(relativePath) {
+function isPreviewHtmlEntry(relativePath) {
   const normalized = `/${toPosixPath(relativePath).toLowerCase()}`;
-  return normalized.includes("/previews-html/")
-    || normalized.endsWith("/.ds_store")
+  return normalized.includes("/previews-html/");
+}
+
+function isIgnoredCoursePackageEntry(relativePath) {
+  const normalized = `/${toPosixPath(relativePath).toLowerCase()}`;
+  return normalized.endsWith("/.ds_store")
     || normalized.endsWith("/thumbs.db")
     || normalized.endsWith(".map")
     || normalized.includes("/node_modules/")
     || normalized.includes("/.git/")
     || normalized.includes("/tmp/")
     || normalized.includes("/cache/");
+}
+
+export function isExcludedCoursePackageEntry(relativePath) {
+  return isPreviewHtmlEntry(relativePath) || isIgnoredCoursePackageEntry(relativePath);
 }
 
 export function isExtractableCoursewareAsset(relativePath, { assetScope = "playable" } = {}) {
@@ -102,7 +110,7 @@ export function isExtractableCoursewareAsset(relativePath, { assetScope = "playa
 
 export function isLightweightCourseContentAsset(relativePath, { size = 0, maxBytes = defaultLightweightMaxBytes } = {}) {
   const rel = toPosixPath(relativePath);
-  if (!rel || rel.endsWith("/") || isExcludedCoursePackageEntry(rel) || isIspringPackageAsset(rel)) return false;
+  if (!rel || rel.endsWith("/") || isIgnoredCoursePackageEntry(rel) || isIspringPackageAsset(rel)) return false;
   if (isExtractableCoursewareAsset(rel, { assetScope: "playable" })) return false;
   const ext = extname(rel).toLowerCase();
   if (!lightweightExts.has(ext)) return false;

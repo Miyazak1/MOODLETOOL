@@ -21,7 +21,7 @@ assert.equal(isExtractableCoursewareAsset("localized-moodle/h5p/activity.h5p"), 
 assert.equal(isExtractableCoursewareAsset("Unit 1/html5-package/presentation.html"), true);
 assert.equal(isExtractableCoursewareAsset("teacher-docs/notes.docx"), false);
 assert.equal(isLightweightCourseContentAsset("localized-moodle-activities/assign/U01/index.html", { size: 1024 }), true);
-assert.equal(isLightweightCourseContentAsset("previews-html/assign/U01/index.html", { size: 1024 }), false);
+assert.equal(isLightweightCourseContentAsset("previews-html/assign/U01/index.html", { size: 1024 }), true);
 assert.equal(isLightweightCourseContentAsset("teacher-docs/huge.pdf", { size: 51 * 1024 * 1024 }), false);
 assert.equal(targetObjectKeyForEntry("MHF4U/html5-package/data/slide.js", {
   course: "MHF4U",
@@ -104,18 +104,19 @@ const summary = await extractEntries({
 });
 assert.equal(summary.extracted, 2);
 assert.equal(summary.mediaExtracted, 2);
-assert.equal(summary.lightweightCandidates, 1);
-assert.equal(summary.skipped, 1);
+assert.equal(summary.lightweightCandidates, 2);
+assert.equal(summary.skipped, 0);
 assert.equal(summary.status, "media-ready");
 assert.deepEqual(putKeys.map((item) => item.key), [
   "courseware-active/MHF4U/localized-moodle/video/a.mp4",
   "courseware-active/MHF4U/html5-package/data/slide.js",
   "inbox/lightweight/MHF4U/upl-123/teacher-docs/notes.docx",
+  "inbox/lightweight/MHF4U/upl-123/previews-html/notes.html",
   "inbox/manifests/MHF4U/upl-123/import-manifest.json",
 ]);
 assert.equal(putKeys[0].contentType, "video/mp4");
 assert.equal(importManifest.summary.media, 2);
-assert.equal(importManifest.summary.lightweight, 1);
+assert.equal(importManifest.summary.lightweight, 2);
 assert.equal(importManifest.lightweightFiles[0].kind, "document");
 assert.equal(importManifest.lightweightFiles[0].objectKey, "inbox/lightweight/MHF4U/upl-123/teacher-docs/notes.docx");
 
