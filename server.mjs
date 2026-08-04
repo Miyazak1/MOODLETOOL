@@ -79,6 +79,7 @@ const coursewareAssetRegistryPath = resolve(process.env.COURSEWARE_ASSET_REGISTR
 const coursewareOssAssetScope = ["playable", "all"].includes(String(process.env.COURSEWARE_OSS_ASSET_SCOPE || "").toLowerCase())
   ? String(process.env.COURSEWARE_OSS_ASSET_SCOPE || "").toLowerCase()
   : "playable";
+const ossExtractCallbackSecret = process.env.OSS_EXTRACT_CALLBACK_SECRET || "";
 const embedTokenSecret = process.env.EMBED_TOKEN_SECRET || adminSessionSecret || portalSessionSecret || "";
 const embedTokenMaxAgeSeconds = Number(process.env.EMBED_TOKEN_MAX_AGE_SECONDS || 3650 * 24 * 60 * 60);
 const embedPublicOrigin = process.env.EMBED_PUBLIC_ORIGIN || "";
@@ -2669,6 +2670,14 @@ function isAuthorized(req) {
   return Boolean(adminToken) && header === `Bearer ${adminToken}`;
 }
 
+function isOssExtractCallbackAuthorized(req) {
+  if (!ossExtractCallbackSecret) return false;
+  const header = req.headers.authorization || "";
+  const bearer = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
+  const token = bearer || String(req.headers["x-oss-extract-secret"] || "");
+  return Boolean(token) && timingSafeStringEqual(token, ossExtractCallbackSecret);
+}
+
 function adminActor(req) {
   const principal = adminPrincipal(req);
   if (principal?.username) return principal.username;
@@ -5021,6 +5030,29 @@ async function handleAdminApi(req, res) {
       clearSessionCookie(res);
       clearPortalSessionCookieAppend(res);
       sendJson(res, 200, { ok: true });
+      return true;
+    }
+
+    const ossExtractCallbackMatch = /^\/api\/admin\/oss\/uploads\/([^/]+)\/extracted$/.exec(requestUrl.pathname);
+    if (ossExtractCallbackMatch && req.method === "POST" && isOssExtractCallbackAuthorized(req)) {
+      const uploadId = safeSegment(ossExtractCallbackMatch[1]);
+      const record = ossUploadStore.readRecord(uploadId);
+      if (!record) {
+        sendJson(res, 404, { ok: false, error: "OSS upload record not found." });
+        return true;
+      }
+      const body = await readJsonBody(req, 256 * 1024);
+      const result = await markOssCoursePackageExtracted({
+        record,
+        actor: "oss-extractor",
+        body,
+      });
+      sendJson(res, result.job ? 202 : 200, {
+        ok: true,
+        upload: ossUploadStore.publicRecord(result.upload),
+        job: result.job,
+        warning: result.warning,
+      });
       return true;
     }
 

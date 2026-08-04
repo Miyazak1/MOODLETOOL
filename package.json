@@ -27,6 +27,7 @@
     "optimize:videos": "node scripts/optimize-video-bitrate.mjs",
     "sync:oss": "node scripts/sync-courseware-oss.mjs",
     "index:oss": "node scripts/index-oss-courseware-assets.mjs",
+    "extract:oss-package": "node functions/oss-course-package-extractor/index.mjs",
     "pipeline:media-delivery": "node scripts/run-media-delivery-pipeline.mjs",
     "audit:content-workbench": "node scripts/generate-content-workbench.mjs",
     "audit:authenticated-rescan-queue": "node scripts/generate-authenticated-rescan-queue.mjs",
@@ -109,6 +110,7 @@
     "smoke:media-job-command": "node scripts/smoke-media-job-command.mjs",
     "smoke:media-job-store": "node scripts/smoke-media-job-store.mjs",
     "smoke:oss-direct-upload": "node scripts/smoke-oss-direct-upload.mjs",
+    "smoke:oss-extractor": "node scripts/smoke-oss-course-package-extractor.mjs",
     "smoke:oss-upload-records": "node scripts/smoke-oss-upload-records.mjs",
     "smoke:media-delivery-pipeline": "node scripts/smoke-media-delivery-pipeline.mjs",
     "smoke:media-jobs": "node scripts/smoke-media-jobs.mjs",
@@ -139,10 +141,12 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "ali-oss": "^6.22.0",
     "h5p-standalone": "^3.8.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "typescript": "^5.8.0",
+    "unzipper": "^0.12.3",
     "vite": "^7.0.0"
   }
 }

@@ -204,6 +204,28 @@ if (directUploadEnabled === "1") {
   warnings.push("OSS_DIRECT_UPLOAD_ENABLED is not 1; browser-to-OSS direct upload will be hidden/disabled.");
 }
 
+const coursePackageImportMode = String(values.COURSE_PACKAGE_IMPORT_MODE || "oss-only").toLowerCase();
+if (!["oss-only", "legacy-local"].includes(coursePackageImportMode)) {
+  errors.push("COURSE_PACKAGE_IMPORT_MODE must be oss-only or legacy-local.");
+} else {
+  ok.push(`COURSE_PACKAGE_IMPORT_MODE=${coursePackageImportMode}.`);
+}
+if (coursePackageImportMode === "oss-only") {
+  requireSecret("OSS_EXTRACT_CALLBACK_SECRET");
+  const callbackBase = values.PORTAL_EXTRACT_CALLBACK_BASE || values.EMBED_PUBLIC_ORIGIN || "";
+  if (!callbackBase) errors.push("PORTAL_EXTRACT_CALLBACK_BASE or EMBED_PUBLIC_ORIGIN is required for OSS-only package extraction callbacks.");
+  else if (!/^https:\/\//i.test(callbackBase)) errors.push("PORTAL_EXTRACT_CALLBACK_BASE should be an HTTPS origin, for example https://www.moodletool.work.");
+  else ok.push("OSS extract callback origin is set.");
+  const extractBucket = values.OSS_EXTRACT_BUCKET || values.OSS_DIRECT_UPLOAD_BUCKET || "";
+  const extractEndpoint = values.OSS_EXTRACT_ENDPOINT || values.OSS_DIRECT_UPLOAD_ENDPOINT || "";
+  if (!extractBucket) errors.push("OSS_EXTRACT_BUCKET or OSS_DIRECT_UPLOAD_BUCKET is required for OSS package extraction.");
+  else if (/^(oss:\/\/|https?:\/\/)/i.test(extractBucket)) errors.push("OSS_EXTRACT_BUCKET should be a plain bucket name, for example moodletool.");
+  else ok.push("OSS extract bucket is set.");
+  if (!extractEndpoint) errors.push("OSS_EXTRACT_ENDPOINT or OSS_DIRECT_UPLOAD_ENDPOINT is required for OSS package extraction.");
+  else if (!/^https:\/\/oss-[a-z0-9-]+\.aliyuncs\.com$/i.test(extractEndpoint)) warnings.push("OSS_EXTRACT_ENDPOINT usually should look like https://oss-cn-hongkong.aliyuncs.com.");
+  else ok.push("OSS extract endpoint is set.");
+}
+
 if ((values.ADMIN_UPLOADS_ENABLED || "") === "1") {
   requireValue("ADMIN_USERNAME");
   requirePassword("ADMIN_PASSWORD");

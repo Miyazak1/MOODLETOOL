@@ -31,6 +31,7 @@ try {
   const secretA = "portal-secret-0123456789-0123456789-0123456789";
   const secretB = "admin-secret-0123456789-0123456789-0123456789";
   const secretC = "embed-secret-0123456789-0123456789-0123456789";
+  const secretD = "extract-secret-0123456789-0123456789-0123456789";
 
   writeFileSync(goodEnvPath, [
     "NODE_ENV=production",
@@ -59,6 +60,11 @@ try {
     "OSS_UPLOADS_DATA_ROOT=/www/wwwroot/ossd-course-portal/data/oss-uploads",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_ID=LTAI5tExampleAccessKeyId",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET=exampleSecretForSmokeOnly1234567890",
+    "COURSE_PACKAGE_IMPORT_MODE=oss-only",
+    `OSS_EXTRACT_CALLBACK_SECRET=${secretD}`,
+    "PORTAL_EXTRACT_CALLBACK_BASE=https://courses.example.com",
+    "OSS_EXTRACT_BUCKET=moodletool",
+    "OSS_EXTRACT_ENDPOINT=https://oss-cn-hongkong.aliyuncs.com",
     "",
   ].join("\n"), "utf8");
 
@@ -112,6 +118,11 @@ try {
     "OSS_UPLOADS_DATA_ROOT=/www/wwwroot/ossd-course-portal/data/oss-uploads",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_ID=LTAI5tExampleAccessKeyId",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET=exampleSecretForSmokeOnly1234567890",
+    "COURSE_PACKAGE_IMPORT_MODE=oss-only",
+    `OSS_EXTRACT_CALLBACK_SECRET=${secretD}`,
+    "PORTAL_EXTRACT_CALLBACK_BASE=https://courses.example.com",
+    "OSS_EXTRACT_BUCKET=moodletool-courseware",
+    "OSS_EXTRACT_ENDPOINT=https://oss-cn-hongkong.aliyuncs.com",
     "",
   ].join("\n"), "utf8");
 
