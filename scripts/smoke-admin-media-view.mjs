@@ -71,6 +71,7 @@ assert.match(configStats, /任务中心/);
 assert.match(configStats, /已启用/);
 assert.match(configStats, /oss:\/\/moodletool/);
 assert.match(configStats, /可发布资源/);
+assert.match(configStats, /Package import/);
 assert.match(configStats, /本地总文件/);
 assert.match(configStats, /已跳过/);
 assert.match(configStats, /12228/);
@@ -212,6 +213,9 @@ const uploadDetail = view.renderUploadDetail(
     course: "ENG4U",
     kind: "course-package",
     status: "queued",
+    importMode: "oss-only",
+    importStatus: "oss-extract-required",
+    ingestMessage: "完整课件包已保存在 OSS inbox，等待 OSS-side 解压/索引；不会下载到 ECS。",
     fileName: "ENG4U-course.zip",
     fileSize: 2048,
     jobId: "job-3",
@@ -220,6 +224,9 @@ const uploadDetail = view.renderUploadDetail(
   { relatedJob: { id: "job-3", type: "publish-upload", status: "succeeded", course: "ENG4U" }, jobs: [] },
 );
 assert.match(uploadDetail, /OSS 对象/);
+assert.match(uploadDetail, /OSS 解压\/索引/);
+assert.match(uploadDetail, /等待 OSS-side 处理/);
+assert.match(uploadDetail, /oss-only/);
 assert.match(uploadDetail, /inbox\/uploads\/ENG4U\/ENG4U-course\.zip/);
 assert.match(uploadDetail, /关联媒体任务/);
 assert.match(uploadDetail, /data-media-job-action="log"/);

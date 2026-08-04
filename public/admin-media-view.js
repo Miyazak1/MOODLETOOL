@@ -404,6 +404,7 @@
       ["任务中心", config.enabled ? "已启用" : "未启用"],
       ["Asset mode", config.assetMode || ""],
       ["Asset scope", assetScopeText],
+      ["Package import", config.coursePackageImportMode || ""],
       ["OSS", config.bucket || "未配置"],
       ["CDN", config.cdnBaseUrl || "未配置"],
       ["Registry", `${data.registry?.assetCount || 0} assets`],
@@ -581,6 +582,8 @@
     const importStarted = Boolean(upload?.importId || upload?.importStatus);
     const importDone = ["committed", "ready", "imported"].includes(upload?.importStatus) || ["imported", "queued"].includes(upload?.status);
     const importFailed = upload?.status === "needs-review" || upload?.importStatus === "needs-review" || uploadFailed;
+    const ossOnlyPackage = upload?.kind === "course-package" && (upload?.importMode === "oss-only" || upload?.importStatus === "oss-extract-required" || upload?.ossOnly === true);
+    const ossExtractWaiting = ossOnlyPackage && upload?.importStatus === "oss-extract-required";
     const publishStarted = Boolean(upload?.jobId);
     const publishDone = ["succeeded", "ready"].includes(relatedJob?.status);
     const publishIssue = ["failed", "warning", "cancelled", "interrupted"].includes(relatedJob?.status) || Boolean(upload?.mediaJobWarning);
@@ -614,6 +617,22 @@
         state: uploadDone ? "done" : uploadFailed ? "issue" : "",
         detail: uploadDone ? "等待后续处理" : uploadFailed ? "上传异常" : "等待上传",
       };
+    } else if (ossOnlyPackage) {
+      steps[1] = {
+        label: "OSS 解压/索引",
+        state: uploadFailed ? "issue" : ossExtractWaiting ? "active" : importDone ? "done" : importStarted ? "active" : "",
+        detail: uploadFailed ? "上传异常" : ossExtractWaiting ? "等待 OSS-side 处理" : importDone ? "索引已完成" : importStarted ? upload.importStatus || "等待处理" : "等待处理",
+      };
+      steps[2] = {
+        label: "发布媒体",
+        state: publishIssue && !ossExtractWaiting ? "issue" : publishDone ? "done" : publishStarted ? "active" : "",
+        detail: ossExtractWaiting ? "等待 OSS 索引完成" : publishIssue ? "有提示或失败" : publishDone ? "媒体已发布" : publishStarted ? (relatedJob?.progress?.message || relatedJob?.status || "任务排队中") : "等待任务",
+      };
+      steps[3] = {
+        label: "可播放",
+        state: publishIssue && !ossExtractWaiting ? "issue" : publishDone ? "done" : "",
+        detail: ossExtractWaiting ? "等待 OSS 索引完成" : publishIssue ? "请看日志" : publishDone ? "CDN/OSS 就绪" : "等待完成",
+      };
     }
 
     return steps
@@ -632,7 +651,7 @@
     const related = upload?.jobId
       ? `媒体任务 ${upload.jobId}`
       : upload?.importId
-        ? `导入任务 ${upload.importId}${upload.importStatus ? ` · ${upload.importStatus}` : ""}`
+        ? `${upload?.importMode === "oss-only" ? "OSS 索引任务" : "导入任务"} ${upload.importId}${upload.importStatus ? ` · ${upload.importStatus}` : ""}`
         : "";
     return `
       <article class="media-upload-card">
@@ -651,6 +670,7 @@
           </div>
           <div class="media-upload-timeline">${uploadTimeline(upload, jobs)}</div>
           ${objectKey ? `<div class="media-upload-object" title="${escapeHtml(objectKey)}">${escapeHtml(objectKey)}</div>` : ""}
+          ${upload?.ingestMessage ? `<div class="meta-line">${escapeHtml(upload.ingestMessage)}</div>` : ""}
           ${upload?.error || upload?.mediaJobWarning ? `<div class="media-job-result status-risk">${escapeHtml(upload.error || upload.mediaJobWarning)}</div>` : ""}
         </div>
         <div class="media-job-card-actions">
@@ -683,10 +703,12 @@
       ["创建", shortDateTime(upload?.requestedAt)],
       ["完成", shortDateTime(upload?.completedAt)],
       ["课程识别", upload?.courseSource || ""],
+      ["导入模式", upload?.importMode || ""],
       ["导入任务", upload?.importId || ""],
       ["导入状态", upload?.importStatus || ""],
       ["媒体任务", upload?.jobId || ""],
       ["OSS 对象", upload?.objectKey || upload?.ossUri || ""],
+      ["说明", upload?.ingestMessage || ""],
     ];
     const issue = upload?.error || upload?.mediaJobWarning || "";
     const actions = upload?.jobId

@@ -42,6 +42,9 @@ try {
     status: "queued",
     jobId: "media-1",
     completedAt: "2026-08-03T00:10:00.000Z",
+    importMode: "oss-only",
+    ossOnly: true,
+    ingestMessage: "等待 OSS-side 解压/索引",
   });
   assert.equal(patched.status, "queued");
   assert.equal(store.readRecord("upl-1").jobId, "media-1");
@@ -54,6 +57,9 @@ try {
   const publicRecord = publicOssUpload(store.readRecord("upl-1"));
   assert.equal(publicRecord.id, "upl-1");
   assert.equal(publicRecord.jobId, "media-1");
+  assert.equal(publicRecord.importMode, "oss-only");
+  assert.equal(publicRecord.ossOnly, true);
+  assert.equal(publicRecord.ingestMessage, "等待 OSS-side 解压/索引");
   assert.equal(publicRecord.internalOnly, undefined);
 
   assert.equal(store.patchRecord("missing", { status: "failed" }), null);

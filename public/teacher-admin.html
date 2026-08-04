@@ -1688,7 +1688,7 @@
         <div class="oss-direct-upload">
           <div>
             <h3>直传 OSS inbox</h3>
-            <p class="meta-line">大文件会从浏览器直接上传到 OSS，不经过 ECS 公网带宽。完整课件包会按文件名自动识别课程，上传后可自动导入课程并继续创建媒体发布任务。</p>
+            <p class="meta-line">大文件会从浏览器直接上传到 OSS，不经过 ECS 公网带宽。完整课件包会按文件名自动识别课程，上传后登记为 OSS-only 待解压/索引，不会下载回 ECS。</p>
           </div>
           <div class="grid compact">
             <div>
@@ -1709,7 +1709,7 @@
               <label class="inline-check"><input id="ossDirectAutoPublish" type="checkbox" /> 上传后自动创建发布任务</label>
             </div>
           </div>
-          <p class="oss-direct-hint">完整课件包支持一次选择多个 ZIP，系统会从文件名识别课程码，例如 ESLDO-course-package-20260803.zip。视频、H5P 和 iSpring 单包仍按当前课程保存。</p>
+          <p class="oss-direct-hint">完整课件包支持一次选择多个 ZIP，系统会从文件名识别课程码，例如 ESLDO-course-package-20260803.zip。视频、H5P 和 iSpring 单包仍按当前课程保存；完整课件包后续由 OSS-side 解压/索引流程接管。</p>
           <div class="actions">
             <button class="primary" id="ossDirectUploadButton" type="button">自动识别并直传 OSS</button>
             <button id="ossDirectCancelButton" type="button" hidden>取消当前上传</button>
@@ -1760,7 +1760,7 @@
 
       <section class="admin-panel auth-required" data-admin-panel="package" hidden>
         <h2>当前课程本地 ZIP 导入</h2>
-        <p class="meta-line">这个入口会把 ZIP 先传到 ECS 再解压分析，只建议用于小包、补救或测试。大课件包请走“媒体发布”的 OSS 直传，上传后可自动创建导入和媒体发布任务。</p>
+        <p class="meta-line">这个入口会把 ZIP 先传到 ECS 再解压分析，只建议用于小包、补救或测试。大课件包请走“媒体发布”的 OSS 直传，文件只保存在 OSS。</p>
         <div class="notice">
           新课程包建议使用 <button class="small" type="button" data-switch-panel="media">媒体发布 / 直传 OSS</button>。这里保留为本地维护通道，避免需要 SSH 时没有后门。
         </div>

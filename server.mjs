@@ -99,6 +99,9 @@ const mediaJobsLogTailBytes = Math.max(16 * 1024, Number(process.env.MEDIA_JOBS_
 const mediaJobsAutoPublishAfterUpload = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_UPLOAD === "1";
 const mediaJobsAutoPublishAfterPackage = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_PACKAGE === "1";
 const mediaJobsAutoPublishAfterActivate = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_ACTIVATE === "1";
+const coursePackageImportMode = ["oss-only", "legacy-local"].includes(String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase())
+  ? String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase()
+  : "oss-only";
 const courseOperationLockRoot = resolve(process.env.COURSE_OPERATION_LOCK_DIR || join(projectRoot, "deployment", "locks"));
 const ossBucketUri = process.env.OSS_BUCKET_URI || "";
 const ossDirectUploadConfig = directUploadConfigFromEnv(process.env, { ossBucketUri });
@@ -768,6 +771,7 @@ function mediaConfig() {
     autoPublishAfterUpload: mediaJobsAutoPublishAfterUpload,
     autoPublishAfterPackage: mediaJobsAutoPublishAfterPackage,
     autoPublishAfterActivate: mediaJobsAutoPublishAfterActivate,
+    coursePackageImportMode,
     directUpload: directUploadPublicConfig(),
   };
 }
@@ -4073,6 +4077,52 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
   });
 }
 
+async function markOssCoursePackageAwaitingExtract({ record, actor }) {
+  const course = safeSegment(record?.course || "").toUpperCase();
+  const importId = safeSegment(record?.id || coursePackageId());
+  if (!course) throw new Error("Course is required for OSS course package ingest.");
+  if (!record?.ossUri) throw new Error("OSS upload record is missing ossUri.");
+  const filename = safeSegment(record.fileName || "course-package.zip") || "course-package.zip";
+  if (extname(filename).toLowerCase() !== ".zip") throw new Error("Course package ingest requires a .zip file.");
+
+  const message = "完整课件包已保存在 OSS inbox，等待 OSS-side 解压/索引；不会下载到 ECS。";
+  const task = writeCoursePackageTask(course, importId, {
+    status: "waiting",
+    phase: "oss-extract-required",
+    filename,
+    source: "oss-direct-upload",
+    ossUri: record.ossUri,
+    totalBytes: record.fileSize || null,
+    percent: 100,
+    startedAt: new Date().toISOString(),
+    message,
+    importMode: "oss-only",
+  });
+
+  ossUploadStore.patchRecord(record.id, {
+    status: "uploaded",
+    importId,
+    importStatus: "oss-extract-required",
+    importMode: "oss-only",
+    ossOnly: true,
+    error: "",
+    ingestMessage: message,
+    mediaJobWarning: "",
+  });
+
+  await appendAdminHistory(course, {
+    actor,
+    action: "oss-course-package-awaiting-extract",
+    importId,
+    filename,
+    ossUri: record.ossUri,
+    bytes: record.fileSize || null,
+    importMode: "oss-only",
+  });
+
+  return task;
+}
+
 async function packageContentRoot(extractRoot) {
   const entries = await readdir(extractRoot, { withFileTypes: true });
   const visible = entries.filter((entry) => !entry.name.startsWith("."));
@@ -4969,21 +5019,32 @@ async function handleAdminApi(req, res) {
         const wantsAutoPublish = body.autoPublish === true || body.autoPublish === "1";
         let coursePackageTask = null;
         if (wantsAutoPublish && record.kind === "course-package") {
-          record.status = "importing";
-          record.importId = record.id;
-          record.importStatus = "queued";
           ossUploadStore.writeRecord(record);
-          coursePackageTask = startOssCoursePackageImport({
-            record: { ...record },
-            actor: adminActor(req),
-            autoCommit: true,
-          });
+          if (coursePackageImportMode === "legacy-local") {
+            record.status = "importing";
+            record.importId = record.id;
+            record.importStatus = "queued";
+            record.importMode = "legacy-local";
+            ossUploadStore.writeRecord(record);
+            coursePackageTask = startOssCoursePackageImport({
+              record: { ...record },
+              actor: adminActor(req),
+              autoCommit: true,
+            });
+            warning = "完整课件包已直传到 OSS，legacy-local 模式会下载到 ECS 导入；仅建议临时补救使用。";
+          } else {
+            coursePackageTask = await markOssCoursePackageAwaitingExtract({
+              record: { ...record },
+              actor: adminActor(req),
+            });
+            warning = "完整课件包已保存到 OSS inbox，已进入 OSS-only 解压/索引待处理；不会下载到 ECS。";
+          }
           sendJson(res, 200, {
             ok: true,
             upload: ossUploadStore.publicRecord(ossUploadStore.readRecord(record.id) || record),
             coursePackageTask,
             job: null,
-            warning: "完整课件包已直传到 OSS，后台正在导入课程；导入成功后会自动创建媒体发布任务。",
+            warning,
           });
           return true;
         }
