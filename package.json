@@ -64,6 +64,7 @@
     "package:baota": "node scripts/package-baota-release.mjs",
     "check:production-env": "node scripts/check-production-env.mjs",
     "check:media-delivery": "node scripts/check-media-delivery-readiness.mjs",
+    "generate:oss-extract-secret": "node scripts/generate-oss-extract-secret.mjs",
     "generate:production-env": "node scripts/generate-production-env.mjs",
     "check:launch-courses": "node scripts/check-launch-courses.mjs",
     "preflight:baota": "node scripts/preflight-baota-deployment.mjs",
