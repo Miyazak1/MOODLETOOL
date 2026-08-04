@@ -44,6 +44,11 @@ try {
     completedAt: "2026-08-03T00:10:00.000Z",
     importMode: "oss-only",
     ossOnly: true,
+    targetPrefix: "courseware-active/ENG3U/",
+    extractedAt: "2026-08-03T00:11:00.000Z",
+    extractedBy: "admin",
+    extractReport: "oss-extract-result.json",
+    importedAt: "2026-08-03T00:12:00.000Z",
     ingestMessage: "等待 OSS-side 解压/索引",
   });
   assert.equal(patched.status, "queued");
@@ -59,6 +64,10 @@ try {
   assert.equal(publicRecord.jobId, "media-1");
   assert.equal(publicRecord.importMode, "oss-only");
   assert.equal(publicRecord.ossOnly, true);
+  assert.equal(publicRecord.targetPrefix, "courseware-active/ENG3U/");
+  assert.equal(publicRecord.extractedAt, "2026-08-03T00:11:00.000Z");
+  assert.equal(publicRecord.extractReport, "oss-extract-result.json");
+  assert.equal(publicRecord.importedAt, "2026-08-03T00:12:00.000Z");
   assert.equal(publicRecord.ingestMessage, "等待 OSS-side 解压/索引");
   assert.equal(publicRecord.internalOnly, undefined);
 

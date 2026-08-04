@@ -31,6 +31,12 @@ export function mediaJobCommand(job, defaults = {}) {
     args.push("--courseware-root", coursewareRootArg, "--bucket", bucketArg, "--cdn-base-url", cdnArg, "--registry", registryArg, "--asset-scope", assetScopeArg, "--ossutil", ossutilArg);
     return args;
   }
+  if (job.type === "index-oss") {
+    const args = ["scripts/index-oss-courseware-assets.mjs", p.applyOss === false ? "--dry-run" : "--apply"];
+    appendCourseArg(args, course, all);
+    args.push("--bucket", bucketArg, "--cdn-base-url", cdnArg, "--registry", registryArg, "--asset-scope", assetScopeArg, "--ossutil", ossutilArg);
+    return args;
+  }
   if (job.type === "export-cdn-preheat") {
     const args = ["scripts/export-cdn-preheat-list.mjs", "--registry", registryArg, "--cdn-base-url", cdnArg];
     if (!all && course) args.push("--course", course);

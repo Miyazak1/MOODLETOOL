@@ -87,6 +87,7 @@
       "audit-videos": "视频审计",
       "optimize-videos": "视频压缩",
       "sync-oss": "同步 OSS",
+      "index-oss": "索引 OSS",
       "export-cdn-preheat": "CDN 预热清单",
       "check-readiness": "配置检查",
       "publish-course": "发布课程",
@@ -248,7 +249,7 @@
   }
 
   function activeWriteJob(jobs = []) {
-    const writeTypes = new Set(["publish-course", "publish-all", "publish-upload", "sync-oss", "optimize-videos"]);
+    const writeTypes = new Set(["publish-course", "publish-all", "publish-upload", "sync-oss", "index-oss", "optimize-videos"]);
     return jobs.find((job) => writeTypes.has(job.type) && ["queued", "running", "cancelling"].includes(job.status)) || null;
   }
 
@@ -580,10 +581,12 @@
     const uploadDone = ["uploaded", "importing", "ready", "needs-review", "imported", "queued"].includes(upload?.status);
     const uploadFailed = ["failed", "expired", "cancelled"].includes(upload?.status);
     const importStarted = Boolean(upload?.importId || upload?.importStatus);
-    const importDone = ["committed", "ready", "imported"].includes(upload?.importStatus) || ["imported", "queued"].includes(upload?.status);
+    const importDone = ["committed", "ready", "imported", "indexed", "indexed-with-warnings"].includes(upload?.importStatus) || ["imported", "queued"].includes(upload?.status);
     const importFailed = upload?.status === "needs-review" || upload?.importStatus === "needs-review" || uploadFailed;
-    const ossOnlyPackage = upload?.kind === "course-package" && (upload?.importMode === "oss-only" || upload?.importStatus === "oss-extract-required" || upload?.ossOnly === true);
+    const ossOnlyPackage = upload?.kind === "course-package" && (upload?.importMode === "oss-only" || String(upload?.importStatus || "").startsWith("oss-") || upload?.ossOnly === true);
     const ossExtractWaiting = ossOnlyPackage && upload?.importStatus === "oss-extract-required";
+    const ossExtracted = ossOnlyPackage && upload?.importStatus === "oss-extracted";
+    const ossIndexing = ossOnlyPackage && upload?.importStatus === "oss-index-queued";
     const publishStarted = Boolean(upload?.jobId);
     const publishDone = ["succeeded", "ready"].includes(relatedJob?.status);
     const publishIssue = ["failed", "warning", "cancelled", "interrupted"].includes(relatedJob?.status) || Boolean(upload?.mediaJobWarning);
@@ -619,19 +622,19 @@
       };
     } else if (ossOnlyPackage) {
       steps[1] = {
-        label: "OSS 解压/索引",
-        state: uploadFailed ? "issue" : ossExtractWaiting ? "active" : importDone ? "done" : importStarted ? "active" : "",
-        detail: uploadFailed ? "上传异常" : ossExtractWaiting ? "等待 OSS-side 处理" : importDone ? "索引已完成" : importStarted ? upload.importStatus || "等待处理" : "等待处理",
+        label: "OSS 解压",
+        state: uploadFailed ? "issue" : ossExtractWaiting ? "active" : (ossExtracted || ossIndexing || importDone) ? "done" : importStarted ? "active" : "",
+        detail: uploadFailed ? "上传异常" : ossExtractWaiting ? "等待 OSS-side 处理" : (ossExtracted || ossIndexing || importDone) ? "已确认" : importStarted ? upload.importStatus || "等待确认" : "等待确认",
       };
       steps[2] = {
-        label: "发布媒体",
-        state: publishIssue && !ossExtractWaiting ? "issue" : publishDone ? "done" : publishStarted ? "active" : "",
-        detail: ossExtractWaiting ? "等待 OSS 索引完成" : publishIssue ? "有提示或失败" : publishDone ? "媒体已发布" : publishStarted ? (relatedJob?.progress?.message || relatedJob?.status || "任务排队中") : "等待任务",
+        label: "索引 Registry",
+        state: publishIssue && !ossExtractWaiting ? "issue" : importDone ? "done" : ossIndexing || publishStarted ? "active" : "",
+        detail: ossExtractWaiting ? "等待 OSS 解压" : publishIssue ? "有提示或失败" : importDone ? "OSS/CDN 已登记" : ossIndexing ? "索引排队中" : publishStarted ? (relatedJob?.progress?.message || relatedJob?.status || "任务排队中") : "等待索引",
       };
       steps[3] = {
         label: "可播放",
-        state: publishIssue && !ossExtractWaiting ? "issue" : publishDone ? "done" : "",
-        detail: ossExtractWaiting ? "等待 OSS 索引完成" : publishIssue ? "请看日志" : publishDone ? "CDN/OSS 就绪" : "等待完成",
+        state: publishIssue && !ossExtractWaiting ? "issue" : importDone || publishDone ? "done" : "",
+        detail: ossExtractWaiting ? "等待 OSS 解压" : publishIssue ? "请看日志" : importDone || publishDone ? "CDN/OSS 就绪" : "等待完成",
       };
     }
 
@@ -706,6 +709,11 @@
       ["导入模式", upload?.importMode || ""],
       ["导入任务", upload?.importId || ""],
       ["导入状态", upload?.importStatus || ""],
+      ["OSS-only", upload?.ossOnly ? "是" : ""],
+      ["目标前缀", upload?.targetPrefix || ""],
+      ["解压确认", shortDateTime(upload?.extractedAt) || ""],
+      ["解压报告", upload?.extractReport || ""],
+      ["索引完成", shortDateTime(upload?.importedAt) || ""],
       ["媒体任务", upload?.jobId || ""],
       ["OSS 对象", upload?.objectKey || upload?.ossUri || ""],
       ["说明", upload?.ingestMessage || ""],

@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { appendFile, cp, mkdir, readdir, readFile, rename, rm, stat, statfs } from "node:fs/promises";
-import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, normalize, relative, resolve } from "node:path";
 import { spawn, spawnSync } from "node:child_process";
 import { finished, pipeline } from "node:stream/promises";
@@ -314,22 +314,26 @@ function generatedCoursewareAssetUrl(course, requestedPath) {
 }
 
 function readCoursewareAssetRegistry() {
-  if (coursewareAssetRegistryCache) return coursewareAssetRegistryCache;
   if (!existsSync(coursewareAssetRegistryPath)) {
-    coursewareAssetRegistryCache = { byKey: new Map(), missing: true };
+    if (coursewareAssetRegistryCache?.missing) return coursewareAssetRegistryCache;
+    coursewareAssetRegistryCache = { byKey: new Map(), missing: true, mtimeMs: 0 };
     return coursewareAssetRegistryCache;
   }
   try {
+    const mtimeMs = statSync(coursewareAssetRegistryPath).mtimeMs;
+    if (coursewareAssetRegistryCache && !coursewareAssetRegistryCache.missing && coursewareAssetRegistryCache.mtimeMs === mtimeMs) {
+      return coursewareAssetRegistryCache;
+    }
     const data = JSON.parse(readFileSync(coursewareAssetRegistryPath, "utf8").replace(/^\uFEFF/, ""));
     const byKey = new Map();
     for (const asset of data.assets || []) {
       if (typeof asset === "string") byKey.set(toPosixPath(asset), {});
       else if (asset?.objectKey) byKey.set(toPosixPath(asset.objectKey), asset);
     }
-    coursewareAssetRegistryCache = { byKey, missing: false };
+    coursewareAssetRegistryCache = { byKey, missing: false, mtimeMs };
   } catch (error) {
     console.warn(`Failed to read COURSEWARE_ASSET_REGISTRY_FILE ${coursewareAssetRegistryPath}:`, error instanceof Error ? error.message : error);
-    coursewareAssetRegistryCache = { byKey: new Map(), missing: true };
+    coursewareAssetRegistryCache = { byKey: new Map(), missing: true, mtimeMs: 0 };
   }
   return coursewareAssetRegistryCache;
 }
@@ -1212,6 +1216,41 @@ function tryCreateMediaJob({ type, course, actor, params = {} }) {
   }
 }
 
+function syncOssUploadFromMediaJob(job) {
+  const uploadId = safeSegment(job?.params?.uploadId || "");
+  if (!uploadId) return;
+  const record = ossUploadStore.readRecord(uploadId);
+  if (!record) return;
+  if (job.type !== "index-oss") return;
+
+  const done = ["succeeded", "warning"].includes(job.status);
+  const stopped = ["failed", "cancelled", "interrupted"].includes(job.status);
+  if (!done && !stopped) return;
+
+  const now = new Date().toISOString();
+  const patch = {
+    jobId: job.id,
+    mediaJobWarning: job.status === "warning" ? "OSS 索引完成但存在警告，请查看媒体任务日志。" : "",
+  };
+  if (done) {
+    Object.assign(patch, {
+      status: "imported",
+      importStatus: job.status === "warning" ? "indexed-with-warnings" : "indexed",
+      importedAt: now,
+      ingestMessage: "OSS 资源已索引，播放和下载将使用 OSS/CDN；ECS 未保存课件副本。",
+      error: "",
+    });
+  } else {
+    Object.assign(patch, {
+      status: "uploaded",
+      importStatus: `oss-index-${job.status}`,
+      ingestMessage: "OSS 资源索引任务未完成，请查看媒体任务日志后重试索引。",
+      error: job.error || "",
+    });
+  }
+  ossUploadStore.patchRecord(uploadId, patch);
+}
+
 function runNextMediaJobs() {
   ensureMediaJobsLoaded();
   while (mediaJobsRunningCount < mediaJobsMaxConcurrency && mediaJobQueue.length) {
@@ -1253,6 +1292,7 @@ function runMediaJob(job) {
     stderrStream.end();
     mediaJobChildren.delete(job.id);
     mediaJobsRunningCount = Math.max(0, mediaJobsRunningCount - 1);
+    syncOssUploadFromMediaJob(job);
     persistMediaJob(job);
     runNextMediaJobs();
   });
@@ -1277,6 +1317,7 @@ function runMediaJob(job) {
       job.status = "failed";
       job.error = stderr.slice(-4000) || stdout.slice(-4000) || `Media job exited ${exitCode}`;
     }
+    syncOssUploadFromMediaJob(job);
     mediaJobStore.writeReport(job, publicMediaJob(job));
     persistMediaJob(job);
     runNextMediaJobs();
@@ -4086,7 +4127,10 @@ async function markOssCoursePackageAwaitingExtract({ record, actor }) {
   if (extname(filename).toLowerCase() !== ".zip") throw new Error("Course package ingest requires a .zip file.");
 
   const message = "完整课件包已保存在 OSS inbox，等待 OSS-side 解压/索引；不会下载到 ECS。";
-  const task = writeCoursePackageTask(course, importId, {
+  const task = {
+    ok: true,
+    course,
+    importId,
     status: "waiting",
     phase: "oss-extract-required",
     filename,
@@ -4097,6 +4141,15 @@ async function markOssCoursePackageAwaitingExtract({ record, actor }) {
     startedAt: new Date().toISOString(),
     message,
     importMode: "oss-only",
+    targetPrefix: `${coursewareAssetPrefix}/${course}/`,
+  };
+  writeJsonFile(ossUploadStore.uploadPath(record.id, "oss-ingest-handoff.json"), {
+    ...task,
+    actor,
+    createdAt: task.startedAt,
+    objectKey: record.objectKey || "",
+    bucket: record.bucket || ossDirectUploadConfig.bucket || "",
+    nextAction: "Extract the ZIP in OSS, write playable assets under targetPrefix, then run index-oss-courseware-assets.",
   });
 
   ossUploadStore.patchRecord(record.id, {
@@ -4105,22 +4158,62 @@ async function markOssCoursePackageAwaitingExtract({ record, actor }) {
     importStatus: "oss-extract-required",
     importMode: "oss-only",
     ossOnly: true,
+    targetPrefix: task.targetPrefix,
     error: "",
     ingestMessage: message,
     mediaJobWarning: "",
   });
 
-  await appendAdminHistory(course, {
-    actor,
-    action: "oss-course-package-awaiting-extract",
-    importId,
-    filename,
-    ossUri: record.ossUri,
-    bytes: record.fileSize || null,
-    importMode: "oss-only",
-  });
-
   return task;
+}
+
+async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
+  const course = safeSegment(record?.course || "").toUpperCase();
+  if (!course) throw new Error("Course is required for OSS course package indexing.");
+  if (record?.kind !== "course-package") throw new Error("Only course package uploads can be marked extracted.");
+  if (record?.importMode !== "oss-only" && record?.ossOnly !== true) {
+    throw new Error("Only OSS-only course package uploads can be marked extracted.");
+  }
+  const now = new Date().toISOString();
+  const targetPrefix = toPosixPath(body.targetPrefix || record.targetPrefix || `${coursewareAssetPrefix}/${course}/`).replace(/^\/+/, "").replace(/\/?$/, "/");
+  const extractReport = {
+    schemaVersion: 1,
+    uploadId: record.id,
+    course,
+    actor,
+    recordedAt: now,
+    sourceObjectKey: record.objectKey || "",
+    sourceOssUri: record.ossUri || "",
+    targetPrefix,
+    extractor: safeSegment(body.extractor || "external"),
+    summary: body.summary || null,
+    note: String(body.note || ""),
+  };
+  writeJsonFile(ossUploadStore.uploadPath(record.id, "oss-extract-result.json"), extractReport);
+
+  const { job, warning } = tryCreateMediaJob({
+    type: "index-oss",
+    course,
+    actor,
+    params: { uploadId: record.id, applyOss: true },
+  });
+  const next = ossUploadStore.patchRecord(record.id, {
+    status: job ? "queued" : "uploaded",
+    importStatus: job ? "oss-index-queued" : "oss-extracted",
+    importMode: "oss-only",
+    ossOnly: true,
+    extractedAt: now,
+    extractedBy: actor,
+    extractReport: "oss-extract-result.json",
+    targetPrefix,
+    jobId: job?.id || record.jobId || "",
+    mediaJobWarning: warning || "",
+    ingestMessage: job
+      ? "OSS-side 解压已确认，正在索引 OSS 资源；不会下载到 ECS。"
+      : `OSS-side 解压已确认，但索引任务未创建：${warning || "任务中心未启用"}`,
+    error: "",
+  });
+  return { upload: next, job, warning };
 }
 
 async function packageContentRoot(extractRoot) {
@@ -5066,6 +5159,21 @@ async function handleAdminApi(req, res) {
         sendJson(res, 200, { ok: true, upload: ossUploadStore.publicRecord(record), job, warning });
         return true;
       }
+      if (action === "extracted" && req.method === "POST") {
+        const body = await readJsonBody(req, 256 * 1024);
+        const result = await markOssCoursePackageExtracted({
+          record,
+          actor: adminActor(req),
+          body,
+        });
+        sendJson(res, result.job ? 202 : 200, {
+          ok: true,
+          upload: ossUploadStore.publicRecord(result.upload),
+          job: result.job,
+          warning: result.warning,
+        });
+        return true;
+      }
     }
 
     if (requestUrl.pathname === "/api/admin/media/courses" && req.method === "GET") {
@@ -5094,16 +5202,6 @@ async function handleAdminApi(req, res) {
         actor: adminActor(req),
         params: body,
       });
-      if (job.course) {
-        await appendAdminHistory(job.course, {
-          actor: adminActor(req),
-          action: "media-job-start",
-          jobId: job.id,
-          jobType: job.type,
-          scope: job.scope,
-          course: job.course,
-        });
-      }
       sendJson(res, 202, { ok: true, job });
       return true;
     }

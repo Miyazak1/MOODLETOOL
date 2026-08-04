@@ -26,6 +26,7 @@
     "audit:videos": "node scripts/audit-video-bitrate.mjs",
     "optimize:videos": "node scripts/optimize-video-bitrate.mjs",
     "sync:oss": "node scripts/sync-courseware-oss.mjs",
+    "index:oss": "node scripts/index-oss-courseware-assets.mjs",
     "pipeline:media-delivery": "node scripts/run-media-delivery-pipeline.mjs",
     "audit:content-workbench": "node scripts/generate-content-workbench.mjs",
     "audit:authenticated-rescan-queue": "node scripts/generate-authenticated-rescan-queue.mjs",

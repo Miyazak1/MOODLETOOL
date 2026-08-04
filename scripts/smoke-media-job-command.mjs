@@ -59,6 +59,23 @@ assert.deepEqual(command({ type: "sync-oss", scope: "course", course: "ENG3U", p
   "ossutil",
 ]);
 
+assert.deepEqual(command({ type: "index-oss", scope: "course", course: "MHF4U", params: { applyOss: true } }), [
+  "scripts/index-oss-courseware-assets.mjs",
+  "--apply",
+  "--course",
+  "MHF4U",
+  "--bucket",
+  "oss://moodletool",
+  "--cdn-base-url",
+  "https://cdn.moodletool.work/courseware-active",
+  "--registry",
+  "/app/deployment/asset-registry.json",
+  "--asset-scope",
+  "playable",
+  "--ossutil",
+  "ossutil",
+]);
+
 assert.deepEqual(command({ type: "publish-upload", scope: "course", course: "ESLDO", params: { uploadId: "upl-1" } }), [
   "scripts/run-oss-upload-media-pipeline.mjs",
   "--upload",

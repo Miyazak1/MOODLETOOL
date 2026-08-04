@@ -17,11 +17,13 @@ import {
 assert.equal(normalizeMediaJobType("PUBLISH-COURSE"), "publish-course");
 assert.deepEqual(mediaJobScope("publish-all", ""), { scope: "all", course: "" });
 assert.deepEqual(mediaJobScope("audit-videos", ""), { scope: "all", course: "" });
+assert.deepEqual(mediaJobScope("index-oss", ""), { scope: "all", course: "" });
 assert.deepEqual(mediaJobScope("sync-oss", " eng4u "), { scope: "course", course: "ENG4U" });
 assert.throws(() => mediaJobScope("publish-course", ""), /Course is required/);
 
 assert.equal(activeMediaJobStatuses.has("running"), true);
 assert.equal(mediaWriteJobTypes.has("sync-oss"), true);
+assert.equal(mediaWriteJobTypes.has("index-oss"), true);
 assert.equal(retryableMediaJobStatuses.has("warning"), true);
 
 const uploadProgress = parseMediaJobProgressFromText(

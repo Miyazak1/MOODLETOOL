@@ -4,6 +4,7 @@ export const mediaJobTypes = new Set([
   "audit-videos",
   "optimize-videos",
   "sync-oss",
+  "index-oss",
   "export-cdn-preheat",
   "check-readiness",
   "publish-course",
@@ -11,7 +12,7 @@ export const mediaJobTypes = new Set([
   "publish-upload",
 ]);
 
-export const mediaWriteJobTypes = new Set(["publish-course", "publish-all", "publish-upload", "sync-oss", "optimize-videos"]);
+export const mediaWriteJobTypes = new Set(["publish-course", "publish-all", "publish-upload", "sync-oss", "index-oss", "optimize-videos"]);
 export const activeMediaJobStatuses = new Set(["queued", "running", "cancelling"]);
 export const retryableMediaJobStatuses = new Set(["failed", "warning", "cancelled", "interrupted"]);
 
@@ -26,6 +27,7 @@ export function mediaJobScope(type, course) {
   if (type === "audit-videos" && !course) return { scope: "all", course: "" };
   if (type === "optimize-videos" && !course) return { scope: "all", course: "" };
   if (type === "sync-oss" && !course) return { scope: "all", course: "" };
+  if (type === "index-oss" && !course) return { scope: "all", course: "" };
   const normalizedCourse = safeCourseSegment(course || "").toUpperCase();
   if (!normalizedCourse && !["check-readiness", "export-cdn-preheat"].includes(type)) {
     throw new Error("Course is required for this media job type.");

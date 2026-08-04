@@ -13,9 +13,11 @@ assert.match(view.statusLabel("running"), /运行中/);
 assert.match(view.statusLabel("failed"), /status-risk/);
 assert.equal(view.uploadKindLabel("course-package"), "完整课件包");
 assert.equal(view.jobTypeLabel("sync-oss"), "同步 OSS");
+assert.equal(view.jobTypeLabel("index-oss"), "索引 OSS");
 assert.equal(view.hasActiveJobs([{ status: "queued" }]), true);
 assert.equal(view.hasActiveUploads([{ importStatus: "running" }]), true);
 assert.equal(view.activeWriteJob([{ type: "sync-oss", status: "running", course: "ENG4U" }]).course, "ENG4U");
+assert.equal(view.activeWriteJob([{ type: "index-oss", status: "running", course: "ENG4U" }]).course, "ENG4U");
 assert.equal(view.jobCardClass({ status: "warning" }), "warning");
 assert.match(view.jobResult({ error: "Course ENG3U is locked by another operation" }), /ENG3U/);
 assert.match(view.jobNextStep({ error: "Course ENG3U is locked by another operation" }), /清理 ENG3U 课程锁/);
@@ -215,6 +217,9 @@ const uploadDetail = view.renderUploadDetail(
     status: "queued",
     importMode: "oss-only",
     importStatus: "oss-extract-required",
+    ossOnly: true,
+    targetPrefix: "courseware-active/ENG4U/",
+    extractedAt: "",
     ingestMessage: "完整课件包已保存在 OSS inbox，等待 OSS-side 解压/索引；不会下载到 ECS。",
     fileName: "ENG4U-course.zip",
     fileSize: 2048,
@@ -224,9 +229,12 @@ const uploadDetail = view.renderUploadDetail(
   { relatedJob: { id: "job-3", type: "publish-upload", status: "succeeded", course: "ENG4U" }, jobs: [] },
 );
 assert.match(uploadDetail, /OSS 对象/);
-assert.match(uploadDetail, /OSS 解压\/索引/);
+assert.match(uploadDetail, /OSS 解压/);
 assert.match(uploadDetail, /等待 OSS-side 处理/);
 assert.match(uploadDetail, /oss-only/);
+assert.match(uploadDetail, /OSS-only/);
+assert.match(uploadDetail, /目标前缀/);
+assert.match(uploadDetail, /courseware-active\/ENG4U\//);
 assert.match(uploadDetail, /inbox\/uploads\/ENG4U\/ENG4U-course\.zip/);
 assert.match(uploadDetail, /关联媒体任务/);
 assert.match(uploadDetail, /data-media-job-action="log"/);
