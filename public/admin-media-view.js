@@ -733,7 +733,6 @@
     const metrics = [
       item?.speedText ? `速度 ${item.speedText}` : "",
       item?.etaText ? `剩余约 ${item.etaText}` : "",
-      item?.overallText ? `总进度 ${item.overallText}` : "",
     ].filter(Boolean);
     const cancelButton = item?.cancelable
       ? `<button class="small" type="button" data-oss-direct-action="cancel-item" data-oss-direct-id="${escapeHtml(item.id || "")}">取消</button>`
@@ -773,12 +772,13 @@
     const cancelled = items.filter((item) => item?.status === "cancelled").length;
     const uploading = items.filter((item) => ["authorizing", "uploading", "verifying"].includes(item?.status)).length;
     const done = items.filter((item) => ["done", "warning"].includes(item?.status)).length;
+    if (items.length <= 1) return items.map(renderOssDirectQueueItem).join("");
     const summary = `
       <div class="oss-direct-queue-summary">
         <span>${items.length} 个文件</span>
         <span>${courses.length} 门课程</span>
         <span>${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}</span>
-        <span>总进度 ${totalPercent}%</span>
+        <span>批量总进度 ${totalPercent}%</span>
         ${uploading ? `<span>${uploading} 个处理中</span>` : ""}
         ${done ? `<span>${done} 个完成</span>` : ""}
         ${skipped ? `<span>${skipped} 个跳过</span>` : ""}

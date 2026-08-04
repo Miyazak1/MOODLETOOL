@@ -268,13 +268,35 @@ assert.match(ossQueue, /失败/);
 assert.match(ossQueue, /已取消/);
 assert.match(ossQueue, /3 个文件/);
 assert.match(ossQueue, /2 门课程/);
-assert.match(ossQueue, /总进度 33%/);
+assert.match(ossQueue, /批量总进度 33%/);
 assert.match(ossQueue, /oss-direct-overall-progress/);
 assert.match(ossQueue, /oss-direct-overall-progress" value="33"/);
 assert.match(ossQueue, /oss-direct-queue-progress" value="50"/);
 assert.match(ossQueue, /速度 2 MB\/s/);
 assert.match(ossQueue, /剩余约 10秒/);
-assert.match(ossQueue, /总进度 2 KB \/ 5 KB/);
+assert.doesNotMatch(ossQueue, /总进度 2 KB \/ 5 KB/);
+
+const singleOssQueue = view.renderOssDirectQueue([
+  {
+    course: "MCR3U",
+    name: "MCR3U-course-package.zip",
+    size: 4096,
+    etaText: "10秒",
+    source: "filename",
+    detail: "上传中",
+    loaded: 2048,
+    overallText: "2 KB / 22 GB",
+    status: "uploading",
+    percent: 50,
+    speedText: "2 MB/s",
+    total: 4096,
+  },
+]);
+assert.match(singleOssQueue, /MCR3U-course-package\.zip/);
+assert.match(singleOssQueue, /2\.0 KB \/ 4\.0 KB/);
+assert.doesNotMatch(singleOssQueue, /oss-direct-overall-progress/);
+assert.doesNotMatch(singleOssQueue, /批量总进度/);
+assert.doesNotMatch(singleOssQueue, /22 GB/);
 
 const progressInfo = view.uploadProgressFormatter({ name: "big.zip", size: 1024 })({
   percent: 50,
