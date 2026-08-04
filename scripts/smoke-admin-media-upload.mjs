@@ -75,8 +75,10 @@ const duplicatePreview = upload.createDirectUploadPreview({
   ],
   courseCodes: ["ENG4U"],
 });
-assert.equal(duplicatePreview.ok, false);
-assert.match(duplicatePreview.errors.join("\n"), /ENG4U 在本次选择里出现了多个完整课件包/);
+assert.equal(duplicatePreview.ok, true);
+assert.equal(duplicatePreview.items.filter((item) => item.uploadable !== false).length, 1);
+assert.equal(duplicatePreview.items.find((item) => item.status === "skipped").name, "ENG4U-course-package.zip");
+assert.match(duplicatePreview.warnings.join("\n"), /ENG4U 本次选择了 2 个完整课件包/);
 
 const wrongTypePreview = upload.createDirectUploadPreview({
   kind: "course-package",

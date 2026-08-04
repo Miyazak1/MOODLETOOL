@@ -18,6 +18,32 @@
     return match ? match[1] : "";
   }
 
+  function fileNameDateScore(fileName) {
+    const matches = [...String(fileName || "").matchAll(/(20\d{2})[-_]?([01]\d)[-_]?([0-3]\d)(?:[-_]?([0-2]\d)([0-5]\d)?)?/g)];
+    if (!matches.length) return 0;
+    const latest = matches
+      .map((match) => {
+        const [, year, month, day, hour = "00", minute = "00"] = match;
+        return Number(`${year}${month}${day}${hour}${minute}`);
+      })
+      .filter(Number.isFinite)
+      .sort((left, right) => right - left)[0];
+    return latest || 0;
+  }
+
+  function compareCoursePackageCandidate(left, right) {
+    const leftNameScore = fileNameDateScore(left?.name);
+    const rightNameScore = fileNameDateScore(right?.name);
+    if (leftNameScore !== rightNameScore) return leftNameScore - rightNameScore;
+    const leftModified = Number(left?.file?.lastModified || 0);
+    const rightModified = Number(right?.file?.lastModified || 0);
+    if (leftModified !== rightModified) return leftModified - rightModified;
+    const leftSize = Number(left?.size || 0);
+    const rightSize = Number(right?.size || 0);
+    if (leftSize !== rightSize) return leftSize - rightSize;
+    return Number(left?.index || 0) - Number(right?.index || 0);
+  }
+
   function validateDirectUploadFile({ kind, file }) {
     const name = file?.name || "";
     const extension = fileExtension(name);
@@ -69,6 +95,7 @@
           size: file.size || 0,
           source: resolvedCourse.source,
           status: "ready",
+          uploadable: true,
           valid: true,
         };
       } catch (error) {
@@ -84,6 +111,7 @@
           size: file?.size || 0,
           source: "",
           status: "failed",
+          uploadable: false,
           valid: false,
         };
       }
@@ -100,7 +128,23 @@
       }, new Map());
       [...courseCounts.entries()]
         .filter(([, count]) => count > 1)
-        .forEach(([course]) => errors.push(`${course} 在本次选择里出现了多个完整课件包。请一次只保留这一门课的最新 ZIP。`));
+        .forEach(([course]) => {
+          const candidates = items.filter((item) => item.course === course && item.valid);
+          const winner = candidates.reduce((best, item) =>
+            compareCoursePackageCandidate(item, best) > 0 ? item : best
+          , candidates[0]);
+          candidates.forEach((item) => {
+            if (item === winner) {
+              item.detail = `同课程多文件，已保留这个课件包上传`;
+              return;
+            }
+            item.detail = `${course} 本次选择里已有更新课件包，将跳过 ${item.name}`;
+            item.status = "skipped";
+            item.uploadable = false;
+          });
+          const skipped = candidates.filter((item) => item !== winner);
+          warnings.push(`${course} 本次选择了 ${candidates.length} 个完整课件包，已自动保留 ${winner.name}，跳过 ${skipped.map((item) => item.name).join("、")}。`);
+        });
       const recognizedCourses = [...courseCounts.keys()];
       const otherCourses = normalizedSelectedCourse
         ? recognizedCourses.filter((course) => course !== normalizedSelectedCourse)
@@ -117,8 +161,8 @@
       files: fileList.length,
       items,
       errors,
-      totalBytes: items.reduce((sum, item) => sum + Number(item.size || 0), 0),
-      courses: [...new Set(items.map((item) => item.course).filter(Boolean))],
+      totalBytes: items.filter((item) => item.uploadable !== false).reduce((sum, item) => sum + Number(item.size || 0), 0),
+      courses: [...new Set(items.filter((item) => item.uploadable !== false).map((item) => item.course).filter(Boolean))],
       warnings,
     };
   }
@@ -378,26 +422,44 @@
       );
     }
 
-    function createQueueItems(files, kind) {
-      return files.map((file, index) => {
-        const resolvedCourse = resolveDirectUploadCourse({
-          kind,
-          file,
-          selectedCourse: typeof getSelectedCourse === "function" ? getSelectedCourse() : "",
-          courseCodes: typeof getCourseCodes === "function" ? getCourseCodes() : [],
-        });
+    function createQueueItems(files, kind, previewItems = null) {
+      const sourceItems = Array.isArray(previewItems) && previewItems.length
+        ? previewItems
+        : files.map((file, index) => {
+            const resolvedCourse = resolveDirectUploadCourse({
+              kind,
+              file,
+              selectedCourse: typeof getSelectedCourse === "function" ? getSelectedCourse() : "",
+              courseCodes: typeof getCourseCodes === "function" ? getCourseCodes() : [],
+            });
+            return {
+              course: resolvedCourse.course,
+              detail: "等待上传",
+              file,
+              index,
+              resolvedCourse,
+              source: resolvedCourse.source,
+              status: "queued",
+              uploadable: true,
+            };
+          });
+      return sourceItems.map((sourceItem, index) => {
+        const file = sourceItem.file;
+        const resolvedCourse = sourceItem.resolvedCourse || { course: sourceItem.course || "", source: sourceItem.source || "" };
+        const canUpload = sourceItem.valid !== false && sourceItem.uploadable !== false;
         return {
-          course: resolvedCourse.course,
-          detail: "等待上传",
+          course: resolvedCourse.course || "",
+          detail: canUpload ? "等待上传" : sourceItem.detail || "已跳过",
           file,
-          id: `${Date.now()}-${index}-${file.name}`,
-          index,
-          name: file.name,
+          id: `${Date.now()}-${index}-${file?.name || "file"}`,
+          index: sourceItem.index ?? index,
+          name: file?.name || "",
           percent: 0,
           resolvedCourse,
-          size: file.size || 0,
-          source: resolvedCourse.source,
-          status: "queued",
+          size: file?.size || 0,
+          source: resolvedCourse.source || sourceItem.source || "",
+          status: canUpload ? sourceItem.status || "queued" : sourceItem.status || "skipped",
+          uploadable: canUpload,
         };
       });
     }
@@ -416,7 +478,7 @@
         selectedCourse: typeof getSelectedCourse === "function" ? getSelectedCourse() : "",
         courseCodes: typeof getCourseCodes === "function" ? getCourseCodes() : [],
       });
-      queue = preview.items;
+      queue = createQueueItems(files, kind, preview.items);
       notifyQueue();
       return preview;
     }
@@ -561,10 +623,12 @@
         const ok = confirmImpl(`OSS 直传预检提示：\n\n${preview.warnings.join("\n")}\n\n确认继续上传吗？`);
         if (!ok) return { canceled: true, message: "已取消 OSS 直传。" };
       }
-      queue = createQueueItems(files, kind);
+      queue = createQueueItems(files, kind, preview.items);
       notifyQueue();
+      const uploadQueue = queue.filter((item) => item.uploadable !== false);
+      if (!uploadQueue.length) throw new Error("本次选择没有可上传的完整课件包。请检查文件名和重复课程。");
       const results = [];
-      const fileSizes = files.map((file) => Number(file.size || 0));
+      const fileSizes = uploadQueue.map((item) => Number(item.file?.size || 0));
       const totalBytes = fileSizes.reduce((sum, size) => sum + size, 0);
       function updateBatchProgress(index, loaded, total) {
         const completedBytes = fileSizes.slice(0, index).reduce((sum, size) => sum + size, 0);
@@ -576,12 +640,12 @@
           total: totalBytes,
         };
       }
-      for (let index = 0; index < files.length; index += 1) {
-        const queueItem = queue[index];
+      for (let index = 0; index < uploadQueue.length; index += 1) {
+        const queueItem = uploadQueue[index];
         try {
-          results.push(await uploadSingle(files[index], {
+          results.push(await uploadSingle(queueItem.file, {
             index,
-            totalFiles: files.length,
+            totalFiles: uploadQueue.length,
             queueItem,
             resolvedCourse: queueItem.resolvedCourse,
             batchProgress: updateBatchProgress,
@@ -593,7 +657,7 @@
             status: wasCancelled ? "cancelled" : "failed",
           });
           if (wasCancelled) {
-            markRemainingQueueCancelled(index + 1);
+            markRemainingQueueCancelled(0);
             setStatus("OSS 直传已取消", "已经完成的 OSS 对象不会被删除，未开始的文件已停止上传。", null, "warn");
             if (typeof onRefresh === "function") await onRefresh();
             if (typeof onStartRefresh === "function") onStartRefresh();
@@ -603,8 +667,9 @@
         }
       }
       const createdJobs = results.filter((item) => item?.job || item?.coursePackageTask).length;
-      const detail = files.length > 1
-        ? `已上传 ${files.length} 个文件，创建 ${createdJobs} 个后续任务。`
+      const skippedCount = queue.filter((item) => item.status === "skipped").length;
+      const detail = uploadQueue.length > 1 || skippedCount
+        ? `已上传 ${uploadQueue.length} 个文件，跳过 ${skippedCount} 个重复文件，创建 ${createdJobs} 个后续任务。`
         : (results[0]?.job
           ? `已创建媒体任务 ${results[0].job.id}。`
           : results[0]?.coursePackageTask

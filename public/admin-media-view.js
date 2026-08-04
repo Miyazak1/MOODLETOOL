@@ -712,6 +712,7 @@
       warning: "提示",
       failed: "失败",
       cancelled: "已取消",
+      skipped: "已跳过",
     };
     return labels[status] || status || "未知";
   }
@@ -764,6 +765,7 @@
     const totalPercent = totalBytes ? Math.max(0, Math.min(100, Math.round((loadedBytes / totalBytes) * 100))) : 0;
     const courses = [...new Set(items.map((item) => item?.course).filter(Boolean))];
     const failed = items.filter((item) => item?.status === "failed").length;
+    const skipped = items.filter((item) => item?.status === "skipped").length;
     const uploading = items.filter((item) => ["authorizing", "uploading", "verifying"].includes(item?.status)).length;
     const done = items.filter((item) => ["done", "warning"].includes(item?.status)).length;
     const summary = `
@@ -774,6 +776,7 @@
         <span>总进度 ${totalPercent}%</span>
         ${uploading ? `<span>${uploading} 个处理中</span>` : ""}
         ${done ? `<span>${done} 个完成</span>` : ""}
+        ${skipped ? `<span>${skipped} 个跳过</span>` : ""}
         ${failed ? `<span class="status-risk">${failed} 个失败</span>` : ""}
       </div>
       <div class="oss-direct-overall-progress" aria-label="OSS 直传总进度">
