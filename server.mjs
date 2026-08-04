@@ -24,6 +24,8 @@ import {
 import { mediaJobCommand as buildMediaJobCommand } from "./scripts/lib/media-job-command.mjs";
 import { createMediaJobStore } from "./scripts/lib/media-job-store.mjs";
 import {
+  completeDirectMultipartUpload,
+  createDirectMultipartUpload,
   createDirectUploadPolicy as buildDirectUploadPolicy,
   directUploadConfigFromEnv,
   directUploadPublicConfig as buildDirectUploadPublicConfig,
@@ -775,6 +777,22 @@ function directUploadPublicConfig() {
 async function createDirectUploadPolicy({ course, fileName, fileSize, contentType, kind, actor }) {
   const catalog = await readCourseCatalog();
   const courseCodes = (catalog.courses || []).map((entry) => entry.code);
+  const size = Number(fileSize || 0);
+  if (size > ossDirectUploadConfig.simpleMaxBytes) {
+    const { record, multipart } = await createDirectMultipartUpload({
+      config: ossDirectUploadConfig,
+      courseCodes,
+      course,
+      fileName,
+      fileSize,
+      contentType,
+      kind,
+      actor,
+      mimeTypes,
+    });
+    ossUploadStore.writeRecord(record);
+    return { record, multipart };
+  }
   const { record, form } = buildDirectUploadPolicy({
     config: ossDirectUploadConfig,
     courseCodes,
@@ -4850,7 +4868,7 @@ async function handleAdminApi(req, res) {
 
     if (requestUrl.pathname === "/api/admin/oss/uploads/init" && req.method === "POST") {
       const body = await readJsonBody(req, 64 * 1024);
-      const { record, form } = await createDirectUploadPolicy({
+      const { record, form, multipart } = await createDirectUploadPolicy({
         course: body.course,
         fileName: body.fileName,
         fileSize: body.fileSize,
@@ -4863,6 +4881,7 @@ async function handleAdminApi(req, res) {
         config: directUploadPublicConfig(),
         upload: ossUploadStore.publicRecord(record),
         form,
+        multipart,
       });
       return true;
     }
@@ -4883,6 +4902,15 @@ async function handleAdminApi(req, res) {
       if (action === "complete" && req.method === "POST") {
         const body = await readJsonBody(req, 64 * 1024);
         if (body.objectKey && body.objectKey !== record.objectKey) throw new Error("Completed object key does not match this upload.");
+        if (record.uploadMode === "multipart") {
+          await completeDirectMultipartUpload({
+            config: ossDirectUploadConfig,
+            record,
+            parts: body.parts,
+          });
+          record.multipartCompletedAt = new Date().toISOString();
+          record.multipartPartEtags = Array.isArray(body.parts) ? body.parts : [];
+        }
         const parsed = verifyOssObjectWithOssutil(record.ossUri);
         record.status = "uploaded";
         record.completedAt = new Date().toISOString();

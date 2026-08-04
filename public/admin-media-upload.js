@@ -171,6 +171,82 @@
     });
   }
 
+  function uploadOssPutPart(part, blob, {
+    XMLHttpRequestImpl = window.XMLHttpRequest,
+    onActiveUploadChange,
+    onProgress,
+  } = {}) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequestImpl();
+      if (typeof onActiveUploadChange === "function") onActiveUploadChange(xhr);
+      xhr.open("PUT", part.url, true);
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable && typeof onProgress === "function") {
+          onProgress({
+            loaded: event.loaded,
+            total: event.total,
+          });
+        }
+      };
+      xhr.onload = () => {
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const etag = xhr.getResponseHeader("ETag") || xhr.getResponseHeader("etag") || "";
+          resolve({ partNumber: part.partNumber, etag: etag.replace(/^"|"$/g, "") });
+        } else {
+          reject(new Error(`OSS 分片上传失败：第 ${part.partNumber} 片 HTTP ${xhr.status} ${xhr.responseText || ""}`.trim()));
+        }
+      };
+      xhr.onerror = () => {
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        reject(new Error("OSS 分片上传网络错误，请检查 CORS、网络或 OSS 域名配置。"));
+      };
+      xhr.ontimeout = () => {
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        reject(new Error("OSS 分片上传超时，请重试。"));
+      };
+      xhr.onabort = () => {
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        reject(new Error("已取消 OSS 直传。"));
+      };
+      xhr.send(blob);
+    });
+  }
+
+  async function uploadOssMultipartObject(multipart, file, {
+    onActiveUploadChange,
+    onProgress,
+  } = {}) {
+    const parts = Array.isArray(multipart?.parts) ? multipart.parts : [];
+    if (!parts.length) throw new Error("OSS 分片上传授权缺少 parts。");
+    const uploadedParts = [];
+    let completedBytes = 0;
+    for (const part of parts) {
+      const blob = file.slice(part.start, part.end);
+      const uploaded = await uploadOssPutPart(part, blob, {
+        onActiveUploadChange,
+        onProgress: ({ loaded, total }) => {
+          const loadedBytes = completedBytes + Number(loaded || 0);
+          const totalBytes = file.size || multipart.totalBytes || 0;
+          if (typeof onProgress === "function") {
+            onProgress({
+              percent: totalBytes ? Math.max(0, Math.min(100, Math.round((loadedBytes / totalBytes) * 100))) : 0,
+              loaded: loadedBytes,
+              total: totalBytes,
+              partNumber: part.partNumber,
+              partCount: multipart.partCount || parts.length,
+              partLoaded: loaded,
+              partTotal: total,
+            });
+          }
+        },
+      });
+      uploadedParts.push(uploaded);
+      completedBytes += blob.size;
+    }
+    return { parts: uploadedParts };
+  }
+
   function createDirectUploadController(options = {}) {
     const {
       api,
@@ -190,6 +266,7 @@
       onStatus,
       onWrite,
       uploadObject = uploadOssPostObject,
+      uploadMultipartObject = uploadOssMultipartObject,
     } = options;
 
     let activeXhr = null;
@@ -318,12 +395,12 @@
         fileSize: file.size,
         contentType: file.type || "",
       });
+      const isMultipart = Boolean(initData.multipart);
       updateQueueItem(queueItem, { detail: initData.upload.objectKey, percent: 1, status: "uploading" });
-      setStatus("正在直传 OSS", `${batchText}${initData.upload.course || course} · ${initData.upload.objectKey}`, 1);
+      setStatus(isMultipart ? "正在分片直传 OSS" : "正在直传 OSS", `${batchText}${initData.upload.course || course} · ${initData.upload.objectKey}`, 1);
       const progressText = typeof formatProgress === "function" ? formatProgress(file) : null;
-      await uploadObject(initData.form, file, {
-        onActiveUploadChange: setActiveUpload,
-        onProgress: ({ percent, loaded, total }) => {
+      let multipartParts = null;
+      const handleUploadProgress = ({ percent, loaded, total, partNumber, partCount }) => {
           const overall = typeof batchProgress === "function"
             ? batchProgress(index, loaded, total || file.size || 0)
             : { percent: Math.round(((index + percent / 100) / totalFiles) * 100), loaded, total };
@@ -338,11 +415,12 @@
           const overallText = totalFiles > 1 && overall?.total
             ? `${window.AdminMediaView?.formatBytes(overall.loaded) || overall.loaded} / ${window.AdminMediaView?.formatBytes(overall.total) || overall.total}`
             : "";
+          const partText = partNumber && partCount ? ` · 分片 ${partNumber}/${partCount}` : "";
           const batchDetail = totalFiles > 1 && overall?.total
-            ? `${batchText}${detail} · 总进度 ${overallText}`
-            : `${batchText}${detail}`;
+            ? `${batchText}${detail}${partText} · 总进度 ${overallText}`
+            : `${batchText}${detail}${partText}`;
           updateQueueItem(queueItem, {
-            detail,
+            detail: `${detail}${partText}`,
             etaText: progressInfo?.etaText || "",
             loaded,
             overallText,
@@ -352,13 +430,25 @@
             total,
           });
           setStatus(`正在直传 OSS · ${overall.percent}%`, batchDetail, overall.percent);
-        },
-      });
+      };
+      if (isMultipart) {
+        const result = await uploadMultipartObject(initData.multipart, file, {
+          onActiveUploadChange: setActiveUpload,
+          onProgress: handleUploadProgress,
+        });
+        multipartParts = result.parts;
+      } else {
+        await uploadObject(initData.form, file, {
+          onActiveUploadChange: setActiveUpload,
+          onProgress: handleUploadProgress,
+        });
+      }
       updateQueueItem(queueItem, { detail: initData.upload.ossUri, percent: 100, status: "verifying" });
       setStatus("正在校验 OSS 对象", `${batchText}${initData.upload.ossUri}`, Math.round(((index + 1) / totalFiles) * 100));
       const completeData = await api.completeOssUpload(initData.upload.id, {
         objectKey: initData.upload.objectKey,
         autoPublish,
+        ...(multipartParts ? { parts: multipartParts } : {}),
       });
       const finishedDetail = completeData.job
         ? `已创建媒体任务 ${completeData.job.id}`

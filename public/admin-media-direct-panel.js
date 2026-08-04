@@ -122,7 +122,7 @@
       const ready = Boolean(direct.enabled && direct.configured);
       configReady = ready;
       const detail = ready
-        ? `可直传到 ${direct.bucket || "OSS"}，单文件上限 ${direct.maxGb || 0} GB。`
+        ? `可直传到 ${direct.bucket || "OSS"}，单文件上限 ${direct.maxGb || 0} GB；超过 ${direct.simpleMaxGb || 5} GB 自动分片上传。`
         : direct.reason || "OSS 直传未配置。";
       updateUploadButton(detail);
       if (!ready) {

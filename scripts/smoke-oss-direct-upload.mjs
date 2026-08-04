@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import {
+  completeDirectMultipartUpload,
+  createDirectMultipartUpload,
   createDirectUploadPolicy,
   directUploadConfigFromEnv,
   directUploadPublicConfig,
@@ -81,5 +83,61 @@ assert.throws(
   }),
   /Upload is too large/,
 );
+
+const multipartEnv = {
+  ...env,
+  OSS_DIRECT_UPLOAD_MAX_GB: "10",
+  OSS_DIRECT_UPLOAD_PART_MB: "512",
+};
+const multipartConfig = directUploadConfigFromEnv(multipartEnv);
+const multipartCalls = [];
+const mockFetch = async (url, options = {}) => {
+  multipartCalls.push({ url: String(url), options });
+  return {
+    ok: true,
+    status: 200,
+    async text() {
+      return "<InitiateMultipartUploadResult><UploadId>mock-upload-id</UploadId></InitiateMultipartUploadResult>";
+    },
+  };
+};
+const multipart = await createDirectMultipartUpload({
+  config: multipartConfig,
+  courseCodes: ["MHF4U"],
+  kind: "course-package",
+  fileName: "MHF4U-course-package-20260803.zip",
+  fileSize: 6 * 1024 * 1024 * 1024,
+  actor: "admin",
+  fetchImpl: mockFetch,
+});
+assert.equal(multipart.record.uploadMode, "multipart");
+assert.equal(multipart.multipart.uploadId, "mock-upload-id");
+assert.equal(multipart.multipart.partCount, 12);
+assert.match(multipart.multipart.parts[0].url, /partNumber=1/);
+assert.match(multipart.multipart.parts[0].url, /uploadId=mock-upload-id/);
+assert.match(multipartCalls[0].url, /\?uploads$/);
+
+const completeCalls = [];
+await completeDirectMultipartUpload({
+  config: multipartConfig,
+  record: multipart.record,
+  parts: [
+    { partNumber: 2, etag: "\"etag-two\"" },
+    { partNumber: 1, etag: "etag-one" },
+  ],
+  fetchImpl: async (url, options = {}) => {
+    completeCalls.push({ url: String(url), options });
+    return {
+      ok: true,
+      status: 200,
+      async text() {
+        return "<CompleteMultipartUploadResult />";
+      },
+    };
+  },
+});
+assert.match(completeCalls[0].url, /\?uploadId=mock-upload-id$/);
+assert.match(String(completeCalls[0].options.body), /<PartNumber>1<\/PartNumber><ETag>etag-one<\/ETag>/);
+assert.match(String(completeCalls[0].options.body), /<PartNumber>2<\/PartNumber><ETag>etag-two<\/ETag>/);
 
 console.log("oss direct upload smoke ok");
