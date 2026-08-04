@@ -317,6 +317,12 @@
       if (changed) notifyQueue();
     }
 
+    function hasActiveQueueItem() {
+      return queue.some((item) =>
+        ["authorizing", "queued", "uploading", "verifying"].includes(item?.status)
+      );
+    }
+
     function createQueueItems(files, kind) {
       return files.map((file, index) => {
         const resolvedCourse = resolveDirectUploadCourse({
@@ -551,7 +557,7 @@
       cancelActiveUpload,
       previewSelected,
       inferCourseCodeFromFilename,
-      isUploading: () => Boolean(activeXhr),
+      isUploading: () => Boolean(activeXhr) || hasActiveQueueItem(),
       resolveDirectUploadCourse,
       uploadSelected,
       uploadSingle,

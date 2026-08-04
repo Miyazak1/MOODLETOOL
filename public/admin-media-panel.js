@@ -227,6 +227,16 @@
       updateRefreshState();
     }
 
+    function renderQuiet(nextData = {}) {
+      const previous = data;
+      data = { ...data, ...nextData };
+      lastChangeText = summarizeChange(previous, data);
+      renderedOnce = true;
+      renderConfig(data);
+      updateActionControls(data);
+      updateRefreshState();
+    }
+
     function setData(nextData = {}) {
       data = { ...data, ...nextData };
       return data;
@@ -246,6 +256,7 @@
       renderJobs,
       renderLocks,
       renderOss,
+      renderQuiet,
       renderUploads,
       setData,
       updateActionControls,

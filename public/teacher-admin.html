@@ -2657,6 +2657,11 @@ pm2 restart ossd-course-portal --update-env</pre>
         mediaPanel.render(mediaData);
       }
 
+      function renderMediaQuiet(data) {
+        mediaData = mediaPanel.setData(data);
+        mediaPanel.renderQuiet(mediaData);
+      }
+
       function updateMediaRefreshState() {
         mediaPanel.updateRefreshState({ updatedAt: mediaLastUpdatedAt });
       }
@@ -3074,7 +3079,11 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       async function readMedia({ writeOutput = true, fromAutoRefresh = false } = {}) {
         const data = await mediaApi.read({ refreshOss: !fromAutoRefresh });
-        if (data.coursesOk) renderMedia(data);
+        const directUploadActive = Boolean(fromAutoRefresh && ossDirectUploadController?.isUploading?.());
+        if (data.coursesOk) {
+          if (directUploadActive) renderMediaQuiet(data);
+          else renderMedia(data);
+        }
         else renderMediaJobs({ jobs: data.jobs || [] });
         mediaLastUpdatedAt = new Date();
         updateMediaRefreshState();
