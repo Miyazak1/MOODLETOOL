@@ -1765,6 +1765,7 @@ function shouldBypassPortalLogin(pathname) {
     pathname.startsWith("/embed/") ||
     pathname.startsWith("/share/") ||
     pathname.startsWith("/assets/") ||
+    pathname === "/downloads/filter_portalembed.zip" ||
     pathname === "/favicon.ico"
   );
 }
