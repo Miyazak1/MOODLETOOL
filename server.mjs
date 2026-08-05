@@ -199,7 +199,7 @@ function resolveRequestPath(urlPath) {
   if (decoded === "/login") {
     return join(webRoot, "login.html");
   }
-  if (decoded === "/teacher-admin") {
+  if (decoded === "/teacher-admin" || decoded === "/teacher-admin/") {
     return join(webRoot, "teacher-admin.html");
   }
   if (decoded === "/" || decoded === "") {
@@ -1759,6 +1759,8 @@ function shouldBypassPortalLogin(pathname) {
     pathname === "/api/portal/session" ||
     pathname === "/api/portal/login" ||
     pathname === "/api/portal/logout" ||
+    pathname === "/teacher-admin" ||
+    pathname === "/teacher-admin/" ||
     pathname.startsWith("/api/admin/") ||
     pathname.startsWith("/embed/") ||
     pathname.startsWith("/share/") ||
