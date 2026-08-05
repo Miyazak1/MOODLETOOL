@@ -1936,8 +1936,10 @@ function publicOrigin(req) {
   return `${String(proto).split(",")[0]}://${String(host).split(",")[0]}`.replace(/\/+$/, "");
 }
 
-function embedTokenForResource({ course, kind, path, label, section, lessonId }) {
-  const normalizedPath = toPosixPath(path);
+function embedTokenForResource({ course, kind, path, url, downloadUrl, label, section, lessonId }) {
+  const normalizedPath = toPosixPath(path || "");
+  const normalizedUrl = cleanExternalUrl(url || "");
+  const normalizedDownloadUrl = cleanExternalUrl(downloadUrl || normalizedUrl);
   return signEmbedPayload({
     v: 1,
     course: safeSegment(course).toUpperCase(),
@@ -1946,7 +1948,9 @@ function embedTokenForResource({ course, kind, path, label, section, lessonId })
     label,
     section,
     path: normalizedPath,
-    prefix: dirnamePosix(normalizedPath),
+    url: normalizedUrl,
+    downloadUrl: normalizedDownloadUrl,
+    prefix: normalizedPath ? dirnamePosix(normalizedPath) : "",
     exp: Math.floor(Date.now() / 1000) + embedTokenMaxAgeSeconds,
   });
 }
@@ -2303,17 +2307,17 @@ async function sendEmbedCoursewareFile(req, res, course, requestedPath, payload)
 function localResourceCandidatesForLesson(lesson) {
   const candidates = [];
   for (const item of lesson.ispring || []) {
-    if (item.path) candidates.push({ kind: "ispring", role: item.role || "lesson_ispring", item });
+    if (item.path || item.url) candidates.push({ kind: "ispring", role: item.role || "lesson_ispring", item });
   }
   for (const item of lesson.downloads || []) {
-    if (!item.path) continue;
+    if (!item.path && !item.url) continue;
     const type = String(item.type || "").toLowerCase();
-    const ext = extname(item.path || "").toLowerCase();
+    const ext = extname(item.path || item.url || "").toLowerCase();
     const kind = type === "mp4" || type === "webm" || type === "video" || [".mp4", ".webm"].includes(ext) ? "video" : type === "h5p" ? "h5p" : "file";
     candidates.push({ kind, role: item.role || "download", item });
   }
   for (const item of lesson.bookSections || []) {
-    if (item.path) candidates.push({ kind: "book-section", role: item.role || "lesson_book_section", item });
+    if (item.path || item.url) candidates.push({ kind: "book-section", role: item.role || "lesson_book_section", item });
   }
   return candidates;
 }
@@ -2369,11 +2373,14 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
           course,
           kind: candidate.kind,
           path: item.path,
+          url: item.previewUrl || item.url,
+          downloadUrl: item.downloadUrl || item.url,
           label: item.label,
           section: item.sectionLabel || candidate.role,
           lessonId,
         });
-        const resourceId = resourceIdFor(item.path);
+        const resourceKey = item.path || item.previewUrl || item.url || item.downloadUrl || item.label || candidate.role;
+        const resourceId = resourceIdFor(resourceKey);
         const embedUrl = `${origin}/embed/${candidate.kind}/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
         const fileUrl = `${origin}/embed/file/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
         let moodleHtml = "";
@@ -2385,7 +2392,7 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
           moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: 1500, height: 750 });
           moodleHtml = moodleShortcode;
         } else if (candidate.kind === "video") {
-          const ext = extname(item.path || "").toLowerCase();
+          const ext = extname(item.path || item.url || "").toLowerCase();
           moodleIframeHtml = moodleContentIframeHtml(embedUrl, { height: 540 });
           moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 540 });
           moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video", mimeTypes[ext] || "video/mp4");
@@ -2413,7 +2420,7 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
           kind: candidate.kind,
           role: candidate.role,
           label: item.label || "",
-          path: item.path,
+          path: item.path || item.previewUrl || item.url || item.downloadUrl,
           source: item.source || null,
           status,
           embedUrl,
@@ -2472,9 +2479,18 @@ async function handleEmbedRequest(req, res, requestUrl) {
     return true;
   }
 
-  const tokenizedRawUrl = `/embed/t/${encodeURIComponent(token)}/${encodeURIComponent(course)}/${encodePathSegments(payload.path)}`;
-  const assetRawUrl = coursewareAssetUrl(course, payload.path) || tokenizedRawUrl;
+  const payloadUrl = cleanExternalUrl(payload.url);
+  const payloadDownloadUrl = cleanExternalUrl(payload.downloadUrl || payload.url);
+  const tokenizedRawUrl = payload.path
+    ? `/embed/t/${encodeURIComponent(token)}/${encodeURIComponent(course)}/${encodePathSegments(payload.path)}`
+    : "";
+  const assetRawUrl = payloadUrl || coursewareAssetUrl(course, payload.path) || tokenizedRawUrl;
   if (kind === "ispring") {
+    if (payloadUrl) {
+      res.writeHead(302, { Location: payloadUrl });
+      res.end();
+      return true;
+    }
     const root = courseRoot(course);
     const filePath = ensureInside(root, join(root, toPosixPath(payload.path)));
     const html = await readFile(filePath, "utf8");
@@ -2483,7 +2499,7 @@ async function handleEmbedRequest(req, res, requestUrl) {
     return true;
   }
   if (kind === "video") {
-    const videoType = mimeTypes[extname(payload.path || "").toLowerCase()] || "video/mp4";
+    const videoType = mimeTypes[extname(payload.path || payloadUrl || "").toLowerCase()] || "video/mp4";
     sendHtml(
       res,
       200,
@@ -2505,10 +2521,20 @@ async function handleEmbedRequest(req, res, requestUrl) {
     return true;
   }
   if (kind === "book-section") {
+    if (payloadUrl) {
+      res.writeHead(302, { Location: payloadUrl });
+      res.end();
+      return true;
+    }
     const root = courseRoot(course);
     const filePath = ensureInside(root, join(root, toPosixPath(payload.path)));
     const html = await readFile(filePath, "utf8");
     sendHtml(res, 200, html);
+    return true;
+  }
+  if (!payload.path && payloadDownloadUrl) {
+    res.writeHead(302, { Location: payloadDownloadUrl });
+    res.end();
     return true;
   }
   return sendEmbedCoursewareFile(req, res, course, payload.path, payload);

@@ -124,6 +124,14 @@ function resourceKey(item: LinkableResource): string {
   return item.path || item.url || item.previewPath || item.previewUrl || item.label;
 }
 
+function moodleEmbedForResource(rowsByPath: MoodleEmbedMap | undefined, item: LinkableResource): MoodleEmbedRow | undefined {
+  if (!rowsByPath) return undefined;
+  return [item.path, item.previewPath, item.url, item.previewUrl, item.downloadPath, item.downloadUrl]
+    .filter((value): value is string => Boolean(value))
+    .map((value) => rowsByPath.get(value))
+    .find(Boolean);
+}
+
 function hasLocalResource(item: LinkableResource): boolean {
   const trustedRemote = item.source === "cdn" || item.source === "oss";
   return Boolean(item.path || item.previewPath || item.downloadPath || (trustedRemote && (item.url || item.previewUrl)));
@@ -892,7 +900,7 @@ function LessonFlowPanel({
                   displayLabel={item.label || item.sectionLabel || flowLabelForKey(bookSectionFlowKey(item))}
                   item={item}
                   key={resourceKey(item)}
-                  moodleEmbed={item.path ? moodleEmbedByPath?.get(item.path) : undefined}
+                  moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
                   showDownload={false}
                 />
               ))}
@@ -906,7 +914,7 @@ function LessonFlowPanel({
                     item={item}
                     key={resourceKey(item)}
                     label={label}
-                    moodleEmbed={item.path ? moodleEmbedByPath?.get(item.path) : undefined}
+                    moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
                   />
                 );
               })}
@@ -918,7 +926,7 @@ function LessonFlowPanel({
                   item={item}
                   key={resourceKey(item)}
                   labelPrefix={downloadFlowKey(item) === "resources" ? undefined : roleLabel(item.role)}
-                  moodleEmbed={item.path ? moodleEmbedByPath?.get(item.path) : undefined}
+                  moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
                 />
               ))}
             </div>
@@ -966,7 +974,7 @@ function ActivityResourcePanel({
           item={item}
           key={resourceKey(item)}
           label={visibleISpring.length > 1 ? `Activity package ${index + 1}` : "Activity package"}
-          moodleEmbed={item.path ? moodleEmbedByPath?.get(item.path) : undefined}
+          moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
         />
       ))}
       {files.map((item) => (
@@ -976,7 +984,7 @@ function ActivityResourcePanel({
           canShare={canShare}
           item={item}
           key={resourceKey(item)}
-          moodleEmbed={item.path ? moodleEmbedByPath?.get(item.path) : undefined}
+          moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
           showDownload={(item.type || "").toLowerCase() !== "html"}
         />
       ))}
@@ -1826,6 +1834,8 @@ function App() {
     const rowsByPath: MoodleEmbedMap = new Map();
     for (const row of moodleEmbedRows) {
       if (row.path) rowsByPath.set(row.path, row);
+      if (row.fileUrl) rowsByPath.set(row.fileUrl, row);
+      if (row.embedUrl) rowsByPath.set(row.embedUrl, row);
     }
     return rowsByPath;
   }, [moodleEmbedRows]);
