@@ -47,3 +47,7 @@ The filter only renders iframe URLs whose `src` starts with an allowed prefix. B
 https://www.moodletool.work/embed/
 http://127.0.0.1:8891/embed/
 ```
+
+The rendered iframe intentionally does not add a `sandbox` attribute. iSpring, H5P, and
+other HTML5 courseware can break inside a sandboxed iframe; access is controlled by
+the allowed embed prefixes and the Portal embed token instead.

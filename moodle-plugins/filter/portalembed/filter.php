@@ -71,7 +71,6 @@ class filter_portalembed extends moodle_text_filter {
             . 'height="' . $height . '" '
             . 'frameborder="0" '
             . 'scrolling="auto" '
-            . 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-presentation allow-modals" '
             . 'allow="autoplay; fullscreen; clipboard-write; encrypted-media; picture-in-picture" '
             . 'allowfullscreen="allowfullscreen"></iframe>';
     }
