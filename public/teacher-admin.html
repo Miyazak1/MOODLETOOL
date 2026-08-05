@@ -1721,9 +1721,9 @@
 
       <section class="admin-panel auth-required" data-admin-panel="package" hidden>
         <h2>当前课程压缩包导入</h2>
-        <p class="meta-line">这个入口由导入 worker 统一处理课程 ZIP：小型无媒体课程可先到 ECS；大课程、媒体课程会先 multipart 直传 OSS raw package，再由 ECS 通过内网流式读取并自动分流。</p>
+        <p class="meta-line">这个入口统一处理课程 ZIP：小型无媒体课程可先到 ECS 并生成确认预览；大课程、媒体课程会 multipart 直传 OSS raw package，再由 ECS 通过内网流式读取并自动导入。</p>
         <div class="notice">
-          不走旧 FC 解压。视频、H5P、iSpring 和超大附件会发布到 OSS/CDN，普通课程资料保留在 ECS。
+          视频、H5P、iSpring 和超大附件会发布到 OSS/CDN，普通课程资料保留在 ECS。
         </div>
         <div class="storage-mini" id="packageStorageMini" hidden></div>
         <div class="form-grid">
@@ -1742,7 +1742,7 @@
         </div>
         <div class="actions">
           <button id="coursePackageUploadButton" type="button">上传并导入</button>
-          <button class="primary" id="coursePackageCommitButton" type="button" disabled>确认导入到当前课程</button>
+          <button class="primary" id="coursePackageCommitButton" type="button" disabled hidden>确认替换课程内容</button>
         </div>
         <div class="upload-status" id="coursePackageStatus" hidden>
           <strong id="coursePackageStatusTitle">等待上传</strong>

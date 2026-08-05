@@ -178,7 +178,8 @@ assert.equal(
   assert.equal(successes[0].uploadedFile.name, "ENG4U-course.zip");
   assert.equal(remembers.at(-1).status, "complete");
   assert.equal(remembers.at(-1).chunksReceived, 3);
-  assert.equal(statuses.at(-1).title, "上传完成，服务器已生成预览");
+  assert.equal(statuses.at(-1).title, "小型课包已生成确认预览");
+  assert.match(statuses.at(-1).detail, /确认替换课程内容/);
   assert.match(writes[0], /正在分片上传整课包/);
 }
 

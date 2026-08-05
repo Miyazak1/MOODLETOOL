@@ -301,8 +301,8 @@
         if (!finalData?.ok) throw new Error("所有分片已上传，但服务器没有返回导入预览。请刷新任务状态。");
 
         showStatus({
-          title: "上传完成，服务器已生成预览",
-          detail: `已扫描 ${finalData.operations?.length || 0} 个导入项。确认无误后点击“确认导入到当前课程”。`,
+          title: "小型课包已生成确认预览",
+          detail: `已扫描 ${finalData.operations?.length || 0} 个导入项。确认无误后点击“确认替换课程内容”。`,
           percent: 100,
           showProgress: true,
         });
@@ -323,7 +323,7 @@
         if (rawUpload && rawUploadRequired(error)) {
           showStatus({
             title: "ECS 空间不足，切换 OSS raw",
-            detail: "课程 ZIP 会先直传到 OSS raw package，再由 ECS worker 通过内网流式读取并自动分流；不使用旧 FC 解压。",
+            detail: "课程 ZIP 会先直传到 OSS raw package，再由 ECS worker 通过内网流式读取并自动分流。",
             percent: 0,
             showProgress: true,
           });
@@ -347,7 +347,7 @@
         });
         showStatus({
           title: "上传失败",
-          detail: `${error instanceof Error ? error.message : String(error)}。重新点“上传并生成预览”会从服务器已有分片继续。`,
+          detail: `${error instanceof Error ? error.message : String(error)}。重新点“上传并导入”会从服务器已有分片继续。`,
           percent: null,
           showProgress: false,
           error: true,
@@ -362,8 +362,8 @@
     async function commitCoursePackage() {
       const importData = currentImport();
       if (!importData?.importId) {
-        if (typeof write === "function") write("请先上传整课 ZIP 并生成预览。");
-        return { canceled: true, message: "请先上传整课 ZIP 并生成预览。" };
+        if (typeof write === "function") write("请先上传整课 ZIP；只有小型 ECS 导入生成预览后才需要确认。");
+        return { canceled: true, message: "请先上传整课 ZIP；只有小型 ECS 导入生成预览后才需要确认。" };
       }
       const commitState = typeof updateCommitState === "function"
         ? updateCommitState(importData)

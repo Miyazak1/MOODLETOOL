@@ -3561,7 +3561,7 @@ async function coursePackageEcsCapacityPreflight(totalBytes) {
 async function assertCoursePackageEcsCapacity(totalBytes) {
   const capacity = await coursePackageEcsCapacityPreflight(totalBytes);
   if (capacity.ok) return capacity;
-  throw new Error(`ECS 剩余空间不足，不能走 ECS 本地课程包导入：ZIP ${formatBytesForError(capacity.packageBytes)}，预估峰值需要 ${formatBytesForError(capacity.requiredBytes)}，当前可用 ${formatBytesForError(capacity.freeBytes)}。请走 OSS raw package，由 ECS worker 从 OSS 内网流式读取并分流，不要走旧 FC 解压链路。`);
+  throw new Error(`ECS 剩余空间不足，不能走 ECS 本地课程包导入：ZIP ${formatBytesForError(capacity.packageBytes)}，预估峰值需要 ${formatBytesForError(capacity.requiredBytes)}，当前可用 ${formatBytesForError(capacity.freeBytes)}。请走 OSS raw package，由 ECS worker 从 OSS 内网流式读取并分流。`);
 }
 
 async function listDirectoryNames(root) {
@@ -4532,7 +4532,7 @@ function startRawOssCoursePackageImport({ record, actor }) {
 
 function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
   if (coursePackageImportMode === "ecs-first" && !isRawCoursePackageUploadKind(record?.kind)) {
-    throw new Error("完整课件包已切换为 ECS-first 导入，旧 OSS/FC 课程包记录不能继续处理。");
+    throw new Error("这个课程包记录来自已停用的历史导入接口，不能继续处理。请通过课程压缩包入口重新上传课程 ZIP。");
   }
   const course = safeSegment(record?.course || "").toUpperCase();
   const importId = safeSegment(record?.id || coursePackageId());
@@ -4721,7 +4721,7 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
 
 async function markOssCoursePackageAwaitingExtract({ record, actor }) {
   if (coursePackageImportMode === "ecs-first") {
-    throw new Error("完整课件包已切换为 ECS-first 导入，不再登记 OSS-side/FC 解压等待状态。");
+    throw new Error("历史 OSS-side 解压等待状态已停用。请通过课程压缩包入口上传课程 ZIP。");
   }
   const course = safeSegment(record?.course || "").toUpperCase();
   const importId = safeSegment(record?.id || coursePackageId());
@@ -4730,7 +4730,7 @@ async function markOssCoursePackageAwaitingExtract({ record, actor }) {
   const filename = safeSegment(record.fileName || "course-package.zip") || "course-package.zip";
   if (extname(filename).toLowerCase() !== ".zip") throw new Error("Course package ingest requires a .zip file.");
 
-  const message = "旧 OSS-side/FC 课程包链路已禁用；请通过 ECS-first 重新上传课程 ZIP。";
+  const message = "历史 OSS-side 课程包链路已停用；请通过课程压缩包入口重新上传课程 ZIP。";
   const task = {
     ok: true,
     course,
@@ -4773,7 +4773,7 @@ async function markOssCoursePackageAwaitingExtract({ record, actor }) {
 
 async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
   if (coursePackageImportMode === "ecs-first") {
-    throw new Error("完整课件包已切换为 ECS-first 导入，不再接收 OSS-side/FC 解压回调。");
+    throw new Error("历史 OSS-side 解压回调已停用。请通过课程压缩包入口重新上传课程 ZIP。");
   }
   const course = safeSegment(record?.course || "").toUpperCase();
   if (!course) throw new Error("Course is required for OSS course package indexing.");
@@ -5507,7 +5507,7 @@ async function commitManifestCoursePackageImport({ course, importId, actor, revi
     lifecycle,
     lightweightPreview: lightweightPreview?.stdout?.trim() || null,
     lightweightPreviewWarning,
-    manifest: ecsFirstStorage ? "manifest restored and finalized for ECS-first hybrid storage" : "manifest restored from course package",
+    manifest: ecsFirstStorage ? "manifest restored and finalized for hybrid ECS/OSS storage" : "manifest restored from course package",
   };
 }
 
@@ -5648,7 +5648,7 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     ecsFirstStorage,
     lightweightPreview: lightweightPreview?.stdout?.trim() || null,
     lightweightPreviewWarning,
-    manifest: ecsFirstStorage ? "manifest updated and finalized for ECS-first hybrid storage" : "manifest updated directly from course package import",
+    manifest: ecsFirstStorage ? "manifest updated and finalized for hybrid ECS/OSS storage" : "manifest updated directly from course package import",
   };
 }
 
@@ -5731,7 +5731,7 @@ async function handleAdminApi(req, res) {
 
     const ossExtractCallbackMatch = /^\/api\/admin\/oss\/uploads\/([^/]+)\/extracted$/.exec(requestUrl.pathname);
     if (ossExtractCallbackMatch && req.method === "POST" && coursePackageImportMode === "ecs-first") {
-      sendJson(res, 410, { ok: false, error: "旧 FC/OSS-side 课件包回调已禁用。请使用小课包 ECS 导入，或大课包 OSS raw 导入。" });
+      sendJson(res, 410, { ok: false, error: "历史课程包回调接口已停用。请使用课程压缩包入口上传导入。" });
       return true;
     }
     if (ossExtractCallbackMatch && req.method === "POST" && isOssExtractCallbackAuthorized(req)) {
@@ -5820,7 +5820,7 @@ async function handleAdminApi(req, res) {
       }
       if (action === "complete" && req.method === "POST") {
         if (!isRawCoursePackageUploadKind(record.kind)) {
-          throw new Error("旧 OSS 直传记录不能继续完成或发布。请通过 ECS-first 重新上传课程 ZIP。");
+          throw new Error("这个直传记录来自已停用的历史入口，不能继续完成或发布。请通过课程压缩包入口重新上传课程 ZIP。");
         }
         const body = await readJsonBody(req, 64 * 1024);
         if (body.objectKey && body.objectKey !== record.objectKey) throw new Error("Completed object key does not match this upload.");
@@ -5861,7 +5861,7 @@ async function handleAdminApi(req, res) {
             });
             warning = "完整课件包已保存为 OSS raw package，ECS worker 会从 OSS 内网流式读取并自动分流；不使用 FC 解压。";
           } else {
-            throw new Error("完整课件包已切换为 ECS worker 导入：旧 OSS course-package 记录不能进入 FC/OSS-side 流程。请使用课程压缩包入口触发 raw package 上传。");
+            throw new Error("完整课件包已切换为 ECS worker 导入：历史 OSS course-package 记录不能继续发布。请使用课程压缩包入口触发 raw package 上传。");
           }
           sendJson(res, 200, {
             ok: true,
@@ -5882,7 +5882,7 @@ async function handleAdminApi(req, res) {
           record.status = "queued";
           record.jobId = job.id;
         } else if (wantsAutoPublish) {
-          warning = "旧 OSS 直传媒体发布入口已禁用；媒体/H5P/iSpring 请通过 ECS-first 课程导入或媒体发布任务处理。";
+          warning = "历史 OSS 直传媒体发布入口已停用；媒体/H5P/iSpring 请通过课程压缩包导入或媒体发布任务处理。";
         }
         ossUploadStore.writeRecord(record);
         sendJson(res, 200, { ok: true, upload: ossUploadStore.publicRecord(record), job, warning });

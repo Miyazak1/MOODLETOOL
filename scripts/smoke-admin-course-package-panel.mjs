@@ -77,7 +77,8 @@ const readyImport = {
 assert.equal(panel.reviewCourse(readyImport), "ENG4U");
 assert.equal(panel.renderPreview(readyImport), readyImport);
 assert.equal(elements.commitButton.disabled, false);
-assert.equal(elements.commitButton.textContent, "确认导入到 ENG4U");
+assert.equal(elements.commitButton.hidden, false);
+assert.equal(elements.commitButton.textContent, "确认替换 ENG4U 课程内容");
 assert.match(elements.panel.innerHTML, /imp-1/);
 assert.match(elements.panel.innerHTML, /video\/a.mp4/);
 
@@ -85,6 +86,7 @@ selectedCourse = "ESLDO";
 const mismatch = panel.commitState(readyImport);
 assert.equal(mismatch.canCommit, false);
 assert.equal(elements.commitButton.disabled, true);
+assert.equal(elements.commitButton.hidden, false);
 assert.match(elements.commitButton.title, /ENG4U/);
 panel.renderPreview(readyImport);
 assert.match(elements.panel.innerHTML, /课程是 ESLDO/);
@@ -120,7 +122,7 @@ panel.renderTaskStatus({
 assert.equal(panel.getCurrentImport(), readyImport);
 
 panel.renderTaskStatus({ course: "ESLDO", importId: "imp-4", status: "failed", error: "boom" });
-assert.equal(elements.statusTitle.textContent, "最近一次上传未完成");
+assert.equal(elements.statusTitle.textContent, "最近一次导入未完成");
 assert.equal(elements.statusTitle.className, "error");
 
 const taskId = panel.createTaskId();

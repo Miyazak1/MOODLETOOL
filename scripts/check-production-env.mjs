@@ -241,7 +241,7 @@ if (["ecs-first", "hybrid-worker"].includes(coursePackageImportMode)) {
   }
 }
 if (values.OSS_EXTRACT_CALLBACK_SECRET || values.PORTAL_EXTRACT_CALLBACK_BASE || values.OSS_EXTRACT_BUCKET || values.OSS_EXTRACT_ENDPOINT) {
-  warnings.push("Old FC/OSS extractor variables are ignored by the ECS-first package flow; remove them after verifying no other manual tooling needs them.");
+  warnings.push("Extractor variables are ignored by the hybrid raw package flow; remove them after verifying no other manual tooling needs them.");
 }
 
 if ((values.ADMIN_UPLOADS_ENABLED || "") === "1") {
