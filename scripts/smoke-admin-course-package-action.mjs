@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
 const source = readFileSync("public/admin-course-package-action.js", "utf8");
+const teacherAdminSource = readFileSync("public/teacher-admin.html", "utf8");
 const context = {
   URLSearchParams,
   window: {},
@@ -12,6 +13,9 @@ vm.createContext(context);
 vm.runInContext(source, context, { filename: "public/admin-course-package-action.js" });
 
 const mod = context.window.AdminCoursePackageAction;
+
+assert.match(teacherAdminSource, /onStatus:\s*\(title,\s*detail,\s*percent,\s*type\)\s*=>/);
+assert.doesNotMatch(teacherAdminSource, /onStatus:\s*\(\{\s*title,\s*detail,\s*percent,\s*type\s*\}\)\s*=>/);
 
 function makeFile(overrides = {}) {
   return {

@@ -2798,7 +2798,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           onStartRefresh: () => {
             startMediaAutoRefresh();
           },
-          onStatus: ({ title, detail, percent, type }) => {
+          onStatus: (title, detail, percent, type) => {
             setStatus({
               title,
               detail,
