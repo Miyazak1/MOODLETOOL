@@ -50,7 +50,7 @@ const portEndArgIndex = process.argv.indexOf("--port-end");
 const portEnd = portEndArgIndex >= 0 ? Number(process.argv[portEndArgIndex + 1]) : port;
 const shouldOpen = process.argv.includes("--open");
 const rootArgIndex = process.argv.indexOf("--root");
-const webRoot = rootArgIndex >= 0 ? resolve(projectRoot, process.argv[rootArgIndex + 1]) : projectRoot;
+const webRoot = rootArgIndex >= 0 ? resolve(projectRoot, process.argv[rootArgIndex + 1]) : join(projectRoot, "public");
 const distRoot = join(projectRoot, "dist");
 const distIndexPath = join(distRoot, "index.html");
 const shouldServeDistApp = rootArgIndex < 0 && existsSync(distIndexPath);
