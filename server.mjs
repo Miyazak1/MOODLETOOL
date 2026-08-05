@@ -107,9 +107,11 @@ const mediaJobsLogTailBytes = Math.max(16 * 1024, Number(process.env.MEDIA_JOBS_
 const mediaJobsAutoPublishAfterUpload = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_UPLOAD === "1";
 const mediaJobsAutoPublishAfterPackage = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_PACKAGE === "1";
 const mediaJobsAutoPublishAfterActivate = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_ACTIVATE === "1";
-const coursePackageImportMode = ["ecs-first", "oss-only", "legacy-local"].includes(String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase())
-  ? String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase()
-  : "ecs-first";
+const configuredCoursePackageImportMode = String(process.env.COURSE_PACKAGE_IMPORT_MODE || "ecs-first").toLowerCase();
+const coursePackageImportMode = "ecs-first";
+if (configuredCoursePackageImportMode && configuredCoursePackageImportMode !== "ecs-first") {
+  console.warn(`COURSE_PACKAGE_IMPORT_MODE=${configuredCoursePackageImportMode} is no longer supported; using ecs-first.`);
+}
 const courseLocalContentEnabled = process.env.COURSE_LOCAL_CONTENT_ENABLED !== "0";
 const courseLocalMaxFileBytes = Math.max(1, Number(process.env.COURSE_LOCAL_MAX_FILE_MB || 50)) * 1024 * 1024;
 const courseLocalMaxCourseBytes = Math.max(1, Number(process.env.COURSE_LOCAL_MAX_COURSE_MB || 1024)) * 1024 * 1024;
@@ -5727,6 +5729,10 @@ async function handleAdminApi(req, res) {
     }
 
     const ossExtractCallbackMatch = /^\/api\/admin\/oss\/uploads\/([^/]+)\/extracted$/.exec(requestUrl.pathname);
+    if (ossExtractCallbackMatch && req.method === "POST" && coursePackageImportMode === "ecs-first") {
+      sendJson(res, 410, { ok: false, error: "旧 FC/OSS-side 课件包回调已禁用。请使用 ECS-first 导入或 overflow 流式兜底。" });
+      return true;
+    }
     if (ossExtractCallbackMatch && req.method === "POST" && isOssExtractCallbackAuthorized(req)) {
       const uploadId = safeSegment(ossExtractCallbackMatch[1]);
       const record = ossUploadStore.readRecord(uploadId);
@@ -5850,26 +5856,8 @@ async function handleAdminApi(req, res) {
               autoCommit: true,
             });
             warning = "完整课件包已保存为 OSS overflow raw package，ECS worker 会从 OSS 流式读取并自动分流；不使用 FC 解压。";
-          } else if (coursePackageImportMode === "ecs-first") {
-            throw new Error("完整课件包已切换为 ECS-first 导入：旧 OSS course-package 记录不能进入 FC/OSS-side 流程。请使用课程压缩包入口触发 overflow fallback。");
-          } else if (coursePackageImportMode === "legacy-local") {
-            record.status = "importing";
-            record.importId = record.id;
-            record.importStatus = "queued";
-            record.importMode = "legacy-local";
-            ossUploadStore.writeRecord(record);
-            coursePackageTask = startOssCoursePackageImport({
-              record: { ...record },
-              actor: adminActor(req),
-              autoCommit: true,
-            });
-            warning = "完整课件包已直传到 OSS，legacy-local 模式会下载到 ECS 导入；仅建议临时补救使用。";
           } else {
-            coursePackageTask = await markOssCoursePackageAwaitingExtract({
-              record: { ...record },
-              actor: adminActor(req),
-            });
-            warning = "完整课件包已保存到 OSS inbox，已进入 OSS-only 解压/索引待处理；不会下载到 ECS。";
+            throw new Error("完整课件包已切换为 ECS-first 导入：旧 OSS course-package 记录不能进入 FC/OSS-side 流程。请使用课程压缩包入口触发 overflow fallback。");
           }
           sendJson(res, 200, {
             ok: true,

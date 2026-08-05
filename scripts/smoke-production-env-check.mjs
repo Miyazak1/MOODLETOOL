@@ -28,6 +28,7 @@ try {
   const goodEnvPath = join(smokeRoot, ".env.production.good");
   const cdnEnvPath = join(smokeRoot, ".env.production.cdn");
   const badEnvPath = join(smokeRoot, ".env.production.bad");
+  const oldModeEnvPath = join(smokeRoot, ".env.production.old-mode");
   const secretA = "portal-secret-0123456789-0123456789-0123456789";
   const secretB = "admin-secret-0123456789-0123456789-0123456789";
   const secretC = "embed-secret-0123456789-0123456789-0123456789";
@@ -137,6 +138,45 @@ try {
   if (bad.status === 0) throw new Error("Expected bad production env to fail.");
   const badReport = JSON.parse(bad.stdout);
   if (!badReport.errors.length) throw new Error("Expected bad production env report to include blockers.");
+
+  writeFileSync(oldModeEnvPath, [
+    "NODE_ENV=production",
+    "PORTAL_AUTH_ENABLED=1",
+    `PORTAL_SESSION_SECRET=${secretA}`,
+    "PORTAL_COOKIE_SECURE=1",
+    "PORTAL_DATA_DIR=/www/wwwroot/ossd-portal/data",
+    "COURSE_STATUS_FILE=/www/wwwroot/ossd-portal/data/course-status.json",
+    "COURSE_ACTIVE_ROOT=/www/wwwroot/ossd-portal/courseware-active",
+    "COURSE_ARCHIVE_ROOT=/www/wwwroot/ossd-portal/courseware-archive",
+    "X_ACCEL_COURSEWARE_PREFIX=/_protected_courseware/",
+    "OSS_BUCKET_URI=oss://moodletool",
+    "COURSEWARE_ASSET_MODE=hybrid",
+    "COURSEWARE_ASSET_BASE_URL=https://cdn.example.com/courseware-active",
+    "COURSEWARE_ASSET_PREFIX=courseware-active",
+    "COURSEWARE_ASSET_REGISTRY_FILE=/www/wwwroot/ossd-course-portal/deployment/asset-registry.json",
+    `EMBED_TOKEN_SECRET=${secretC}`,
+    "EMBED_PUBLIC_ORIGIN=https://courses.example.com",
+    'PORTAL_USERS_JSON=[{"username":"admin","password":"StrongAdminPassword123!","role":"admin","courses":["*"]}]',
+    "ADMIN_UPLOADS_ENABLED=1",
+    "ADMIN_USERNAME=admin-main",
+    "ADMIN_PASSWORD=AnotherStrongAdminPassword123!",
+    `ADMIN_SESSION_SECRET=${secretB}`,
+    "ADMIN_COOKIE_SECURE=1",
+    "OSS_DIRECT_UPLOAD_ENABLED=1",
+    "OSS_DIRECT_UPLOAD_BUCKET=moodletool",
+    "OSS_DIRECT_UPLOAD_ENDPOINT=https://oss-cn-hongkong.aliyuncs.com",
+    "OSS_UPLOADS_DATA_ROOT=/www/wwwroot/ossd-course-portal/data/oss-uploads",
+    "OSS_DIRECT_UPLOAD_ACCESS_KEY_ID=LTAI5tExampleAccessKeyId",
+    "OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET=exampleSecretForSmokeOnly1234567890",
+    "COURSE_PACKAGE_IMPORT_MODE=oss-only",
+    "",
+  ].join("\n"), "utf8");
+  const oldMode = runCheck(oldModeEnvPath);
+  if (oldMode.status === 0) throw new Error("Expected old course package import mode to fail.");
+  const oldModeReport = JSON.parse(oldMode.stdout);
+  if (!oldModeReport.errors.some((item) => item.includes("COURSE_PACKAGE_IMPORT_MODE must be ecs-first"))) {
+    throw new Error("Expected old course package import mode to be rejected.");
+  }
 
   console.log("Production env check smoke passed.");
 } finally {

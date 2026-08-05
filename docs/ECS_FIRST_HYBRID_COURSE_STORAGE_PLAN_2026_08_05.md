@@ -998,16 +998,16 @@ COURSE_LARGE_FILE_THRESHOLD_MB=100
 COURSE_LARGE_IMAGE_THRESHOLD_MB=25
 ```
 
-需要废弃或降级的变量语义：
+课程包导入不得再使用的旧变量语义：
 
 ```text
-COURSE_PACKAGE_IMPORT_MODE=oss-only
+COURSE_PACKAGE_IMPORT_MODE=oss-only 或 legacy-local
 OSS_DIRECT_UPLOAD_INBOX_PREFIX
 PORTAL_EXTRACT_CALLBACK_BASE
 OSS_EXTRACT_CALLBACK_SECRET
 ```
 
-这些属于旧的 OSS inbox + FC extractor 方案，不再是主流程必需项。
+这些属于旧的 OSS inbox + FC extractor 方案。生产检查必须拒绝 `oss-only` 和 `legacy-local`，服务端必须把旧 FC callback 视为已停用入口；旧记录只可作为审计日志查看，不可继续处理或重试。
 
 ## 14. 清理策略
 

@@ -205,8 +205,8 @@ if (directUploadEnabled === "1") {
 }
 
 const coursePackageImportMode = String(values.COURSE_PACKAGE_IMPORT_MODE || "ecs-first").toLowerCase();
-if (!["ecs-first", "oss-only", "legacy-local"].includes(coursePackageImportMode)) {
-  errors.push("COURSE_PACKAGE_IMPORT_MODE must be ecs-first, oss-only, or legacy-local.");
+if (coursePackageImportMode !== "ecs-first") {
+  errors.push("COURSE_PACKAGE_IMPORT_MODE must be ecs-first. The old oss-only/legacy-local course package flows are disabled.");
 } else {
   ok.push(`COURSE_PACKAGE_IMPORT_MODE=${coursePackageImportMode}.`);
 }
@@ -231,20 +231,8 @@ if (coursePackageImportMode === "ecs-first") {
     ok.push(`OSS_COURSE_PACKAGE_OVERFLOW_PREFIX=${values.OSS_COURSE_PACKAGE_OVERFLOW_PREFIX || "course-import-overflow"}.`);
   }
 }
-if (coursePackageImportMode === "oss-only") {
-  requireSecret("OSS_EXTRACT_CALLBACK_SECRET");
-  const callbackBase = values.PORTAL_EXTRACT_CALLBACK_BASE || values.EMBED_PUBLIC_ORIGIN || "";
-  if (!callbackBase) errors.push("PORTAL_EXTRACT_CALLBACK_BASE or EMBED_PUBLIC_ORIGIN is required for OSS-only package extraction callbacks.");
-  else if (!/^https:\/\//i.test(callbackBase)) errors.push("PORTAL_EXTRACT_CALLBACK_BASE should be an HTTPS origin, for example https://www.moodletool.work.");
-  else ok.push("OSS extract callback origin is set.");
-  const extractBucket = values.OSS_EXTRACT_BUCKET || values.OSS_DIRECT_UPLOAD_BUCKET || "";
-  const extractEndpoint = values.OSS_EXTRACT_ENDPOINT || values.OSS_DIRECT_UPLOAD_ENDPOINT || "";
-  if (!extractBucket) errors.push("OSS_EXTRACT_BUCKET or OSS_DIRECT_UPLOAD_BUCKET is required for OSS package extraction.");
-  else if (/^(oss:\/\/|https?:\/\/)/i.test(extractBucket)) errors.push("OSS_EXTRACT_BUCKET should be a plain bucket name, for example moodletool.");
-  else ok.push("OSS extract bucket is set.");
-  if (!extractEndpoint) errors.push("OSS_EXTRACT_ENDPOINT or OSS_DIRECT_UPLOAD_ENDPOINT is required for OSS package extraction.");
-  else if (!/^https:\/\/oss-[a-z0-9-]+\.aliyuncs\.com$/i.test(extractEndpoint)) warnings.push("OSS_EXTRACT_ENDPOINT usually should look like https://oss-cn-hongkong.aliyuncs.com.");
-  else ok.push("OSS extract endpoint is set.");
+if (values.OSS_EXTRACT_CALLBACK_SECRET || values.PORTAL_EXTRACT_CALLBACK_BASE || values.OSS_EXTRACT_BUCKET || values.OSS_EXTRACT_ENDPOINT) {
+  warnings.push("Old FC/OSS extractor variables are ignored by the ECS-first package flow; remove them after verifying no other manual tooling needs them.");
 }
 
 if ((values.ADMIN_UPLOADS_ENABLED || "") === "1") {

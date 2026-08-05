@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { createHash } from "node:crypto";
 import { createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { cp, mkdir, readdir, rm } from "node:fs/promises";
+import { cp, mkdir, readdir, rename, rm } from "node:fs/promises";
 import { dirname, extname, join, relative, resolve } from "node:path";
 import { pipeline } from "node:stream/promises";
 import unzipper from "unzipper";
@@ -25,6 +25,7 @@ const coursewareRoot = resolve(args.coursewareRoot || process.env.COURSE_ACTIVE_
 const courseRoot = resolve(coursewareRoot, course);
 const stagingRoot = resolve(args.stagingRoot || join(courseRoot, "_admin_uploads", "overflow-staging", importId));
 const localStagingRoot = join(stagingRoot, "local");
+const previousActiveRoot = join(stagingRoot, "previous-active");
 const registryPath = resolve(args.registry || process.env.COURSEWARE_ASSET_REGISTRY_FILE || join(deploymentRoot, "asset-registry.json"));
 const targetBucketUri = normalizeBucket(args.bucket || process.env.OSS_BUCKET_URI || (sourceBucket ? `oss://${sourceBucket}` : ""));
 const cdnBaseUrl = stripSlash(args.cdnBaseUrl || process.env.COURSEWARE_ASSET_BASE_URL || "");
@@ -375,6 +376,42 @@ async function copyLocalStagingToCourseRoot() {
   }
 }
 
+async function moveCurrentActiveToPrevious() {
+  await mkdir(courseRoot, { recursive: true });
+  await rm(previousActiveRoot, { recursive: true, force: true });
+  await mkdir(previousActiveRoot, { recursive: true });
+  let moved = 0;
+  for (const entry of await readdir(courseRoot, { withFileTypes: true })) {
+    if (entry.name === "_admin_uploads") continue;
+    await rename(
+      assertInside(courseRoot, join(courseRoot, entry.name)),
+      assertInside(previousActiveRoot, join(previousActiveRoot, entry.name)),
+    );
+    moved += 1;
+  }
+  return moved;
+}
+
+async function restorePreviousActive() {
+  await clearCourseRootPreservingAdmin();
+  if (!existsSync(previousActiveRoot)) return;
+  for (const entry of await readdir(previousActiveRoot, { withFileTypes: true })) {
+    await cp(join(previousActiveRoot, entry.name), join(courseRoot, entry.name), { recursive: true, force: true });
+  }
+}
+
+async function switchLocalStagingToCourseRoot() {
+  const previousEntries = await moveCurrentActiveToPrevious();
+  try {
+    await copyLocalStagingToCourseRoot();
+  } catch (error) {
+    await restorePreviousActive();
+    throw error;
+  }
+  await rm(previousActiveRoot, { recursive: true, force: true });
+  return { previousEntries, rollback: "restored-on-switch-failure" };
+}
+
 const sourceClient = await createOssClient(sourceBucket || "mock-source");
 const publishClient = sourceBucket === targetBucketName() ? sourceClient : await createOssClient(targetBucketName());
 
@@ -472,11 +509,11 @@ manifest.sourceAudit = {
   publishedAssetCount: uploaded.length,
   rewrittenResources,
   localCleanup: "streamed-no-media-local-copy",
+  activeSwitch: "staging-copy-with-rollback",
 };
 writeJson(join(localStagingRoot, "course-manifest.json"), manifest);
 
-await clearCourseRootPreservingAdmin();
-await copyLocalStagingToCourseRoot();
+const activeSwitch = await switchLocalStagingToCourseRoot();
 writeJson(registryPath, mergeRegistry(uploaded));
 
 const report = {
@@ -496,6 +533,7 @@ const report = {
     uploaded: uploaded.length,
     uploadedBytes: uploaded.reduce((sum, item) => sum + Number(item.bytes || 0), 0),
     rewrittenResources,
+    activeSwitch,
   },
   uploaded,
   failed,
