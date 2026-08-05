@@ -93,7 +93,9 @@ const loginRateLimitWindowMs = Number(process.env.LOGIN_RATE_LIMIT_WINDOW_SECOND
 const loginRateLimitLockMs = Number(process.env.LOGIN_RATE_LIMIT_LOCK_SECONDS || 15 * 60) * 1000;
 const maxDocumentUploadBytes = Number(process.env.ADMIN_MAX_DOCUMENT_MB || 50) * 1024 * 1024;
 const maxIspringUploadBytes = Number(process.env.ADMIN_MAX_ISPRING_MB || 2048) * 1024 * 1024;
-const maxCoursePackageUploadBytes = Number(process.env.ADMIN_MAX_COURSE_PACKAGE_MB || 4096) * 1024 * 1024;
+const maxCoursePackageUploadBytes = Number(process.env.ADMIN_MAX_COURSE_PACKAGE_MB || 32768) * 1024 * 1024;
+const coursePackageEcsSpaceFactor = Math.max(1, Number(process.env.COURSE_PACKAGE_ECS_SPACE_FACTOR || 3));
+const coursePackageDiskReserveBytes = Math.max(0, Number(process.env.COURSE_PACKAGE_DISK_RESERVE_MB || 4096)) * 1024 * 1024;
 const generatePreviewsAfterUploads = process.env.GENERATE_PREVIEWS_AFTER_UPLOADS === "1";
 const mediaJobsEnabled = process.env.MEDIA_JOBS_ENABLED === "1";
 const mediaJobsDataRoot = resolve(process.env.MEDIA_JOBS_DATA_ROOT || join(portalDataRoot, "media-jobs"));
@@ -104,9 +106,9 @@ const mediaJobsLogTailBytes = Math.max(16 * 1024, Number(process.env.MEDIA_JOBS_
 const mediaJobsAutoPublishAfterUpload = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_UPLOAD === "1";
 const mediaJobsAutoPublishAfterPackage = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_PACKAGE === "1";
 const mediaJobsAutoPublishAfterActivate = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_ACTIVATE === "1";
-const coursePackageImportMode = ["oss-only", "legacy-local"].includes(String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase())
+const coursePackageImportMode = ["ecs-first", "oss-only", "legacy-local"].includes(String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase())
   ? String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase()
-  : "oss-only";
+  : "ecs-first";
 const courseLocalContentEnabled = process.env.COURSE_LOCAL_CONTENT_ENABLED !== "0";
 const courseLocalMaxFileBytes = Math.max(1, Number(process.env.COURSE_LOCAL_MAX_FILE_MB || 50)) * 1024 * 1024;
 const courseLocalMaxCourseBytes = Math.max(1, Number(process.env.COURSE_LOCAL_MAX_COURSE_MB || 1024)) * 1024 * 1024;
@@ -797,6 +799,9 @@ function directUploadPublicConfig() {
 }
 
 async function createDirectUploadPolicy({ course, fileName, fileSize, contentType, kind, actor }) {
+  if (kind === "course-package" && coursePackageImportMode === "ecs-first") {
+    throw new Error("完整课件包已切换为 ECS-first 导入：请使用“课程压缩包”上传入口，不再使用 OSS 直传/FC 解压。");
+  }
   const catalog = await readCourseCatalog();
   const courseCodes = (catalog.courses || []).map((entry) => entry.code);
   const size = Number(fileSize || 0);
@@ -3438,6 +3443,35 @@ async function generateContentWorkbench() {
   return runCommand("node", [scriptPath], projectRoot);
 }
 
+async function finalizeEcsFirstCourseStorage(course, importId) {
+  if (coursePackageImportMode !== "ecs-first") return null;
+  const scriptPath = join(projectRoot, "scripts", "finalize-ecs-first-course-storage.mjs");
+  const args = [
+    scriptPath,
+    "--course",
+    safeSegment(course).toUpperCase(),
+    "--courseware-root",
+    courseActiveRoot,
+    "--bucket",
+    ossBucketUri,
+    "--cdn-base-url",
+    coursewareAssetBaseUrl,
+    "--prefix",
+    coursewareAssetPrefix,
+    "--registry",
+    coursewareAssetRegistryPath,
+    "--ossutil",
+    ossutilPath,
+    "--apply",
+  ];
+  const result = await runCommand("node", args, projectRoot);
+  return parseJobPayload(result.stdout) || {
+    ok: result.code === 0,
+    stdout: result.stdout,
+    stderr: result.stderr,
+  };
+}
+
 async function readContentWorkbench() {
   return JSON.parse(await readFile(join(projectRoot, "deployment", "course-content-workbench.json"), "utf8"));
 }
@@ -3488,6 +3522,42 @@ async function diskInfoFor(path) {
   } catch {
     return null;
   }
+}
+
+function formatBytesForError(bytes) {
+  const value = Number(bytes || 0);
+  if (!Number.isFinite(value) || value <= 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let size = value;
+  let unit = 0;
+  while (size >= 1024 && unit < units.length - 1) {
+    size /= 1024;
+    unit += 1;
+  }
+  return `${size.toFixed(unit === 0 ? 0 : 1)} ${units[unit]}`;
+}
+
+async function coursePackageEcsCapacityPreflight(totalBytes) {
+  const packageBytes = Number(totalBytes || 0);
+  const disk = await diskInfoFor(courseActiveRoot) || await diskInfoFor(projectRoot);
+  const requiredBytes = Math.ceil(packageBytes * coursePackageEcsSpaceFactor + coursePackageDiskReserveBytes);
+  const ok = !disk || disk.freeBytes >= requiredBytes;
+  return {
+    ok,
+    disk,
+    packageBytes,
+    requiredBytes,
+    freeBytes: disk?.freeBytes ?? null,
+    spaceFactor: coursePackageEcsSpaceFactor,
+    reserveBytes: coursePackageDiskReserveBytes,
+    overflowRequired: !ok,
+  };
+}
+
+async function assertCoursePackageEcsCapacity(totalBytes) {
+  const capacity = await coursePackageEcsCapacityPreflight(totalBytes);
+  if (capacity.ok) return capacity;
+  throw new Error(`ECS 剩余空间不足，不能走 ECS-first 课程包导入：ZIP ${formatBytesForError(capacity.packageBytes)}，预估峰值需要 ${formatBytesForError(capacity.requiredBytes)}，当前可用 ${formatBytesForError(capacity.freeBytes)}。请走 OSS overflow raw package 兜底，由 ECS worker 从 OSS 读取并分流，不要走旧 OSS inbox/FC 解压。`);
 }
 
 async function listDirectoryNames(root) {
@@ -4297,6 +4367,9 @@ function startCoursePackageFinalize({ course, importId, actor }) {
 }
 
 function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
+  if (coursePackageImportMode === "ecs-first") {
+    throw new Error("完整课件包已切换为 ECS-first 导入，不再支持 OSS inbox 下载回 ECS 的导入路径。");
+  }
   const course = safeSegment(record?.course || "").toUpperCase();
   const importId = safeSegment(record?.id || coursePackageId());
   if (!course) throw new Error("Course is required for OSS course package import.");
@@ -4479,6 +4552,9 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
 }
 
 async function markOssCoursePackageAwaitingExtract({ record, actor }) {
+  if (coursePackageImportMode === "ecs-first") {
+    throw new Error("完整课件包已切换为 ECS-first 导入，不再登记 OSS-side/FC 解压等待状态。");
+  }
   const course = safeSegment(record?.course || "").toUpperCase();
   const importId = safeSegment(record?.id || coursePackageId());
   if (!course) throw new Error("Course is required for OSS course package ingest.");
@@ -4528,6 +4604,9 @@ async function markOssCoursePackageAwaitingExtract({ record, actor }) {
 }
 
 async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
+  if (coursePackageImportMode === "ecs-first") {
+    throw new Error("完整课件包已切换为 ECS-first 导入，不再接收 OSS-side/FC 解压回调。");
+  }
   const course = safeSegment(record?.course || "").toUpperCase();
   if (!course) throw new Error("Course is required for OSS course package indexing.");
   if (record?.kind !== "course-package") throw new Error("Only course package uploads can be marked extracted.");
@@ -5205,12 +5284,16 @@ async function commitManifestCoursePackageImport({ course, importId, actor, revi
   }
 
   const root = courseRoot(course);
-  const manifest = normalizeManifestCourse(packageManifest.manifest, course);
+  let manifest = normalizeManifestCourse(packageManifest.manifest, course);
   await clearCourseRootForManifestPackage(course);
   const copiedTopLevelEntries = await copyManifestPackageContent(review.contentRoot, root);
   const removedGeneratedLocalPackageNotes = await pruneGeneratedLocalPackageNotes(course, manifest);
   recomputeManifestSummaries(manifest);
   writeJsonFile(join(root, "course-manifest.json"), manifest);
+  const ecsFirstStorage = await finalizeEcsFirstCourseStorage(course, importId);
+  if (ecsFirstStorage) {
+    manifest = normalizeManifestCourse(JSON.parse(await readFile(join(root, "course-manifest.json"), "utf8")), course);
+  }
   const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
   const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after whole-course ZIP import.");
   let lightweightPreview = null;
@@ -5228,6 +5311,7 @@ async function commitManifestCoursePackageImport({ course, importId, actor, revi
     originalFilename: review.originalFilename,
     copiedTopLevelEntries,
     removedGeneratedLocalPackageNotes,
+    ecsFirstStorage,
     lifecycleStatus: lifecycle.status,
     lightweightPreview: lightweightPreview?.stdout?.trim() || null,
     lightweightPreviewWarning,
@@ -5249,12 +5333,13 @@ async function commitManifestCoursePackageImport({ course, importId, actor, revi
     installed: review.operations || [],
     copiedTopLevelEntries,
     removedGeneratedLocalPackageNotes,
+    ecsFirstStorage,
     cleanup,
     catalogEntry,
     lifecycle,
     lightweightPreview: lightweightPreview?.stdout?.trim() || null,
     lightweightPreviewWarning,
-    manifest: "manifest restored from course package",
+    manifest: ecsFirstStorage ? "manifest restored and finalized for ECS-first hybrid storage" : "manifest restored from course package",
   };
 }
 
@@ -5349,7 +5434,11 @@ async function commitCoursePackageImport({ course, importId, actor }) {
   const removedGeneratedLocalPackageNotes = await pruneGeneratedLocalPackageNotes(course, manifest);
   recomputeManifestSummaries(manifest);
   writeJsonFile(join(courseRoot(course), "course-manifest.json"), manifest);
-  const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
+  const ecsFirstStorage = await finalizeEcsFirstCourseStorage(course, importId);
+  const finalManifest = ecsFirstStorage
+    ? normalizeManifestCourse(JSON.parse(await readFile(join(courseRoot(course), "course-manifest.json"), "utf8")), course)
+    : manifest;
+  const catalogEntry = await ensureCourseCatalogEntry(course, finalManifest);
   const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after whole-course ZIP import.");
   let lightweightPreview = null;
   let lightweightPreviewWarning = null;
@@ -5365,6 +5454,7 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     originalFilename: review.originalFilename,
     installedCount: installed.length,
     removedGeneratedLocalPackageNotes,
+    ecsFirstStorage,
     backups,
     lifecycleStatus: lifecycle.status,
     lightweightPreview: lightweightPreview?.stdout?.trim() || null,
@@ -5387,9 +5477,10 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     catalogEntry,
     lifecycle,
     removedGeneratedLocalPackageNotes,
+    ecsFirstStorage,
     lightweightPreview: lightweightPreview?.stdout?.trim() || null,
     lightweightPreviewWarning,
-    manifest: "manifest updated directly from course package import",
+    manifest: ecsFirstStorage ? "manifest updated and finalized for ECS-first hybrid storage" : "manifest updated directly from course package import",
   };
 }
 
@@ -6089,6 +6180,22 @@ async function handleAdminApi(req, res) {
       const originalFilename = requestUrl.searchParams.get("filename") || "course-package.zip";
       if (extname(originalFilename).toLowerCase() !== ".zip") throw new Error("Course package upload must be a .zip file.");
       const importId = safeSegment(requestUrl.searchParams.get("importId") || coursePackageId());
+      let capacity = null;
+      try {
+        capacity = await assertCoursePackageEcsCapacity(contentLength);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        writeCoursePackageTask(course, importId, {
+          status: "blocked",
+          phase: "ecs-space-insufficient",
+          filename: originalFilename,
+          totalBytes: contentLength,
+          percent: 0,
+          overflowRequired: true,
+          error: message,
+        });
+        throw error;
+      }
       const packageDir = coursePackageDir(course, importId);
       const sourceZip = ensureInside(packageDir, join(packageDir, safeSegment(originalFilename)));
       await mkdir(dirname(sourceZip), { recursive: true });
@@ -6098,6 +6205,7 @@ async function handleAdminApi(req, res) {
         filename: originalFilename,
         bytesReceived: 0,
         totalBytes: contentLength,
+        capacity,
         percent: 0,
         startedAt: new Date().toISOString(),
       });
@@ -6151,6 +6259,23 @@ async function handleAdminApi(req, res) {
       if (totalBytes > maxCoursePackageUploadBytes) {
         throw new Error(`Course package is too large. Max is ${Math.round(maxCoursePackageUploadBytes / 1024 / 1024)} MB.`);
       }
+      let capacity = null;
+      try {
+        capacity = await assertCoursePackageEcsCapacity(totalBytes || contentLength);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        writeCoursePackageTask(course, importId, {
+          status: "blocked",
+          phase: "ecs-space-insufficient",
+          filename: originalFilename,
+          totalBytes,
+          chunkTotal,
+          percent: 0,
+          overflowRequired: true,
+          error: message,
+        });
+        throw error;
+      }
 
       await mkdir(coursePackageChunkDir(course, importId), { recursive: true });
       writeCoursePackageTask(course, importId, {
@@ -6159,6 +6284,7 @@ async function handleAdminApi(req, res) {
         filename: originalFilename,
         totalBytes,
         chunkTotal,
+        capacity,
         startedAt: readCoursePackageTask(course, importId)?.startedAt || new Date().toISOString(),
       });
       const chunkPath = coursePackageChunkPath(course, importId, chunkIndex);
@@ -6252,7 +6378,7 @@ async function handleAdminApi(req, res) {
       if (!importId) throw new Error("Missing course package importId.");
       await withOperationLock(`course:${requestedCourse}:write`, async () => {
         const result = await commitCoursePackageImport({ course: requestedCourse, importId, actor: adminActor(req) });
-        const media = mediaJobsAutoPublishAfterPackage
+        const media = mediaJobsAutoPublishAfterPackage && coursePackageImportMode !== "ecs-first"
           ? tryCreateMediaJob({ type: "publish-course", course: requestedCourse, actor: adminActor(req) })
           : { job: null, warning: "" };
         sendJson(res, 200, {

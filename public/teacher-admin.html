@@ -1452,7 +1452,7 @@
           <div class="nav-group-label">当前课程操作</div>
           <button type="button" data-admin-nav="media" data-auth-required="1" disabled>媒体发布</button>
           <button type="button" data-admin-nav="upload" data-auth-required="1" disabled>本地维护上传</button>
-          <button type="button" data-admin-nav="package" data-auth-required="1" disabled>本地 ZIP 导入</button>
+          <button type="button" data-admin-nav="package" data-auth-required="1" disabled>课程压缩包</button>
           <button type="button" data-admin-nav="lifecycle" data-auth-required="1" disabled>启用 / 归档</button>
           <button type="button" data-admin-nav="maintenance" data-auth-required="1" disabled>维护</button>
           <div class="nav-group-label">全局管理</div>
@@ -1523,7 +1523,7 @@
         <div class="panel-heading">
           <div>
             <h2>选择当前课程</h2>
-            <p class="meta-line">先在这里确定要操作哪一门课。选择后，启用/归档、当前课程维护、本地维护上传都会同步作用于这门课程。完整课件包优先走媒体发布里的 OSS 直传。</p>
+            <p class="meta-line">先在这里确定要操作哪一门课。选择后，启用/归档、当前课程维护、本地维护上传都会同步作用于这门课程。完整课件包走“课程压缩包”导入，系统会自动把高并发资源发布到 OSS/CDN。</p>
           </div>
           <a class="button-link subtle" id="coursePanelLink" href="/?course=ENG3U">返回当前课程页面</a>
         </div>
@@ -1553,7 +1553,7 @@
         <div class="actions">
           <button id="statusButton" type="button">读取状态</button>
           <button class="primary" type="button" data-switch-panel="media">去媒体发布</button>
-          <button type="button" data-switch-panel="package">去本地 ZIP 导入</button>
+          <button type="button" data-switch-panel="package">去课程压缩包</button>
           <button type="button" data-switch-panel="upload">去本地维护上传</button>
         </div>
         <div class="stats" id="statusStats" hidden></div>
@@ -1607,9 +1607,9 @@
 
       <section class="admin-panel auth-required" data-admin-panel="upload" hidden>
         <h2>当前课程本地维护上传</h2>
-        <p class="meta-line">这个入口会先上传到 ECS，再写入当前课程目录，适合少量文本、iSpring 修补和维护性替换。大视频和完整课件包请优先使用“媒体发布”的 OSS 直传。</p>
+        <p class="meta-line">这个入口会先上传到 ECS，再写入当前课程目录，适合少量文本、iSpring 修补和维护性替换。完整课件包请使用“课程压缩包”导入。</p>
         <div class="notice">
-          常规新课件包上传请走 <button class="small" type="button" data-switch-panel="media">媒体发布 / 直传 OSS</button>，这样使用本地网络直传 OSS，不占用 ECS 5M 公网带宽。
+          常规新课件包上传请走 <button class="small" type="button" data-switch-panel="package">课程压缩包</button>，导入完成后会自动判断哪些资源留在 ECS、哪些发布到 OSS/CDN。
         </div>
         <div class="storage-mini" id="uploadStorageMini" hidden></div>
         <div id="courseUploadTasks" hidden></div>
@@ -1688,13 +1688,12 @@
         <div class="oss-direct-upload">
           <div>
             <h3>直传 OSS inbox</h3>
-            <p class="meta-line">大文件会从浏览器直接上传到 OSS，不经过 ECS 公网带宽。完整课件包会按文件名自动识别课程，上传后登记为 OSS-only 待解压/索引，不会下载回 ECS。</p>
+            <p class="meta-line">这里只用于单个视频、H5P 或 iSpring 包直传 OSS。完整课件包请走“课程压缩包”导入，由 ECS worker 自动分流。</p>
           </div>
           <div class="grid compact">
             <div>
               <label for="ossDirectKind">上传类型</label>
               <select id="ossDirectKind">
-                <option value="course-package">完整课件包 ZIP</option>
                 <option value="video">单个视频</option>
                 <option value="h5p">H5P 文件</option>
                 <option value="ispring-package">iSpring 包</option>
@@ -1709,9 +1708,9 @@
               <label class="inline-check"><input id="ossDirectAutoPublish" type="checkbox" /> 上传后自动创建发布任务</label>
             </div>
           </div>
-          <p class="oss-direct-hint">完整课件包支持一次选择多个 ZIP，系统会从文件名识别课程码，例如 ESLDO-course-package-20260803.zip。视频、H5P 和 iSpring 单包仍按当前课程保存；完整课件包后续由 OSS-side 解压/索引流程接管。</p>
+          <p class="oss-direct-hint">视频和 H5P 可直接进入 OSS/CDN；iSpring 单包仅作为独立媒体包上传。整课 ZIP 不再走 OSS inbox/FC 解压。</p>
           <div class="actions">
-            <button class="primary" id="ossDirectUploadButton" type="button">自动识别并直传 OSS</button>
+            <button class="primary" id="ossDirectUploadButton" type="button">直传媒体到 OSS</button>
             <button id="ossDirectCancelButton" type="button" hidden>取消当前上传</button>
           </div>
           <div class="upload-status" id="ossDirectStatus" hidden>
@@ -1759,10 +1758,10 @@
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="package" hidden>
-        <h2>当前课程本地 ZIP 导入</h2>
-        <p class="meta-line">这个入口会把 ZIP 先传到 ECS 再解压分析，只建议用于小包、补救或测试。大课件包请走“媒体发布”的 OSS 直传，文件只保存在 OSS。</p>
+        <h2>当前课程压缩包导入</h2>
+        <p class="meta-line">这个入口会把 ZIP 先传到 ECS，由导入 worker 解压分析，再自动判断普通资料留在 ECS、视频/H5P/iSpring 等高并发资源发布到 OSS/CDN。</p>
         <div class="notice">
-          新课程包建议使用 <button class="small" type="button" data-switch-panel="media">媒体发布 / 直传 OSS</button>。这里保留为本地维护通道，避免需要 SSH 时没有后门。
+          上传前会检查 ECS 剩余空间；空间不足时会阻断并提示走 OSS overflow raw package 兜底，不走旧 FC 解压。
         </div>
         <div class="storage-mini" id="packageStorageMini" hidden></div>
         <div>
@@ -2411,7 +2410,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       });
       ossDirectUploadController = window.AdminMediaUpload.createDirectUploadController({
         api: mediaApi,
-        getKind: () => ossDirectKind?.value || "course-package",
+        getKind: () => ossDirectKind?.value || "video",
         getFiles: () => Array.from(ossDirectFile?.files || []),
         getSelectedCourse: () => String(fields.course.value || "").trim().toUpperCase(),
         getCourseCodes: () => knownAdminCourseCodes(),

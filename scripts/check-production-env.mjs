@@ -204,11 +204,27 @@ if (directUploadEnabled === "1") {
   warnings.push("OSS_DIRECT_UPLOAD_ENABLED is not 1; browser-to-OSS direct upload will be hidden/disabled.");
 }
 
-const coursePackageImportMode = String(values.COURSE_PACKAGE_IMPORT_MODE || "oss-only").toLowerCase();
-if (!["oss-only", "legacy-local"].includes(coursePackageImportMode)) {
-  errors.push("COURSE_PACKAGE_IMPORT_MODE must be oss-only or legacy-local.");
+const coursePackageImportMode = String(values.COURSE_PACKAGE_IMPORT_MODE || "ecs-first").toLowerCase();
+if (!["ecs-first", "oss-only", "legacy-local"].includes(coursePackageImportMode)) {
+  errors.push("COURSE_PACKAGE_IMPORT_MODE must be ecs-first, oss-only, or legacy-local.");
 } else {
   ok.push(`COURSE_PACKAGE_IMPORT_MODE=${coursePackageImportMode}.`);
+}
+if (coursePackageImportMode === "ecs-first") {
+  if (assetMode === "local") {
+    warnings.push("COURSE_PACKAGE_IMPORT_MODE=ecs-first with COURSEWARE_ASSET_MODE=local will keep all course assets on ECS; media/iSpring concurrency benefits require hybrid or cdn.");
+  }
+  if (!ossBucket) {
+    warnings.push("COURSE_PACKAGE_IMPORT_MODE=ecs-first should set OSS_BUCKET_URI before importing media/iSpring/H5P courses.");
+  }
+  if (!assetBaseUrl) {
+    warnings.push("COURSE_PACKAGE_IMPORT_MODE=ecs-first should set COURSEWARE_ASSET_BASE_URL before importing media/iSpring/H5P courses.");
+  }
+  const ossutilPath = values.OSSUTIL_PATH || "ossutil";
+  ok.push(`ECS-first package import will publish selected assets with ${ossutilPath}.`);
+  if (directUploadEnabled === "1") {
+    ok.push("OSS direct upload remains available for single video/H5P assets; whole-course ZIP direct upload is disabled by the server.");
+  }
 }
 if (coursePackageImportMode === "oss-only") {
   requireSecret("OSS_EXTRACT_CALLBACK_SECRET");

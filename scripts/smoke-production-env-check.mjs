@@ -31,7 +31,6 @@ try {
   const secretA = "portal-secret-0123456789-0123456789-0123456789";
   const secretB = "admin-secret-0123456789-0123456789-0123456789";
   const secretC = "embed-secret-0123456789-0123456789-0123456789";
-  const secretD = "extract-secret-0123456789-0123456789-0123456789";
 
   writeFileSync(goodEnvPath, [
     "NODE_ENV=production",
@@ -43,6 +42,11 @@ try {
     "COURSE_ACTIVE_ROOT=/www/wwwroot/ossd-portal/courseware-active",
     "COURSE_ARCHIVE_ROOT=/www/wwwroot/ossd-portal/courseware-archive",
     "X_ACCEL_COURSEWARE_PREFIX=/_protected_courseware/",
+    "OSS_BUCKET_URI=oss://moodletool",
+    "COURSEWARE_ASSET_MODE=hybrid",
+    "COURSEWARE_ASSET_BASE_URL=https://cdn.example.com/courseware-active",
+    "COURSEWARE_ASSET_PREFIX=courseware-active",
+    "COURSEWARE_ASSET_REGISTRY_FILE=/www/wwwroot/ossd-course-portal/deployment/asset-registry.json",
     `EMBED_TOKEN_SECRET=${secretC}`,
     "EMBED_PUBLIC_ORIGIN=https://courses.example.com",
     'PORTAL_USERS_JSON=[{"username":"admin","password":"StrongAdminPassword123!","role":"admin","courses":["*"]},{"username":"teacher1","password":"StrongTeacherPassword123!","role":"teacher","courses":["ENG3U"]}]',
@@ -60,11 +64,7 @@ try {
     "OSS_UPLOADS_DATA_ROOT=/www/wwwroot/ossd-course-portal/data/oss-uploads",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_ID=LTAI5tExampleAccessKeyId",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET=exampleSecretForSmokeOnly1234567890",
-    "COURSE_PACKAGE_IMPORT_MODE=oss-only",
-    `OSS_EXTRACT_CALLBACK_SECRET=${secretD}`,
-    "PORTAL_EXTRACT_CALLBACK_BASE=https://courses.example.com",
-    "OSS_EXTRACT_BUCKET=moodletool",
-    "OSS_EXTRACT_ENDPOINT=https://oss-cn-hongkong.aliyuncs.com",
+    "COURSE_PACKAGE_IMPORT_MODE=ecs-first",
     "",
   ].join("\n"), "utf8");
 
@@ -118,11 +118,7 @@ try {
     "OSS_UPLOADS_DATA_ROOT=/www/wwwroot/ossd-course-portal/data/oss-uploads",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_ID=LTAI5tExampleAccessKeyId",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET=exampleSecretForSmokeOnly1234567890",
-    "COURSE_PACKAGE_IMPORT_MODE=oss-only",
-    `OSS_EXTRACT_CALLBACK_SECRET=${secretD}`,
-    "PORTAL_EXTRACT_CALLBACK_BASE=https://courses.example.com",
-    "OSS_EXTRACT_BUCKET=moodletool-courseware",
-    "OSS_EXTRACT_ENDPOINT=https://oss-cn-hongkong.aliyuncs.com",
+    "COURSE_PACKAGE_IMPORT_MODE=ecs-first",
     "",
   ].join("\n"), "utf8");
 

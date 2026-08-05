@@ -122,8 +122,6 @@ const uploadPath = join(uploadsRoot, safeSegment(uploadId), "upload.json");
 if (!existsSync(uploadPath)) throw new Error(`Upload record not found: ${uploadPath}`);
 const upload = readJson(uploadPath);
 const uploadKind = String(upload.kind || "").toLowerCase();
-const isOssOnlyCoursePackage = uploadKind === "course-package"
-  && (upload.importMode === "oss-only" || upload.ossOnly === true || String(upload.importStatus || "").startsWith("oss-"));
 const needsLocalPublish = isPlayableDirectKind(uploadKind);
 const reportPath = join(deploymentRoot, `oss-upload-pipeline-${safeSegment(upload.id)}.json`);
 const markdownPath = join(deploymentRoot, `oss-upload-pipeline-${safeSegment(upload.id)}.md`);
@@ -141,14 +139,7 @@ if (needsLocalPublish) {
 if (!upload.ossUri || !upload.objectKey) blockers.push("Upload record is missing OSS object information.");
 if (upload.status !== "uploaded" && upload.status !== "queued") warnings.push(`Upload status is ${upload.status}; expected uploaded/queued.`);
 if (uploadKind === "course-package") {
-  if (isOssOnlyCoursePackage) {
-    ok.push("Course package is handled by the OSS-side extractor/indexer; ECS does not download or store the ZIP.");
-    if (!["oss-extract-required", "oss-index-queued", "oss-extracted", "committed"].includes(String(upload.importStatus || ""))) {
-      warnings.push(`Course package import status is ${upload.importStatus || "not set"}; expected OSS extractor/indexer handoff state.`);
-    }
-  } else {
-    blockers.push("course-package publish-upload requires OSS-only handoff. Set COURSE_PACKAGE_IMPORT_MODE=oss-only or use the legacy-local import path explicitly.");
-  }
+  blockers.push("Whole-course ZIP imports are ECS-first now. Use the course-package upload/commit endpoint so the worker can classify local-vs-OSS assets.");
 }
 if (uploadKind === "ispring-package") {
   blockers.push("ispring-package direct upload is stored in OSS inbox, but iSpring package extraction/import from OSS inbox is not implemented yet.");

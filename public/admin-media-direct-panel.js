@@ -76,7 +76,7 @@
     }
 
     function uploadButtonText(preview = latestPreview) {
-      if (!preview?.files) return "自动识别并直传 OSS";
+      if (!preview?.files) return "直传媒体到 OSS";
       if (!preview.ok) return "修正后再上传";
       if (preview.files === 1) return "直传到 OSS";
       return `直传 ${preview.files} 个文件到 OSS`;

@@ -15,6 +15,7 @@ function element() {
     disabled: false,
     hidden: true,
     innerHTML: "",
+    addEventListener() {},
     style: {},
     textContent: "",
     title: "",
@@ -79,7 +80,7 @@ const panel = context.window.AdminMediaDirectPanel.createPanel({
 panel.renderConfig({ directUpload: { enabled: false, configured: false, reason: "missing CORS" } });
 assert.equal(elements.uploadButton.disabled, true);
 assert.equal(elements.uploadButton.title, "missing CORS");
-assert.equal(elements.uploadButton.textContent, "自动识别并直传 OSS");
+assert.equal(elements.uploadButton.textContent, "直传媒体到 OSS");
 assert.equal(elements.statusTitle.textContent, "OSS 直传暂不可用");
 assert.deepEqual(elements.status.classList.toggled.slice(-2), [["error", true], ["warn", false]]);
 
@@ -145,6 +146,6 @@ elements.fileInput.value = "fake-file";
 await panel.uploadSelected();
 assert.equal(uploadCount, 1);
 assert.equal(elements.fileInput.value, "");
-assert.equal(elements.uploadButton.textContent, "自动识别并直传 OSS");
+assert.equal(elements.uploadButton.textContent, "直传媒体到 OSS");
 
 console.log("admin media direct panel smoke ok");

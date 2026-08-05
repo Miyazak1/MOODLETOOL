@@ -487,7 +487,7 @@
         notifyQueue();
         return createDirectUploadPreview();
       }
-      const kind = typeof getKind === "function" ? getKind() : "course-package";
+      const kind = typeof getKind === "function" ? getKind() : "video";
       const signature = `${kind}:${fileSelectionSignature(files)}`;
       if (signature !== lastPreviewSignature) {
         cancelledQueueItemIds.clear();
@@ -538,11 +538,11 @@
         const activeWriteJob = typeof hasActiveWriteJob === "function" ? hasActiveWriteJob() : null;
         if (activeWriteJob) {
           const typeLabel = typeof jobTypeLabel === "function" ? jobTypeLabel(activeWriteJob.type) : activeWriteJob.type;
-          throw new Error(`已有写任务运行中：${activeWriteJob.course || activeWriteJob.scope || "all"} · ${typeLabel}。请等待完成后再自动发布，或取消勾选“上传后自动创建发布任务”只直传到 OSS inbox。`);
+          throw new Error(`已有写任务运行中：${activeWriteJob.course || activeWriteJob.scope || "all"} · ${typeLabel}。请等待完成后再自动发布，或取消勾选“上传后自动创建发布任务”只直传到 OSS。`);
         }
       }
       if (autoPublish && kind === "ispring-package") {
-        const ok = confirmImpl("当前自动发布支持完整课件包 ZIP、单个视频和 H5P。iSpring 单包会先保存到 OSS inbox，暂不会自动覆盖课程。仍然继续上传吗？");
+        const ok = confirmImpl("当前自动发布支持单个视频和 H5P。iSpring 单包会先保存到 OSS，暂不会自动覆盖课程。仍然继续上传吗？");
         if (!ok) return { canceled: true, message: "已取消 OSS 直传。" };
       }
 
@@ -638,7 +638,7 @@
         ? `已创建媒体任务 ${completeData.job.id}`
         : completeData.coursePackageTask
           ? `已创建导入任务 ${completeData.coursePackageTask.importId || completeData.upload?.importId || ""}`.trim()
-          : completeData.warning || "已保存到 OSS inbox";
+          : completeData.warning || "已保存到 OSS";
       updateQueueItem(queueItem, { detail: finishedDetail, percent: 100, status: completeData.warning ? "warning" : "done" });
       if (typeof onRefresh === "function") await onRefresh();
       if (typeof onStartRefresh === "function") onStartRefresh();
@@ -650,7 +650,7 @@
       const files = typeof getFiles === "function" ? Array.from(getFiles() || []) : [];
       if (!files.length) throw new Error("请选择要直传到 OSS 的文件。");
       cancelRequested = false;
-      const kind = typeof getKind === "function" ? getKind() : "course-package";
+      const kind = typeof getKind === "function" ? getKind() : "video";
       const signature = `${kind}:${fileSelectionSignature(files)}`;
       if (signature !== lastPreviewSignature) {
         cancelledQueueItemIds.clear();
