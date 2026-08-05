@@ -144,6 +144,11 @@ function isDownloadableFile(item: LinkableResource): boolean {
   return Boolean(item.path || item.url || item.downloadPath || item.downloadUrl) && type !== "html" && type !== "htm";
 }
 
+function isVisibleISpringEntry(item: Lesson["ispring"][number]): boolean {
+  const trustedRemote = item.source === "cdn" || item.source === "oss";
+  return Boolean(item.path || item.url) && (item.mode !== "external" || trustedRemote);
+}
+
 function isEmptyMoodleActivityShell(item: LinkableResource): boolean {
   const category = (item.category || "").toLowerCase();
   if (!category.startsWith("moodle_") || category === "moodle_course_section") return false;
@@ -1427,7 +1432,7 @@ function LessonRow({
   const [open, setOpen] = useState(defaultOpen);
   const visibleDownloads = lesson.downloads.filter(isTeacherVisibleResource);
   const visibleTextExports = lesson.textExports.filter(isTeacherVisibleResource);
-  const visibleISpring = lesson.ispring.filter((item) => item.path && item.mode !== "external");
+  const visibleISpring = lesson.ispring.filter(isVisibleISpringEntry);
   const visibleBookPageCount = lesson.bookSections?.length ? visibleBookSectionsForLesson(lesson).length : lesson.bookPageCount;
   const unitOverview = isUnitOverviewLesson(lesson);
 
