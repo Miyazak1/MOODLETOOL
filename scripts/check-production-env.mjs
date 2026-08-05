@@ -201,7 +201,7 @@ if (directUploadEnabled === "1") {
   }
   if (directRoot && !directRoot.startsWith("/")) errors.push("OSS_UPLOADS_DATA_ROOT should be an absolute Linux path when set.");
 } else {
-  warnings.push("OSS_DIRECT_UPLOAD_ENABLED is not 1; browser-to-OSS direct upload will be hidden/disabled.");
+  warnings.push("OSS_DIRECT_UPLOAD_ENABLED is not 1; ECS-first overflow raw ZIP fallback will be unavailable when ECS cannot safely receive the ZIP.");
 }
 
 const coursePackageImportMode = String(values.COURSE_PACKAGE_IMPORT_MODE || "ecs-first").toLowerCase();
@@ -223,7 +223,7 @@ if (coursePackageImportMode === "ecs-first") {
   const ossutilPath = values.OSSUTIL_PATH || "ossutil";
   ok.push(`ECS-first package import will publish selected assets with ${ossutilPath}.`);
   if (directUploadEnabled === "1") {
-    ok.push("OSS direct upload remains available for single video/H5P assets; whole-course ZIP direct upload is disabled by the server.");
+    ok.push("OSS browser upload is reserved for ECS-first overflow raw ZIP fallback; manual media/H5P/iSpring direct upload is disabled by the server.");
     const directMaxGb = Number(values.OSS_DIRECT_UPLOAD_MAX_GB || 20);
     if (Number.isFinite(directMaxGb) && directMaxGb < 10) {
       warnings.push("OSS_DIRECT_UPLOAD_MAX_GB is below 10; very large course ZIP overflow uploads may be blocked before the ECS worker can process them.");

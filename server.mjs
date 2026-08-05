@@ -802,8 +802,8 @@ function directUploadPublicConfig() {
 }
 
 async function createDirectUploadPolicy({ course, fileName, fileSize, contentType, kind, actor }) {
-  if (kind === "course-package" && coursePackageImportMode === "ecs-first") {
-    throw new Error("完整课件包已切换为 ECS-first 导入：请使用“课程压缩包”上传入口。空间不足时系统会自动使用 OSS overflow raw package，不再使用旧 OSS 直传/FC 解压。");
+  if (kind !== "course-package-overflow") {
+    throw new Error("OSS browser upload is reserved for ECS-first overflow raw course packages. Use the course package upload entry; media/iSpring/H5P publishing is handled by the ECS worker.");
   }
   const catalog = await readCourseCatalog();
   const courseCodes = (catalog.courses || []).map((entry) => entry.code);
@@ -3560,7 +3560,7 @@ async function coursePackageEcsCapacityPreflight(totalBytes) {
 async function assertCoursePackageEcsCapacity(totalBytes) {
   const capacity = await coursePackageEcsCapacityPreflight(totalBytes);
   if (capacity.ok) return capacity;
-  throw new Error(`ECS 剩余空间不足，不能走 ECS-first 课程包导入：ZIP ${formatBytesForError(capacity.packageBytes)}，预估峰值需要 ${formatBytesForError(capacity.requiredBytes)}，当前可用 ${formatBytesForError(capacity.freeBytes)}。请走 OSS overflow raw package 兜底，由 ECS worker 从 OSS 读取并分流，不要走旧 OSS inbox/FC 解压。`);
+  throw new Error(`ECS 剩余空间不足，不能走 ECS-first 课程包导入：ZIP ${formatBytesForError(capacity.packageBytes)}，预估峰值需要 ${formatBytesForError(capacity.requiredBytes)}，当前可用 ${formatBytesForError(capacity.freeBytes)}。请走 OSS overflow raw package 兜底，由 ECS worker 从 OSS 读取并分流，不要走旧 FC 解压链路。`);
 }
 
 async function listDirectoryNames(root) {
@@ -4531,7 +4531,7 @@ function startEcsFirstOverflowCoursePackageImport({ record, actor }) {
 
 function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
   if (coursePackageImportMode === "ecs-first" && record?.kind !== "course-package-overflow") {
-    throw new Error("完整课件包已切换为 ECS-first 导入，不再支持 OSS inbox 下载回 ECS 的导入路径。");
+    throw new Error("完整课件包已切换为 ECS-first 导入，旧 OSS/FC 课程包记录不能继续处理。");
   }
   const course = safeSegment(record?.course || "").toUpperCase();
   const importId = safeSegment(record?.id || coursePackageId());
@@ -4729,7 +4729,7 @@ async function markOssCoursePackageAwaitingExtract({ record, actor }) {
   const filename = safeSegment(record.fileName || "course-package.zip") || "course-package.zip";
   if (extname(filename).toLowerCase() !== ".zip") throw new Error("Course package ingest requires a .zip file.");
 
-  const message = "完整课件包已保存在 OSS inbox，等待 OSS-side 解压/索引；不会下载到 ECS。";
+  const message = "旧 OSS-side/FC 课程包链路已禁用；请通过 ECS-first 重新上传课程 ZIP。";
   const task = {
     ok: true,
     course,
@@ -5818,6 +5818,9 @@ async function handleAdminApi(req, res) {
         return true;
       }
       if (action === "complete" && req.method === "POST") {
+        if (record.kind !== "course-package-overflow") {
+          throw new Error("旧 OSS 直传记录不能继续完成或发布。请通过 ECS-first 重新上传课程 ZIP。");
+        }
         const body = await readJsonBody(req, 64 * 1024);
         if (body.objectKey && body.objectKey !== record.objectKey) throw new Error("Completed object key does not match this upload.");
         if (record.uploadMode === "multipart") {
@@ -5878,9 +5881,7 @@ async function handleAdminApi(req, res) {
           record.status = "queued";
           record.jobId = job.id;
         } else if (wantsAutoPublish) {
-          warning = record.kind === "ispring-package"
-            ? "iSpring 包已直传到 OSS；当前自动发布只支持单个视频、H5P 和 ECS-first overflow 课程包。"
-            : "该上传类型已直传到 OSS；当前自动发布只支持单个视频、H5P 和 ECS-first overflow 课程包。";
+          warning = "旧 OSS 直传媒体发布入口已禁用；媒体/H5P/iSpring 请通过 ECS-first 课程导入或媒体发布任务处理。";
         }
         ossUploadStore.writeRecord(record);
         sendJson(res, 200, { ok: true, upload: ossUploadStore.publicRecord(record), job, warning });

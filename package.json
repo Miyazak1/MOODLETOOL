@@ -90,7 +90,6 @@
     "smoke:admin-media-view": "node scripts/smoke-admin-media-view.mjs",
     "smoke:admin-media-state": "node scripts/smoke-admin-media-state.mjs",
     "smoke:admin-media-panel": "node scripts/smoke-admin-media-panel.mjs",
-    "smoke:admin-media-direct-panel": "node scripts/smoke-admin-media-direct-panel.mjs",
     "smoke:admin-api-client": "node scripts/smoke-admin-api-client.mjs",
     "smoke:admin-course-data-client": "node scripts/smoke-admin-course-data-client.mjs",
     "smoke:admin-course-package-panel": "node scripts/smoke-admin-course-package-panel.mjs",

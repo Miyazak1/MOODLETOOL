@@ -9,7 +9,6 @@
     elements = {},
     getSelectedCourse,
     jobTypeLabel = window.AdminMediaView.jobTypeLabel,
-    renderOssDirectUploadConfig,
   } = {}) {
     let data = { courses: [], jobs: [], uploads: [], config: {} };
     let lastUpdatedAt = null;
@@ -63,7 +62,6 @@
         registryAssets: Number(nextData.registry?.assetCount || 0),
         ossObjects: Number(nextData.oss?.objectCount || 0),
         ossBytes: Number(nextData.oss?.totalBytes || 0),
-        uploads: uploads.length,
         activeUploads: activeUploadCount(uploads),
       };
     }
@@ -85,8 +83,6 @@
         deltaText("已发布资源", before.publishedAssets, after.publishedAssets),
         deltaText("Registry", before.registryAssets, after.registryAssets),
         deltaText("OSS对象", before.ossObjects, after.ossObjects),
-        deltaText("直传记录", before.uploads, after.uploads),
-        deltaText("直传处理中", before.activeUploads, after.activeUploads),
       ].filter(Boolean);
       if (changes.length) return changes.slice(0, 4).join(" · ");
       return "本次无变化";
@@ -144,7 +140,6 @@
           elements.notice.innerHTML = "媒体任务中心当前未启用。现有命令行迁移完成后，在生产环境设置 <strong>MEDIA_JOBS_ENABLED=1</strong> 再允许后台创建任务。";
         }
       }
-      if (typeof renderOssDirectUploadConfig === "function") renderOssDirectUploadConfig(config);
       renderOss(data.oss);
       renderLocks(data.locks);
     }
@@ -188,16 +183,6 @@
       elements.jobsTable.hidden = false;
     }
 
-    function renderUploads(nextData = data) {
-      data = { ...data, ...nextData };
-      if (!elements.uploadsTable) return;
-      elements.uploadsTable.innerHTML = window.AdminMediaView.renderUploadsSection({
-        uploads: data.uploads || [],
-        jobs: data.jobs || [],
-      });
-      elements.uploadsTable.hidden = false;
-    }
-
     function updateRefreshState({ updatedAt = lastUpdatedAt, refreshing = false, nextDelayMs = null } = {}) {
       lastUpdatedAt = updatedAt || lastUpdatedAt;
       if (!elements.refreshState) return;
@@ -221,7 +206,6 @@
       renderConfig(data);
       renderCourses(data);
       renderJobs(data);
-      renderUploads(data);
       updateActionControls(data);
       updateRefreshState();
     }
@@ -256,7 +240,6 @@
       renderLocks,
       renderOss,
       renderQuiet,
-      renderUploads,
       setData,
       updateActionControls,
       updateRefreshState,

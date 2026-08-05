@@ -1295,6 +1295,7 @@ PORTAL_EXTRACT_CALLBACK_BASE
 保留旧记录只作为审计日志，不作为可执行任务
 启用新的 OSS overflow raw package 入口，但只在 ECS 空间不足以接收 ZIP 时使用
 新的 OSS overflow 不写 inbox/uploads，不触发 FC
+后台不再展示人工“直传 OSS inbox/媒体”面板；后端浏览器直传接口只接受 course-package-overflow
 ```
 
 如果旧记录对应课程已经成功成为 active 课程，则 active 课程按现有 course-manifest 继续展示；但后续更新必须走 ECS-first 重新导入。

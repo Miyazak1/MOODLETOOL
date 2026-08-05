@@ -1685,43 +1685,6 @@
           <button id="readinessMediaButton" type="button">检查媒体配置</button>
           <span class="media-refresh-state" id="mediaRefreshState">自动刷新未启动</span>
         </div>
-        <div class="oss-direct-upload">
-          <div>
-            <h3>直传 OSS inbox</h3>
-            <p class="meta-line">这里只用于单个视频、H5P 或 iSpring 包直传 OSS。完整课件包请走“课程压缩包”导入，由 ECS worker 自动分流。</p>
-          </div>
-          <div class="grid compact">
-            <div>
-              <label for="ossDirectKind">上传类型</label>
-              <select id="ossDirectKind">
-                <option value="video">单个视频</option>
-                <option value="h5p">H5P 文件</option>
-                <option value="ispring-package">iSpring 包</option>
-              </select>
-            </div>
-            <div>
-              <label for="ossDirectFile">文件</label>
-              <input id="ossDirectFile" type="file" multiple />
-            </div>
-            <div>
-              <label>完成后动作</label>
-              <label class="inline-check"><input id="ossDirectAutoPublish" type="checkbox" /> 上传后自动创建发布任务</label>
-            </div>
-          </div>
-          <p class="oss-direct-hint">视频和 H5P 可直接进入 OSS/CDN；iSpring 单包仅作为独立媒体包上传。整课 ZIP 不再走 OSS inbox/FC 解压。</p>
-          <div class="actions">
-            <button class="primary" id="ossDirectUploadButton" type="button">直传媒体到 OSS</button>
-            <button id="ossDirectCancelButton" type="button" hidden>取消当前上传</button>
-          </div>
-          <div class="upload-status" id="ossDirectStatus" hidden>
-            <strong id="ossDirectStatusTitle">等待上传</strong>
-            <div class="progress" id="ossDirectProgress" hidden>
-              <div class="progress-bar" id="ossDirectProgressBar"></div>
-            </div>
-            <div class="meta-line" id="ossDirectStatusDetail"></div>
-          </div>
-          <div class="oss-direct-queue" id="ossDirectQueue" hidden></div>
-        </div>
         <div class="media-course-controls">
           <div>
             <label for="mediaCourseFilter">课程显示</label>
@@ -1749,7 +1712,6 @@
           </div>
         </div>
         <div id="mediaCourseTable" hidden></div>
-        <div id="mediaUploadsTable" hidden></div>
         <div id="mediaJobsTable" hidden></div>
         <div id="mediaJobLogPanel" class="upload-status media-detail-panel" hidden>
           <strong id="mediaJobLogTitle">媒体详情</strong>
@@ -1968,7 +1930,6 @@ pm2 restart ossd-course-portal --update-env</pre>
     <script src="/admin-api-client.js"></script>
     <script src="/admin-course-data-client.js"></script>
     <script src="/admin-media-panel.js"></script>
-    <script src="/admin-media-direct-panel.js"></script>
     <script src="/admin-course-package-panel.js"></script>
     <script src="/admin-course-package-action.js"></script>
     <script src="/admin-storage-panel.js"></script>
@@ -2051,7 +2012,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       const mediaLocksPanel = document.querySelector("#mediaLocksPanel");
       const mediaNotice = document.querySelector("#mediaNotice");
       const mediaCourseTable = document.querySelector("#mediaCourseTable");
-      const mediaUploadsTable = document.querySelector("#mediaUploadsTable");
       const mediaJobsTable = document.querySelector("#mediaJobsTable");
       const mediaJobLogPanel = document.querySelector("#mediaJobLogPanel");
       const mediaJobLogTitle = document.querySelector("#mediaJobLogTitle");
@@ -2065,17 +2025,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       const syncCurrentCourseButton = document.querySelector("#syncCurrentCourseButton");
       const publishAllMediaButton = document.querySelector("#publishAllMediaButton");
       const readinessMediaButton = document.querySelector("#readinessMediaButton");
-      const ossDirectKind = document.querySelector("#ossDirectKind");
-      const ossDirectFile = document.querySelector("#ossDirectFile");
-      const ossDirectAutoPublish = document.querySelector("#ossDirectAutoPublish");
-      const ossDirectUploadButton = document.querySelector("#ossDirectUploadButton");
-      const ossDirectCancelButton = document.querySelector("#ossDirectCancelButton");
-      const ossDirectStatus = document.querySelector("#ossDirectStatus");
-      const ossDirectStatusTitle = document.querySelector("#ossDirectStatusTitle");
-      const ossDirectStatusDetail = document.querySelector("#ossDirectStatusDetail");
-      const ossDirectProgress = document.querySelector("#ossDirectProgress");
-      const ossDirectProgressBar = document.querySelector("#ossDirectProgressBar");
-      const ossDirectQueue = document.querySelector("#ossDirectQueue");
       const courseNavigationLinks = [
         document.querySelector("#topCourseLink"),
         document.querySelector("#sidebarCourseLink"),
@@ -2105,8 +2054,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       let shellPanel = null;
       let mediaPanel = null;
       let mediaAutoRefresh = null;
-      let ossDirectPanel = null;
-      let ossDirectUploadController = null;
       let coursePackageUi = null;
       let coursePackageAction = null;
       let storagePanel = null;
@@ -2345,21 +2292,6 @@ pm2 restart ossd-course-portal --update-env</pre>
           if (data.backups?.length) await readBackups({ writeOutput: false });
         },
       });
-      ossDirectPanel = window.AdminMediaDirectPanel.createPanel({
-        elements: {
-          cancelButton: ossDirectCancelButton,
-          fileInput: ossDirectFile,
-          progress: ossDirectProgress,
-          progressBar: ossDirectProgressBar,
-          queue: ossDirectQueue,
-          status: ossDirectStatus,
-          statusDetail: ossDirectStatusDetail,
-          statusTitle: ossDirectStatusTitle,
-          uploadButton: ossDirectUploadButton,
-        },
-        formatBytes,
-        getController: () => ossDirectUploadController,
-      });
       mediaPanel = window.AdminMediaPanel.createPanel({
         elements: {
           auditCurrentCourseButton,
@@ -2377,11 +2309,9 @@ pm2 restart ossd-course-portal --update-env</pre>
           readinessMediaButton,
           refreshState: mediaRefreshState,
           syncCurrentCourseButton,
-          uploadsTable: mediaUploadsTable,
         },
         getSelectedCourse: () => fields.course.value,
         jobTypeLabel: window.AdminMediaView.jobTypeLabel,
-        renderOssDirectUploadConfig: (config) => ossDirectPanel.renderConfig(config),
       });
       mediaAutoRefresh = window.AdminMediaApi.createAutoRefresh({
         isEnabled: () => Boolean(adminAuthenticated && activeAdminPanel === "media"),
@@ -2411,25 +2341,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         write,
         confirm: (message) => confirm(message),
       });
-      ossDirectUploadController = window.AdminMediaUpload.createDirectUploadController({
-        api: mediaApi,
-        getKind: () => ossDirectKind?.value || "video",
-        getFiles: () => Array.from(ossDirectFile?.files || []),
-        getSelectedCourse: () => String(fields.course.value || "").trim().toUpperCase(),
-        getCourseCodes: () => knownAdminCourseCodes(),
-        getAutoPublish: () => Boolean(ossDirectAutoPublish?.checked),
-        hasActiveWriteJob: () => mediaPanel.activeWriteJob(),
-        jobTypeLabel: window.AdminMediaView.jobTypeLabel,
-        confirm: (message) => confirm(message),
-        formatProgress: (file) => window.AdminMediaView.uploadProgressFormatter(file),
-        onActiveUploadChange: (xhr) => ossDirectPanel.setActiveUpload(xhr),
-        onStatus: ({ title, detail, percent, type }) => ossDirectPanel.setStatus(title, detail, percent, type),
-        onQueueChange: (items) => ossDirectPanel.renderQueue(items),
-        onRefresh: () => readMedia({ writeOutput: false }),
-        onStartRefresh: () => startMediaAutoRefresh(),
-        onWrite: (data) => write(data),
-      });
-
       function showFeedback(title, type = "info", detail = "") {
         if (!adminFeedback) return;
         adminFeedback.hidden = false;
@@ -2676,10 +2587,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         mediaPanel.renderJobs(data);
       }
 
-      function renderMediaUploads(data) {
-        mediaPanel.renderUploads(data);
-      }
-
       function renderMedia(data) {
         mediaData = mediaPanel.setData(data);
         mediaPanel.render(mediaData);
@@ -2863,12 +2770,8 @@ pm2 restart ossd-course-portal --update-env</pre>
           getSelectedCourse: () => course,
           hasActiveWriteJob: () => null,
           jobTypeLabel: window.AdminMediaView.jobTypeLabel,
-          onActiveUploadChange: (xhr) => {
-            ossDirectPanel?.setActiveUpload?.(xhr);
-          },
-          onQueueChange: (items) => {
-            ossDirectPanel?.renderQueue?.(items);
-          },
+          onActiveUploadChange: () => {},
+          onQueueChange: () => {},
           onRefresh: async () => {
             await readMedia({ writeOutput: false, fromAutoRefresh: true });
           },
@@ -3149,10 +3052,8 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       async function readMedia({ writeOutput = true, fromAutoRefresh = false } = {}) {
         const data = await mediaApi.read({ refreshOss: !fromAutoRefresh });
-        const directUploadActive = Boolean(fromAutoRefresh && ossDirectUploadController?.isUploading?.());
         if (data.coursesOk) {
-          if (directUploadActive) renderMediaQuiet(data);
-          else renderMedia(data);
+          renderMedia(data);
         }
         else renderMediaJobs({ jobs: data.jobs || [] });
         mediaLastUpdatedAt = new Date();
@@ -3366,22 +3267,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       document.querySelector("#readinessMediaButton").addEventListener("click", () => {
         runButtonAction("#readinessMediaButton", "正在创建媒体配置检查任务...", () => mediaActions.checkReadiness(), "媒体配置检查任务已创建");
       });
-      if (ossDirectUploadButton) {
-        ossDirectUploadButton.addEventListener("click", () => {
-          runButtonAction(ossDirectUploadButton, "正在直传 OSS...", () => ossDirectPanel.uploadSelected(), "OSS 直传流程已完成");
-        });
-      }
-      if (ossDirectFile) {
-        ossDirectFile.addEventListener("change", () => ossDirectPanel.refreshPreview());
-      }
-      if (ossDirectKind) {
-        ossDirectKind.addEventListener("change", () => ossDirectPanel.refreshPreview());
-      }
-      if (ossDirectCancelButton) {
-        ossDirectCancelButton.addEventListener("click", () => {
-          ossDirectPanel.cancelActiveUpload();
-        });
-      }
       if (mediaCourseFilter) {
         mediaCourseFilter.addEventListener("change", () => renderMediaCourses(mediaData));
       }
@@ -3407,18 +3292,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         const button = event.target.closest("[data-media-job-action]");
         if (!button) return;
         handleMediaJobAction(button);
-      });
-      mediaUploadsTable.addEventListener("click", (event) => {
-        const uploadButton = event.target.closest("[data-media-upload-action]");
-        if (uploadButton) {
-          const action = uploadButton.dataset.mediaUploadAction;
-          if (action === "detail") {
-            runButtonAction(uploadButton, "正在打开 OSS 直传详情...", () => mediaActions.showUploadDetail(uploadButton.dataset.upload), "直传详情已打开");
-          }
-          return;
-        }
-        const jobButton = event.target.closest("[data-media-job-action]");
-        if (jobButton) handleMediaJobAction(jobButton);
       });
       if (mediaLocksPanel) {
         mediaLocksPanel.addEventListener("click", (event) => {
@@ -3469,7 +3342,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         if (activeAdminPanel === "media") {
           renderMediaCourses(mediaData);
           updateMediaActionControls(mediaData);
-          ossDirectPanel.refreshPreview();
         }
         loadSelectedCourseManifest()
           .then(renderCurrentCourseUploadTasks)
