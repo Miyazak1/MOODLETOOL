@@ -285,23 +285,42 @@ function rewriteManifestNode(node, publishedByRelPath) {
   return rewritten;
 }
 
+function courseObjectPrefix() {
+  return `${stripSlash(objectPrefix)}/${course}/`;
+}
+
+function isCourseAssetRecord(record) {
+  const objectKey = String(record?.objectKey || "");
+  return String(record?.course || "").toUpperCase() === course || objectKey.startsWith(courseObjectPrefix());
+}
+
 function mergeRegistry(records) {
   const existing = readJson(registryPath, { assets: [], assetRecords: [] }) || {};
   const byKey = new Map();
   for (const record of Array.isArray(existing.assetRecords) ? existing.assetRecords : []) {
+    if (isCourseAssetRecord(record)) continue;
     if (record?.objectKey) byKey.set(record.objectKey, record);
   }
   for (const record of records) byKey.set(record.objectKey, record);
+  const currentKeys = new Set(records.map((record) => record.objectKey).filter(Boolean));
+  const staleRecords = (Array.isArray(existing.assetRecords) ? existing.assetRecords : []).filter((record) =>
+    isCourseAssetRecord(record)
+    && record?.objectKey
+    && !currentKeys.has(record.objectKey)
+  );
   const assetRecords = [...byKey.values()].sort((a, b) => String(a.objectKey).localeCompare(String(b.objectKey)));
   return {
-    ...existing,
-    generatedAt: new Date().toISOString(),
-    bucket: targetBucketUri,
-    cdnBaseUrl,
-    objectPrefix,
-    assetCount: assetRecords.length,
-    assets: assetRecords.map((item) => item.objectKey),
-    assetRecords,
+    registry: {
+      ...existing,
+      generatedAt: new Date().toISOString(),
+      bucket: targetBucketUri,
+      cdnBaseUrl,
+      objectPrefix,
+      assetCount: assetRecords.length,
+      assets: assetRecords.map((item) => item.objectKey),
+      assetRecords,
+    },
+    staleRecords,
   };
 }
 
@@ -324,6 +343,11 @@ async function createOssClient(bucket) {
         }
         await pipeline(stream, createWriteStream(target));
         return { name, url: target, res: { statusCode: 200 } };
+      },
+      async delete(name) {
+        const target = assertInside(mockOssRoot, join(mockOssRoot, bucket, name));
+        rmSync(target, { force: true });
+        return { res: { statusCode: 204 } };
       },
     };
   }
@@ -424,6 +448,11 @@ let localFiles = 0;
 let localBytes = 0;
 const uploaded = [];
 let failed = [];
+const staleCleanup = {
+  planned: [],
+  deleted: [],
+  failed: [],
+};
 
 const zipStream = await zipStreamFromOss(sourceClient);
 const parser = zipStream.pipe(unzipper.Parse({ forceStream: true }));
@@ -514,7 +543,21 @@ manifest.sourceAudit = {
 writeJson(join(localStagingRoot, "course-manifest.json"), manifest);
 
 const activeSwitch = await switchLocalStagingToCourseRoot();
-writeJson(registryPath, mergeRegistry(uploaded));
+const { registry, staleRecords } = mergeRegistry(uploaded);
+staleCleanup.planned = staleRecords;
+writeJson(registryPath, registry);
+for (const staleRecord of staleRecords) {
+  try {
+    await publishClient.delete(staleRecord.objectKey);
+    staleCleanup.deleted.push({ ...staleRecord, action: "deleted" });
+  } catch (error) {
+    staleCleanup.failed.push({
+      ...staleRecord,
+      action: "failed",
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
 
 const report = {
   ok: true,
@@ -534,9 +577,13 @@ const report = {
     uploadedBytes: uploaded.reduce((sum, item) => sum + Number(item.bytes || 0), 0),
     rewrittenResources,
     activeSwitch,
+    staleOssObjects: staleCleanup.planned.length,
+    deletedStaleOssObjects: staleCleanup.deleted.length,
+    failedStaleOssDeletes: staleCleanup.failed.length,
   },
   uploaded,
   failed,
+  staleCleanup,
 };
 
 mkdirSync(deploymentRoot, { recursive: true });
@@ -553,5 +600,7 @@ console.log(JSON.stringify({
   localFiles,
   uploaded: uploaded.length,
   rewrittenResources,
+  staleOssObjects: staleCleanup.planned.length,
+  deletedStaleOssObjects: staleCleanup.deleted.length,
   report: reportPath,
 }, null, 2));

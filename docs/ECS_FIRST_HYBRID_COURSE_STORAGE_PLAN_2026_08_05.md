@@ -1017,6 +1017,7 @@ OSS_EXTRACT_CALLBACK_SECRET
 删除原始 ZIP
 删除 staging
 删除已经发布到 OSS/CDN 的媒体/iSpring/H5P 本地副本
+删除同课程旧版本中不再被最新 registry 引用的 OSS/CDN 对象
 保留 import report
 保留 active 课程中的 local 文件
 ```
@@ -1299,6 +1300,32 @@ PORTAL_EXTRACT_CALLBACK_BASE
 ```
 
 如果旧记录对应课程已经成功成为 active 课程，则 active 课程按现有 course-manifest 继续展示；但后续更新必须走 ECS-first 重新导入。
+
+## 17.1 只保留最新版本的 OSS 清理
+
+同一课程重复上传并成功导入后，系统必须只保留最新版本引用的 OSS 对象。
+
+自动清理顺序：
+
+```text
+1. 新课程 staging/import 成功
+2. 新媒体/iSpring/H5P/大文件发布到 OSS 成功
+3. manifest 和 asset-registry 切换到新版本
+4. 读取旧 registry 中同课程 objectKey
+5. 删除旧 registry 有、最新 registry 没有的 OSS object
+6. 将删除结果写入 import/finalize report
+```
+
+不能在新版本切换成功前删除旧 OSS 对象，避免导入失败导致旧课程不可播放。
+
+已遗留的 OSS 旧对象可以按课程手动清理：
+
+```bash
+npm run cleanup:oss-stale -- --course BOH4M --dry-run
+npm run cleanup:oss-stale -- --course BOH4M --apply
+```
+
+手动清理会列出 `courseware-active/<COURSE>/` 下所有 OSS 对象，只保留当前 `asset-registry.json` 引用的对象，删除其余对象。
 
 ## 18. 漏洞复核与强制约束
 

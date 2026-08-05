@@ -216,24 +216,61 @@ function uploadWithRetry(item) {
   return { ...item, action: "failed", attempts: maxRetries, error: String(lastError || "upload failed").trim() };
 }
 
+function courseObjectPrefix() {
+  return `${stripSlash(objectPrefix)}/${course}/`;
+}
+
+function isCourseAssetRecord(record) {
+  const objectKey = String(record?.objectKey || "");
+  return String(record?.course || "").toUpperCase() === course || objectKey.startsWith(courseObjectPrefix());
+}
+
+function deleteOssObjectWithRetry(record) {
+  if (!bucket) throw new Error("Missing OSS bucket. Set OSS_BUCKET_URI or pass --bucket.");
+  if (!ossutilPath) throw new Error("ossutil is not available. Set OSSUTIL_PATH or install ossutil.");
+  const objectKey = String(record?.objectKey || "");
+  if (!objectKey) return { ...record, action: "skipped", reason: "missing objectKey" };
+  const ossUri = String(record?.ossUri || `${bucket}/${objectKey}`);
+  let lastError = null;
+  for (let attempt = 1; attempt <= maxRetries; attempt += 1) {
+    const result = spawnSync(ossutilPath, ["rm", ossUri, "-f"], {
+      encoding: "utf8",
+      windowsHide: true,
+    });
+    if (!result.error && result.status === 0) return { ...record, ossUri, action: "deleted", attempts: attempt };
+    lastError = result.error?.message || result.stderr || result.stdout || `ossutil exited ${result.status}`;
+  }
+  return { ...record, ossUri, action: "failed", attempts: maxRetries, error: String(lastError || "delete failed").trim() };
+}
+
 function mergeRegistry(records) {
   const existing = readJson(registryPath, { assets: [], assetRecords: [] }) || {};
   const byKey = new Map();
   const existingRecords = Array.isArray(existing.assetRecords) ? existing.assetRecords : [];
   for (const record of existingRecords) {
+    if (isCourseAssetRecord(record)) continue;
     if (record?.objectKey) byKey.set(record.objectKey, record);
   }
   for (const record of records) byKey.set(record.objectKey, record);
+  const currentKeys = new Set(records.map((record) => record.objectKey).filter(Boolean));
+  const staleRecords = existingRecords.filter((record) =>
+    isCourseAssetRecord(record)
+    && record?.objectKey
+    && !currentKeys.has(record.objectKey)
+  );
   const assetRecords = [...byKey.values()].sort((a, b) => String(a.objectKey).localeCompare(String(b.objectKey)));
   return {
-    ...existing,
-    generatedAt: new Date().toISOString(),
-    bucket: bucket || existing.bucket || "",
-    cdnBaseUrl: cdnBaseUrl || existing.cdnBaseUrl || "",
-    objectPrefix,
-    assetCount: assetRecords.length,
-    assets: assetRecords.map((item) => item.objectKey),
-    assetRecords,
+    registry: {
+      ...existing,
+      generatedAt: new Date().toISOString(),
+      bucket: bucket || existing.bucket || "",
+      cdnBaseUrl: cdnBaseUrl || existing.cdnBaseUrl || "",
+      objectPrefix,
+      assetCount: assetRecords.length,
+      assets: assetRecords.map((item) => item.objectKey),
+      assetRecords,
+    },
+    staleRecords,
   };
 }
 
@@ -322,8 +359,14 @@ for (let index = 0; index < planned.length; index += 1) {
 
 let rewrittenResources = 0;
 let deletedLocalFiles = 0;
+const staleCleanup = {
+  planned: [],
+  deleted: [],
+  failed: [],
+  skipped: apply ? [] : [],
+};
 if (apply && !failed.length) {
-  const registry = mergeRegistry(uploaded.map((item) => ({
+  const registryRecords = uploaded.map((item) => ({
     course: item.course,
     kind: item.kind,
     source: "cdn",
@@ -334,7 +377,9 @@ if (apply && !failed.length) {
     cdnUrl: item.cdnUrl,
     bytes: item.bytes,
     sha256: item.sha256,
-  })));
+  }));
+  const { registry, staleRecords } = mergeRegistry(registryRecords);
+  staleCleanup.planned = staleRecords;
   writeJson(registryPath, registry);
   const publishedByRelPath = new Map(uploaded.map((item) => [item.relativePath, item]));
   rewrittenResources = rewriteManifestNode(manifest, publishedByRelPath);
@@ -358,6 +403,11 @@ if (apply && !failed.length) {
       pruneEmptyDirs(dirname(item.localPath));
     }
   }
+  for (const staleRecord of staleRecords) {
+    const result = deleteOssObjectWithRetry(staleRecord);
+    if (result.action === "deleted") staleCleanup.deleted.push(result);
+    else staleCleanup.failed.push(result);
+  }
 }
 
 const report = {
@@ -378,10 +428,14 @@ const report = {
     failed: failed.length,
     rewrittenResources,
     deletedLocalFiles,
+    staleOssObjects: staleCleanup.planned.length,
+    deletedStaleOssObjects: staleCleanup.deleted.length,
+    failedStaleOssDeletes: staleCleanup.failed.length,
     totalPublishedBytes: uploaded.reduce((sum, item) => sum + item.bytes, 0),
   },
   uploaded,
   failed,
+  staleCleanup,
 };
 
 mkdirSync(deploymentRoot, { recursive: true });
@@ -396,6 +450,8 @@ console.log(JSON.stringify({
   failed: report.summary.failed,
   rewrittenResources,
   deletedLocalFiles,
+  staleOssObjects: staleCleanup.planned.length,
+  deletedStaleOssObjects: staleCleanup.deleted.length,
   report: reportPath,
 }, null, 2));
 

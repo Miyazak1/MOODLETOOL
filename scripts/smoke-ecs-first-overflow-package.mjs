@@ -55,6 +55,22 @@ try {
   writeFixture(join(sourceCourseRoot, "localized-moodle-activities", "resource", "demo", "html5-package", "data", "slides.js"), "console.log('slides');");
   writeFixture(join(coursewareRoot, course, "old-active", "stale.txt"), "stale");
   writeFixture(join(coursewareRoot, course, "_admin_uploads", "keep.txt"), "keep");
+  writeFixture(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4"), Buffer.alloc(32, 9));
+  writeFixture(registryPath, `${JSON.stringify({
+    assetRecords: [
+      {
+        course,
+        kind: "video",
+        objectKey: `courseware-active/${course}/media/old-video.mp4`,
+        ossUri: `oss://moodletool/courseware-active/${course}/media/old-video.mp4`,
+      },
+      {
+        course: "OTHER",
+        kind: "video",
+        objectKey: "courseware-active/OTHER/media/keep.mp4",
+      },
+    ],
+  }, null, 2)}\n`, "utf8");
 
   const tar = process.env.SystemRoot ? join(process.env.SystemRoot, "System32", "tar.exe") : "tar";
   const zipResult = spawnSync(tar, ["-acf", zipPath, "-C", sourceRoot, course], { encoding: "utf8" });
@@ -91,6 +107,7 @@ try {
   assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "keep.txt")), true);
   assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "overflow-staging", "upl-overflow-smoke", "previous-active")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "lesson-video.mp4")), true);
+  assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "localized-moodle-activities", "resource", "demo", "html5-package", "presentation.html")), true);
 
   const manifest = JSON.parse(readFileSync(join(targetCourseRoot, "course-manifest.json"), "utf8"));
@@ -103,10 +120,14 @@ try {
   assert.equal(manifest.sourceAudit.importMode, "ecs-first-overflow");
 
   const registry = JSON.parse(readFileSync(registryPath, "utf8"));
-  assert.equal(registry.assetRecords.length, 3);
+  assert.equal(registry.assetRecords.length, 4);
+  assert.equal(registry.assetRecords.some((item) => item.objectKey === `courseware-active/${course}/media/old-video.mp4`), false);
+  assert.equal(registry.assetRecords.some((item) => item.objectKey === "courseware-active/OTHER/media/keep.mp4"), true);
   const report = JSON.parse(readFileSync(reportPath, "utf8"));
   assert.ok(report.uploaded.some((item) => item.relativePath === "media/lesson-video.mp4" && item.attempts === 2));
   assert.equal(report.summary.activeSwitch.rollback, "restored-on-switch-failure");
+  assert.equal(report.summary.staleOssObjects, 1);
+  assert.equal(report.summary.deletedStaleOssObjects, 1);
 
   console.log("ECS-first overflow package smoke passed.");
 } finally {
