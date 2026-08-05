@@ -180,6 +180,7 @@ assert.equal(
   assert.equal(remembers.at(-1).chunksReceived, 3);
   assert.equal(statuses.at(-1).title, "小型课包已生成确认预览");
   assert.match(statuses.at(-1).detail, /确认替换课程内容/);
+  assert.ok(statuses.some((status) => /速度 .*\/s · 剩余约/.test(status.detail || "")));
   assert.match(writes[0], /正在分片上传整课包/);
 }
 

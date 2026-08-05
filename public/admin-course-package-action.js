@@ -47,6 +47,47 @@
     });
   }
 
+  function formatDurationSeconds(value) {
+    const seconds = Math.max(0, Math.round(Number(value || 0)));
+    if (!seconds || !Number.isFinite(seconds)) return "计算中";
+    if (seconds < 60) return `${seconds} 秒`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} 分${seconds % 60 ? `${seconds % 60} 秒` : ""}`;
+    const hours = Math.floor(minutes / 60);
+    const restMinutes = minutes % 60;
+    return `${hours} 小时${restMinutes ? `${restMinutes} 分` : ""}`;
+  }
+
+  function createUploadSpeedTracker({ totalBytes, formatBytes, initialLoaded = 0 }) {
+    const startedAt = Date.now();
+    let lastAt = startedAt;
+    let lastLoaded = Math.max(0, Number(initialLoaded || 0));
+    let smoothedBytesPerSecond = 0;
+    return (loadedBytes) => {
+      const loaded = Math.max(0, Number(loadedBytes || 0));
+      const total = Math.max(0, Number(totalBytes || 0));
+      const now = Date.now();
+      const elapsedMs = Math.max(1, now - lastAt);
+      const deltaBytes = Math.max(0, loaded - lastLoaded);
+      const instantBytesPerSecond = (deltaBytes / elapsedMs) * 1000;
+      if (instantBytesPerSecond > 0) {
+        smoothedBytesPerSecond = smoothedBytesPerSecond
+          ? smoothedBytesPerSecond * 0.7 + instantBytesPerSecond * 0.3
+          : instantBytesPerSecond;
+      }
+      lastAt = now;
+      lastLoaded = loaded;
+      const averageBytesPerSecond = loaded > 0 ? loaded / Math.max(1, (now - startedAt) / 1000) : 0;
+      const bytesPerSecond = smoothedBytesPerSecond || averageBytesPerSecond;
+      const remainingBytes = Math.max(0, total - loaded);
+      const etaSeconds = bytesPerSecond > 0 ? remainingBytes / bytesPerSecond : 0;
+      return {
+        etaText: formatDurationSeconds(etaSeconds),
+        speedText: bytesPerSecond > 0 ? `${formatBytes(bytesPerSecond)}/s` : "计算中",
+      };
+    };
+  }
+
   function createAction({
     fields,
     chunkBytes,
@@ -209,6 +250,11 @@
         totalBytes: file.size,
         chunkTotal,
       });
+      const speedTracker = createUploadSpeedTracker({
+        totalBytes: file.size,
+        formatBytes: bytesLabel,
+        initialLoaded: Math.min(file.size, startChunk * chunkBytes),
+      });
 
       rememberUpload({
         rememberTask: rememberSavedTask,
@@ -248,9 +294,10 @@
             onProgress: (loaded) => {
               const totalLoaded = Math.min(file.size, start + loaded);
               const percent = Math.round((totalLoaded / file.size) * 100);
+              const progressMeta = speedTracker(totalLoaded);
               showStatus({
                 title: `正在上传 ${file.name}`,
-                detail: `分片 ${index + 1}/${chunkTotal}，已上传 ${bytesLabel(totalLoaded)} / ${bytesLabel(file.size)} (${percent}%)。断线会自动重试。`,
+                detail: `分片 ${index + 1}/${chunkTotal}，已上传 ${bytesLabel(totalLoaded)} / ${bytesLabel(file.size)} (${percent}%)。速度 ${progressMeta.speedText} · 剩余约 ${progressMeta.etaText}。断线会自动重试。`,
                 percent,
                 showProgress: true,
               });
