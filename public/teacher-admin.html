@@ -2782,7 +2782,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         const rawController = window.AdminMediaUpload.createDirectUploadController({
           api: mediaApi,
           confirm: (message) => confirm(message),
-          formatProgress,
+          formatProgress: window.AdminMediaView.uploadProgressFormatter,
           getAutoPublish: () => true,
           getCourseCodes: () => knownAdminCourseCodes(),
           getFiles: () => [file],

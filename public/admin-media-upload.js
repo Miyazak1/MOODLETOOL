@@ -350,7 +350,7 @@
     const {
       api,
       confirm: confirmImpl = window.confirm.bind(window),
-      formatProgress,
+      formatProgress = window.AdminMediaView?.uploadProgressFormatter,
       getAutoPublish,
       getCourseCodes,
       getFiles,
