@@ -42,6 +42,7 @@ function createHarness({
   commitState,
   confirmCommit = () => true,
   commitPackage,
+  uploadOverflowPackage,
 } = {}) {
   const statuses = [];
   const writes = [];
@@ -116,6 +117,7 @@ function createHarness({
     async afterCommitSuccess(data) {
       commitSuccesses.push(data);
     },
+    uploadOverflowPackage,
   });
   return { action, disabled, fields, previews, remembers, statuses, successes, uploadedChunks, writes, clears, commits, commitSuccesses };
 }
@@ -223,6 +225,37 @@ assert.equal(
   assert.equal(statuses.at(-1).title, "上传失败");
   assert.match(statuses.at(-1).detail, /network down/);
   assert.match(writes.at(-1), /Error: network down/);
+}
+
+{
+  let overflowCalled = false;
+  let waitedFor = "";
+  const error = new Error("ECS 剩余空间不足，请走 OSS overflow raw package。");
+  const { action, remembers, statuses, successes, writes } = createHarness({
+    uploadChunk() {
+      throw error;
+    },
+    async uploadOverflowPackage({ file }) {
+      overflowCalled = true;
+      assert.equal(file.name, "ENG4U-course.zip");
+      return {
+        ok: true,
+        coursePackageTask: { importId: "upl-overflow-1" },
+      };
+    },
+    waitForReview(importId) {
+      waitedFor = importId;
+      return { ok: true, imported: true, importId, mode: "ecs-first-overflow" };
+    },
+  });
+  const result = await action.uploadCoursePackage();
+  assert.equal(overflowCalled, true);
+  assert.equal(waitedFor, "upl-overflow-1");
+  assert.equal(result.imported, true);
+  assert.equal(remembers.at(-1).status, "committed");
+  assert.equal(statuses.at(-1).title, "OSS overflow 导入完成");
+  assert.equal(successes.length, 1);
+  assert.match(writes[1], /OSS overflow raw package/);
 }
 
 {

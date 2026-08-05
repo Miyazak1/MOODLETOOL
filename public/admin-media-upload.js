@@ -49,7 +49,7 @@
     const extension = fileExtension(name);
     if (!name) throw new Error("请选择有效文件。");
     if (!Number.isFinite(file?.size) || file.size <= 0) throw new Error(`${name} 是空文件，不能上传。`);
-    if (kind === "course-package" && extension !== "zip") {
+    if ((kind === "course-package" || kind === "course-package-overflow") && extension !== "zip") {
       throw new Error(`${name} 不是 ZIP 完整课件包。请选择 .zip 文件。`);
     }
     if (kind === "h5p" && extension !== "h5p") {
@@ -65,7 +65,7 @@
 
   function resolveDirectUploadCourse({ kind, file, selectedCourse, courseCodes }) {
     validateDirectUploadFile({ kind, file });
-    if (kind !== "course-package") {
+    if (kind !== "course-package" && kind !== "course-package-overflow") {
       const selected = String(selectedCourse || "").trim().toUpperCase();
       if (!selected) throw new Error("请选择课程。");
       return { course: selected, source: "selected-course" };
@@ -121,7 +121,7 @@
     if (fileList.length > 1 && kind !== "course-package") {
       errors.push("批量直传目前只支持完整课件包 ZIP。视频、H5P 和 iSpring 单包请一次传一个。");
     }
-    if (kind === "course-package") {
+    if (kind === "course-package" || kind === "course-package-overflow") {
       const courseCounts = items.reduce((counts, item) => {
         if (item.course) counts.set(item.course, (counts.get(item.course) || 0) + 1);
         return counts;
@@ -525,7 +525,7 @@
     async function uploadSingleImpl(file, { index = 0, totalFiles = 1, queueItem = null, resolvedCourse = null, batchProgress = null, showUploadStatus = true } = {}) {
       if (!file) throw new Error("请选择要直传到 OSS 的文件。");
       throwIfQueueItemCancelled(queueItem);
-      const kind = typeof getKind === "function" ? getKind() : "course-package";
+      const kind = typeof getKind === "function" ? getKind() : "video";
       const courseInfo = resolvedCourse || resolveDirectUploadCourse({
         kind,
         file,

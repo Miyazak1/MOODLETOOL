@@ -1,7 +1,7 @@
 import { extname } from "node:path";
 
 export const playableCoursewareVideoExts = new Set([".mp4", ".webm", ".mov", ".m4v"]);
-export const directUploadKinds = new Set(["course-package", "video", "h5p", "ispring-package"]);
+export const directUploadKinds = new Set(["course-package", "course-package-overflow", "video", "h5p", "ispring-package"]);
 
 export function toPosixAssetPath(value) {
   return String(value || "").replaceAll("\\", "/").replace(/^\/+/, "");
@@ -33,6 +33,10 @@ export function inferCourseCodeFromFileName(fileName, courseCodes = []) {
 
 export function directUploadKindCanAutoPublish(kind) {
   return ["video", "h5p"].includes(String(kind || "").toLowerCase());
+}
+
+export function isCoursePackageUploadKind(kind) {
+  return ["course-package", "course-package-overflow"].includes(String(kind || "").toLowerCase());
 }
 
 export function isIspringCoursewareAsset(relPath) {

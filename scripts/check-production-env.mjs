@@ -224,6 +224,11 @@ if (coursePackageImportMode === "ecs-first") {
   ok.push(`ECS-first package import will publish selected assets with ${ossutilPath}.`);
   if (directUploadEnabled === "1") {
     ok.push("OSS direct upload remains available for single video/H5P assets; whole-course ZIP direct upload is disabled by the server.");
+    const directMaxGb = Number(values.OSS_DIRECT_UPLOAD_MAX_GB || 20);
+    if (Number.isFinite(directMaxGb) && directMaxGb < 10) {
+      warnings.push("OSS_DIRECT_UPLOAD_MAX_GB is below 10; very large course ZIP overflow uploads may be blocked before the ECS worker can process them.");
+    }
+    ok.push(`OSS_COURSE_PACKAGE_OVERFLOW_PREFIX=${values.OSS_COURSE_PACKAGE_OVERFLOW_PREFIX || "course-import-overflow"}.`);
   }
 }
 if (coursePackageImportMode === "oss-only") {

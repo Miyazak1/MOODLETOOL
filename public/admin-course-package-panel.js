@@ -205,6 +205,26 @@
         }
         return;
       }
+      if (task.status === "committed") {
+        setStatus({
+          title: "课程压缩包已导入完成",
+          detail: task.result?.manifest || "导入完成。普通资料保存在 ECS，高并发资源已发布到 OSS/CDN。",
+          percent: 100,
+          showProgress: true,
+        });
+        currentImport = null;
+        commitState(null);
+        hidePreview();
+        return;
+      }
+      if (task.status === "blocked") {
+        setStatus({
+          title: "ECS 空间不足",
+          detail: task.error || "当前 ECS 空间不足，需要走 OSS overflow raw package。",
+          error: true,
+        });
+        return;
+      }
       if (task.status === "failed") {
         setStatus({
           title: "最近一次上传未完成",

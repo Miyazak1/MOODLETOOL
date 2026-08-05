@@ -967,7 +967,7 @@ COURSE_IMPORT_UPLOAD_ROOT=/www/wwwroot/ossd-course-portal/data/imports/uploads
 COURSE_IMPORT_STAGING_ROOT=/www/wwwroot/ossd-course-portal/data/imports/staging
 COURSE_IMPORT_REPORT_ROOT=/www/wwwroot/ossd-course-portal/data/imports/reports
 COURSE_IMPORT_ALLOW_OSS_OVERFLOW=1
-COURSE_IMPORT_OVERFLOW_PREFIX=course-import-overflow
+OSS_COURSE_PACKAGE_OVERFLOW_PREFIX=course-import-overflow
 
 COURSE_LOCAL_MAX_FILE_MB=100
 COURSE_LOCAL_MAX_COURSE_MB=2048
@@ -979,6 +979,9 @@ COURSEWARE_ASSET_PREFIX=courseware-active
 COURSEWARE_ASSET_BASE_URL=https://cdn.moodletool.work/courseware-active
 COURSEWARE_ASSET_MODE=hybrid
 COURSEWARE_ASSET_REGISTRY_FILE=/www/wwwroot/ossd-course-portal/deployment/asset-registry.json
+OSS_DIRECT_UPLOAD_ENABLED=1
+OSS_DIRECT_UPLOAD_MAX_GB=32
+OSS_DIRECT_UPLOAD_PART_MB=64
 
 COURSE_IMPORT_DELETE_ZIP_AFTER_SUCCESS=1
 COURSE_IMPORT_DELETE_OVERFLOW_ZIP_AFTER_SUCCESS=1

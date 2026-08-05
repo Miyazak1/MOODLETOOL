@@ -29,6 +29,7 @@ export function directUploadConfigFromEnv(env = process.env, { ossBucketUri = ""
     bucket: env.OSS_DIRECT_UPLOAD_BUCKET || bucketFromUri,
     endpoint: String(env.OSS_DIRECT_UPLOAD_ENDPOINT || "https://oss-cn-hongkong.aliyuncs.com").replace(/\/+$/, ""),
     inboxPrefix: toPosixPath(env.OSS_DIRECT_UPLOAD_INBOX_PREFIX || "inbox/uploads").replace(/^\/+|\/+$/g, ""),
+    overflowPrefix: toPosixPath(env.OSS_COURSE_PACKAGE_OVERFLOW_PREFIX || "course-import-overflow").replace(/^\/+|\/+$/g, ""),
     maxBytes: maxGb * 1024 * 1024 * 1024,
     simpleMaxBytes: maxPostObjectBytes,
     multipartPartBytes: multipartPartMb * 1024 * 1024,
@@ -48,6 +49,7 @@ export function directUploadPublicConfig(config) {
     bucket: config?.bucket || "",
     endpoint: config?.endpoint || "",
     inboxPrefix: config?.inboxPrefix || "",
+    overflowPrefix: config?.overflowPrefix || "",
     maxBytes: config?.maxBytes || 0,
     maxGb: Math.round(((config?.maxBytes || 0) / 1024 / 1024 / 1024) * 100) / 100,
     simpleMaxGb: Math.round(((config?.simpleMaxBytes || maxPostObjectBytes) / 1024 / 1024 / 1024) * 100) / 100,
@@ -191,7 +193,7 @@ function assertDirectUploadReady(config) {
 export function resolveDirectUploadCourse({ course, fileName, kind, courseCodes = [] }) {
   const selectedCourse = safeSegment(course || "").toUpperCase();
   const uploadKind = normalizeDirectUploadKind(kind);
-  if (uploadKind !== "course-package") {
+  if (!["course-package", "course-package-overflow"].includes(uploadKind)) {
     if (!selectedCourse) throw new Error("Course is required.");
     return { course: selectedCourse, source: "selected-course", kind: uploadKind };
   }
@@ -214,7 +216,8 @@ export function createDirectUploadPolicy({ config, courseCodes, course, fileName
     throw new Error(`Upload is too large. Max direct upload size is ${Math.round(config.maxBytes / 1024 / 1024 / 1024)} GB.`);
   }
   const uploadId = `upl-${Date.now()}-${code}-${randomBytes(4).toString("hex")}`;
-  const objectKey = `${config.inboxPrefix}/${code}/${uploadId}/${safeName}`;
+  const rootPrefix = resolvedCourse.kind === "course-package-overflow" ? config.overflowPrefix : config.inboxPrefix;
+  const objectKey = `${rootPrefix}/${code}/${uploadId}/${safeName}`;
   const expiresAt = new Date(Date.now() + config.ttlSeconds * 1000).toISOString();
   const policy = {
     expiration: expiresAt,
@@ -284,7 +287,8 @@ export async function createDirectMultipartUpload({ config, courseCodes, course,
     throw new Error(`Upload is too large. Max direct upload size is ${Math.round(config.maxBytes / 1024 / 1024 / 1024)} GB.`);
   }
   const uploadId = `upl-${Date.now()}-${code}-${randomBytes(4).toString("hex")}`;
-  const objectKey = `${config.inboxPrefix}/${code}/${uploadId}/${safeName}`;
+  const rootPrefix = resolvedCourse.kind === "course-package-overflow" ? config.overflowPrefix : config.inboxPrefix;
+  const objectKey = `${rootPrefix}/${code}/${uploadId}/${safeName}`;
   const normalizedContentType = contentTypeForUpload(safeName, { fallback: contentType, mimeTypes });
   const initiated = await ossApiFetch({
     config,

@@ -2321,6 +2321,8 @@ pm2 restart ossd-course-portal --update-env</pre>
         write,
         afterSuccess: async () => {
           await readStorage({ writeOutput: false });
+          await readStatus({ writeOutput: false });
+          await readMedia({ writeOutput: false });
         },
         getCurrentImport: () => currentCoursePackageImport,
         setUploadDisabled: (disabled) => {
@@ -2332,6 +2334,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         clearPackageFile: () => {
           fields.coursePackageFile.value = "";
         },
+        uploadOverflowPackage: uploadCoursePackageOverflow,
         afterCommitSuccess: async (data) => {
           await loadSelectedCourseManifest();
           await readStatus({ writeOutput: false });
@@ -2831,6 +2834,8 @@ pm2 restart ossd-course-portal --update-env</pre>
           if (data.ok && data.task) {
             renderCoursePackageTaskStatus(data.task);
             if (data.task.status === "complete" && data.task.review) return data.task.review;
+            if (data.task.status === "committed" && data.task.result) return data.task.result;
+            if (data.task.status === "blocked") throw new Error(data.task.error || "ECS 空间不足，需要走 OSS overflow raw package。");
             if (data.task.status === "failed") throw new Error(data.task.error || "服务器处理整课包失败。");
           }
           await sleep(5000);
@@ -2844,6 +2849,46 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       async function uploadCoursePackageChunkWithRetry({ url, blob, onProgress, onRetry }) {
         return uploadTransport.uploadWithRetry({ url, blob, onProgress, onRetry });
+      }
+
+      async function uploadCoursePackageOverflow({ course, file, setStatus, write: writeOutput }) {
+        const overflowController = window.AdminMediaUpload.createDirectUploadController({
+          api: mediaApi,
+          confirm: (message) => confirm(message),
+          formatProgress,
+          getAutoPublish: () => true,
+          getCourseCodes: () => knownAdminCourseCodes(),
+          getFiles: () => [file],
+          getKind: () => "course-package-overflow",
+          getSelectedCourse: () => course,
+          hasActiveWriteJob: () => null,
+          jobTypeLabel: window.AdminMediaView.jobTypeLabel,
+          onActiveUploadChange: (xhr) => {
+            ossDirectPanel?.setActiveUpload?.(xhr);
+          },
+          onQueueChange: (items) => {
+            ossDirectPanel?.renderQueue?.(items);
+          },
+          onRefresh: async () => {
+            await readMedia({ writeOutput: false, fromAutoRefresh: true });
+          },
+          onStartRefresh: () => {
+            startMediaAutoRefresh();
+          },
+          onStatus: ({ title, detail, percent, type }) => {
+            setStatus({
+              title,
+              detail,
+              percent,
+              showProgress: percent !== null && percent !== undefined,
+              error: type === "error",
+            });
+          },
+          onWrite: (data) => {
+            if (typeof writeOutput === "function") writeOutput(data);
+          },
+        });
+        return overflowController.uploadSelected();
       }
 
       function reusableCoursePackageImportId(file) {
