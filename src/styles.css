@@ -307,7 +307,7 @@ input {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 18px;
   align-items: start;
-  padding: 20px;
+  padding: 22px 24px 18px;
 }
 
 .overview-tags {
@@ -340,17 +340,15 @@ input {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(110px, 1fr));
+  gap: 1px;
   border-top: 1px solid var(--soft-line);
+  background: var(--soft-line);
 }
 
 .stat {
-  min-height: 76px;
-  padding: 14px;
-  border-right: 1px solid var(--soft-line);
-}
-
-.stat:last-child {
-  border-right: 0;
+  min-height: 58px;
+  padding: 10px 14px;
+  background: #fbfdff;
 }
 
 .stat span {
@@ -362,159 +360,81 @@ input {
 
 .stat strong {
   display: block;
-  margin-top: 6px;
-  font-size: 22px;
+  margin-top: 4px;
+  font-size: 17px;
   line-height: 1.1;
 }
 
-.readiness-strip {
+.teacher-start-panel {
   display: grid;
-  grid-template-columns: repeat(5, minmax(120px, 1fr));
-  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
   border-top: 1px solid var(--soft-line);
-  background: var(--soft-line);
-}
-
-.readiness-item {
-  min-width: 0;
-  padding: 12px 14px;
+  padding: 16px 20px;
   background: #fff;
 }
 
-.readiness-item span {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.readiness-item strong {
-  display: block;
-  margin-top: 5px;
-  font-size: 14px;
-  line-height: 1.25;
-  overflow-wrap: anywhere;
-}
-
-.readiness-item.ready strong {
-  color: var(--teal);
-}
-
-.readiness-item.pending strong {
-  color: var(--gold);
-}
-
-.readiness-item.optional strong {
-  color: var(--muted);
-}
-
-.prep-flow-guide {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  border-top: 1px solid var(--soft-line);
-  background: var(--soft-line);
-}
-
-.prep-step {
+.teacher-start-action {
   min-width: 0;
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: 7px 10px;
-  padding: 14px;
-  background: #fbfdff;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  gap: 4px 10px;
+  align-items: center;
+  border: 1px solid #cbd9e8;
+  border-radius: 8px;
+  padding: 13px 14px;
+  color: var(--ink);
+  background: #f7fbff;
+  text-decoration: none;
 }
 
-.prep-step span {
+.teacher-start-action:hover {
+  border-color: #7aa4d0;
+  background: #eef6ff;
+  text-decoration: none;
+}
+
+.teacher-start-action.disabled {
+  pointer-events: none;
+  opacity: 0.58;
+}
+
+.teacher-start-action > span {
   grid-row: span 2;
   display: grid;
   place-items: center;
-  width: 34px;
+  width: 42px;
   height: 34px;
-  border-radius: 50%;
+  border-radius: 6px;
   color: #fff;
+  font-size: 12px;
   font-weight: 900;
+  line-height: 1;
   background: var(--navy);
 }
 
-.prep-step strong {
-  color: var(--navy);
-  line-height: 1.15;
-}
-
-.prep-step p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.45;
-}
-
-.course-roadmap {
-  border-top: 1px solid var(--soft-line);
-  padding: 14px 20px 16px;
-  background: #fffdf7;
-}
-
-.course-roadmap-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.course-roadmap-header h3 {
-  margin: 0;
-  font-size: 14px;
-}
-
-.course-roadmap-header span {
-  flex: 0 0 auto;
-  color: var(--gold);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.roadmap-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
-  gap: 1px;
-  border: 1px solid var(--soft-line);
-  background: var(--soft-line);
-}
-
-.roadmap-metrics div {
+.teacher-start-action strong {
   min-width: 0;
-  padding: 10px 12px;
-  background: #fff;
-}
-
-.roadmap-metrics span {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.roadmap-metrics strong {
-  display: block;
-  margin-top: 5px;
   color: var(--navy);
-  font-size: 14px;
-  line-height: 1.25;
+  font-size: 16px;
+  line-height: 1.18;
   overflow-wrap: anywhere;
 }
 
-.course-roadmap ul {
-  margin: 10px 0 0;
-  padding-left: 18px;
-  color: var(--ink);
-  font-size: 13px;
-  line-height: 1.5;
+.teacher-start-action em {
+  color: var(--teal);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+  white-space: nowrap;
 }
 
-.course-roadmap li + li {
-  margin-top: 4px;
+.teacher-start-action p {
+  grid-column: 2 / -1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .course-downloads {
@@ -525,6 +445,156 @@ input {
 .course-downloads h3 {
   margin: 0 0 10px;
   font-size: 14px;
+}
+
+.moodle-section-map {
+  border-top: 1px solid var(--soft-line);
+  padding: 18px 20px 22px;
+  background: #f8fafc;
+}
+
+.moodle-section-map-header,
+.moodle-section-group header,
+.unit-moodle-resource-group header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.moodle-section-map-header {
+  margin-bottom: 12px;
+}
+
+.moodle-section-map-header h3 {
+  margin: 4px 0 0;
+  color: var(--navy);
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.moodle-section-map-header > span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--teal);
+  background: var(--green-soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.moodle-section-groups {
+  display: grid;
+  gap: 14px;
+}
+
+.moodle-section-group,
+.unit-moodle-resource-group {
+  border: 1px solid #d9e4ef;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.moodle-section-group header,
+.unit-moodle-resource-group header {
+  padding: 13px 16px;
+  border-bottom: 1px solid #edf2f7;
+  background: #fbfdff;
+}
+
+.moodle-section-group h4 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.moodle-section-group p,
+.unit-moodle-resource-group p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.moodle-section-group strong,
+.unit-moodle-resource-group strong {
+  flex: 0 0 auto;
+  color: var(--teal);
+  font-size: 13px;
+}
+
+.moodle-section-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 8px;
+  padding: 10px;
+}
+
+.moodle-unit-subgroups {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.moodle-unit-subgroup {
+  border: 1px solid #e1e9f2;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.moodle-unit-subgroup .moodle-section-items {
+  padding: 10px;
+}
+
+.moodle-unit-subgroup-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  padding: 9px 11px;
+  border-bottom: 1px solid #edf2f7;
+  background: #fbfdff;
+}
+
+.moodle-unit-subgroup-header span {
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: #0f5b54;
+  background: var(--green-soft);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.moodle-unit-subgroup-header strong {
+  min-width: 0;
+  color: var(--navy);
+  font-size: 13px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.moodle-unit-subgroup-header em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.unit-moodle-resources {
+  display: grid;
+  gap: 12px;
+  padding: 0 18px 16px;
+}
+
+.unit-moodle-resource-group header span {
+  display: block;
+  color: var(--navy);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.2;
 }
 
 .unit-roadmap {
@@ -757,6 +827,11 @@ input {
   display: block;
 }
 
+.activity-resource-list {
+  display: grid;
+  gap: 8px;
+}
+
 .lesson-tools {
   display: flex;
   flex-wrap: wrap;
@@ -804,12 +879,13 @@ input {
 .resource-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
+  gap: 9px;
+  align-items: start;
   width: 100%;
-  min-height: 88px;
-  border: 1px solid #d5dfeb;
-  border-radius: 8px;
-  padding: 11px;
+  min-height: 72px;
+  border: 1px solid #e1e9f2;
+  border-radius: 7px;
+  padding: 10px 11px;
   background: #fff;
 }
 
@@ -833,14 +909,15 @@ input {
   color: #123d67;
   font-weight: 800;
   line-height: 1.25;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .resource-card-meta {
   width: max-content;
   max-width: 100%;
   border-radius: 999px;
-  padding: 3px 8px;
+  padding: 2px 7px;
   color: #667085;
   background: #eef2f6;
   font-size: 11px;
@@ -851,8 +928,9 @@ input {
 .resource-card-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .resource-card-actions .button-link {
@@ -918,6 +996,70 @@ input {
 .resource-card-actions .button-link:disabled {
   cursor: progress;
   opacity: 0.68;
+}
+
+.resource-card-attachments {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid #edf2f7;
+}
+
+.attachment-heading {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.attachment-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  border-radius: 6px;
+  padding: 7px 8px;
+  background: #f8fafc;
+}
+
+.attachment-label {
+  min-width: 0;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.attachment-actions {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.attachment-link {
+  border: 1px solid #c6d4e3;
+  border-radius: 5px;
+  padding: 4px 6px;
+  color: #123d67;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.attachment-actions .share-copy {
+  min-height: 28px;
+  border: 1px solid #c6d4e3;
+  border-radius: 5px;
+  padding: 4px 6px;
+  color: #123d67;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .button-link.ispring {
@@ -1188,15 +1330,7 @@ input {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .readiness-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .roadmap-metrics {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .prep-flow-guide {
+  .teacher-start-panel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1222,15 +1356,7 @@ input {
     grid-template-columns: 1fr;
   }
 
-  .readiness-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .roadmap-metrics {
-    grid-template-columns: 1fr;
-  }
-
-  .prep-flow-guide {
+  .teacher-start-panel {
     grid-template-columns: 1fr;
   }
 
@@ -1238,13 +1364,12 @@ input {
     flex-direction: column;
   }
 
-  .stat {
-    border-right: 0;
-    border-bottom: 1px solid var(--soft-line);
-  }
-
   .lesson-summary {
     grid-template-columns: 1fr 24px;
+  }
+
+  .resource-card {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .lesson-code {

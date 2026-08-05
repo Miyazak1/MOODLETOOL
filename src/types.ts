@@ -9,6 +9,11 @@ export interface FileResource {
   previewUrl?: string;
   source?: string;
   bytes?: number;
+  attachments?: FileResource[];
+  unit?: number;
+  moodleActivityId?: string;
+  teacherUse?: string;
+  textPreview?: string;
 }
 
 export interface MoodleEmbedRow {
@@ -92,7 +97,7 @@ export interface Unit {
   title: string;
   coreTexts: string[];
   unitPlan: FileResource | null;
-  unitResources: Record<string, string>;
+  unitResources: Record<string, string | FileResource | FileResource[]>;
   summary: UnitSummary;
   lessons: Lesson[];
 }
@@ -139,6 +144,9 @@ export interface CourseManifest {
     secondary: string;
   };
   courseDownloads: FileResource[];
+  courseSections?: FileResource[];
+  evaluations?: FileResource[];
+  teacherResources?: FileResource[];
   texts: TextRegistryEntry[];
   units: Unit[];
 }
@@ -182,52 +190,4 @@ export interface MoodleCourseResourceIndex {
   generatedAt: string;
   source: string;
   courses: MoodleCourseResourceIndexEntry[];
-}
-
-export interface CourseRoadmapEntry {
-  course: string;
-  title: string;
-  level: string;
-  status: string;
-  phase: string;
-  priority: number;
-  moodle: {
-    coursePage: string;
-    outlineStatus: string;
-    outlineUrl: string;
-    bookCount: number;
-    numberedLessonCount: number;
-  };
-  readiness: {
-    units: number;
-    lessons: number;
-    unitPlans: number;
-    lessonPlans: number;
-    lessonPlanExpected: number;
-    missingCourseOutline: boolean;
-    missingIntroduction: boolean;
-    missingUnitPlans: number;
-    missingLessonPlans: number;
-    textsNeedingReview: number;
-    linkOnlyTexts: number;
-  };
-  queue: {
-    status: string;
-    targetFilename: string;
-    hasUrl: boolean;
-  };
-  localEvidence: {
-    courseOutlines: number;
-    unitPlans: number;
-    lessonPlans: number;
-    ispringFiles: number;
-    outlineExamples: string[];
-  };
-  nextActions: string[];
-}
-
-export interface CourseRoadmap {
-  schemaVersion: number;
-  generatedAt: string;
-  courses: CourseRoadmapEntry[];
 }
