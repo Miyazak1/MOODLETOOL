@@ -103,14 +103,20 @@ function shareKindForItem(item: LinkableResource): MoodleEmbedRow["kind"] {
 }
 
 function resourceHref(item: LinkableResource, baseUrl: string): string {
-  if (item.path) return resourceUrl(item.path, baseUrl);
   if (item.url) return item.url;
+  if (item.path) return resourceUrl(item.path, baseUrl);
   return "#";
 }
 
 function resourcePreviewHref(item: LinkableResource, baseUrl: string): string {
-  if (item.previewPath) return resourceUrl(item.previewPath, baseUrl);
   if (item.previewUrl) return item.previewUrl;
+  if (item.previewPath) return resourceUrl(item.previewPath, baseUrl);
+  return resourceHref(item, baseUrl);
+}
+
+function resourceDownloadHref(item: LinkableResource, baseUrl: string): string {
+  if (item.downloadUrl) return item.downloadUrl;
+  if (item.downloadPath) return resourceUrl(item.downloadPath, baseUrl);
   return resourceHref(item, baseUrl);
 }
 
@@ -128,14 +134,14 @@ const BROWSER_PREVIEW_TYPES = new Set(["html", "htm", "pdf", "jpg", "jpeg", "png
 function hasWebPreview(item: LinkableResource, moodleEmbed?: MoodleEmbedRow): boolean {
   if (moodleEmbed?.kind === "video" && Boolean(moodleEmbed.embedUrl)) return true;
   if (item.previewPath || item.previewUrl) return true;
-  if (!item.path) return false;
+  if (!item.path && !item.url) return false;
   const type = (item.type || "").toLowerCase();
   return BROWSER_PREVIEW_TYPES.has(type);
 }
 
 function isDownloadableFile(item: LinkableResource): boolean {
   const type = (item.type || "").toLowerCase();
-  return Boolean(item.path || item.downloadPath || item.downloadUrl) && type !== "html" && type !== "htm";
+  return Boolean(item.path || item.url || item.downloadPath || item.downloadUrl) && type !== "html" && type !== "htm";
 }
 
 function isEmptyMoodleActivityShell(item: LinkableResource): boolean {
@@ -339,8 +345,8 @@ function localOpenProps(item: LinkableResource, baseUrl: string, moodleEmbed?: M
 }
 
 function localDownloadProps(item: LinkableResource, baseUrl: string) {
-  const href = resourceHref(item, baseUrl);
-  return item.path ? { download: true, href } : { href, rel: "noopener", target: "_blank" };
+  const href = resourceDownloadHref(item, baseUrl);
+  return item.path && !item.url && !item.downloadUrl ? { download: true, href } : { href, rel: "noopener", target: "_blank" };
 }
 
 async function copyText(value: string) {
@@ -394,7 +400,7 @@ function PublicShareButton({
   kind?: MoodleEmbedRow["kind"];
 }) {
   const [status, setStatus] = useState<"idle" | "working" | "copied" | "failed">("idle");
-  if (!item.path && !item.previewPath) return null;
+  if (!item.path && !item.previewPath && !item.url && !item.previewUrl) return null;
 
   const createShare = async () => {
     const input = window.prompt("公开分享有效期（天）。到期后链接自动失效。", "30");
@@ -413,7 +419,10 @@ function PublicShareButton({
           kind: kind || shareKindForItem(item),
           label: item.label,
           path: item.path,
+          url: item.url,
           previewPath: item.previewPath,
+          previewUrl: item.previewUrl,
+          downloadUrl: item.downloadUrl,
         }),
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
@@ -574,7 +583,9 @@ function ISpringActions({
   const shareItem: LinkableResource = {
     label,
     path: item.downloadPath || item.path,
+    url: item.downloadUrl || item.url,
     previewPath: item.path,
+    previewUrl: item.url,
     type: "ispring",
   };
 

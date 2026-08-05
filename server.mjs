@@ -1825,10 +1825,17 @@ function dirnamePosix(path) {
   return index >= 0 ? value.slice(0, index) : "";
 }
 
-function shareTokenForResource({ course, kind, path, previewPath, label, expiresInSeconds }) {
+function cleanExternalUrl(value) {
+  const url = String(value || "").trim();
+  return /^https?:\/\//i.test(url) ? url : "";
+}
+
+function shareTokenForResource({ course, kind, path, previewPath, url, previewUrl, downloadUrl, label, expiresInSeconds }) {
   const rawPath = toPosixPath(path || previewPath || "");
   const viewPath = toPosixPath(previewPath || path || "");
-  if (!rawPath && !viewPath) throw new Error("A local resource path is required.");
+  const rawUrl = cleanExternalUrl(downloadUrl || url || previewUrl);
+  const viewUrl = cleanExternalUrl(previewUrl || url || downloadUrl);
+  if (!rawPath && !viewPath && !rawUrl && !viewUrl) throw new Error("A local resource path or trusted URL is required.");
   return signEmbedPayload({
     v: 1,
     share: true,
@@ -1837,6 +1844,8 @@ function shareTokenForResource({ course, kind, path, previewPath, label, expires
     label,
     path: viewPath || rawPath,
     downloadPath: rawPath || viewPath,
+    url: viewUrl || rawUrl,
+    downloadUrl: rawUrl || viewUrl,
     exp: Math.floor(Date.now() / 1000) + Math.max(60, Math.min(Number(expiresInSeconds) || shareTokenMaxAgeSeconds, embedTokenMaxAgeSeconds)),
   });
 }
@@ -1870,12 +1879,15 @@ function renderSharePage(req, token, payload) {
   const course = safeSegment(payload.course).toUpperCase();
   const viewPath = toPosixPath(payload.path || payload.downloadPath || "");
   const downloadPath = toPosixPath(payload.downloadPath || payload.path || "");
-  const viewToken = tokenForSharedPath(payload, viewPath);
-  const downloadToken = tokenForSharedPath(payload, downloadPath);
-  const viewHref = `/embed/t/${encodeURIComponent(viewToken)}/${encodeURIComponent(course)}/${encodePathSegments(viewPath)}`;
-  const downloadHref = `/embed/t/${encodeURIComponent(downloadToken)}/${encodeURIComponent(course)}/${encodePathSegments(downloadPath)}?download=1`;
+  const externalViewUrl = cleanExternalUrl(payload.url);
+  const externalDownloadUrl = cleanExternalUrl(payload.downloadUrl || payload.url);
+  const viewToken = viewPath ? tokenForSharedPath(payload, viewPath) : "";
+  const downloadToken = downloadPath ? tokenForSharedPath(payload, downloadPath) : "";
+  const viewHref = externalViewUrl || `/embed/t/${encodeURIComponent(viewToken)}/${encodeURIComponent(course)}/${encodePathSegments(viewPath)}`;
+  const downloadHref = externalDownloadUrl || `/embed/t/${encodeURIComponent(downloadToken)}/${encodeURIComponent(course)}/${encodePathSegments(downloadPath)}?download=1`;
   const expiresAt = payload.exp ? new Date(Number(payload.exp) * 1000).toLocaleString("zh-CN", { hour12: false }) : "未设置";
   const title = payload.label || basename(downloadPath || viewPath) || "Shared resource";
+  const metaTarget = downloadPath || viewPath || externalDownloadUrl || externalViewUrl;
   return `<!doctype html>
 <html lang="zh-CN">
   <head>
@@ -1903,7 +1915,7 @@ function renderSharePage(req, token, payload) {
       <section class="share-header">
         <p class="kicker">${htmlEscape(course)} · ${htmlEscape(shareKindLabel(payload.kind))}</p>
         <h1>${htmlEscape(title)}</h1>
-        <div class="meta">${htmlEscape(downloadPath || viewPath)}<br>分享有效期至：${htmlEscape(expiresAt)}</div>
+        <div class="meta">${htmlEscape(metaTarget)}<br>分享有效期至：${htmlEscape(expiresAt)}</div>
         <div class="actions">
           <a class="button primary" href="${htmlEscape(viewHref)}" target="_blank" rel="noopener">新窗口查看</a>
           <a class="button" href="${htmlEscape(downloadHref)}">下载原始文件</a>
@@ -6766,8 +6778,11 @@ async function handlePortalApi(req, res) {
       }
       const path = toPosixPath(body.path || "");
       const previewPath = toPosixPath(body.previewPath || "");
-      if (!path && !previewPath) {
-        sendJson(res, 400, { ok: false, error: "A local resource path or preview path is required." });
+      const url = cleanExternalUrl(body.url || "");
+      const previewUrl = cleanExternalUrl(body.previewUrl || "");
+      const downloadUrl = cleanExternalUrl(body.downloadUrl || "");
+      if (!path && !previewPath && !url && !previewUrl && !downloadUrl) {
+        sendJson(res, 400, { ok: false, error: "A local resource path, preview path, or trusted URL is required." });
         return true;
       }
       const days = Number(body.expiresInDays || 30);
@@ -6778,6 +6793,9 @@ async function handlePortalApi(req, res) {
         label: body.label || basename(path || previewPath),
         path,
         previewPath,
+        url,
+        previewUrl,
+        downloadUrl,
         expiresInSeconds,
       });
       const payload = verifyEmbedToken(token);
