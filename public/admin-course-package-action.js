@@ -70,7 +70,8 @@
     confirmCommit,
     clearPackageFile,
     afterCommitSuccess,
-    uploadOverflowPackage,
+    uploadRawPackage,
+    shouldUseRawUpload,
   } = {}) {
     if (!fields) throw new Error("AdminCoursePackageAction requires fields.");
     const bytesLabel = requireFunction(formatBytes, "formatBytes");
@@ -82,11 +83,58 @@
     const importIdFor = requireFunction(reusableImportId, "reusableImportId");
     const showPreview = requireFunction(renderPreview, "renderPreview");
     const currentImport = typeof getCurrentImport === "function" ? getCurrentImport : () => null;
-    const overflowUpload = typeof uploadOverflowPackage === "function" ? uploadOverflowPackage : null;
+    const rawUpload = typeof uploadRawPackage === "function" ? uploadRawPackage : null;
+    const shouldUseRaw = typeof shouldUseRawUpload === "function" ? shouldUseRawUpload : () => false;
 
-    function overflowRequired(error) {
+    function rawUploadRequired(error) {
       const message = error instanceof Error ? error.message : String(error || "");
-      return Boolean(error?.data?.task?.overflowRequired || /ECS 剩余空间不足|OSS overflow raw package|overflow raw package/i.test(message));
+      return Boolean(error?.data?.task?.rawUploadRequired || /ECS 剩余空间不足|OSS raw package|raw package/i.test(message));
+    }
+
+    function rawUploadImportId(data, fallback) {
+      return data?.coursePackageTask?.importId
+        || data?.upload?.importId
+        || data?.uploads?.[0]?.coursePackageTask?.importId
+        || data?.uploads?.[0]?.upload?.importId
+        || fallback;
+    }
+
+    async function runRawPackageUpload({ course, file, importId, writeRawReason }) {
+      if (!rawUpload) throw new Error("OSS raw package 上传入口未初始化。");
+      if (writeRawReason && typeof write === "function") write(writeRawReason);
+      const rawData = await rawUpload({
+        course,
+        file,
+        importId,
+        write,
+        setStatus: showStatus,
+      });
+      const rawImportId = rawUploadImportId(rawData, importId);
+      const finalData = await waitForServerReview(rawImportId);
+      rememberUpload({
+        rememberTask: rememberSavedTask,
+        course,
+        importId: rawImportId,
+        file,
+        chunkTotal: 0,
+        chunksReceived: 0,
+        status: finalData?.imported ? "committed" : "complete",
+      });
+      if (finalData?.imported) {
+        showStatus({
+          title: "OSS raw 导入完成",
+          detail: "普通资料已保存到 ECS，高并发资源已发布到 OSS/CDN。",
+          percent: 100,
+          showProgress: true,
+        });
+        if (typeof write === "function") write(finalData);
+        if (typeof clearPackageFile === "function") clearPackageFile();
+        if (typeof afterSuccess === "function") await afterSuccess(finalData, file);
+        return finalData;
+      }
+      showPreview(finalData);
+      if (typeof afterSuccess === "function") await afterSuccess(finalData, file);
+      return finalData;
     }
 
     async function uploadCoursePackage() {
@@ -109,6 +157,50 @@
 
       const importId = importIdFor(file);
       const chunkTotal = chunkCount(file.size, chunkBytes);
+      if (rawUpload && shouldUseRaw(file)) {
+        showStatus({
+          title: "正在准备 OSS raw 上传",
+          detail: "这个课包将先 multipart 直传 OSS raw package，再由 ECS worker 通过内网流式读取并导入。",
+          percent: 0,
+          showProgress: true,
+        });
+        rememberUpload({
+          rememberTask: rememberSavedTask,
+          course,
+          importId,
+          file,
+          chunkTotal: 0,
+          chunksReceived: 0,
+          status: "uploading",
+        });
+        try {
+          return await runRawPackageUpload({
+            course,
+            file,
+            importId,
+            writeRawReason: "正在走 OSS raw package 导入：浏览器 multipart 直传原始 ZIP，ECS worker 内网流式处理。",
+          });
+        } catch (error) {
+          rememberUpload({
+            rememberTask: rememberSavedTask,
+            course,
+            importId,
+            file,
+            chunkTotal: 0,
+            chunksReceived: 0,
+            status: "failed",
+          });
+          showStatus({
+            title: "OSS raw 上传或导入失败",
+            detail: error instanceof Error ? error.message : String(error),
+            error: true,
+          });
+          if (typeof write === "function") write(`Error: ${error instanceof Error ? error.message : String(error)}`);
+          return undefined;
+        } finally {
+          if (typeof setUploadDisabled === "function") setUploadDisabled(false);
+        }
+      }
       const restoredTask = await restoreSavedTask({ writeOutput: false });
       const startChunk = resumableStartChunk({
         restoredTask,
@@ -228,45 +320,19 @@
         if (typeof afterSuccess === "function") await afterSuccess(finalData, file);
         return finalData;
       } catch (error) {
-        if (overflowUpload && overflowRequired(error)) {
+        if (rawUpload && rawUploadRequired(error)) {
           showStatus({
-            title: "ECS 空间不足，切换 OSS overflow",
-            detail: "课程 ZIP 会先直传到 OSS raw 暂存区，再由 ECS worker 流式读取并自动分流；不使用旧 FC 解压。",
+            title: "ECS 空间不足，切换 OSS raw",
+            detail: "课程 ZIP 会先直传到 OSS raw package，再由 ECS worker 通过内网流式读取并自动分流；不使用旧 FC 解压。",
             percent: 0,
             showProgress: true,
           });
-          if (typeof write === "function") write("ECS 空间不足，正在切换到 OSS overflow raw package 导入。");
-          const overflowData = await overflowUpload({
+          const finalData = await runRawPackageUpload({
             course,
             file,
             importId,
-            write,
-            setStatus: showStatus,
+            writeRawReason: "ECS 空间不足，正在切换到 OSS raw package 导入。",
           });
-          const overflowImportId = overflowData?.coursePackageTask?.importId || overflowData?.upload?.importId || importId;
-          const finalData = await waitForServerReview(overflowImportId);
-          rememberUpload({
-            rememberTask: rememberSavedTask,
-            course,
-            importId: overflowImportId,
-            file,
-            chunkTotal: 0,
-            chunksReceived: 0,
-            status: finalData?.imported ? "committed" : "complete",
-          });
-          if (finalData?.imported) {
-            showStatus({
-              title: "OSS overflow 导入完成",
-              detail: "普通资料已保存到 ECS，高并发资源已发布到 OSS/CDN。",
-              percent: 100,
-              showProgress: true,
-            });
-            if (typeof write === "function") write(finalData);
-            if (typeof afterSuccess === "function") await afterSuccess(finalData, file);
-            return finalData;
-          }
-          showPreview(finalData);
-          if (typeof afterSuccess === "function") await afterSuccess(finalData, file);
           return finalData;
         }
         const latest = await restoreSavedTask({ writeOutput: false }).catch(() => null);

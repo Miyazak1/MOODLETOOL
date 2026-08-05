@@ -1721,17 +1721,27 @@
 
       <section class="admin-panel auth-required" data-admin-panel="package" hidden>
         <h2>当前课程压缩包导入</h2>
-        <p class="meta-line">这个入口会把 ZIP 先传到 ECS，由导入 worker 解压分析，再自动判断普通资料留在 ECS、视频/H5P/iSpring 等高并发资源发布到 OSS/CDN。</p>
+        <p class="meta-line">这个入口由导入 worker 统一处理课程 ZIP：小型无媒体课程可先到 ECS；大课程、媒体课程会先 multipart 直传 OSS raw package，再由 ECS 通过内网流式读取并自动分流。</p>
         <div class="notice">
-          上传前会检查 ECS 剩余空间；空间不足时会阻断并提示走 OSS overflow raw package 兜底，不走旧 FC 解压。
+          不走旧 FC 解压。视频、H5P、iSpring 和超大附件会发布到 OSS/CDN，普通课程资料保留在 ECS。
         </div>
         <div class="storage-mini" id="packageStorageMini" hidden></div>
-        <div>
-          <label for="coursePackageFile">课程压缩包</label>
-          <input id="coursePackageFile" type="file" accept=".zip" />
+        <div class="form-grid">
+          <div>
+            <label for="coursePackageRoute">导入路径</label>
+            <select id="coursePackageRoute">
+              <option value="auto">自动选择</option>
+              <option value="raw">OSS raw 大课包 / 媒体课包</option>
+              <option value="ecs">ECS 小型无媒体课包</option>
+            </select>
+          </div>
+          <div>
+            <label for="coursePackageFile">课程压缩包</label>
+            <input id="coursePackageFile" type="file" accept=".zip" />
+          </div>
         </div>
         <div class="actions">
-          <button id="coursePackageUploadButton" type="button">上传并生成预览</button>
+          <button id="coursePackageUploadButton" type="button">上传并导入</button>
           <button class="primary" id="coursePackageCommitButton" type="button" disabled>确认导入到当前课程</button>
         </div>
         <div class="upload-status" id="coursePackageStatus" hidden>
@@ -1968,6 +1978,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         lifecycleFilter: document.querySelector("#lifecycleFilter"),
         lifecycleSearch: document.querySelector("#lifecycleSearch"),
         coursePackageFile: document.querySelector("#coursePackageFile"),
+        coursePackageRoute: document.querySelector("#coursePackageRoute"),
       };
       const unitField = document.querySelector("#unitField");
       const lessonField = document.querySelector("#lessonField");
@@ -2281,7 +2292,8 @@ pm2 restart ossd-course-portal --update-env</pre>
         clearPackageFile: () => {
           fields.coursePackageFile.value = "";
         },
-        uploadOverflowPackage: uploadCoursePackageOverflow,
+        uploadRawPackage: uploadCoursePackageRaw,
+        shouldUseRawUpload: (file) => shouldUseRawCoursePackageUpload(file),
         afterCommitSuccess: async (data) => {
           await loadSelectedCourseManifest();
           await readStatus({ writeOutput: false });
@@ -2742,7 +2754,7 @@ pm2 restart ossd-course-portal --update-env</pre>
             renderCoursePackageTaskStatus(data.task);
             if (data.task.status === "complete" && data.task.review) return data.task.review;
             if (data.task.status === "committed" && data.task.result) return data.task.result;
-            if (data.task.status === "blocked") throw new Error(data.task.error || "ECS 空间不足，需要走 OSS overflow raw package。");
+            if (data.task.status === "blocked") throw new Error(data.task.error || "ECS 空间不足，需要走 OSS raw package。");
             if (data.task.status === "failed") throw new Error(data.task.error || "服务器处理整课包失败。");
           }
           await sleep(5000);
@@ -2758,15 +2770,23 @@ pm2 restart ossd-course-portal --update-env</pre>
         return uploadTransport.uploadWithRetry({ url, blob, onProgress, onRetry });
       }
 
-      async function uploadCoursePackageOverflow({ course, file, setStatus, write: writeOutput }) {
-        const overflowController = window.AdminMediaUpload.createDirectUploadController({
+      function shouldUseRawCoursePackageUpload(file) {
+        const route = fields.coursePackageRoute?.value || "auto";
+        if (route === "raw") return true;
+        if (route === "ecs") return false;
+        const rawMinBytes = Number(mediaData?.config?.directUpload?.coursePackageRawMinBytes || 2 * 1024 * 1024 * 1024);
+        return Number(file?.size || 0) >= rawMinBytes;
+      }
+
+      async function uploadCoursePackageRaw({ course, file, setStatus, write: writeOutput }) {
+        const rawController = window.AdminMediaUpload.createDirectUploadController({
           api: mediaApi,
           confirm: (message) => confirm(message),
           formatProgress,
           getAutoPublish: () => true,
           getCourseCodes: () => knownAdminCourseCodes(),
           getFiles: () => [file],
-          getKind: () => "course-package-overflow",
+          getKind: () => "course-package-raw",
           getSelectedCourse: () => course,
           hasActiveWriteJob: () => null,
           jobTypeLabel: window.AdminMediaView.jobTypeLabel,
@@ -2791,7 +2811,7 @@ pm2 restart ossd-course-portal --update-env</pre>
             if (typeof writeOutput === "function") writeOutput(data);
           },
         });
-        return overflowController.uploadSelected();
+        return rawController.uploadSelected();
       }
 
       function reusableCoursePackageImportId(file) {

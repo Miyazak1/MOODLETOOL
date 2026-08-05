@@ -75,7 +75,7 @@ OSS inbox/uploads -> FC extractor -> Portal callback
 course-import-raw/<COURSE>/<uploadId>/<original.zip>
 ```
 
-当前代码里如果仍叫 `course-import-overflow`，可以先继续使用；后续建议改名为 `course-import-raw`，因为它不只是空间兜底，也是媒体/大包主入口。
+实现中应使用 `course-import-raw`，因为它不只是空间兜底，也是媒体/大包主入口。
 
 ## 4. 总体流程
 
@@ -510,21 +510,22 @@ External target could not be downloaded: HTTP 401
 
 ### Step 1：把 raw OSS 上传升级为正式入口
 
-当前 `course-package-overflow` 可以作为基础，但需要调整语义：
+当前 raw OSS 上传入口应作为正式入口使用：
 
 ```text
 旧语义：ECS 空间不足时兜底
 新语义：大课程/媒体课程默认 raw package 入口
 ```
 
-建议迁移命名：
+命名要求：
 
 ```text
-course-import-overflow -> course-import-raw
-OSS_COURSE_PACKAGE_OVERFLOW_PREFIX -> COURSE_IMPORT_RAW_PREFIX
+上传 kind：course-package-raw
+OSS 前缀：course-import-raw
+环境变量：COURSE_IMPORT_RAW_PREFIX
 ```
 
-可以不做兼容，切换后新上传只写新前缀。
+新上传只写新前缀；旧大包兜底入口不再作为新技术路线使用。
 
 ### Step 2：服务端使用 OSS_SERVER_ENDPOINT
 

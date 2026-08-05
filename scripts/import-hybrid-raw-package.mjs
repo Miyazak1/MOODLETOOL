@@ -19,11 +19,11 @@ const mockOssRoot = args.mockOssRoot ? resolve(args.mockOssRoot) : "";
 const mockFailOnce = Boolean(args.mockFailOnce);
 const sourceObjectKey = args.sourceObjectKey || objectKeyFromOssUri(sourceOssUri);
 const sourceBucket = args.sourceBucket || bucketFromOssUri(sourceOssUri) || process.env.OSS_DIRECT_UPLOAD_BUCKET || "";
-const importId = safeSegment(args.importId || `overflow-${Date.now()}`);
-const actor = args.actor || "ecs-overflow-worker";
+const importId = safeSegment(args.importId || `raw-${Date.now()}`);
+const actor = args.actor || "ecs-raw-worker";
 const coursewareRoot = resolve(args.coursewareRoot || process.env.COURSE_ACTIVE_ROOT || join(workspaceRoot, "courseware"));
 const courseRoot = resolve(coursewareRoot, course);
-const stagingRoot = resolve(args.stagingRoot || join(courseRoot, "_admin_uploads", "overflow-staging", importId));
+const stagingRoot = resolve(args.stagingRoot || join(courseRoot, "_admin_uploads", "raw-staging", importId));
 const localStagingRoot = join(stagingRoot, "local");
 const previousActiveRoot = join(stagingRoot, "previous-active");
 const registryPath = resolve(args.registry || process.env.COURSEWARE_ASSET_REGISTRY_FILE || join(deploymentRoot, "asset-registry.json"));
@@ -36,8 +36,8 @@ const maxRetries = Math.max(1, Number(args.retries || process.env.COURSE_IMPORT_
 const keepStaging = Boolean(args.keepStaging);
 
 if (!sourceZip && (!sourceBucket || !sourceObjectKey)) throw new Error("--source-oss-uri or --source-bucket/--source-object-key is required.");
-if (!targetBucketUri) throw new Error("OSS_BUCKET_URI or --bucket is required for overflow media publishing.");
-if (!cdnBaseUrl) throw new Error("COURSEWARE_ASSET_BASE_URL or --cdn-base-url is required for overflow media publishing.");
+if (!targetBucketUri) throw new Error("OSS_BUCKET_URI or --bucket is required for raw package media publishing.");
+if (!cdnBaseUrl) throw new Error("COURSEWARE_ASSET_BASE_URL or --cdn-base-url is required for raw package media publishing.");
 
 function parseArgs(argv) {
   const out = {};
@@ -56,9 +56,9 @@ function parseArgs(argv) {
 
 function printUsage() {
   console.log(`Usage:
-  node scripts/import-ecs-first-overflow-package.mjs --course BOH4M --source-oss-uri oss://moodletool/inbox/uploads/BOH4M/upl.../BOH4M-course-package.zip
+  node scripts/import-hybrid-raw-package.mjs --course BOH4M --source-oss-uri oss://moodletool/course-import-raw/BOH4M/upl.../BOH4M-course-package.zip
 
-Streams an overflow raw course ZIP from OSS. Local documents are staged on ECS; video/audio/H5P/iSpring/large files are streamed to OSS/CDN.`);
+Streams a raw course ZIP from OSS. Local documents are staged on ECS; video/audio/H5P/iSpring/large files are streamed to OSS/CDN.`);
 }
 
 function toCamel(value) {
@@ -359,7 +359,11 @@ async function createOssClient(bucket) {
     accessKeyId: process.env.OSS_DIRECT_UPLOAD_ACCESS_KEY_ID || process.env.ALIBABA_CLOUD_ACCESS_KEY_ID || process.env.OSS_ACCESS_KEY_ID || "",
     accessKeySecret: process.env.OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET || process.env.ALIBABA_CLOUD_ACCESS_KEY_SECRET || process.env.OSS_ACCESS_KEY_SECRET || "",
   };
-  const endpoint = process.env.OSS_DIRECT_UPLOAD_ENDPOINT || process.env.OSS_EXTRACT_ENDPOINT || "";
+  const endpoint = process.env.OSS_SERVER_ENDPOINT
+    || process.env.OSS_INTERNAL_ENDPOINT
+    || process.env.OSS_DIRECT_UPLOAD_ENDPOINT
+    || process.env.OSS_EXTRACT_ENDPOINT
+    || "";
   if (endpoint) options.endpoint = endpoint;
   const token = process.env.OSS_DIRECT_UPLOAD_SECURITY_TOKEN || process.env.ALIBABA_CLOUD_SECURITY_TOKEN || "";
   if (token) options.stsToken = token;
@@ -532,7 +536,7 @@ manifest.sourceAudit = {
   mediaStatus: uploaded.length ? "ready" : "not-required",
   hasPlayableMedia: uploaded.some((item) => ["video", "audio", "ispring", "h5p"].includes(item.kind)),
   ecsFirstOverflowImportedAt: new Date().toISOString(),
-  importMode: "ecs-first-overflow",
+  importMode: "hybrid-raw",
   sourceOssUri: sourceOssUri || `oss://${sourceBucket}/${sourceObjectKey}`,
   latestUploadId: importId,
   publishedAssetCount: uploaded.length,
@@ -565,7 +569,7 @@ const report = {
   course,
   importId,
   actor,
-  mode: "ecs-first-overflow",
+  mode: "hybrid-raw",
   sourceOssUri: sourceOssUri || `oss://${sourceBucket}/${sourceObjectKey}`,
   courseRoot,
   registryPath,
@@ -587,7 +591,7 @@ const report = {
 };
 
 mkdirSync(deploymentRoot, { recursive: true });
-const reportPath = join(deploymentRoot, `${course}-ecs-first-overflow-import-report.json`);
+const reportPath = join(deploymentRoot, `${course}-hybrid-raw-import-report.json`);
 writeJson(reportPath, report);
 if (!keepStaging) rmSync(stagingRoot, { recursive: true, force: true });
 
@@ -595,7 +599,7 @@ console.log(JSON.stringify({
   ok: true,
   course,
   importId,
-  mode: "ecs-first-overflow",
+  mode: "hybrid-raw",
   entries,
   localFiles,
   uploaded: uploaded.length,

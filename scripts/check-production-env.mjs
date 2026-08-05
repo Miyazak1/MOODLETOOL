@@ -201,34 +201,43 @@ if (directUploadEnabled === "1") {
   }
   if (directRoot && !directRoot.startsWith("/")) errors.push("OSS_UPLOADS_DATA_ROOT should be an absolute Linux path when set.");
 } else {
-  warnings.push("OSS_DIRECT_UPLOAD_ENABLED is not 1; ECS-first overflow raw ZIP fallback will be unavailable when ECS cannot safely receive the ZIP.");
+  warnings.push("OSS_DIRECT_UPLOAD_ENABLED is not 1; OSS raw course ZIP upload will be unavailable for large/media course packages.");
 }
 
 const coursePackageImportMode = String(values.COURSE_PACKAGE_IMPORT_MODE || "ecs-first").toLowerCase();
-if (coursePackageImportMode !== "ecs-first") {
-  errors.push("COURSE_PACKAGE_IMPORT_MODE must be ecs-first. The old oss-only/legacy-local course package flows are disabled.");
+if (!["ecs-first", "hybrid-worker"].includes(coursePackageImportMode)) {
+  errors.push("COURSE_PACKAGE_IMPORT_MODE must be ecs-first or hybrid-worker. The old oss-only/legacy-local course package flows are disabled.");
 } else {
   ok.push(`COURSE_PACKAGE_IMPORT_MODE=${coursePackageImportMode}.`);
 }
-if (coursePackageImportMode === "ecs-first") {
+if (["ecs-first", "hybrid-worker"].includes(coursePackageImportMode)) {
   if (assetMode === "local") {
-    warnings.push("COURSE_PACKAGE_IMPORT_MODE=ecs-first with COURSEWARE_ASSET_MODE=local will keep all course assets on ECS; media/iSpring concurrency benefits require hybrid or cdn.");
+    warnings.push("Course package import with COURSEWARE_ASSET_MODE=local will keep all course assets on ECS; media/iSpring concurrency benefits require hybrid or cdn.");
   }
   if (!ossBucket) {
-    warnings.push("COURSE_PACKAGE_IMPORT_MODE=ecs-first should set OSS_BUCKET_URI before importing media/iSpring/H5P courses.");
+    warnings.push("Course package import should set OSS_BUCKET_URI before importing media/iSpring/H5P courses.");
   }
   if (!assetBaseUrl) {
-    warnings.push("COURSE_PACKAGE_IMPORT_MODE=ecs-first should set COURSEWARE_ASSET_BASE_URL before importing media/iSpring/H5P courses.");
+    warnings.push("Course package import should set COURSEWARE_ASSET_BASE_URL before importing media/iSpring/H5P courses.");
+  }
+  const serverEndpoint = values.OSS_SERVER_ENDPOINT || values.OSS_INTERNAL_ENDPOINT || "";
+  if (serverEndpoint) {
+    ok.push("OSS_SERVER_ENDPOINT is set for ECS worker OSS access.");
+    if (!/-internal\.aliyuncs\.com$/i.test(serverEndpoint.replace(/^https?:\/\//i, "").replace(/\/+$/, ""))) {
+      warnings.push("OSS_SERVER_ENDPOINT should use the internal regional endpoint on ECS, for example https://oss-cn-hongkong-internal.aliyuncs.com.");
+    }
+  } else {
+    warnings.push("OSS_SERVER_ENDPOINT is not set; ECS worker OSS reads/writes may use the public endpoint and hit ECS bandwidth limits.");
   }
   const ossutilPath = values.OSSUTIL_PATH || "ossutil";
-  ok.push(`ECS-first package import will publish selected assets with ${ossutilPath}.`);
+  ok.push(`Course package import can publish selected assets with ${ossutilPath}.`);
   if (directUploadEnabled === "1") {
-    ok.push("OSS browser upload is reserved for ECS-first overflow raw ZIP fallback; manual media/H5P/iSpring direct upload is disabled by the server.");
+    ok.push("OSS browser upload is reserved for raw course ZIP packages; manual media/H5P/iSpring direct upload is disabled by the server.");
     const directMaxGb = Number(values.OSS_DIRECT_UPLOAD_MAX_GB || 20);
     if (Number.isFinite(directMaxGb) && directMaxGb < 10) {
-      warnings.push("OSS_DIRECT_UPLOAD_MAX_GB is below 10; very large course ZIP overflow uploads may be blocked before the ECS worker can process them.");
+      warnings.push("OSS_DIRECT_UPLOAD_MAX_GB is below 10; very large course ZIP raw uploads may be blocked before the ECS worker can process them.");
     }
-    ok.push(`OSS_COURSE_PACKAGE_OVERFLOW_PREFIX=${values.OSS_COURSE_PACKAGE_OVERFLOW_PREFIX || "course-import-overflow"}.`);
+    ok.push(`COURSE_IMPORT_RAW_PREFIX=${values.COURSE_IMPORT_RAW_PREFIX || "course-import-raw"}.`);
   }
 }
 if (values.OSS_EXTRACT_CALLBACK_SECRET || values.PORTAL_EXTRACT_CALLBACK_BASE || values.OSS_EXTRACT_BUCKET || values.OSS_EXTRACT_ENDPOINT) {

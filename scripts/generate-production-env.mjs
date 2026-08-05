@@ -43,6 +43,11 @@ const domain = readArg("--domain", "your-domain");
 const assetMode = String(readArg("--asset-mode", "local") || "local").toLowerCase();
 const cdnBaseUrl = String(readArg("--cdn-base-url", "") || "").replace(/\/+$/, "");
 const ossBucket = String(readArg("--oss-bucket", "") || "").replace(/\/+$/, "");
+const ossBucketName = ossBucket.replace(/^oss:\/\//i, "").split("/")[0];
+const ossPublicEndpoint = readArg("--oss-direct-upload-endpoint", "https://oss-cn-hongkong.aliyuncs.com");
+const ossServerEndpoint = readArg("--oss-server-endpoint", "https://oss-cn-hongkong-internal.aliyuncs.com");
+const ossAccessKeyId = readArg("--oss-access-key-id", "CHANGE_ME_OSS_ACCESS_KEY_ID");
+const ossAccessKeySecret = readArg("--oss-access-key-secret", "CHANGE_ME_OSS_ACCESS_KEY_SECRET");
 const assetPrefix = String(readArg("--asset-prefix", "courseware-active") || "courseware-active").replace(/^\/+|\/+$/g, "");
 const assetRegistryFile = readArg("--asset-registry-file", "/www/wwwroot/ossd-course-portal/deployment/asset-registry.json");
 
@@ -142,6 +147,34 @@ const env = [
   "ADMIN_COOKIE_SECURE=1",
   "ADMIN_MAX_DOCUMENT_MB=100",
   "ADMIN_MAX_ISPRING_MB=4096",
+  "ADMIN_MAX_COURSE_PACKAGE_MB=32768",
+  "",
+  "MEDIA_JOBS_ENABLED=1",
+  "MEDIA_JOBS_MAX_CONCURRENCY=1",
+  "MEDIA_JOBS_DATA_ROOT=/www/wwwroot/ossd-course-portal/data/media-jobs",
+  "COURSE_PACKAGE_IMPORT_MODE=hybrid-worker",
+  "COURSE_IMPORT_RAW_PREFIX=course-import-raw",
+  "COURSE_ECS_UPLOAD_MAX_GB=2",
+  "OSS_DIRECT_UPLOAD_MAX_GB=50",
+  "OSS_DIRECT_UPLOAD_PART_MB=64",
+  "COURSE_LARGE_FILE_THRESHOLD_MB=100",
+  "COURSE_LARGE_IMAGE_THRESHOLD_MB=25",
+  "COURSE_LOCAL_MAX_COURSE_MB=2048",
+  "COURSE_IMPORT_STORAGE_WARNING_FREE_GB=40",
+  "COURSE_IMPORT_STORAGE_GUARDED_FREE_GB=25",
+  "COURSE_IMPORT_STORAGE_BLOCKED_FREE_GB=15",
+  "COURSE_IMPORT_SYSTEM_RESERVED_GB=10",
+  ...(assetMode === "local" ? [
+    "OSS_DIRECT_UPLOAD_ENABLED=0",
+  ] : [
+    "OSS_DIRECT_UPLOAD_ENABLED=1",
+    envLine("OSS_DIRECT_UPLOAD_BUCKET", ossBucketName || "YOUR_OSS_BUCKET_NAME"),
+    envLine("OSS_DIRECT_UPLOAD_ENDPOINT", ossPublicEndpoint),
+    envLine("OSS_SERVER_ENDPOINT", ossServerEndpoint),
+    envLine("OSS_DIRECT_UPLOAD_ACCESS_KEY_ID", ossAccessKeyId),
+    envLine("OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET", ossAccessKeySecret),
+    "OSS_UPLOADS_DATA_ROOT=/www/wwwroot/ossd-course-portal/data/oss-uploads",
+  ]),
   "",
 ].join("\n");
 

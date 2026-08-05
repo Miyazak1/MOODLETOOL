@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node
 import { isAbsolute, join, relative, resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
-const smokeRoot = join(projectRoot, "deployment", ".ecs-first-overflow-smoke");
+const smokeRoot = join(projectRoot, "deployment", ".hybrid-raw-smoke");
 const sourceRoot = join(smokeRoot, "source");
 const coursewareRoot = join(smokeRoot, "courseware-active");
 const mockOssRoot = join(smokeRoot, "mock-oss");
@@ -12,7 +12,7 @@ const registryPath = join(smokeRoot, "asset-registry.json");
 const course = "ZZZOVERFLOW";
 const sourceCourseRoot = join(sourceRoot, course);
 const zipPath = join(smokeRoot, `${course}.zip`);
-const reportPath = join(projectRoot, "deployment", `${course}-ecs-first-overflow-import-report.json`);
+const reportPath = join(projectRoot, "deployment", `${course}-hybrid-raw-import-report.json`);
 
 function assertInside(parent, child, label) {
   const rel = relative(parent, child);
@@ -77,9 +77,9 @@ try {
   if (zipResult.status !== 0) throw new Error(zipResult.stderr || zipResult.stdout || "zip fixture failed");
 
   const result = spawnSync("node", [
-    "scripts/import-ecs-first-overflow-package.mjs",
+    "scripts/import-hybrid-raw-package.mjs",
     "--course", course,
-    "--import-id", "upl-overflow-smoke",
+    "--import-id", "upl-raw-smoke",
     "--source-zip", zipPath,
     "--mock-oss-root", mockOssRoot,
     "--mock-fail-once", "1",
@@ -97,7 +97,7 @@ try {
 
   const stdout = JSON.parse(result.stdout);
   assert.equal(stdout.ok, true);
-  assert.equal(stdout.mode, "ecs-first-overflow");
+  assert.equal(stdout.mode, "hybrid-raw");
   assert.equal(stdout.uploaded, 3);
 
   const targetCourseRoot = join(coursewareRoot, course);
@@ -105,7 +105,7 @@ try {
   assert.equal(existsSync(join(targetCourseRoot, "media", "lesson-video.mp4")), false);
   assert.equal(existsSync(join(targetCourseRoot, "old-active", "stale.txt")), false);
   assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "keep.txt")), true);
-  assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "overflow-staging", "upl-overflow-smoke", "previous-active")), false);
+  assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "raw-staging", "upl-raw-smoke", "previous-active")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "lesson-video.mp4")), true);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "localized-moodle-activities", "resource", "demo", "html5-package", "presentation.html")), true);
@@ -117,7 +117,7 @@ try {
   assert.equal(lesson.downloads[1].path, undefined);
   assert.match(lesson.ispring[0].url, /presentation\.html$/);
   assert.equal(lesson.ispring[0].packagePath, undefined);
-  assert.equal(manifest.sourceAudit.importMode, "ecs-first-overflow");
+  assert.equal(manifest.sourceAudit.importMode, "hybrid-raw");
 
   const registry = JSON.parse(readFileSync(registryPath, "utf8"));
   assert.equal(registry.assetRecords.length, 4);
@@ -129,7 +129,7 @@ try {
   assert.equal(report.summary.staleOssObjects, 1);
   assert.equal(report.summary.deletedStaleOssObjects, 1);
 
-  console.log("ECS-first overflow package smoke passed.");
+  console.log("Hybrid raw package smoke passed.");
 } finally {
   if (!process.argv.includes("--keep-output") && existsSync(smokeRoot)) {
     rmSync(smokeRoot, { recursive: true, force: true });

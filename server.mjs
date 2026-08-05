@@ -10,6 +10,7 @@ import {
   directUploadKindCanAutoPublish,
   isCoursePackageUploadKind,
   isPlayableCoursewareAsset,
+  isRawCoursePackageUploadKind,
   playableCoursewareVideoExts,
 } from "./scripts/lib/media-delivery-assets.mjs";
 import {
@@ -109,7 +110,7 @@ const mediaJobsAutoPublishAfterPackage = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFT
 const mediaJobsAutoPublishAfterActivate = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_ACTIVATE === "1";
 const configuredCoursePackageImportMode = String(process.env.COURSE_PACKAGE_IMPORT_MODE || "ecs-first").toLowerCase();
 const coursePackageImportMode = "ecs-first";
-if (configuredCoursePackageImportMode && configuredCoursePackageImportMode !== "ecs-first") {
+if (configuredCoursePackageImportMode && !["ecs-first", "hybrid-worker"].includes(configuredCoursePackageImportMode)) {
   console.warn(`COURSE_PACKAGE_IMPORT_MODE=${configuredCoursePackageImportMode} is no longer supported; using ecs-first.`);
 }
 const courseLocalContentEnabled = process.env.COURSE_LOCAL_CONTENT_ENABLED !== "0";
@@ -802,8 +803,8 @@ function directUploadPublicConfig() {
 }
 
 async function createDirectUploadPolicy({ course, fileName, fileSize, contentType, kind, actor }) {
-  if (kind !== "course-package-overflow") {
-    throw new Error("OSS browser upload is reserved for ECS-first overflow raw course packages. Use the course package upload entry; media/iSpring/H5P publishing is handled by the ECS worker.");
+  if (!isRawCoursePackageUploadKind(kind)) {
+    throw new Error("OSS browser upload is reserved for raw course ZIP packages handled by the ECS worker. Use the course package upload entry; media/iSpring/H5P publishing is automatic.");
   }
   const catalog = await readCourseCatalog();
   const courseCodes = (catalog.courses || []).map((entry) => entry.code);
@@ -3553,14 +3554,14 @@ async function coursePackageEcsCapacityPreflight(totalBytes) {
     freeBytes: disk?.freeBytes ?? null,
     spaceFactor: coursePackageEcsSpaceFactor,
     reserveBytes: coursePackageDiskReserveBytes,
-    overflowRequired: !ok,
+    rawUploadRequired: !ok,
   };
 }
 
 async function assertCoursePackageEcsCapacity(totalBytes) {
   const capacity = await coursePackageEcsCapacityPreflight(totalBytes);
   if (capacity.ok) return capacity;
-  throw new Error(`ECS 剩余空间不足，不能走 ECS-first 课程包导入：ZIP ${formatBytesForError(capacity.packageBytes)}，预估峰值需要 ${formatBytesForError(capacity.requiredBytes)}，当前可用 ${formatBytesForError(capacity.freeBytes)}。请走 OSS overflow raw package 兜底，由 ECS worker 从 OSS 读取并分流，不要走旧 FC 解压链路。`);
+  throw new Error(`ECS 剩余空间不足，不能走 ECS 本地课程包导入：ZIP ${formatBytesForError(capacity.packageBytes)}，预估峰值需要 ${formatBytesForError(capacity.requiredBytes)}，当前可用 ${formatBytesForError(capacity.freeBytes)}。请走 OSS raw package，由 ECS worker 从 OSS 内网流式读取并分流，不要走旧 FC 解压链路。`);
 }
 
 async function listDirectoryNames(root) {
@@ -4369,49 +4370,49 @@ function startCoursePackageFinalize({ course, importId, actor }) {
   });
 }
 
-function startEcsFirstOverflowCoursePackageImport({ record, actor }) {
+function startRawOssCoursePackageImport({ record, actor }) {
   const course = safeSegment(record?.course || "").toUpperCase();
   const importId = safeSegment(record?.id || coursePackageId());
   const filename = safeSegment(record?.fileName || "course-package.zip") || "course-package.zip";
   const key = coursePackageTaskKey(course, importId);
-  if (!course) throw new Error("Course is required for ECS-first overflow import.");
-  if (!record?.ossUri) throw new Error("Overflow course package is missing ossUri.");
+  if (!course) throw new Error("Course is required for raw OSS package import.");
+  if (!record?.ossUri) throw new Error("Raw OSS course package is missing ossUri.");
   if (coursePackageFinalizeTasks.has(key)) {
     return writeCoursePackageTask(course, importId, {
       status: "processing",
-      phase: "streaming-oss-overflow",
+      phase: "streaming-oss-raw",
       filename,
-      source: "oss-overflow-raw-package",
+      source: "oss-raw-package",
       ossUri: record.ossUri,
       totalBytes: record.fileSize || null,
       percent: 10,
-      importMode: "ecs-first-overflow",
+      importMode: "hybrid-raw",
     });
   }
 
   const promise = (async () => {
     writeCoursePackageTask(course, importId, {
       status: "processing",
-      phase: "streaming-oss-overflow",
+      phase: "streaming-oss-raw",
       filename,
-      source: "oss-overflow-raw-package",
+      source: "oss-raw-package",
       ossUri: record.ossUri,
       totalBytes: record.fileSize || null,
       percent: 10,
       startedAt: new Date().toISOString(),
-      importMode: "ecs-first-overflow",
+      importMode: "hybrid-raw",
     });
     ossUploadStore.patchRecord(record.id, {
       status: "importing",
       importId,
-      importStatus: "ecs-overflow-streaming",
-      importMode: "ecs-first-overflow",
+      importStatus: "oss-raw-streaming",
+      importMode: "hybrid-raw",
       ossOnly: false,
       error: "",
-      ingestMessage: "超大课程包已进入 ECS-first overflow worker：从 OSS raw ZIP 流式读取，普通资料落 ECS，高并发资源发布到 OSS/CDN。",
+      ingestMessage: "课程包已进入 ECS worker：从 OSS raw ZIP 流式读取，普通资料落 ECS，高并发资源发布到 OSS/CDN。",
     });
 
-    const scriptPath = join(projectRoot, "scripts", "import-ecs-first-overflow-package.mjs");
+    const scriptPath = join(projectRoot, "scripts", "import-hybrid-raw-package.mjs");
     const result = await runCommand("node", [
       scriptPath,
       "--course",
@@ -4436,7 +4437,7 @@ function startEcsFirstOverflowCoursePackageImport({ record, actor }) {
     const payload = parseJobPayload(result.stdout) || { ok: true, stdout: result.stdout, stderr: result.stderr };
     const manifest = await readManifest(course);
     const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
-    const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after ECS-first overflow course package import.");
+    const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after hybrid raw course package import.");
     let lightweightPreview = null;
     let lightweightPreviewWarning = null;
     try {
@@ -4449,13 +4450,13 @@ function startEcsFirstOverflowCoursePackageImport({ record, actor }) {
       course,
       importId,
       imported: true,
-      mode: "ecs-first-overflow",
+      mode: "hybrid-raw",
       payload,
       catalogEntry,
       lifecycle,
       lightweightPreview: lightweightPreview?.stdout?.trim() || null,
       lightweightPreviewWarning,
-      manifest: "manifest imported from OSS overflow raw package and finalized for ECS-first hybrid storage",
+      manifest: "manifest imported from OSS raw package and finalized for hybrid ECS/OSS storage",
     };
     writeCoursePackageTask(course, importId, {
       status: "committed",
@@ -4463,7 +4464,7 @@ function startEcsFirstOverflowCoursePackageImport({ record, actor }) {
       percent: 100,
       filename,
       result: finalResult,
-      importMode: "ecs-first-overflow",
+      importMode: "hybrid-raw",
     });
     ossUploadStore.patchRecord(record.id, {
       status: "imported",
@@ -4477,12 +4478,12 @@ function startEcsFirstOverflowCoursePackageImport({ record, actor }) {
         mode: finalResult.mode,
         manifest: finalResult.manifest,
       },
-      ingestMessage: "ECS-first overflow 导入完成：普通资料保存在 ECS，高并发资源已发布到 OSS/CDN。",
+      ingestMessage: "OSS raw 导入完成：普通资料保存在 ECS，高并发资源已发布到 OSS/CDN。",
       error: "",
     });
     await appendAdminHistory(course, {
       actor,
-      action: "course-package-overflow-import",
+      action: "course-package-raw-import",
       importId,
       filename,
       ossUri: record.ossUri,
@@ -4498,16 +4499,16 @@ function startEcsFirstOverflowCoursePackageImport({ record, actor }) {
         status: "failed",
         phase: "failed",
         filename,
-        source: "oss-overflow-raw-package",
+        source: "oss-raw-package",
         ossUri: record.ossUri,
-        importMode: "ecs-first-overflow",
+        importMode: "hybrid-raw",
         error: message,
       });
       ossUploadStore.patchRecord(record.id, {
         status: "failed",
         importId,
         importStatus: "failed",
-        importMode: "ecs-first-overflow",
+        importMode: "hybrid-raw",
         error: message,
       });
     })
@@ -4518,19 +4519,19 @@ function startEcsFirstOverflowCoursePackageImport({ record, actor }) {
 
   return writeCoursePackageTask(course, importId, {
     status: "processing",
-    phase: "streaming-oss-overflow",
+    phase: "streaming-oss-raw",
     filename,
-    source: "oss-overflow-raw-package",
+    source: "oss-raw-package",
     ossUri: record.ossUri,
     totalBytes: record.fileSize || null,
     percent: 10,
     startedAt: new Date().toISOString(),
-    importMode: "ecs-first-overflow",
+    importMode: "hybrid-raw",
   });
 }
 
 function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
-  if (coursePackageImportMode === "ecs-first" && record?.kind !== "course-package-overflow") {
+  if (coursePackageImportMode === "ecs-first" && !isRawCoursePackageUploadKind(record?.kind)) {
     throw new Error("完整课件包已切换为 ECS-first 导入，旧 OSS/FC 课程包记录不能继续处理。");
   }
   const course = safeSegment(record?.course || "").toUpperCase();
@@ -4540,8 +4541,8 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
   const filename = safeSegment(record.fileName || "course-package.zip") || "course-package.zip";
   if (extname(filename).toLowerCase() !== ".zip") throw new Error("Course package import requires a .zip file.");
 
-  if (coursePackageImportMode === "ecs-first" && record?.kind === "course-package-overflow") {
-    return startEcsFirstOverflowCoursePackageImport({ record, actor });
+  if (coursePackageImportMode === "ecs-first" && isRawCoursePackageUploadKind(record?.kind)) {
+    return startRawOssCoursePackageImport({ record, actor });
   }
 
   const key = coursePackageTaskKey(course, importId);
@@ -5730,7 +5731,7 @@ async function handleAdminApi(req, res) {
 
     const ossExtractCallbackMatch = /^\/api\/admin\/oss\/uploads\/([^/]+)\/extracted$/.exec(requestUrl.pathname);
     if (ossExtractCallbackMatch && req.method === "POST" && coursePackageImportMode === "ecs-first") {
-      sendJson(res, 410, { ok: false, error: "旧 FC/OSS-side 课件包回调已禁用。请使用 ECS-first 导入或 overflow 流式兜底。" });
+      sendJson(res, 410, { ok: false, error: "旧 FC/OSS-side 课件包回调已禁用。请使用小课包 ECS 导入，或大课包 OSS raw 导入。" });
       return true;
     }
     if (ossExtractCallbackMatch && req.method === "POST" && isOssExtractCallbackAuthorized(req)) {
@@ -5818,7 +5819,7 @@ async function handleAdminApi(req, res) {
         return true;
       }
       if (action === "complete" && req.method === "POST") {
-        if (record.kind !== "course-package-overflow") {
+        if (!isRawCoursePackageUploadKind(record.kind)) {
           throw new Error("旧 OSS 直传记录不能继续完成或发布。请通过 ECS-first 重新上传课程 ZIP。");
         }
         const body = await readJsonBody(req, 64 * 1024);
@@ -5847,20 +5848,20 @@ async function handleAdminApi(req, res) {
         let coursePackageTask = null;
         if (wantsAutoPublish && isCoursePackageUploadKind(record.kind)) {
           ossUploadStore.writeRecord(record);
-          if (coursePackageImportMode === "ecs-first" && record.kind === "course-package-overflow") {
+          if (coursePackageImportMode === "ecs-first" && isRawCoursePackageUploadKind(record.kind)) {
             record.status = "importing";
             record.importId = record.id;
-            record.importStatus = "ecs-overflow-queued";
-            record.importMode = "ecs-first-overflow";
+            record.importStatus = "oss-raw-queued";
+            record.importMode = "hybrid-raw";
             ossUploadStore.writeRecord(record);
             coursePackageTask = startOssCoursePackageImport({
               record: { ...record },
               actor: adminActor(req),
               autoCommit: true,
             });
-            warning = "完整课件包已保存为 OSS overflow raw package，ECS worker 会从 OSS 流式读取并自动分流；不使用 FC 解压。";
+            warning = "完整课件包已保存为 OSS raw package，ECS worker 会从 OSS 内网流式读取并自动分流；不使用 FC 解压。";
           } else {
-            throw new Error("完整课件包已切换为 ECS-first 导入：旧 OSS course-package 记录不能进入 FC/OSS-side 流程。请使用课程压缩包入口触发 overflow fallback。");
+            throw new Error("完整课件包已切换为 ECS worker 导入：旧 OSS course-package 记录不能进入 FC/OSS-side 流程。请使用课程压缩包入口触发 raw package 上传。");
           }
           sendJson(res, 200, {
             ok: true,
@@ -6359,7 +6360,7 @@ async function handleAdminApi(req, res) {
           filename: originalFilename,
           totalBytes: contentLength,
           percent: 0,
-          overflowRequired: true,
+          rawUploadRequired: true,
           error: message,
         });
         throw error;
@@ -6441,7 +6442,7 @@ async function handleAdminApi(req, res) {
           totalBytes,
           chunkTotal,
           percent: 0,
-          overflowRequired: true,
+          rawUploadRequired: true,
           error: message,
         });
         throw error;

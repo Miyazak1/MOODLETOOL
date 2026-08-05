@@ -27,7 +27,7 @@ assert.equal(publicConfig.configured, true);
 assert.equal(publicConfig.bucket, "moodletool");
 assert.equal(publicConfig.endpoint, "https://oss-cn-hongkong.aliyuncs.com");
 assert.equal(publicConfig.inboxPrefix, "inbox/uploads");
-assert.equal(publicConfig.overflowPrefix, "course-import-overflow");
+assert.equal(publicConfig.rawPrefix, "course-import-raw");
 assert.equal(publicConfig.maxGb, 1);
 
 assert.deepEqual(
@@ -63,19 +63,19 @@ assert.equal(form.fields["Content-Type"], "application/zip");
 assert.ok(form.fields.policy);
 assert.ok(form.fields.Signature);
 
-const overflow = createDirectUploadPolicy({
+const rawPackage = createDirectUploadPolicy({
   config,
   courseCodes: ["ENG3U", "ESLDO"],
-  kind: "course-package-overflow",
+  kind: "course-package-raw",
   fileName: "ESLDO-course-package-20260803.zip",
   fileSize: 1000,
   contentType: "",
   actor: "admin",
   mimeTypes: { ".zip": "application/zip" },
 });
-assert.equal(overflow.record.course, "ESLDO");
-assert.equal(overflow.record.kind, "course-package-overflow");
-assert.match(overflow.record.objectKey, /^course-import-overflow\/ESLDO\/upl-\d+-ESLDO-[a-f0-9]+\/ESLDO-course-package-20260803\.zip$/);
+assert.equal(rawPackage.record.course, "ESLDO");
+assert.equal(rawPackage.record.kind, "course-package-raw");
+assert.match(rawPackage.record.objectKey, /^course-import-raw\/ESLDO\/upl-\d+-ESLDO-[a-f0-9]+\/ESLDO-course-package-20260803\.zip$/);
 
 assert.throws(
   () => createDirectUploadPolicy({

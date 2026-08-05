@@ -220,7 +220,7 @@
       if (task.status === "blocked") {
         setStatus({
           title: "ECS 空间不足",
-          detail: task.error || "当前 ECS 空间不足，需要走 OSS overflow raw package。",
+          detail: task.error || "当前 ECS 空间不足，需要走 OSS raw package。",
           error: true,
         });
         return;

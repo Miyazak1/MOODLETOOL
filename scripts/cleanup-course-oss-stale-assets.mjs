@@ -125,7 +125,11 @@ async function createOssClient() {
   const client = new OSS({
     bucket: bucketName,
     secure: true,
-    endpoint: process.env.OSS_DIRECT_UPLOAD_ENDPOINT || process.env.OSS_EXTRACT_ENDPOINT || "",
+    endpoint: process.env.OSS_SERVER_ENDPOINT
+      || process.env.OSS_INTERNAL_ENDPOINT
+      || process.env.OSS_DIRECT_UPLOAD_ENDPOINT
+      || process.env.OSS_EXTRACT_ENDPOINT
+      || "",
     accessKeyId: process.env.OSS_DIRECT_UPLOAD_ACCESS_KEY_ID || process.env.ALIBABA_CLOUD_ACCESS_KEY_ID || process.env.OSS_ACCESS_KEY_ID || "",
     accessKeySecret: process.env.OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET || process.env.ALIBABA_CLOUD_ACCESS_KEY_SECRET || process.env.OSS_ACCESS_KEY_SECRET || "",
     stsToken: process.env.OSS_DIRECT_UPLOAD_SECURITY_TOKEN || process.env.ALIBABA_CLOUD_SECURITY_TOKEN || undefined,

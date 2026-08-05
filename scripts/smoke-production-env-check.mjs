@@ -62,6 +62,7 @@ try {
     "OSS_DIRECT_UPLOAD_ENABLED=1",
     "OSS_DIRECT_UPLOAD_BUCKET=moodletool",
     "OSS_DIRECT_UPLOAD_ENDPOINT=https://oss-cn-hongkong.aliyuncs.com",
+    "OSS_SERVER_ENDPOINT=https://oss-cn-hongkong-internal.aliyuncs.com",
     "OSS_UPLOADS_DATA_ROOT=/www/wwwroot/ossd-course-portal/data/oss-uploads",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_ID=LTAI5tExampleAccessKeyId",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET=exampleSecretForSmokeOnly1234567890",
@@ -116,6 +117,7 @@ try {
     "OSS_DIRECT_UPLOAD_ENABLED=1",
     "OSS_DIRECT_UPLOAD_BUCKET=moodletool-courseware",
     "OSS_DIRECT_UPLOAD_ENDPOINT=https://oss-cn-hongkong.aliyuncs.com",
+    "OSS_SERVER_ENDPOINT=https://oss-cn-hongkong-internal.aliyuncs.com",
     "OSS_UPLOADS_DATA_ROOT=/www/wwwroot/ossd-course-portal/data/oss-uploads",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_ID=LTAI5tExampleAccessKeyId",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET=exampleSecretForSmokeOnly1234567890",
@@ -165,6 +167,7 @@ try {
     "OSS_DIRECT_UPLOAD_ENABLED=1",
     "OSS_DIRECT_UPLOAD_BUCKET=moodletool",
     "OSS_DIRECT_UPLOAD_ENDPOINT=https://oss-cn-hongkong.aliyuncs.com",
+    "OSS_SERVER_ENDPOINT=https://oss-cn-hongkong-internal.aliyuncs.com",
     "OSS_UPLOADS_DATA_ROOT=/www/wwwroot/ossd-course-portal/data/oss-uploads",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_ID=LTAI5tExampleAccessKeyId",
     "OSS_DIRECT_UPLOAD_ACCESS_KEY_SECRET=exampleSecretForSmokeOnly1234567890",
@@ -174,7 +177,7 @@ try {
   const oldMode = runCheck(oldModeEnvPath);
   if (oldMode.status === 0) throw new Error("Expected old course package import mode to fail.");
   const oldModeReport = JSON.parse(oldMode.stdout);
-  if (!oldModeReport.errors.some((item) => item.includes("COURSE_PACKAGE_IMPORT_MODE must be ecs-first"))) {
+  if (!oldModeReport.errors.some((item) => item.includes("COURSE_PACKAGE_IMPORT_MODE must be ecs-first or hybrid-worker"))) {
     throw new Error("Expected old course package import mode to be rejected.");
   }
 

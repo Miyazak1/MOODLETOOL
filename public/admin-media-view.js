@@ -75,7 +75,7 @@
   function uploadKindLabel(kind) {
     const labels = {
       "course-package": "完整课件包",
-      "course-package-overflow": "完整课件包 Overflow",
+      "course-package-raw": "完整课件包 Raw",
       video: "视频",
       h5p: "H5P",
       "ispring-package": "iSpring 包",
