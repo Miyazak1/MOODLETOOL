@@ -51,6 +51,9 @@ const portEnd = portEndArgIndex >= 0 ? Number(process.argv[portEndArgIndex + 1])
 const shouldOpen = process.argv.includes("--open");
 const rootArgIndex = process.argv.indexOf("--root");
 const webRoot = rootArgIndex >= 0 ? resolve(projectRoot, process.argv[rootArgIndex + 1]) : projectRoot;
+const distRoot = join(projectRoot, "dist");
+const distIndexPath = join(distRoot, "index.html");
+const shouldServeDistApp = rootArgIndex < 0 && existsSync(distIndexPath);
 const adminUploadsEnabled = process.env.ADMIN_UPLOADS_ENABLED === "1";
 const adminToken = process.env.ADMIN_TOKEN || "";
 const adminUsername = process.env.ADMIN_USERNAME || "";
@@ -200,7 +203,7 @@ function resolveRequestPath(urlPath) {
     return join(webRoot, "teacher-admin.html");
   }
   if (decoded === "/" || decoded === "") {
-    return join(webRoot, "index.html");
+    return shouldServeDistApp ? distIndexPath : join(webRoot, "index.html");
   }
 
   if (decoded.startsWith("/courseware/") && decoded.split("/").includes("_admin_uploads")) {
@@ -208,8 +211,9 @@ function resolveRequestPath(urlPath) {
   }
 
   const isCoursewareRequest = decoded.startsWith("/courseware/");
+  const isDistAssetRequest = shouldServeDistApp && decoded.startsWith("/assets/");
   const relativePath = isCoursewareRequest ? decoded.replace(/^\/courseware\/?/i, "") : decoded;
-  const root = isCoursewareRequest ? courseActiveRoot : webRoot;
+  const root = isCoursewareRequest ? courseActiveRoot : isDistAssetRequest ? distRoot : webRoot;
   const candidate = normalize(join(root, relativePath));
   const allowedRoot = root;
 
