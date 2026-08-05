@@ -48,6 +48,6 @@ https://www.moodletool.work/embed/
 http://127.0.0.1:8891/embed/
 ```
 
-The rendered iframe intentionally does not add a `sandbox` attribute. iSpring, H5P, and
-other HTML5 courseware can break inside a sandboxed iframe; access is controlled by
-the allowed embed prefixes and the Portal embed token instead.
+The rendered iframe is created server-side by the filter with a controlled `sandbox`
+and `allow` policy. Authors paste only the shortcode into Moodle, so TinyMCE does
+not rewrite or strip iframe permissions.
