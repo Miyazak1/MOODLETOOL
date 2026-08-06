@@ -58,7 +58,7 @@ function printUsage() {
   console.log(`Usage:
   node scripts/import-hybrid-raw-package.mjs --course BOH4M --source-oss-uri oss://moodletool/course-import-raw/BOH4M/upl.../BOH4M-course-package.zip
 
-Streams a raw course ZIP from OSS. Local documents are staged on ECS; video/audio/H5P/iSpring/large files are streamed to OSS/CDN.`);
+Imports a raw course ZIP. The raw ZIP is staged locally for stable central-directory reading; local documents are staged on ECS, while video/audio/H5P/iSpring/large files are published to OSS/CDN.`);
 }
 
 function toCamel(value) {
@@ -239,18 +239,28 @@ async function publishEntryStream(record, entry) {
   return { ...record, sha256: hash.digest("hex") };
 }
 
-async function retryPublishEntryFromZip(record, attempt) {
-  const stream = await zipStreamFromOss(sourceClient);
-  const retryParser = stream.pipe(unzipper.Parse({ forceStream: true }));
-  for await (const entry of retryParser) {
+async function retryPublishEntryFromZip(zipPath, record, attempt) {
+  const entry = await findZipEntry(zipPath, record.relativePath);
+  if (!entry) throw new Error(`ZIP entry not found during retry: ${record.relativePath}`);
+  return { ...(await publishEntryStream(record, entry.stream())), attempts: attempt };
+}
+
+async function openZipDirectory(zipPath) {
+  return unzipper.Open.file(zipPath, { tailSize: 1024 * 1024 });
+}
+
+async function zipEntries(zipPath) {
+  const directory = await openZipDirectory(zipPath);
+  return Array.isArray(directory.files) ? directory.files : await directory.files;
+}
+
+async function findZipEntry(zipPath, relativePath) {
+  const entries = await zipEntries(zipPath);
+  for (const entry of entries) {
     const relPath = zipRelativePath(entry.path);
-    if (entry.type !== "File" || relPath !== record.relativePath) {
-      entry.autodrain();
-      continue;
-    }
-    return { ...(await publishEntryStream(record, entry)), attempts: attempt };
+    if (entry.type === "File" && relPath === relativePath) return entry;
   }
-  throw new Error(`ZIP entry not found during retry: ${record.relativePath}`);
+  return null;
 }
 
 function rewriteManifestValue(container, pathKey, urlKey, publishedByRelPath) {
@@ -388,6 +398,15 @@ async function zipStreamFromOss(client) {
   return result.stream || result.res || result;
 }
 
+async function prepareSourceZip(client) {
+  if (sourceZip) return sourceZip;
+  const stagedZip = assertInside(stagingRoot, join(stagingRoot, "source-package.zip"));
+  mkdirSync(dirname(stagedZip), { recursive: true });
+  const stream = await zipStreamFromOss(client);
+  await pipeline(stream, createWriteStream(stagedZip));
+  return stagedZip;
+}
+
 async function clearCourseRootPreservingAdmin() {
   await mkdir(courseRoot, { recursive: true });
   for (const entry of await readdir(courseRoot, { withFileTypes: true })) {
@@ -458,20 +477,17 @@ const staleCleanup = {
   failed: [],
 };
 
-const zipStream = await zipStreamFromOss(sourceClient);
-const parser = zipStream.pipe(unzipper.Parse({ forceStream: true }));
+const sourceZipForImport = await prepareSourceZip(sourceClient);
+const packageEntries = await zipEntries(sourceZipForImport);
 
-for await (const entry of parser) {
+for (const entry of packageEntries) {
   const relPath = zipRelativePath(entry.path);
-  if (entry.type !== "File" || !relPath) {
-    entry.autodrain();
-    continue;
-  }
+  if (entry.type !== "File" || !relPath) continue;
   entries += 1;
   const size = Number(entry.vars?.uncompressedSize || 0);
   const kind = publishKind(relPath, size);
   if (relPath === "course-manifest.json") {
-    const buffer = await streamToBuffer(entry);
+    const buffer = await streamToBuffer(entry.stream());
     manifest = JSON.parse(buffer.toString("utf8").replace(/^\uFEFF/, ""));
     writeFileSync(assertInside(localStagingRoot, join(localStagingRoot, relPath)), buffer);
     localFiles += 1;
@@ -481,20 +497,15 @@ for await (const entry of parser) {
   if (kind) {
     const record = publishRecordFor(relPath, size, kind);
     try {
-      uploaded.push({ ...(await publishEntryStream(record, entry)), attempts: 1 });
+      uploaded.push({ ...(await publishEntryStream(record, entry.stream())), attempts: 1 });
     } catch (error) {
       failed.push({ ...record, error: error instanceof Error ? error.message : String(error) });
-      try {
-        entry.autodrain();
-      } catch {
-        // The entry may already be closed after a stream upload failure.
-      }
     }
     continue;
   }
   const target = assertInside(localStagingRoot, join(localStagingRoot, relPath));
   mkdirSync(dirname(target), { recursive: true });
-  await pipeline(entry, createWriteStream(target));
+  await pipeline(entry.stream(), createWriteStream(target));
   localFiles += 1;
   try {
     localBytes += statSync(target).size;
@@ -510,7 +521,7 @@ if (failed.length && maxRetries > 1) {
     let lastError = item.error || "";
     for (let attempt = 2; attempt <= maxRetries; attempt += 1) {
       try {
-        retried = await retryPublishEntryFromZip(item, attempt);
+        retried = await retryPublishEntryFromZip(sourceZipForImport, item, attempt);
         break;
       } catch (error) {
         lastError = error instanceof Error ? error.message : String(error);
