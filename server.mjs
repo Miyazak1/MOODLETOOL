@@ -306,6 +306,36 @@ function injectIspringEmbedCompatibility(html, baseHref) {
   return `${injection}\n${html}`;
 }
 
+function directoryHrefForUrl(value) {
+  try {
+    const url = new URL(value);
+    url.pathname = url.pathname.slice(0, url.pathname.lastIndexOf("/") + 1);
+    url.search = "";
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return "";
+  }
+}
+
+function isTrustedCoursewareAssetUrl(value) {
+  if (!coursewareAssetBaseUrl) return false;
+  try {
+    const url = new URL(value);
+    const base = new URL(`${coursewareAssetBaseUrl}/`);
+    return url.protocol === "https:" && url.origin === base.origin && url.pathname.startsWith(base.pathname);
+  } catch {
+    return false;
+  }
+}
+
+async function fetchTrustedCoursewareHtml(value) {
+  if (!isTrustedCoursewareAssetUrl(value)) throw new Error("Remote iSpring URL is outside COURSEWARE_ASSET_BASE_URL.");
+  const response = await fetch(value, { signal: AbortSignal.timeout(15000) });
+  if (!response.ok) throw new Error(`Remote HTML returned HTTP ${response.status}`);
+  return response.text();
+}
+
 function toPosixPath(value) {
   return String(value || "").replaceAll("\\", "/").replace(/^\/+/, "");
 }
@@ -2488,8 +2518,19 @@ async function handleEmbedRequest(req, res, requestUrl) {
   const assetRawUrl = payloadUrl || coursewareAssetUrl(course, payload.path) || tokenizedRawUrl;
   if (kind === "ispring") {
     if (payloadUrl) {
-      res.writeHead(302, { Location: payloadUrl });
-      res.end();
+      if (isTrustedCoursewareAssetUrl(payloadUrl)) {
+        try {
+          const html = await fetchTrustedCoursewareHtml(payloadUrl);
+          sendHtml(res, 200, injectIspringEmbedCompatibility(html, directoryHrefForUrl(payloadUrl)));
+        } catch (error) {
+          console.warn(`Trusted CDN iSpring proxy failed; redirecting to source: ${error.message}`);
+          res.writeHead(302, { Location: payloadUrl });
+          res.end();
+        }
+      } else {
+        res.writeHead(302, { Location: payloadUrl });
+        res.end();
+      }
       return true;
     }
     const root = courseRoot(course);
