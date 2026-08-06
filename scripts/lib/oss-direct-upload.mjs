@@ -424,6 +424,18 @@ export async function completeDirectMultipartUpload({ config, record, parts = []
     .filter((part) => Number.isInteger(part.partNumber) && part.partNumber > 0 && part.etag)
     .sort((left, right) => left.partNumber - right.partNumber);
   if (!validParts.length) throw new Error("No uploaded multipart parts were provided.");
+  const expectedPartCount = Number(record.multipartPartCount || Math.ceil(Number(record.fileSize || 0) / Math.max(5 * 1024 * 1024, Number(record.multipartPartBytes || config.multipartPartBytes || defaultMultipartPartBytes))));
+  if (Number.isInteger(expectedPartCount) && expectedPartCount > 0) {
+    const seenPartNumbers = new Set(validParts.map((part) => part.partNumber));
+    const missingPartNumbers = [];
+    for (let partNumber = 1; partNumber <= expectedPartCount; partNumber += 1) {
+      if (!seenPartNumbers.has(partNumber)) missingPartNumbers.push(partNumber);
+    }
+    if (seenPartNumbers.size !== validParts.length || missingPartNumbers.length) {
+      const missingPreview = missingPartNumbers.slice(0, 10).join(", ");
+      throw new Error(`Multipart upload is incomplete: received ${seenPartNumbers.size}/${expectedPartCount} parts${missingPreview ? `; missing part(s): ${missingPreview}${missingPartNumbers.length > 10 ? ", ..." : ""}` : ""}.`);
+    }
+  }
   const body = [
     "<CompleteMultipartUpload>",
     ...validParts.map((part) => `<Part><PartNumber>${part.partNumber}</PartNumber><ETag>${xmlEscape(part.etag)}</ETag></Part>`),

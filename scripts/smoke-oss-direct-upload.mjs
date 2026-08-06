@@ -134,13 +134,27 @@ assert.match(multipart.multipart.parts[0].url, /uploadId=mock-upload-id/);
 assert.match(multipartCalls[0].url, /\?uploads$/);
 
 const completeCalls = [];
+await assert.rejects(
+  () => completeDirectMultipartUpload({
+    config: multipartConfig,
+    record: multipart.record,
+    parts: [
+      { partNumber: 2, etag: "\"etag-two\"" },
+      { partNumber: 1, etag: "etag-one" },
+    ],
+    fetchImpl: async () => {
+      throw new Error("complete should not be called for incomplete parts");
+    },
+  }),
+  /Multipart upload is incomplete/,
+);
 await completeDirectMultipartUpload({
   config: multipartConfig,
   record: multipart.record,
-  parts: [
-    { partNumber: 2, etag: "\"etag-two\"" },
-    { partNumber: 1, etag: "etag-one" },
-  ],
+  parts: Array.from({ length: multipart.multipart.partCount }, (_, index) => ({
+    partNumber: multipart.multipart.partCount - index,
+    etag: `"etag-${multipart.multipart.partCount - index}"`,
+  })),
   fetchImpl: async (url, options = {}) => {
     completeCalls.push({ url: String(url), options });
     return {
@@ -153,8 +167,9 @@ await completeDirectMultipartUpload({
   },
 });
 assert.match(completeCalls[0].url, /\?uploadId=mock-upload-id$/);
-assert.match(String(completeCalls[0].options.body), /<PartNumber>1<\/PartNumber><ETag>etag-one<\/ETag>/);
-assert.match(String(completeCalls[0].options.body), /<PartNumber>2<\/PartNumber><ETag>etag-two<\/ETag>/);
+assert.match(String(completeCalls[0].options.body), /<PartNumber>1<\/PartNumber><ETag>etag-1<\/ETag>/);
+assert.match(String(completeCalls[0].options.body), /<PartNumber>2<\/PartNumber><ETag>etag-2<\/ETag>/);
+assert.match(String(completeCalls[0].options.body), /<PartNumber>12<\/PartNumber><ETag>etag-12<\/ETag>/);
 
 const resumeCalls = [];
 const resumed = await resumeDirectMultipartUpload({

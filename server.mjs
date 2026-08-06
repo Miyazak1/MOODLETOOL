@@ -5920,6 +5920,10 @@ async function handleAdminApi(req, res) {
           record.multipartPartEtags = Array.isArray(body.parts) ? body.parts : [];
         }
         const parsed = verifyOssObjectWithOssutil(record.ossUri);
+        const expectedBytes = Number(record.fileSize || 0);
+        if (expectedBytes > 0 && parsed.totalBytes !== expectedBytes) {
+          throw new Error(`OSS object size mismatch after upload: expected ${expectedBytes} bytes, got ${parsed.totalBytes} bytes. Please retry the upload; the raw ZIP object is incomplete.`);
+        }
         record.status = "uploaded";
         record.completedAt = new Date().toISOString();
         record.completedBy = adminActor(req);
