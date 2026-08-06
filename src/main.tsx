@@ -149,7 +149,15 @@ function hasWebPreview(item: LinkableResource, moodleEmbed?: MoodleEmbedRow): bo
 
 function isDownloadableFile(item: LinkableResource): boolean {
   const type = (item.type || "").toLowerCase();
-  return Boolean(item.path || item.url || item.downloadPath || item.downloadUrl) && type !== "html" && type !== "htm";
+  const category = (item.category || "").toLowerCase();
+  if (type === "html" || type === "htm") return false;
+  if (type === "mp4" || type === "webm" || type === "mov" || type === "m4v" || type === "video" || category.includes("video")) return false;
+  if (type === "ispring" || category.includes("ispring")) return false;
+  return Boolean(item.path || item.url || item.downloadPath || item.downloadUrl);
+}
+
+function isShareableResource(item: LinkableResource): boolean {
+  return Boolean(item.path || item.previewPath || item.url || item.previewUrl || item.downloadPath || item.downloadUrl);
 }
 
 function isVisibleISpringEntry(item: Lesson["ispring"][number]): boolean {
@@ -507,7 +515,7 @@ function ResourceActions({
   const displayType = primaryActionItem.type || item.type;
   const canViewPrimary = hasWebPreview(primaryActionItem, primaryActionEmbed);
   const canDownloadPrimary = showDownload && isDownloadableFile(primaryActionItem);
-  const canSharePrimary = canShare && isDownloadableFile(primaryActionItem);
+  const canSharePrimary = canShare && isShareableResource(primaryActionItem);
 
   return (
     <span className={`resource-actions resource-card ${variant || ""}`}>
@@ -546,7 +554,7 @@ function ResourceActions({
                 <a className="attachment-link" {...localDownloadProps(attachment, courseBaseUrl)}>
                   下载
                 </a>
-                {canShare && isDownloadableFile(attachment) ? (
+                {canShare && isShareableResource(attachment) ? (
                   <PublicShareButton courseCode={courseCode || courseCodeFromBaseUrl(courseBaseUrl)} item={attachment} />
                 ) : null}
               </span>

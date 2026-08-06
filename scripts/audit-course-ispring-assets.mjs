@@ -100,7 +100,7 @@ for (const owner of manifestIspringItems(manifest)) {
     downloadPath: item.downloadPath || "",
     presentationExists: Boolean(presentationPath && existsSync(presentationPath)),
     packageExists: Boolean(packageRoot && existsSync(packageRoot)),
-    downloadExists: item.downloadPath ? existsSync(join(courseRoot, item.downloadPath)) : false,
+    downloadExists: item.downloadPath ? existsSync(join(courseRoot, item.downloadPath)) : null,
     checkedRefs: 0,
     missingRefs: 0,
     ignoredMissingRefs: 0,
@@ -139,7 +139,7 @@ for (const owner of manifestIspringItems(manifest)) {
   packages.push(packageRecord);
 }
 
-const missingPackages = packages.filter((item) => !item.presentationExists || !item.packageExists || !item.downloadExists || item.missingRefs);
+const missingPackages = packages.filter((item) => !item.presentationExists || !item.packageExists || item.downloadExists === false || item.missingRefs);
 console.log(JSON.stringify({
   course,
   packages: packages.length,
