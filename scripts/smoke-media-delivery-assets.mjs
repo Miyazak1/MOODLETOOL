@@ -18,6 +18,7 @@ assert.equal(directUploadKindCanAutoPublish("course-package"), false);
 assert.equal(playableCoursewareVideoExts.has(".mp4"), true);
 assert.equal(isPlayableCoursewareAsset("localized-moodle/video/U02L02/Food.webm"), true);
 assert.equal(isPlayableCoursewareAsset("Unit 1/Lesson 1/html5-package/presentation.html"), true);
+assert.equal(isPlayableCoursewareAsset("ispring-localized/unit-01/U01L01/presentation.html"), true);
 assert.equal(isPlayableCoursewareAsset("localized-moodle-activities/resource/file.docx.html"), false);
 
 console.log("media delivery asset helpers smoke ok");

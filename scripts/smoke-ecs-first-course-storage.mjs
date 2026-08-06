@@ -41,7 +41,7 @@ try {
           { label: "h5p", path: "activities/check.h5p" },
         ],
         ispring: [
-          { label: "slides", path: "localized-moodle-activities/resource/demo/html5-package/presentation.html" },
+          { label: "slides", path: "ispring-localized/unit-01/U01L01/presentation.html" },
         ],
       }],
     }],
@@ -49,8 +49,8 @@ try {
   writeFixture(join(courseRoot, "docs", "ordinary.pdf"), Buffer.from("%PDF-1.7\n"));
   writeFixture(join(courseRoot, "media", "lesson-video.mp4"), Buffer.alloc(128, 1));
   writeFixture(join(courseRoot, "activities", "check.h5p"), Buffer.alloc(64, 2));
-  writeFixture(join(courseRoot, "localized-moodle-activities", "resource", "demo", "html5-package", "presentation.html"), "<!doctype html><title>slides</title>");
-  writeFixture(join(courseRoot, "localized-moodle-activities", "resource", "demo", "html5-package", "data", "slides.js"), "console.log('slides');");
+  writeFixture(join(courseRoot, "ispring-localized", "unit-01", "U01L01", "presentation.html"), "<!doctype html><title>slides</title>");
+  writeFixture(join(courseRoot, "ispring-localized", "unit-01", "U01L01", "data", "slides.js"), "console.log('slides');");
 
   const result = spawnSync("node", [
     "scripts/finalize-ecs-first-course-storage.mjs",
@@ -80,8 +80,8 @@ try {
   const published = new Set(report.uploaded.map((item) => item.relativePath));
   assert.ok(published.has("media/lesson-video.mp4"));
   assert.ok(published.has("activities/check.h5p"));
-  assert.ok(published.has("localized-moodle-activities/resource/demo/html5-package/presentation.html"));
-  assert.ok(published.has("localized-moodle-activities/resource/demo/html5-package/data/slides.js"));
+  assert.ok(published.has("ispring-localized/unit-01/U01L01/presentation.html"));
+  assert.ok(published.has("ispring-localized/unit-01/U01L01/data/slides.js"));
   assert.ok(!published.has("docs/ordinary.pdf"));
   assert.equal(existsSync(join(courseRoot, "media", "lesson-video.mp4")), true);
 

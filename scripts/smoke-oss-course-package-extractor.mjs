@@ -19,6 +19,7 @@ assert.equal(courseRelativePathFromZipEntry("MHF4U/html5-package/data/slide.js",
 assert.equal(isExtractableCoursewareAsset("localized-moodle/video/a.mp4"), true);
 assert.equal(isExtractableCoursewareAsset("localized-moodle/h5p/activity.h5p"), true);
 assert.equal(isExtractableCoursewareAsset("Unit 1/html5-package/presentation.html"), true);
+assert.equal(isExtractableCoursewareAsset("ispring-localized/unit-01/U01L01/presentation.html"), true);
 assert.equal(isExtractableCoursewareAsset("teacher-docs/notes.docx"), false);
 assert.equal(isLightweightCourseContentAsset("localized-moodle-activities/assign/U01/index.html", { size: 1024 }), true);
 assert.equal(isLightweightCourseContentAsset("previews-html/assign/U01/index.html", { size: 1024 }), true);

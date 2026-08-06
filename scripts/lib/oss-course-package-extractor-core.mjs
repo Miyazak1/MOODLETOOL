@@ -76,7 +76,7 @@ export function courseRelativePathFromZipEntry(entryPath, course, { objectPrefix
 
 export function isIspringPackageAsset(relativePath) {
   const normalized = `/${toPosixPath(relativePath).toLowerCase()}`;
-  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/");
+  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/") || normalized.includes("/ispring-localized/");
 }
 
 function isPreviewHtmlEntry(relativePath) {

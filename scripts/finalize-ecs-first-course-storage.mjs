@@ -141,7 +141,7 @@ const imageExts = new Set([".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".i
 
 function isIspringAsset(relPath) {
   const normalized = `/${toPosix(relPath).toLowerCase()}`;
-  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/");
+  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/") || normalized.includes("/ispring-localized/");
 }
 
 function publishKind(relPath, size) {

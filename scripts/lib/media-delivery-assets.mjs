@@ -45,7 +45,7 @@ export function isRawCoursePackageUploadKind(kind) {
 
 export function isIspringCoursewareAsset(relPath) {
   const normalized = `/${toPosixAssetPath(relPath).toLowerCase()}`;
-  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/");
+  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/") || normalized.includes("/ispring-localized/");
 }
 
 export function isPlayableCoursewareAsset(relPath) {

@@ -44,15 +44,15 @@ try {
           { label: "video", path: "media/lesson-video.mp4" },
         ],
         ispring: [
-          { label: "slides", path: "localized-moodle-activities/resource/demo/html5-package/presentation.html", packagePath: "localized-moodle-activities/resource/demo/html5-package" },
+          { label: "slides", path: "ispring-localized/unit-01/U01L01/presentation.html", packagePath: "ispring-localized/unit-01/U01L01" },
         ],
       }],
     }],
   }, null, 2)}\n`, "utf8");
   writeFixture(join(sourceCourseRoot, "docs", "ordinary.pdf"), Buffer.from("%PDF-1.7\n"));
   writeFixture(join(sourceCourseRoot, "media", "lesson-video.mp4"), Buffer.alloc(128, 1));
-  writeFixture(join(sourceCourseRoot, "localized-moodle-activities", "resource", "demo", "html5-package", "presentation.html"), "<!doctype html><title>slides</title>");
-  writeFixture(join(sourceCourseRoot, "localized-moodle-activities", "resource", "demo", "html5-package", "data", "slides.js"), "console.log('slides');");
+  writeFixture(join(sourceCourseRoot, "ispring-localized", "unit-01", "U01L01", "presentation.html"), "<!doctype html><title>slides</title>");
+  writeFixture(join(sourceCourseRoot, "ispring-localized", "unit-01", "U01L01", "data", "slides.js"), "console.log('slides');");
   writeFixture(join(coursewareRoot, course, "old-active", "stale.txt"), "stale");
   writeFixture(join(coursewareRoot, course, "_admin_uploads", "keep.txt"), "keep");
   writeFixture(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4"), Buffer.alloc(32, 9));
@@ -108,7 +108,7 @@ try {
   assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "raw-staging", "upl-raw-smoke", "previous-active")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "lesson-video.mp4")), true);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4")), false);
-  assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "localized-moodle-activities", "resource", "demo", "html5-package", "presentation.html")), true);
+  assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "ispring-localized", "unit-01", "U01L01", "presentation.html")), true);
 
   const manifest = JSON.parse(readFileSync(join(targetCourseRoot, "course-manifest.json"), "utf8"));
   const lesson = manifest.units[0].lessons[0];
@@ -116,7 +116,9 @@ try {
   assert.match(lesson.downloads[1].url, /^https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/media\/lesson-video\.mp4$/);
   assert.equal(lesson.downloads[1].path, undefined);
   assert.match(lesson.ispring[0].url, /presentation\.html$/);
+  assert.match(lesson.ispring[0].url, /\/ispring-localized\/unit-01\/U01L01\/presentation\.html$/);
   assert.equal(lesson.ispring[0].packagePath, undefined);
+  assert.match(lesson.ispring[0].packageUrl, /\/ispring-localized\/unit-01\/U01L01\/$/);
   assert.equal(manifest.sourceAudit.importMode, "hybrid-raw");
 
   const registry = JSON.parse(readFileSync(registryPath, "utf8"));
