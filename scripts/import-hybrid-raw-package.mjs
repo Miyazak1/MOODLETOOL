@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { cp, mkdir, readdir, rename, rm } from "node:fs/promises";
 import { dirname, extname, join, relative, resolve } from "node:path";
@@ -249,9 +250,61 @@ async function openZipDirectory(zipPath) {
   return unzipper.Open.file(zipPath, { tailSize: 1024 * 1024 });
 }
 
+const extractedZipEntryCache = new Map();
+
+async function listFiles(root) {
+  const out = [];
+  async function walk(current) {
+    for (const entry of await readdir(current, { withFileTypes: true })) {
+      const absPath = join(current, entry.name);
+      if (entry.isDirectory()) {
+        await walk(absPath);
+      } else if (entry.isFile()) {
+        out.push(absPath);
+      }
+    }
+  }
+  await walk(root);
+  return out;
+}
+
+async function zipEntriesFromExtractedFiles(zipPath, cause) {
+  const cacheKey = resolve(zipPath);
+  if (extractedZipEntryCache.has(cacheKey)) return extractedZipEntryCache.get(cacheKey);
+
+  const extractRoot = assertInside(stagingRoot, join(stagingRoot, "zip64-fallback-extracted"));
+  await rm(extractRoot, { recursive: true, force: true });
+  await mkdir(extractRoot, { recursive: true });
+  try {
+    execFileSync("unzip", ["-qq", zipPath, "-d", extractRoot], { stdio: ["ignore", "inherit", "inherit"] });
+  } catch (error) {
+    const causeMessage = cause instanceof Error ? cause.message : String(cause || "");
+    throw new Error(`Failed to read ZIP central directory with unzipper (${causeMessage}) and system unzip fallback also failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  const files = await listFiles(extractRoot);
+  const entries = files.map((absPath) => {
+    const relPath = toPosix(relative(extractRoot, absPath));
+    const stats = statSync(absPath);
+    return {
+      path: relPath,
+      type: "File",
+      vars: { uncompressedSize: stats.size },
+      stream: () => createReadStream(absPath),
+    };
+  });
+  extractedZipEntryCache.set(cacheKey, entries);
+  return entries;
+}
+
 async function zipEntries(zipPath) {
-  const directory = await openZipDirectory(zipPath);
-  return Array.isArray(directory.files) ? directory.files : await directory.files;
+  try {
+    const directory = await openZipDirectory(zipPath);
+    return Array.isArray(directory.files) ? directory.files : await directory.files;
+  } catch (error) {
+    if (!/zip64|central dir|end of central|signature/i.test(error instanceof Error ? error.message : String(error))) throw error;
+    return zipEntriesFromExtractedFiles(zipPath, error);
+  }
 }
 
 async function findZipEntry(zipPath, relativePath) {
