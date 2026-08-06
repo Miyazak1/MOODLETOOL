@@ -843,7 +843,7 @@ async function createDirectUploadPolicy({ course, fileName, fileSize, contentTyp
   const catalog = await readCourseCatalog();
   const courseCodes = (catalog.courses || []).map((entry) => entry.code);
   const size = Number(fileSize || 0);
-  if (size > ossDirectUploadConfig.simpleMaxBytes) {
+  if (isRawCoursePackageUploadKind(kind) || size > ossDirectUploadConfig.simpleMaxBytes) {
     const resolved = resolveDirectUploadCourse({ course, fileName, kind, courseCodes });
     const reusable = findReusableMultipartUpload({
       course: resolved.course,
