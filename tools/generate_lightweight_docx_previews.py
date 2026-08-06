@@ -5,6 +5,7 @@ import base64
 import html
 import json
 import mimetypes
+import posixpath
 import re
 import shutil
 import zipfile
@@ -71,11 +72,28 @@ def iter_resource_items(manifest: dict[str, Any]):
     for item in manifest.get("courseDownloads", []):
         yield from yield_with_attachments(item)
 
+    for item in manifest.get("courseSections", []):
+        yield from yield_with_attachments(item)
+
+    for item in manifest.get("evaluations", []):
+        yield from yield_with_attachments(item)
+
+    for item in manifest.get("teacherResources", []):
+        yield from yield_with_attachments(item)
+
     for text in manifest.get("texts", []):
         for item in text.get("materials", []):
             yield from yield_with_attachments(item)
 
     for unit in manifest.get("units", []):
+        for value in (unit.get("unitResources") or {}).values():
+            if isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict):
+                        yield from yield_with_attachments(item)
+            elif isinstance(value, dict):
+                yield from yield_with_attachments(value)
+
         unit_plan = unit.get("unitPlan")
         if unit_plan:
             yield from yield_with_attachments(unit_plan)
@@ -765,6 +783,12 @@ def course_href(value: str) -> str:
     return "/".join(quote(part) for part in to_posix(value).split("/"))
 
 
+def relative_course_href(from_rel: str, to_rel: str) -> str:
+    from_dir = posixpath.dirname(to_posix(from_rel))
+    raw = posixpath.relpath(to_posix(to_rel), from_dir or ".")
+    return course_href(raw)
+
+
 def add_doc_heading_ids(body_html: str) -> tuple[str, list[dict[str, str]]]:
     headings: list[dict[str, str]] = []
     used: dict[str, int] = {}
@@ -787,7 +811,9 @@ def add_doc_heading_ids(body_html: str) -> tuple[str, list[dict[str, str]]]:
 def render_preview_html(
     title: str,
     source_rel: str,
+    preview_rel: str,
     blocks: list[tuple[str, Any]],
+    notice: str = "",
 ) -> str:
     body_parts: list[str] = []
     for kind, content in blocks:
@@ -811,7 +837,8 @@ def render_preview_html(
             body_parts.append(render_text(str(content), "body-text"))
 
     body_html, headings = add_doc_heading_ids("".join(body_parts))
-    download_href = f"../{course_href(source_rel)}"
+    download_href = relative_course_href(preview_rel, source_rel)
+    notice_html = f'<div class="notice">{html.escape(notice)}</div>' if notice else ""
     toc_html = ""
     if headings:
         toc_items = "".join(
@@ -1110,6 +1137,7 @@ def render_preview_html(
     <div class="doc-layout{' no-toc' if not headings else ''}">
       {toc_html}
       <article class="doc-content">
+        {notice_html}
         {body_html}
       </article>
     </div>
@@ -1152,10 +1180,16 @@ def main() -> int:
             if ext == ".docx":
                 preview_rel = f"previews-html/{sanitize_segment(source_rel)}.html"
                 preview_path = course_root / preview_rel
-                blocks = extract_docx_blocks(source_path)
+                try:
+                    blocks = extract_docx_blocks(source_path)
+                except zipfile.BadZipFile:
+                    skipped.append({"path": source_rel, "reason": "encrypted-or-unsupported-docx"})
+                    if item.pop("previewPath", None):
+                        updated += 1
+                    continue
                 title = item.get("label") or Path(source_rel).stem
                 preview_path.parent.mkdir(parents=True, exist_ok=True)
-                preview_path.write_text(render_preview_html(title, source_rel, blocks), encoding="utf-8")
+                preview_path.write_text(render_preview_html(title, source_rel, preview_rel, blocks), encoding="utf-8")
                 generated_by_type["docx"] += 1
             else:
                 try:
@@ -1174,7 +1208,7 @@ def main() -> int:
                     title = item.get("label") or h5p_title
                     notice = f"H5P standalone player generation failed: {exc}. Readable fallback generated from package text."
                     preview_path.parent.mkdir(parents=True, exist_ok=True)
-                    preview_path.write_text(render_preview_html(title, source_rel, blocks, notice), encoding="utf-8")
+                    preview_path.write_text(render_preview_html(title, source_rel, preview_rel, blocks, notice), encoding="utf-8")
                 generated_by_type["h5p"] += 1
             generated[source_rel] = preview_rel
 
@@ -1194,7 +1228,8 @@ def main() -> int:
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    return 0 if not skipped else 1
+    fatal_skipped = [item for item in skipped if item.get("reason") != "encrypted-or-unsupported-docx"]
+    return 0 if not fatal_skipped else 1
 
 
 if __name__ == "__main__":

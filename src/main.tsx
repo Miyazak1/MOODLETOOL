@@ -103,20 +103,20 @@ function shareKindForItem(item: LinkableResource): MoodleEmbedRow["kind"] {
 }
 
 function resourceHref(item: LinkableResource, baseUrl: string): string {
-  if (item.url) return item.url;
   if (item.path) return resourceUrl(item.path, baseUrl);
+  if (item.url) return item.url;
   return "#";
 }
 
 function resourcePreviewHref(item: LinkableResource, baseUrl: string): string {
-  if (item.previewUrl) return item.previewUrl;
   if (item.previewPath) return resourceUrl(item.previewPath, baseUrl);
+  if (item.previewUrl) return item.previewUrl;
   return resourceHref(item, baseUrl);
 }
 
 function resourceDownloadHref(item: LinkableResource, baseUrl: string): string {
-  if (item.downloadUrl) return item.downloadUrl;
   if (item.downloadPath) return resourceUrl(item.downloadPath, baseUrl);
+  if (item.downloadUrl) return item.downloadUrl;
   return resourceHref(item, baseUrl);
 }
 
@@ -359,7 +359,7 @@ function localOpenProps(item: LinkableResource, baseUrl: string, moodleEmbed?: M
 
 function localDownloadProps(item: LinkableResource, baseUrl: string) {
   const href = resourceDownloadHref(item, baseUrl);
-  return item.path && !item.url && !item.downloadUrl ? { download: true, href } : { href, rel: "noopener", target: "_blank" };
+  return item.path || item.downloadPath ? { download: true, href } : { href, rel: "noopener", target: "_blank" };
 }
 
 async function copyText(value: string) {
