@@ -55,7 +55,11 @@ function visit(value, path, removals) {
   }
 }
 
-const manifestPath = join(workspaceRoot, "courseware", course, "course-manifest.json");
+const courseRoot = resolve(
+  process.env.COURSE_ROOT ||
+    (process.env.COURSEWARE_ROOT ? join(resolve(process.env.COURSEWARE_ROOT), course) : join(workspaceRoot, "courseware", course)),
+);
+const manifestPath = join(courseRoot, "course-manifest.json");
 if (!existsSync(manifestPath)) {
   console.error(`Missing manifest: ${manifestPath}`);
   process.exit(1);
