@@ -116,6 +116,7 @@ const coursePackageImportMode = "ecs-first";
 if (configuredCoursePackageImportMode && !["ecs-first", "hybrid-worker"].includes(configuredCoursePackageImportMode)) {
   console.warn(`COURSE_PACKAGE_IMPORT_MODE=${configuredCoursePackageImportMode} is no longer supported; using ecs-first.`);
 }
+const rawCoursePackageImportRetries = Math.max(1, Number(process.env.COURSE_RAW_IMPORT_RETRIES || 3));
 const courseLocalContentEnabled = process.env.COURSE_LOCAL_CONTENT_ENABLED !== "0";
 const courseLocalMaxFileBytes = Math.max(1, Number(process.env.COURSE_LOCAL_MAX_FILE_MB || 50)) * 1024 * 1024;
 const courseLocalMaxCourseBytes = Math.max(1, Number(process.env.COURSE_LOCAL_MAX_COURSE_MB || 1024)) * 1024 * 1024;
@@ -4456,6 +4457,45 @@ function startCoursePackageFinalize({ course, importId, actor }) {
   });
 }
 
+function isRetryableRawCoursePackageImportError(error) {
+  const message = error instanceof Error ? error.message : String(error || "");
+  return /unexpected end of file|Z_BUF_ERROR|socket hang up|ECONNRESET|ETIMEDOUT|EPIPE|Premature close|aborted|read ECONNRESET/i.test(message);
+}
+
+async function runRawCoursePackageImportCommand({ args, course, importId, filename, record }) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= rawCoursePackageImportRetries; attempt += 1) {
+    if (attempt > 1) {
+      writeCoursePackageTask(course, importId, {
+        status: "processing",
+        phase: "retrying-oss-raw",
+        filename,
+        source: "oss-raw-package",
+        ossUri: record.ossUri,
+        totalBytes: record.fileSize || null,
+        percent: 10,
+        importMode: "hybrid-raw",
+        attempt,
+        maxAttempts: rawCoursePackageImportRetries,
+        previousError: lastError instanceof Error ? lastError.message : String(lastError || ""),
+      });
+      ossUploadStore.patchRecord(record.id, {
+        status: "importing",
+        importStatus: "oss-raw-retrying",
+        ingestMessage: `OSS raw 导入读取流中断，正在重新从 OSS raw ZIP 启动 worker（${attempt}/${rawCoursePackageImportRetries}）。`,
+        error: "",
+      });
+    }
+    try {
+      return await runCommand("node", args, projectRoot);
+    } catch (error) {
+      lastError = error;
+      if (attempt >= rawCoursePackageImportRetries || !isRetryableRawCoursePackageImportError(error)) throw error;
+    }
+  }
+  throw lastError || new Error("OSS raw package import failed.");
+}
+
 function startRawOssCoursePackageImport({ record, actor }) {
   const course = safeSegment(record?.course || "").toUpperCase();
   const importId = safeSegment(record?.id || coursePackageId());
@@ -4499,7 +4539,7 @@ function startRawOssCoursePackageImport({ record, actor }) {
     });
 
     const scriptPath = join(projectRoot, "scripts", "import-hybrid-raw-package.mjs");
-    const result = await runCommand("node", [
+    const rawImportArgs = [
       scriptPath,
       "--course",
       course,
@@ -4519,7 +4559,14 @@ function startRawOssCoursePackageImport({ record, actor }) {
       coursewareAssetRegistryPath,
       "--actor",
       actor || "unknown",
-    ], projectRoot);
+    ];
+    const result = await runRawCoursePackageImportCommand({
+      args: rawImportArgs,
+      course,
+      importId,
+      filename,
+      record,
+    });
     const payload = parseJobPayload(result.stdout) || { ok: true, stdout: result.stdout, stderr: result.stderr };
     const manifest = await readManifest(course);
     const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
