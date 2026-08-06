@@ -2778,6 +2778,39 @@ pm2 restart ossd-course-portal --update-env</pre>
         return Number(file?.size || 0) >= rawMinBytes;
       }
 
+      function updateRawCoursePackageQueueStatus(items, setStatus) {
+        const item = Array.isArray(items) ? items[0] : null;
+        if (!item || typeof setStatus !== "function") return;
+        const percent = Number.isFinite(Number(item.percent)) ? Number(item.percent) : null;
+        const titleByStatus = {
+          authorizing: "正在准备 OSS raw 上传",
+          cancelled: "OSS raw 上传已取消",
+          done: "OSS raw 上传完成，等待服务器导入",
+          failed: "OSS raw 上传失败",
+          queued: "OSS raw 上传排队中",
+          skipped: "OSS raw 上传已跳过",
+          uploading: `正在上传 ${item.name || "课程 ZIP"}`,
+          verifying: "正在确认 OSS raw 上传",
+          warning: "OSS raw 上传完成但有提示",
+        };
+        const loadedText = Number.isFinite(Number(item.loaded)) && Number.isFinite(Number(item.total)) && Number(item.total) > 0
+          ? `已上传 ${window.AdminMediaView.formatBytes(Number(item.loaded))} / ${window.AdminMediaView.formatBytes(Number(item.total))}`
+          : "";
+        const metrics = [
+          item.detail || "",
+          loadedText,
+          item.speedText ? `速度 ${item.speedText}` : "",
+          item.etaText ? `剩余约 ${item.etaText}` : "",
+        ].filter(Boolean);
+        setStatus({
+          title: titleByStatus[item.status] || titleByStatus.uploading,
+          detail: metrics.join(" · "),
+          percent,
+          showProgress: percent !== null,
+          error: item.status === "failed",
+        });
+      }
+
       async function uploadCoursePackageRaw({ course, file, setStatus, write: writeOutput }) {
         const rawController = window.AdminMediaUpload.createDirectUploadController({
           api: mediaApi,
@@ -2791,20 +2824,25 @@ pm2 restart ossd-course-portal --update-env</pre>
           hasActiveWriteJob: () => null,
           jobTypeLabel: window.AdminMediaView.jobTypeLabel,
           onActiveUploadChange: () => {},
-          onQueueChange: () => {},
+          onQueueChange: (items) => {
+            updateRawCoursePackageQueueStatus(items, setStatus);
+          },
           onRefresh: async () => {
             await readMedia({ writeOutput: false, fromAutoRefresh: true });
           },
           onStartRefresh: () => {
             startMediaAutoRefresh();
           },
-          onStatus: (title, detail, percent, type) => {
+          onStatus: (statusOrTitle, detail = "", percent = null, type = "info") => {
+            const status = typeof statusOrTitle === "object" && statusOrTitle
+              ? statusOrTitle
+              : { title: statusOrTitle, detail, percent, type };
             setStatus({
-              title,
-              detail,
-              percent,
-              showProgress: percent !== null && percent !== undefined,
-              error: type === "error",
+              title: status.title,
+              detail: status.detail,
+              percent: status.percent,
+              showProgress: status.percent !== null && status.percent !== undefined,
+              error: status.type === "error",
             });
           },
           onWrite: (data) => {
