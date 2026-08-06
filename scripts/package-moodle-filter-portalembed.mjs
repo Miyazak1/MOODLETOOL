@@ -15,14 +15,26 @@ if (!existsSync(join(pluginDir, "version.php")) || !existsSync(join(pluginDir, "
 mkdirSync(dirname(output), { recursive: true });
 if (existsSync(output)) rmSync(output, { force: true });
 
-const result = spawnSync("tar", ["-acf", output, "-C", sourceRoot, "portalembed"], {
-  cwd: projectRoot,
+let result = spawnSync("zip", ["-qr", output, "portalembed"], {
+  cwd: sourceRoot,
   encoding: "utf8",
   shell: false,
 });
 
+if (result.status !== 0 && process.platform === "win32") {
+  result = spawnSync(
+    "powershell.exe",
+    ["-NoProfile", "-Command", `Compress-Archive -Path '${pluginDir.replaceAll("'", "''")}' -DestinationPath '${output.replaceAll("'", "''")}' -Force`],
+    {
+      cwd: projectRoot,
+      encoding: "utf8",
+      shell: false,
+    },
+  );
+}
+
 if (result.status !== 0) {
-  console.error(result.stderr || result.stdout || "tar failed");
+  console.error(result.stderr || result.stdout || "zip failed");
   process.exit(result.status || 1);
 }
 

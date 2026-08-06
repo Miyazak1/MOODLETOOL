@@ -1452,7 +1452,7 @@
           <div class="nav-group-label">当前课程操作</div>
           <button type="button" data-admin-nav="media" data-auth-required="1" disabled>媒体发布</button>
           <button type="button" data-admin-nav="upload" data-auth-required="1" disabled>本地维护上传</button>
-          <button type="button" data-admin-nav="package" data-auth-required="1" disabled>本地 ZIP 导入</button>
+          <button type="button" data-admin-nav="package" data-auth-required="1" disabled>课程压缩包</button>
           <button type="button" data-admin-nav="lifecycle" data-auth-required="1" disabled>启用 / 归档</button>
           <button type="button" data-admin-nav="maintenance" data-auth-required="1" disabled>维护</button>
           <div class="nav-group-label">全局管理</div>
@@ -1523,7 +1523,7 @@
         <div class="panel-heading">
           <div>
             <h2>选择当前课程</h2>
-            <p class="meta-line">先在这里确定要操作哪一门课。选择后，启用/归档、当前课程维护、本地维护上传都会同步作用于这门课程。完整课件包优先走媒体发布里的 OSS 直传。</p>
+            <p class="meta-line">先在这里确定要操作哪一门课。选择后，启用/归档、当前课程维护、本地维护上传都会同步作用于这门课程。完整课件包走“课程压缩包”导入，系统会自动把高并发资源发布到 OSS/CDN。</p>
           </div>
           <a class="button-link subtle" id="coursePanelLink" href="/?course=ENG3U">返回当前课程页面</a>
         </div>
@@ -1553,7 +1553,7 @@
         <div class="actions">
           <button id="statusButton" type="button">读取状态</button>
           <button class="primary" type="button" data-switch-panel="media">去媒体发布</button>
-          <button type="button" data-switch-panel="package">去本地 ZIP 导入</button>
+          <button type="button" data-switch-panel="package">去课程压缩包</button>
           <button type="button" data-switch-panel="upload">去本地维护上传</button>
         </div>
         <div class="stats" id="statusStats" hidden></div>
@@ -1607,9 +1607,9 @@
 
       <section class="admin-panel auth-required" data-admin-panel="upload" hidden>
         <h2>当前课程本地维护上传</h2>
-        <p class="meta-line">这个入口会先上传到 ECS，再写入当前课程目录，适合少量文本、iSpring 修补和维护性替换。大视频和完整课件包请优先使用“媒体发布”的 OSS 直传。</p>
+        <p class="meta-line">这个入口会先上传到 ECS，再写入当前课程目录，适合少量文本、iSpring 修补和维护性替换。完整课件包请使用“课程压缩包”导入。</p>
         <div class="notice">
-          常规新课件包上传请走 <button class="small" type="button" data-switch-panel="media">媒体发布 / 直传 OSS</button>，这样使用本地网络直传 OSS，不占用 ECS 5M 公网带宽。
+          常规新课件包上传请走 <button class="small" type="button" data-switch-panel="package">课程压缩包</button>，导入完成后会自动判断哪些资源留在 ECS、哪些发布到 OSS/CDN。
         </div>
         <div class="storage-mini" id="uploadStorageMini" hidden></div>
         <div id="courseUploadTasks" hidden></div>
@@ -1685,44 +1685,6 @@
           <button id="readinessMediaButton" type="button">检查媒体配置</button>
           <span class="media-refresh-state" id="mediaRefreshState">自动刷新未启动</span>
         </div>
-        <div class="oss-direct-upload">
-          <div>
-            <h3>直传 OSS inbox</h3>
-            <p class="meta-line">大文件会从浏览器直接上传到 OSS，不经过 ECS 公网带宽。完整课件包会按文件名自动识别课程，上传后登记为 OSS-only 待解压/索引，不会下载回 ECS。</p>
-          </div>
-          <div class="grid compact">
-            <div>
-              <label for="ossDirectKind">上传类型</label>
-              <select id="ossDirectKind">
-                <option value="course-package">完整课件包 ZIP</option>
-                <option value="video">单个视频</option>
-                <option value="h5p">H5P 文件</option>
-                <option value="ispring-package">iSpring 包</option>
-              </select>
-            </div>
-            <div>
-              <label for="ossDirectFile">文件</label>
-              <input id="ossDirectFile" type="file" multiple />
-            </div>
-            <div>
-              <label>完成后动作</label>
-              <label class="inline-check"><input id="ossDirectAutoPublish" type="checkbox" /> 上传后自动创建发布任务</label>
-            </div>
-          </div>
-          <p class="oss-direct-hint">完整课件包支持一次选择多个 ZIP，系统会从文件名识别课程码，例如 ESLDO-course-package-20260803.zip。视频、H5P 和 iSpring 单包仍按当前课程保存；完整课件包后续由 OSS-side 解压/索引流程接管。</p>
-          <div class="actions">
-            <button class="primary" id="ossDirectUploadButton" type="button">自动识别并直传 OSS</button>
-            <button id="ossDirectCancelButton" type="button" hidden>取消当前上传</button>
-          </div>
-          <div class="upload-status" id="ossDirectStatus" hidden>
-            <strong id="ossDirectStatusTitle">等待上传</strong>
-            <div class="progress" id="ossDirectProgress" hidden>
-              <div class="progress-bar" id="ossDirectProgressBar"></div>
-            </div>
-            <div class="meta-line" id="ossDirectStatusDetail"></div>
-          </div>
-          <div class="oss-direct-queue" id="ossDirectQueue" hidden></div>
-        </div>
         <div class="media-course-controls">
           <div>
             <label for="mediaCourseFilter">课程显示</label>
@@ -1750,7 +1712,6 @@
           </div>
         </div>
         <div id="mediaCourseTable" hidden></div>
-        <div id="mediaUploadsTable" hidden></div>
         <div id="mediaJobsTable" hidden></div>
         <div id="mediaJobLogPanel" class="upload-status media-detail-panel" hidden>
           <strong id="mediaJobLogTitle">媒体详情</strong>
@@ -1759,19 +1720,29 @@
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="package" hidden>
-        <h2>当前课程本地 ZIP 导入</h2>
-        <p class="meta-line">这个入口会把 ZIP 先传到 ECS 再解压分析，只建议用于小包、补救或测试。大课件包请走“媒体发布”的 OSS 直传，文件只保存在 OSS。</p>
+        <h2>当前课程压缩包导入</h2>
+        <p class="meta-line">这个入口统一处理课程 ZIP：小型无媒体课程可先到 ECS 并生成确认预览；大课程、媒体课程会 multipart 直传 OSS raw package，再由 ECS 通过内网流式读取并自动导入。</p>
         <div class="notice">
-          新课程包建议使用 <button class="small" type="button" data-switch-panel="media">媒体发布 / 直传 OSS</button>。这里保留为本地维护通道，避免需要 SSH 时没有后门。
+          视频、H5P、iSpring 和超大附件会发布到 OSS/CDN，普通课程资料保留在 ECS。
         </div>
         <div class="storage-mini" id="packageStorageMini" hidden></div>
-        <div>
-          <label for="coursePackageFile">课程压缩包</label>
-          <input id="coursePackageFile" type="file" accept=".zip" />
+        <div class="form-grid">
+          <div>
+            <label for="coursePackageRoute">导入路径</label>
+            <select id="coursePackageRoute">
+              <option value="auto">自动选择</option>
+              <option value="raw">OSS raw 大课包 / 媒体课包</option>
+              <option value="ecs">ECS 小型无媒体课包</option>
+            </select>
+          </div>
+          <div>
+            <label for="coursePackageFile">课程压缩包</label>
+            <input id="coursePackageFile" type="file" accept=".zip" />
+          </div>
         </div>
         <div class="actions">
-          <button id="coursePackageUploadButton" type="button">上传并生成预览</button>
-          <button class="primary" id="coursePackageCommitButton" type="button" disabled>确认导入到当前课程</button>
+          <button id="coursePackageUploadButton" type="button">上传并导入</button>
+          <button class="primary" id="coursePackageCommitButton" type="button" disabled hidden>确认替换课程内容</button>
         </div>
         <div class="upload-status" id="coursePackageStatus" hidden>
           <strong id="coursePackageStatusTitle">等待上传</strong>
@@ -1969,7 +1940,6 @@ pm2 restart ossd-course-portal --update-env</pre>
     <script src="/admin-api-client.js"></script>
     <script src="/admin-course-data-client.js"></script>
     <script src="/admin-media-panel.js"></script>
-    <script src="/admin-media-direct-panel.js"></script>
     <script src="/admin-course-package-panel.js"></script>
     <script src="/admin-course-package-action.js"></script>
     <script src="/admin-storage-panel.js"></script>
@@ -2008,6 +1978,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         lifecycleFilter: document.querySelector("#lifecycleFilter"),
         lifecycleSearch: document.querySelector("#lifecycleSearch"),
         coursePackageFile: document.querySelector("#coursePackageFile"),
+        coursePackageRoute: document.querySelector("#coursePackageRoute"),
       };
       const unitField = document.querySelector("#unitField");
       const lessonField = document.querySelector("#lessonField");
@@ -2052,7 +2023,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       const mediaLocksPanel = document.querySelector("#mediaLocksPanel");
       const mediaNotice = document.querySelector("#mediaNotice");
       const mediaCourseTable = document.querySelector("#mediaCourseTable");
-      const mediaUploadsTable = document.querySelector("#mediaUploadsTable");
       const mediaJobsTable = document.querySelector("#mediaJobsTable");
       const mediaJobLogPanel = document.querySelector("#mediaJobLogPanel");
       const mediaJobLogTitle = document.querySelector("#mediaJobLogTitle");
@@ -2066,17 +2036,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       const syncCurrentCourseButton = document.querySelector("#syncCurrentCourseButton");
       const publishAllMediaButton = document.querySelector("#publishAllMediaButton");
       const readinessMediaButton = document.querySelector("#readinessMediaButton");
-      const ossDirectKind = document.querySelector("#ossDirectKind");
-      const ossDirectFile = document.querySelector("#ossDirectFile");
-      const ossDirectAutoPublish = document.querySelector("#ossDirectAutoPublish");
-      const ossDirectUploadButton = document.querySelector("#ossDirectUploadButton");
-      const ossDirectCancelButton = document.querySelector("#ossDirectCancelButton");
-      const ossDirectStatus = document.querySelector("#ossDirectStatus");
-      const ossDirectStatusTitle = document.querySelector("#ossDirectStatusTitle");
-      const ossDirectStatusDetail = document.querySelector("#ossDirectStatusDetail");
-      const ossDirectProgress = document.querySelector("#ossDirectProgress");
-      const ossDirectProgressBar = document.querySelector("#ossDirectProgressBar");
-      const ossDirectQueue = document.querySelector("#ossDirectQueue");
       const courseNavigationLinks = [
         document.querySelector("#topCourseLink"),
         document.querySelector("#sidebarCourseLink"),
@@ -2106,8 +2065,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       let shellPanel = null;
       let mediaPanel = null;
       let mediaAutoRefresh = null;
-      let ossDirectPanel = null;
-      let ossDirectUploadController = null;
       let coursePackageUi = null;
       let coursePackageAction = null;
       let storagePanel = null;
@@ -2322,6 +2279,8 @@ pm2 restart ossd-course-portal --update-env</pre>
         write,
         afterSuccess: async () => {
           await readStorage({ writeOutput: false });
+          await readStatus({ writeOutput: false });
+          await readMedia({ writeOutput: false });
         },
         getCurrentImport: () => currentCoursePackageImport,
         setUploadDisabled: (disabled) => {
@@ -2333,6 +2292,8 @@ pm2 restart ossd-course-portal --update-env</pre>
         clearPackageFile: () => {
           fields.coursePackageFile.value = "";
         },
+        uploadRawPackage: uploadCoursePackageRaw,
+        shouldUseRawUpload: (file) => shouldUseRawCoursePackageUpload(file),
         afterCommitSuccess: async (data) => {
           await loadSelectedCourseManifest();
           await readStatus({ writeOutput: false });
@@ -2342,21 +2303,6 @@ pm2 restart ossd-course-portal --update-env</pre>
           await readMedia({ writeOutput: false });
           if (data.backups?.length) await readBackups({ writeOutput: false });
         },
-      });
-      ossDirectPanel = window.AdminMediaDirectPanel.createPanel({
-        elements: {
-          cancelButton: ossDirectCancelButton,
-          fileInput: ossDirectFile,
-          progress: ossDirectProgress,
-          progressBar: ossDirectProgressBar,
-          queue: ossDirectQueue,
-          status: ossDirectStatus,
-          statusDetail: ossDirectStatusDetail,
-          statusTitle: ossDirectStatusTitle,
-          uploadButton: ossDirectUploadButton,
-        },
-        formatBytes,
-        getController: () => ossDirectUploadController,
       });
       mediaPanel = window.AdminMediaPanel.createPanel({
         elements: {
@@ -2375,11 +2321,9 @@ pm2 restart ossd-course-portal --update-env</pre>
           readinessMediaButton,
           refreshState: mediaRefreshState,
           syncCurrentCourseButton,
-          uploadsTable: mediaUploadsTable,
         },
         getSelectedCourse: () => fields.course.value,
         jobTypeLabel: window.AdminMediaView.jobTypeLabel,
-        renderOssDirectUploadConfig: (config) => ossDirectPanel.renderConfig(config),
       });
       mediaAutoRefresh = window.AdminMediaApi.createAutoRefresh({
         isEnabled: () => Boolean(adminAuthenticated && activeAdminPanel === "media"),
@@ -2409,25 +2353,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         write,
         confirm: (message) => confirm(message),
       });
-      ossDirectUploadController = window.AdminMediaUpload.createDirectUploadController({
-        api: mediaApi,
-        getKind: () => ossDirectKind?.value || "course-package",
-        getFiles: () => Array.from(ossDirectFile?.files || []),
-        getSelectedCourse: () => String(fields.course.value || "").trim().toUpperCase(),
-        getCourseCodes: () => knownAdminCourseCodes(),
-        getAutoPublish: () => Boolean(ossDirectAutoPublish?.checked),
-        hasActiveWriteJob: () => mediaPanel.activeWriteJob(),
-        jobTypeLabel: window.AdminMediaView.jobTypeLabel,
-        confirm: (message) => confirm(message),
-        formatProgress: (file) => window.AdminMediaView.uploadProgressFormatter(file),
-        onActiveUploadChange: (xhr) => ossDirectPanel.setActiveUpload(xhr),
-        onStatus: ({ title, detail, percent, type }) => ossDirectPanel.setStatus(title, detail, percent, type),
-        onQueueChange: (items) => ossDirectPanel.renderQueue(items),
-        onRefresh: () => readMedia({ writeOutput: false }),
-        onStartRefresh: () => startMediaAutoRefresh(),
-        onWrite: (data) => write(data),
-      });
-
       function showFeedback(title, type = "info", detail = "") {
         if (!adminFeedback) return;
         adminFeedback.hidden = false;
@@ -2674,10 +2599,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         mediaPanel.renderJobs(data);
       }
 
-      function renderMediaUploads(data) {
-        mediaPanel.renderUploads(data);
-      }
-
       function renderMedia(data) {
         mediaData = mediaPanel.setData(data);
         mediaPanel.render(mediaData);
@@ -2832,6 +2753,8 @@ pm2 restart ossd-course-portal --update-env</pre>
           if (data.ok && data.task) {
             renderCoursePackageTaskStatus(data.task);
             if (data.task.status === "complete" && data.task.review) return data.task.review;
+            if (data.task.status === "committed" && data.task.result) return data.task.result;
+            if (data.task.status === "blocked") throw new Error(data.task.error || "ECS 空间不足，需要走 OSS raw package。");
             if (data.task.status === "failed") throw new Error(data.task.error || "服务器处理整课包失败。");
           }
           await sleep(5000);
@@ -2845,6 +2768,88 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       async function uploadCoursePackageChunkWithRetry({ url, blob, onProgress, onRetry }) {
         return uploadTransport.uploadWithRetry({ url, blob, onProgress, onRetry });
+      }
+
+      function shouldUseRawCoursePackageUpload(file) {
+        const route = fields.coursePackageRoute?.value || "auto";
+        if (route === "raw") return true;
+        if (route === "ecs") return false;
+        const rawMinBytes = Number(mediaData?.config?.directUpload?.coursePackageRawMinBytes || 2 * 1024 * 1024 * 1024);
+        return Number(file?.size || 0) >= rawMinBytes;
+      }
+
+      function updateRawCoursePackageQueueStatus(items, setStatus) {
+        const item = Array.isArray(items) ? items[0] : null;
+        if (!item || typeof setStatus !== "function") return;
+        const percent = Number.isFinite(Number(item.percent)) ? Number(item.percent) : null;
+        const titleByStatus = {
+          authorizing: "正在准备 OSS raw 上传",
+          cancelled: "OSS raw 上传已取消",
+          done: "OSS raw 上传完成，等待服务器导入",
+          failed: "OSS raw 上传失败",
+          queued: "OSS raw 上传排队中",
+          skipped: "OSS raw 上传已跳过",
+          uploading: `正在上传 ${item.name || "课程 ZIP"}`,
+          verifying: "正在确认 OSS raw 上传",
+          warning: "OSS raw 上传完成但有提示",
+        };
+        const loadedText = Number.isFinite(Number(item.loaded)) && Number.isFinite(Number(item.total)) && Number(item.total) > 0
+          ? `已上传 ${window.AdminMediaView.formatBytes(Number(item.loaded))} / ${window.AdminMediaView.formatBytes(Number(item.total))}`
+          : "";
+        const metrics = [
+          item.detail || "",
+          loadedText,
+          item.speedText ? `速度 ${item.speedText}` : "",
+          item.etaText ? `剩余约 ${item.etaText}` : "",
+        ].filter(Boolean);
+        setStatus({
+          title: titleByStatus[item.status] || titleByStatus.uploading,
+          detail: metrics.join(" · "),
+          percent,
+          showProgress: percent !== null,
+          error: item.status === "failed",
+        });
+      }
+
+      async function uploadCoursePackageRaw({ course, file, setStatus, write: writeOutput }) {
+        const rawController = window.AdminMediaUpload.createDirectUploadController({
+          api: mediaApi,
+          confirm: (message) => confirm(message),
+          formatProgress: window.AdminMediaView.uploadProgressFormatter,
+          getAutoPublish: () => true,
+          getCourseCodes: () => knownAdminCourseCodes(),
+          getFiles: () => [file],
+          getKind: () => "course-package-raw",
+          getSelectedCourse: () => course,
+          hasActiveWriteJob: () => null,
+          jobTypeLabel: window.AdminMediaView.jobTypeLabel,
+          onActiveUploadChange: () => {},
+          onQueueChange: (items) => {
+            updateRawCoursePackageQueueStatus(items, setStatus);
+          },
+          onRefresh: async () => {
+            await readMedia({ writeOutput: false, fromAutoRefresh: true });
+          },
+          onStartRefresh: () => {
+            startMediaAutoRefresh();
+          },
+          onStatus: (statusOrTitle, detail = "", percent = null, type = "info") => {
+            const status = typeof statusOrTitle === "object" && statusOrTitle
+              ? statusOrTitle
+              : { title: statusOrTitle, detail, percent, type };
+            setStatus({
+              title: status.title,
+              detail: status.detail,
+              percent: status.percent,
+              showProgress: status.percent !== null && status.percent !== undefined,
+              error: status.type === "error",
+            });
+          },
+          onWrite: (data) => {
+            if (typeof writeOutput === "function") writeOutput(data);
+          },
+        });
+        return rawController.uploadSelected();
       }
 
       function reusableCoursePackageImportId(file) {
@@ -3105,10 +3110,8 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       async function readMedia({ writeOutput = true, fromAutoRefresh = false } = {}) {
         const data = await mediaApi.read({ refreshOss: !fromAutoRefresh });
-        const directUploadActive = Boolean(fromAutoRefresh && ossDirectUploadController?.isUploading?.());
         if (data.coursesOk) {
-          if (directUploadActive) renderMediaQuiet(data);
-          else renderMedia(data);
+          renderMedia(data);
         }
         else renderMediaJobs({ jobs: data.jobs || [] });
         mediaLastUpdatedAt = new Date();
@@ -3322,22 +3325,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       document.querySelector("#readinessMediaButton").addEventListener("click", () => {
         runButtonAction("#readinessMediaButton", "正在创建媒体配置检查任务...", () => mediaActions.checkReadiness(), "媒体配置检查任务已创建");
       });
-      if (ossDirectUploadButton) {
-        ossDirectUploadButton.addEventListener("click", () => {
-          runButtonAction(ossDirectUploadButton, "正在直传 OSS...", () => ossDirectPanel.uploadSelected(), "OSS 直传流程已完成");
-        });
-      }
-      if (ossDirectFile) {
-        ossDirectFile.addEventListener("change", () => ossDirectPanel.refreshPreview());
-      }
-      if (ossDirectKind) {
-        ossDirectKind.addEventListener("change", () => ossDirectPanel.refreshPreview());
-      }
-      if (ossDirectCancelButton) {
-        ossDirectCancelButton.addEventListener("click", () => {
-          ossDirectPanel.cancelActiveUpload();
-        });
-      }
       if (mediaCourseFilter) {
         mediaCourseFilter.addEventListener("change", () => renderMediaCourses(mediaData));
       }
@@ -3363,18 +3350,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         const button = event.target.closest("[data-media-job-action]");
         if (!button) return;
         handleMediaJobAction(button);
-      });
-      mediaUploadsTable.addEventListener("click", (event) => {
-        const uploadButton = event.target.closest("[data-media-upload-action]");
-        if (uploadButton) {
-          const action = uploadButton.dataset.mediaUploadAction;
-          if (action === "detail") {
-            runButtonAction(uploadButton, "正在打开 OSS 直传详情...", () => mediaActions.showUploadDetail(uploadButton.dataset.upload), "直传详情已打开");
-          }
-          return;
-        }
-        const jobButton = event.target.closest("[data-media-job-action]");
-        if (jobButton) handleMediaJobAction(jobButton);
       });
       if (mediaLocksPanel) {
         mediaLocksPanel.addEventListener("click", (event) => {
@@ -3425,7 +3400,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         if (activeAdminPanel === "media") {
           renderMediaCourses(mediaData);
           updateMediaActionControls(mediaData);
-          ossDirectPanel.refreshPreview();
         }
         loadSelectedCourseManifest()
           .then(renderCurrentCourseUploadTasks)

@@ -131,7 +131,14 @@ function checkCourse(code, catalog) {
   if (sourceAudit.ispringExpected && sourceAudit.ispringComplete < sourceAudit.ispringExpected) {
     blockers.push(`${code} iSpring incomplete: ${sourceAudit.ispringComplete}/${sourceAudit.ispringExpected}.`);
   }
-  if (sourceAudit.authenticatedResourceFailedFiles) warnings.push(`${code} source audit records ${sourceAudit.authenticatedResourceFailedFiles} failed authenticated resource file(s).`);
+  const resourceCoverageClean = sourceAudit.resourceCoverage?.exists
+    && sourceAudit.resourceCoverage.missing === 0
+    && (sourceAudit.resourceCoverage.uniqueMissing ?? 0) === 0;
+  const resourceValidationClean = sourceAudit.resourceValidation?.exists
+    && sourceAudit.resourceValidation.failedCount === 0;
+  if (sourceAudit.authenticatedResourceFailedFiles && !(resourceCoverageClean && resourceValidationClean)) {
+    warnings.push(`${code} source audit records ${sourceAudit.authenticatedResourceFailedFiles} failed authenticated resource file(s).`);
+  }
 
   const pathRecords = collectResourcePaths(manifest, courseRoot);
   const missingPathRecords = pathRecords.filter((record) => !record.path);

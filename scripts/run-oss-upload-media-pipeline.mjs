@@ -80,7 +80,13 @@ function isPlayableDirectKind(kind) {
   return ["video", "h5p"].includes(String(kind || "").toLowerCase());
 }
 
-function updateRegistryAsset(objectKey) {
+function assetKindForUpload(upload) {
+  const kind = String(upload?.kind || "").toLowerCase();
+  if (kind === "video" || kind === "h5p") return kind;
+  return "other";
+}
+
+function updateRegistryAsset(objectKey, record = null) {
   const existing = existsSync(registryPath)
     ? readJson(registryPath)
     : {
@@ -90,9 +96,14 @@ function updateRegistryAsset(objectKey) {
         objectPrefix: "courseware-active",
         assetCount: 0,
         assets: [],
+        assetRecords: [],
       };
   const assets = new Set(Array.isArray(existing.assets) ? existing.assets : []);
   assets.add(objectKey);
+  const assetRecords = new Map((Array.isArray(existing.assetRecords) ? existing.assetRecords : [])
+    .filter((item) => item?.objectKey)
+    .map((item) => [item.objectKey, item]));
+  if (record?.objectKey) assetRecords.set(record.objectKey, record);
   const next = {
     ...existing,
     generatedAt: new Date().toISOString(),
@@ -100,6 +111,7 @@ function updateRegistryAsset(objectKey) {
     cdnBaseUrl: existing.cdnBaseUrl || cdnBaseUrl,
     assetCount: assets.size,
     assets: [...assets].sort(),
+    assetRecords: [...assetRecords.values()].sort((a, b) => String(a.objectKey).localeCompare(String(b.objectKey))),
   };
   writeFileSync(registryPath, `${JSON.stringify(next, null, 2)}\n`, "utf8");
   return next;
@@ -110,8 +122,6 @@ const uploadPath = join(uploadsRoot, safeSegment(uploadId), "upload.json");
 if (!existsSync(uploadPath)) throw new Error(`Upload record not found: ${uploadPath}`);
 const upload = readJson(uploadPath);
 const uploadKind = String(upload.kind || "").toLowerCase();
-const isOssOnlyCoursePackage = uploadKind === "course-package"
-  && (upload.importMode === "oss-only" || upload.ossOnly === true || String(upload.importStatus || "").startsWith("oss-"));
 const needsLocalPublish = isPlayableDirectKind(uploadKind);
 const reportPath = join(deploymentRoot, `oss-upload-pipeline-${safeSegment(upload.id)}.json`);
 const markdownPath = join(deploymentRoot, `oss-upload-pipeline-${safeSegment(upload.id)}.md`);
@@ -129,14 +139,7 @@ if (needsLocalPublish) {
 if (!upload.ossUri || !upload.objectKey) blockers.push("Upload record is missing OSS object information.");
 if (upload.status !== "uploaded" && upload.status !== "queued") warnings.push(`Upload status is ${upload.status}; expected uploaded/queued.`);
 if (uploadKind === "course-package") {
-  if (isOssOnlyCoursePackage) {
-    ok.push("Course package is handled by the OSS-side extractor/indexer; ECS does not download or store the ZIP.");
-    if (!["oss-extract-required", "oss-index-queued", "oss-extracted", "committed"].includes(String(upload.importStatus || ""))) {
-      warnings.push(`Course package import status is ${upload.importStatus || "not set"}; expected OSS extractor/indexer handoff state.`);
-    }
-  } else {
-    blockers.push("course-package publish-upload requires OSS-only handoff. Set COURSE_PACKAGE_IMPORT_MODE=oss-only or use the legacy-local import path explicitly.");
-  }
+  blockers.push("Whole-course ZIP imports are ECS-first now. Use the course-package upload/commit endpoint so the worker can classify local-vs-OSS assets.");
 }
 if (uploadKind === "ispring-package") {
   blockers.push("ispring-package direct upload is stored in OSS inbox, but iSpring package extraction/import from OSS inbox is not implemented yet.");
@@ -162,11 +165,22 @@ if (!blockers.length && needsLocalPublish) {
   if (result.status !== 0) {
     throw new Error((result.stderr || result.stdout || `ossutil exited ${result.status}`).trim());
   }
-  const registry = updateRegistryAsset(activeObjectKey);
+  const cdnUrl = `${cdnBaseUrl}/${course}/direct-uploads/${safeSegment(upload.id)}/${encodeURIComponent(filename)}`;
+  const registry = updateRegistryAsset(activeObjectKey, {
+    course,
+    kind: assetKindForUpload(upload),
+    source: "cdn",
+    objectKey: activeObjectKey,
+    relativePath: `direct-uploads/${safeSegment(upload.id)}/${filename}`,
+    ossUri: targetUri,
+    url: cdnUrl,
+    cdnUrl,
+    bytes: upload.fileSize || 0,
+  });
   published = {
     objectKey: activeObjectKey,
     ossUri: targetUri,
-    cdnUrl: `${cdnBaseUrl}/${course}/direct-uploads/${safeSegment(upload.id)}/${encodeURIComponent(filename)}`,
+    cdnUrl,
     registryAssetCount: registry.assetCount,
   };
   ok.push("Uploaded playable asset was copied to courseware-active and registry was updated.");

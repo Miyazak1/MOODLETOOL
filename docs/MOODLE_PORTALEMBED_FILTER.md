@@ -47,3 +47,7 @@ The filter only renders iframe URLs whose `src` starts with an allowed prefix. B
 https://www.moodletool.work/embed/
 http://127.0.0.1:8891/embed/
 ```
+
+The rendered iframe is created server-side by the filter with a controlled `sandbox`
+and `allow` policy. Authors paste only the shortcode into Moodle, so TinyMCE does
+not rewrite or strip iframe permissions.

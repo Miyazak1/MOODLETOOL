@@ -24,10 +24,6 @@
       return (currentData().jobs || []).find((job) => job.id === jobId) || null;
     }
 
-    function uploadById(uploadId) {
-      return (currentData().uploads || []).find((upload) => upload.id === uploadId) || null;
-    }
-
     async function refreshMedia() {
       if (typeof refresh === "function") await refresh({ writeOutput: false });
     }
@@ -89,16 +85,6 @@
 
     async function checkReadiness() {
       return createJob({ type: "check-readiness" });
-    }
-
-    function showUploadDetail(uploadId) {
-      const upload = uploadById(uploadId);
-      if (!upload) throw new Error("找不到这条 OSS 直传记录，请刷新媒体状态后再试。");
-      const relatedJob = upload.jobId ? jobById(upload.jobId) : null;
-      renderDetail(
-        `OSS 直传详情：${upload.course || upload.fileName || upload.id}`,
-        window.AdminMediaView.renderUploadDetail(upload, { relatedJob, jobs: currentData().jobs || [] }),
-      );
     }
 
     async function showJobLog(jobId) {
@@ -197,9 +183,7 @@
       publishCurrentCourse,
       retryJob,
       showJobLog,
-      showUploadDetail,
       syncCurrentCourse,
-      uploadById,
     };
   }
 

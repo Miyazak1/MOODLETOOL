@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
 const source = readFileSync("public/admin-course-package-action.js", "utf8");
+const teacherAdminSource = readFileSync("public/teacher-admin.html", "utf8");
 const context = {
   URLSearchParams,
   window: {},
@@ -12,6 +13,9 @@ vm.createContext(context);
 vm.runInContext(source, context, { filename: "public/admin-course-package-action.js" });
 
 const mod = context.window.AdminCoursePackageAction;
+
+assert.match(teacherAdminSource, /onStatus:\s*\(title,\s*detail,\s*percent,\s*type\)\s*=>/);
+assert.doesNotMatch(teacherAdminSource, /onStatus:\s*\(\{\s*title,\s*detail,\s*percent,\s*type\s*\}\)\s*=>/);
 
 function makeFile(overrides = {}) {
   return {
@@ -42,6 +46,8 @@ function createHarness({
   commitState,
   confirmCommit = () => true,
   commitPackage,
+  uploadRawPackage,
+  shouldUseRawUpload,
 } = {}) {
   const statuses = [];
   const writes = [];
@@ -116,6 +122,8 @@ function createHarness({
     async afterCommitSuccess(data) {
       commitSuccesses.push(data);
     },
+    uploadRawPackage,
+    shouldUseRawUpload,
   });
   return { action, disabled, fields, previews, remembers, statuses, successes, uploadedChunks, writes, clears, commits, commitSuccesses };
 }
@@ -174,7 +182,9 @@ assert.equal(
   assert.equal(successes[0].uploadedFile.name, "ENG4U-course.zip");
   assert.equal(remembers.at(-1).status, "complete");
   assert.equal(remembers.at(-1).chunksReceived, 3);
-  assert.equal(statuses.at(-1).title, "上传完成，服务器已生成预览");
+  assert.equal(statuses.at(-1).title, "小型课包已生成确认预览");
+  assert.match(statuses.at(-1).detail, /确认替换课程内容/);
+  assert.ok(statuses.some((status) => /速度 .*\/s · 剩余约/.test(status.detail || "")));
   assert.match(writes[0], /正在分片上传整课包/);
 }
 
@@ -223,6 +233,66 @@ assert.equal(
   assert.equal(statuses.at(-1).title, "上传失败");
   assert.match(statuses.at(-1).detail, /network down/);
   assert.match(writes.at(-1), /Error: network down/);
+}
+
+{
+  let rawCalled = false;
+  let waitedFor = "";
+  const error = new Error("ECS 剩余空间不足，请走 OSS raw package。");
+  const { action, remembers, statuses, successes, writes } = createHarness({
+    uploadChunk() {
+      throw error;
+    },
+    async uploadRawPackage({ file }) {
+      rawCalled = true;
+      assert.equal(file.name, "ENG4U-course.zip");
+      return {
+        ok: true,
+        coursePackageTask: { importId: "upl-raw-fallback-1" },
+      };
+    },
+    waitForReview(importId) {
+      waitedFor = importId;
+      return { ok: true, imported: true, importId, mode: "hybrid-raw" };
+    },
+  });
+  const result = await action.uploadCoursePackage();
+  assert.equal(rawCalled, true);
+  assert.equal(waitedFor, "upl-raw-fallback-1");
+  assert.equal(result.imported, true);
+  assert.equal(remembers.at(-1).status, "committed");
+  assert.equal(statuses.at(-1).title, "OSS raw 导入完成");
+  assert.equal(successes.length, 1);
+  assert.match(writes[1], /OSS raw package/);
+}
+
+{
+  let rawCalled = false;
+  let waitedFor = "";
+  const { action, uploadedChunks, statuses, writes } = createHarness({
+    shouldUseRawUpload() {
+      return true;
+    },
+    async uploadRawPackage({ file }) {
+      rawCalled = true;
+      assert.equal(file.name, "ENG4U-course.zip");
+      return {
+        ok: true,
+        uploads: [{ coursePackageTask: { importId: "upl-raw-1" } }],
+      };
+    },
+    waitForReview(importId) {
+      waitedFor = importId;
+      return { ok: true, imported: true, importId, mode: "hybrid-raw" };
+    },
+  });
+  const result = await action.uploadCoursePackage();
+  assert.equal(rawCalled, true);
+  assert.equal(uploadedChunks.length, 0);
+  assert.equal(waitedFor, "upl-raw-1");
+  assert.equal(result.imported, true);
+  assert.equal(statuses.at(-1).title, "OSS raw 导入完成");
+  assert.match(writes[0], /OSS raw package/);
 }
 
 {

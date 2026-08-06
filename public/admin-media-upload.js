@@ -49,7 +49,7 @@
     const extension = fileExtension(name);
     if (!name) throw new Error("请选择有效文件。");
     if (!Number.isFinite(file?.size) || file.size <= 0) throw new Error(`${name} 是空文件，不能上传。`);
-    if (kind === "course-package" && extension !== "zip") {
+    if ((kind === "course-package" || kind === "course-package-raw") && extension !== "zip") {
       throw new Error(`${name} 不是 ZIP 完整课件包。请选择 .zip 文件。`);
     }
     if (kind === "h5p" && extension !== "h5p") {
@@ -65,7 +65,7 @@
 
   function resolveDirectUploadCourse({ kind, file, selectedCourse, courseCodes }) {
     validateDirectUploadFile({ kind, file });
-    if (kind !== "course-package") {
+    if (kind !== "course-package" && kind !== "course-package-raw") {
       const selected = String(selectedCourse || "").trim().toUpperCase();
       if (!selected) throw new Error("请选择课程。");
       return { course: selected, source: "selected-course" };
@@ -121,7 +121,7 @@
     if (fileList.length > 1 && kind !== "course-package") {
       errors.push("批量直传目前只支持完整课件包 ZIP。视频、H5P 和 iSpring 单包请一次传一个。");
     }
-    if (kind === "course-package") {
+    if (kind === "course-package" || kind === "course-package-raw") {
       const courseCounts = items.reduce((counts, item) => {
         if (item.course) counts.set(item.course, (counts.get(item.course) || 0) + 1);
         return counts;
@@ -350,7 +350,7 @@
     const {
       api,
       confirm: confirmImpl = window.confirm.bind(window),
-      formatProgress,
+      formatProgress = window.AdminMediaView?.uploadProgressFormatter,
       getAutoPublish,
       getCourseCodes,
       getFiles,
@@ -487,7 +487,7 @@
         notifyQueue();
         return createDirectUploadPreview();
       }
-      const kind = typeof getKind === "function" ? getKind() : "course-package";
+      const kind = typeof getKind === "function" ? getKind() : "video";
       const signature = `${kind}:${fileSelectionSignature(files)}`;
       if (signature !== lastPreviewSignature) {
         cancelledQueueItemIds.clear();
@@ -525,7 +525,7 @@
     async function uploadSingleImpl(file, { index = 0, totalFiles = 1, queueItem = null, resolvedCourse = null, batchProgress = null, showUploadStatus = true } = {}) {
       if (!file) throw new Error("请选择要直传到 OSS 的文件。");
       throwIfQueueItemCancelled(queueItem);
-      const kind = typeof getKind === "function" ? getKind() : "course-package";
+      const kind = typeof getKind === "function" ? getKind() : "video";
       const courseInfo = resolvedCourse || resolveDirectUploadCourse({
         kind,
         file,
@@ -538,11 +538,11 @@
         const activeWriteJob = typeof hasActiveWriteJob === "function" ? hasActiveWriteJob() : null;
         if (activeWriteJob) {
           const typeLabel = typeof jobTypeLabel === "function" ? jobTypeLabel(activeWriteJob.type) : activeWriteJob.type;
-          throw new Error(`已有写任务运行中：${activeWriteJob.course || activeWriteJob.scope || "all"} · ${typeLabel}。请等待完成后再自动发布，或取消勾选“上传后自动创建发布任务”只直传到 OSS inbox。`);
+          throw new Error(`已有写任务运行中：${activeWriteJob.course || activeWriteJob.scope || "all"} · ${typeLabel}。请等待完成后再自动发布，或取消勾选“上传后自动创建发布任务”只直传到 OSS。`);
         }
       }
       if (autoPublish && kind === "ispring-package") {
-        const ok = confirmImpl("当前自动发布支持完整课件包 ZIP、单个视频和 H5P。iSpring 单包会先保存到 OSS inbox，暂不会自动覆盖课程。仍然继续上传吗？");
+        const ok = confirmImpl("当前自动发布支持单个视频和 H5P。iSpring 单包会先保存到 OSS，暂不会自动覆盖课程。仍然继续上传吗？");
         if (!ok) return { canceled: true, message: "已取消 OSS 直传。" };
       }
 
@@ -638,7 +638,7 @@
         ? `已创建媒体任务 ${completeData.job.id}`
         : completeData.coursePackageTask
           ? `已创建导入任务 ${completeData.coursePackageTask.importId || completeData.upload?.importId || ""}`.trim()
-          : completeData.warning || "已保存到 OSS inbox";
+          : completeData.warning || "已保存到 OSS";
       updateQueueItem(queueItem, { detail: finishedDetail, percent: 100, status: completeData.warning ? "warning" : "done" });
       if (typeof onRefresh === "function") await onRefresh();
       if (typeof onStartRefresh === "function") onStartRefresh();
@@ -650,13 +650,13 @@
       const files = typeof getFiles === "function" ? Array.from(getFiles() || []) : [];
       if (!files.length) throw new Error("请选择要直传到 OSS 的文件。");
       cancelRequested = false;
-      const kind = typeof getKind === "function" ? getKind() : "course-package";
+      const kind = typeof getKind === "function" ? getKind() : "video";
       const signature = `${kind}:${fileSelectionSignature(files)}`;
       if (signature !== lastPreviewSignature) {
         cancelledQueueItemIds.clear();
         lastPreviewSignature = signature;
       }
-      if (files.length > 1 && kind !== "course-package") {
+      if (files.length > 1 && kind !== "course-package" && kind !== "course-package-raw") {
         throw new Error("批量直传目前只支持完整课件包 ZIP。视频、H5P 和 iSpring 单包请一次传一个。");
       }
       const preview = createDirectUploadPreview({

@@ -150,13 +150,27 @@ function shouldIgnore(relPath) {
 
 function isIspringPackageAsset(relPath) {
   const normalized = `/${toPosix(relPath).toLowerCase()}`;
-  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/");
+  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/") || normalized.includes("/ispring-localized/");
 }
 
 function isPlayableAsset(relPath) {
   const normalized = toPosix(relPath);
   const ext = extname(normalized).toLowerCase();
   return playableVideoExts.has(ext) || ext === ".h5p" || isIspringPackageAsset(normalized);
+}
+
+function assetKind(relPath) {
+  const normalized = toPosix(relPath);
+  const ext = extname(normalized).toLowerCase();
+  if (isIspringPackageAsset(normalized)) return "ispring";
+  if (playableVideoExts.has(ext)) return "video";
+  if (ext === ".h5p") return "h5p";
+  if ([".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xls", ".xlsx"].includes(ext)) return "document";
+  if ([".html", ".htm"].includes(ext)) return "html";
+  if ([".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico"].includes(ext)) return "image";
+  if ([".css"].includes(ext)) return "style";
+  if ([".js"].includes(ext)) return "script";
+  return ext ? ext.slice(1) : "other";
 }
 
 function walkFiles(root, result = []) {
@@ -415,6 +429,17 @@ writeJson(registryPath, {
   objectPrefix,
   assetCount: items.length,
   assets: items.map((item) => item.objectKey),
+  assetRecords: items.map((item) => ({
+    course: item.course,
+    kind: assetKind(item.relativePath),
+    source: "cdn",
+    objectKey: item.objectKey,
+    relativePath: item.relativePath,
+    ossUri: item.ossUri,
+    url: item.cdnUrl,
+    cdnUrl: item.cdnUrl,
+    bytes: item.sizeBytes,
+  })),
 });
 
 console.log(

@@ -6,6 +6,7 @@ const source = readFileSync("public/admin-media-panel.js", "utf8");
 
 function element() {
   return {
+    dataset: {},
     disabled: false,
     hidden: true,
     innerHTML: "",
@@ -31,7 +32,6 @@ const elements = {
   readinessMediaButton: element(),
   refreshState: element(),
   syncCurrentCourseButton: element(),
-  uploadsTable: element(),
 };
 
 const context = {
@@ -88,9 +88,6 @@ const context = {
       renderMediaOssStats(oss) {
         return `oss:${oss.objectCount}`;
       },
-      renderUploadsSection({ uploads, jobs }) {
-        return `uploads:${uploads.length}:${jobs.length}`;
-      },
     },
   },
 };
@@ -99,13 +96,9 @@ vm.createContext(context);
 vm.runInContext(source, context, { filename: "public/admin-media-panel.js" });
 
 let selectedCourse = "ENG4U";
-let directUploadConfig = null;
 const panel = context.window.AdminMediaPanel.createPanel({
   elements,
   getSelectedCourse: () => selectedCourse,
-  renderOssDirectUploadConfig: (config) => {
-    directUploadConfig = config;
-  },
 });
 
 panel.render({
@@ -122,20 +115,18 @@ assert.equal(elements.ossStats.innerHTML, "oss:12");
 assert.equal(elements.locksPanel.innerHTML, "locks:1");
 assert.equal(elements.courseTable.innerHTML, "courses:1/2:playable:job-1:ENG4U");
 assert.equal(elements.jobsTable.innerHTML, "jobs:1/2");
-assert.equal(elements.uploadsTable.innerHTML, "uploads:1:2");
 assert.equal(elements.publishAllMediaButton.disabled, true);
 assert.equal(elements.publishAllMediaButton.title, "busy");
 assert.equal(elements.syncCurrentCourseButton.title, "sync locked");
 assert.equal(elements.notice.innerHTML, "notice");
-assert.equal(directUploadConfig.assetMode, "hybrid");
 
 panel.updateRefreshState({ updatedAt: new Date("2026-07-31T10:00:00Z") });
 assert.match(elements.refreshState.textContent, /任务运行中/);
 assert.match(elements.refreshState.textContent, /状态已同步/);
 panel.updateRefreshState({ refreshing: true });
-assert.match(elements.refreshState.textContent, /正在刷新媒体状态/);
+assert.equal(elements.refreshState.dataset.refreshing, "1");
 panel.updateRefreshState({ nextDelayMs: 5000 });
-assert.match(elements.refreshState.textContent, /下次约 5 秒后/);
+assert.equal(elements.refreshState.dataset.refreshing, "0");
 assert.equal(panel.hasActive(), true);
 assert.equal(panel.activeWriteJob().id, "job-1");
 

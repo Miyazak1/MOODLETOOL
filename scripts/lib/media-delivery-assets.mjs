@@ -1,7 +1,7 @@
 import { extname } from "node:path";
 
 export const playableCoursewareVideoExts = new Set([".mp4", ".webm", ".mov", ".m4v"]);
-export const directUploadKinds = new Set(["course-package", "video", "h5p", "ispring-package"]);
+export const directUploadKinds = new Set(["course-package", "course-package-raw", "video", "h5p", "ispring-package"]);
 
 export function toPosixAssetPath(value) {
   return String(value || "").replaceAll("\\", "/").replace(/^\/+/, "");
@@ -35,9 +35,17 @@ export function directUploadKindCanAutoPublish(kind) {
   return ["video", "h5p"].includes(String(kind || "").toLowerCase());
 }
 
+export function isCoursePackageUploadKind(kind) {
+  return ["course-package", "course-package-raw"].includes(String(kind || "").toLowerCase());
+}
+
+export function isRawCoursePackageUploadKind(kind) {
+  return String(kind || "").toLowerCase() === "course-package-raw";
+}
+
 export function isIspringCoursewareAsset(relPath) {
   const normalized = `/${toPosixAssetPath(relPath).toLowerCase()}`;
-  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/");
+  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/") || normalized.includes("/ispring-localized/");
 }
 
 export function isPlayableCoursewareAsset(relPath) {

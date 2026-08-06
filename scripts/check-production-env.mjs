@@ -201,29 +201,47 @@ if (directUploadEnabled === "1") {
   }
   if (directRoot && !directRoot.startsWith("/")) errors.push("OSS_UPLOADS_DATA_ROOT should be an absolute Linux path when set.");
 } else {
-  warnings.push("OSS_DIRECT_UPLOAD_ENABLED is not 1; browser-to-OSS direct upload will be hidden/disabled.");
+  warnings.push("OSS_DIRECT_UPLOAD_ENABLED is not 1; OSS raw course ZIP upload will be unavailable for large/media course packages.");
 }
 
-const coursePackageImportMode = String(values.COURSE_PACKAGE_IMPORT_MODE || "oss-only").toLowerCase();
-if (!["oss-only", "legacy-local"].includes(coursePackageImportMode)) {
-  errors.push("COURSE_PACKAGE_IMPORT_MODE must be oss-only or legacy-local.");
+const coursePackageImportMode = String(values.COURSE_PACKAGE_IMPORT_MODE || "ecs-first").toLowerCase();
+if (!["ecs-first", "hybrid-worker"].includes(coursePackageImportMode)) {
+  errors.push("COURSE_PACKAGE_IMPORT_MODE must be ecs-first or hybrid-worker. The old oss-only/legacy-local course package flows are disabled.");
 } else {
   ok.push(`COURSE_PACKAGE_IMPORT_MODE=${coursePackageImportMode}.`);
 }
-if (coursePackageImportMode === "oss-only") {
-  requireSecret("OSS_EXTRACT_CALLBACK_SECRET");
-  const callbackBase = values.PORTAL_EXTRACT_CALLBACK_BASE || values.EMBED_PUBLIC_ORIGIN || "";
-  if (!callbackBase) errors.push("PORTAL_EXTRACT_CALLBACK_BASE or EMBED_PUBLIC_ORIGIN is required for OSS-only package extraction callbacks.");
-  else if (!/^https:\/\//i.test(callbackBase)) errors.push("PORTAL_EXTRACT_CALLBACK_BASE should be an HTTPS origin, for example https://www.moodletool.work.");
-  else ok.push("OSS extract callback origin is set.");
-  const extractBucket = values.OSS_EXTRACT_BUCKET || values.OSS_DIRECT_UPLOAD_BUCKET || "";
-  const extractEndpoint = values.OSS_EXTRACT_ENDPOINT || values.OSS_DIRECT_UPLOAD_ENDPOINT || "";
-  if (!extractBucket) errors.push("OSS_EXTRACT_BUCKET or OSS_DIRECT_UPLOAD_BUCKET is required for OSS package extraction.");
-  else if (/^(oss:\/\/|https?:\/\/)/i.test(extractBucket)) errors.push("OSS_EXTRACT_BUCKET should be a plain bucket name, for example moodletool.");
-  else ok.push("OSS extract bucket is set.");
-  if (!extractEndpoint) errors.push("OSS_EXTRACT_ENDPOINT or OSS_DIRECT_UPLOAD_ENDPOINT is required for OSS package extraction.");
-  else if (!/^https:\/\/oss-[a-z0-9-]+\.aliyuncs\.com$/i.test(extractEndpoint)) warnings.push("OSS_EXTRACT_ENDPOINT usually should look like https://oss-cn-hongkong.aliyuncs.com.");
-  else ok.push("OSS extract endpoint is set.");
+if (["ecs-first", "hybrid-worker"].includes(coursePackageImportMode)) {
+  if (assetMode === "local") {
+    warnings.push("Course package import with COURSEWARE_ASSET_MODE=local will keep all course assets on ECS; media/iSpring concurrency benefits require hybrid or cdn.");
+  }
+  if (!ossBucket) {
+    warnings.push("Course package import should set OSS_BUCKET_URI before importing media/iSpring/H5P courses.");
+  }
+  if (!assetBaseUrl) {
+    warnings.push("Course package import should set COURSEWARE_ASSET_BASE_URL before importing media/iSpring/H5P courses.");
+  }
+  const serverEndpoint = values.OSS_SERVER_ENDPOINT || values.OSS_INTERNAL_ENDPOINT || "";
+  if (serverEndpoint) {
+    ok.push("OSS_SERVER_ENDPOINT is set for ECS worker OSS access.");
+    if (!/-internal\.aliyuncs\.com$/i.test(serverEndpoint.replace(/^https?:\/\//i, "").replace(/\/+$/, ""))) {
+      warnings.push("OSS_SERVER_ENDPOINT should use the internal regional endpoint on ECS, for example https://oss-cn-hongkong-internal.aliyuncs.com.");
+    }
+  } else {
+    warnings.push("OSS_SERVER_ENDPOINT is not set; ECS worker OSS reads/writes may use the public endpoint and hit ECS bandwidth limits.");
+  }
+  const ossutilPath = values.OSSUTIL_PATH || "ossutil";
+  ok.push(`Course package import can publish selected assets with ${ossutilPath}.`);
+  if (directUploadEnabled === "1") {
+    ok.push("OSS browser upload is reserved for raw course ZIP packages; manual media/H5P/iSpring direct upload is disabled by the server.");
+    const directMaxGb = Number(values.OSS_DIRECT_UPLOAD_MAX_GB || 20);
+    if (Number.isFinite(directMaxGb) && directMaxGb < 10) {
+      warnings.push("OSS_DIRECT_UPLOAD_MAX_GB is below 10; very large course ZIP raw uploads may be blocked before the ECS worker can process them.");
+    }
+    ok.push(`COURSE_IMPORT_RAW_PREFIX=${values.COURSE_IMPORT_RAW_PREFIX || "course-import-raw"}.`);
+  }
+}
+if (values.OSS_EXTRACT_CALLBACK_SECRET || values.PORTAL_EXTRACT_CALLBACK_BASE || values.OSS_EXTRACT_BUCKET || values.OSS_EXTRACT_ENDPOINT) {
+  warnings.push("Extractor variables are ignored by the hybrid raw package flow; remove them after verifying no other manual tooling needs them.");
 }
 
 if ((values.ADMIN_UPLOADS_ENABLED || "") === "1") {

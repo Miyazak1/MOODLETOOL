@@ -32,7 +32,10 @@
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve(data);
           } else {
-            reject(new Error(data.error || `Upload failed with HTTP ${xhr.status}.`));
+            const error = new Error(data.error || `Upload failed with HTTP ${xhr.status}.`);
+            error.data = data;
+            error.status = xhr.status;
+            reject(error);
           }
         });
         xhr.addEventListener("error", () => reject(new Error("上传连接失败，请检查网络、Nginx 限制或登录状态。")));
