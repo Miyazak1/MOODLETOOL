@@ -2845,6 +2845,24 @@ async function readManifestOrEmpty(course) {
   }
 }
 
+async function readManifestForAdminStatus(course) {
+  try {
+    return {
+      manifest: await readManifest(course),
+      manifestStatus: "ready",
+      manifestError: "",
+    };
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+    const code = safeSegment(course).toUpperCase();
+    return {
+      manifest: emptyCourseManifest(code),
+      manifestStatus: "missing",
+      manifestError: `Missing course-manifest.json for ${code}. Upload or import this course before publishing.`,
+    };
+  }
+}
+
 function normalizedOssExtractSummary(body = {}) {
   const summary = body.summary || {};
   const mediaExtracted = Number(body.mediaExtracted ?? summary.mediaExtracted ?? summary.extracted ?? 0);
@@ -3283,13 +3301,16 @@ function manifestReadiness(manifest) {
 }
 
 async function courseReadinessRecord(course) {
-  const manifest = await readManifest(course.code);
+  const { manifest, manifestStatus, manifestError } = await readManifestForAdminStatus(course.code);
   const readiness = manifestReadiness(manifest);
   return {
     code: course.code,
     title: course.title,
     status: course.status,
     level: course.level,
+    uploaded: manifestStatus === "ready",
+    manifestStatus,
+    manifestError,
     units: manifest.units?.length || 0,
     lessons: manifest.sourceAudit?.lessonCount || (manifest.units || []).reduce((sum, unit) => sum + (unit.lessons?.length || 0), 0),
     readiness,
@@ -3455,10 +3476,25 @@ function removePortalUser(users, username) {
 }
 
 async function courseUploadGapRecord(course) {
-  const manifest = await readManifest(course.code);
+  const { manifest, manifestStatus, manifestError } = await readManifestForAdminStatus(course.code);
+  if (manifestStatus !== "ready") {
+    return {
+      code: course.code,
+      title: course.title,
+      uploaded: false,
+      manifestStatus,
+      manifestError,
+      uploadItems: [],
+      reviewItems: [],
+      externalItems: [],
+    };
+  }
   return {
     code: course.code,
     title: course.title,
+    uploaded: true,
+    manifestStatus,
+    manifestError,
     uploadItems: directUploadGapItems(course, manifest),
     reviewItems: reviewGapItems(course, manifest),
     externalItems: externalGapItems(course, manifest),
@@ -6122,18 +6158,21 @@ async function handleAdminApi(req, res) {
     if (requestUrl.pathname === "/api/admin/readiness" && req.method === "GET") {
       const catalog = await readCourseCatalog();
       const courses = await Promise.all(visibleCatalogCourses(catalog).map((courseEntry) => courseReadinessRecord(courseEntry)));
+      const uploadedCourses = courses.filter((courseEntry) => courseEntry.uploaded);
       sendJson(res, 200, {
         ok: true,
         generatedAt: new Date().toISOString(),
         courseCount: courses.length,
         courses,
         summary: {
-          missingCourseOutlines: courses.filter((courseEntry) => !courseEntry.readiness.courseOutline.ok).length,
-          missingIntroductions: courses.filter((courseEntry) => !courseEntry.readiness.introduction.ok).length,
-          unitPlanGapCourses: courses.filter((courseEntry) => courseEntry.readiness.unitPlans.missing.length).length,
-          lessonPlanGapCourses: courses.filter((courseEntry) => courseEntry.readiness.lessonPlans.missing.length).length,
-          ispringMissingCourses: courses.filter((courseEntry) => !courseEntry.readiness.ispring.connected).length,
-          textReviewCourses: courses.filter((courseEntry) => courseEntry.readiness.texts.needsReview.length).length,
+          uploadedCourses: uploadedCourses.length,
+          missingManifestCourses: courses.filter((courseEntry) => !courseEntry.uploaded).length,
+          missingCourseOutlines: uploadedCourses.filter((courseEntry) => !courseEntry.readiness.courseOutline.ok).length,
+          missingIntroductions: uploadedCourses.filter((courseEntry) => !courseEntry.readiness.introduction.ok).length,
+          unitPlanGapCourses: uploadedCourses.filter((courseEntry) => courseEntry.readiness.unitPlans.missing.length).length,
+          lessonPlanGapCourses: uploadedCourses.filter((courseEntry) => courseEntry.readiness.lessonPlans.missing.length).length,
+          ispringMissingCourses: uploadedCourses.filter((courseEntry) => !courseEntry.readiness.ispring.connected).length,
+          textReviewCourses: uploadedCourses.filter((courseEntry) => courseEntry.readiness.texts.needsReview.length).length,
         },
       });
       return true;
@@ -6156,6 +6195,8 @@ async function handleAdminApi(req, res) {
         courseCount: courses.length,
         courses,
         summary: {
+          uploadedCourses: courses.filter((courseEntry) => courseEntry.uploaded).length,
+          missingManifestCourses: courses.filter((courseEntry) => !courseEntry.uploaded).length,
           directUploads: uploadItems.length,
           textReviews: reviewItems.length,
           externalDecisions: externalItems.length,
@@ -6378,7 +6419,7 @@ async function handleAdminApi(req, res) {
 
     const course = (requestUrl.searchParams.get("course") || "ENG3U").toUpperCase();
     if (requestUrl.pathname === "/api/admin/status" && req.method === "GET") {
-      const manifest = await readManifest(course);
+      const { manifest, manifestStatus, manifestError } = await readManifestForAdminStatus(course);
       const lessons = (manifest.units || []).flatMap((unit) => unit.lessons || []);
       const readiness = manifestReadiness(manifest);
       const root = courseRoot(course);
@@ -6388,6 +6429,9 @@ async function handleAdminApi(req, res) {
         ok: true,
         course,
         lifecycle: courseLifecycleRecord(course),
+        uploaded: manifestStatus === "ready",
+        manifestStatus,
+        manifestError,
         units: manifest.units?.length || 0,
         lessons: lessons.length,
         courseDownloads: manifest.courseDownloads?.length || 0,
