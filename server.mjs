@@ -6717,7 +6717,17 @@ async function handleAdminApi(req, res) {
             chunkBytes: await directorySize(coursePackageChunkDir(requestedCourse, importId)),
           };
         }
-        sendJson(res, task ? 200 : 404, task ? { ok: true, task } : { ok: false, error: "Course package task not found." });
+        sendJson(res, 200, task ? { ok: true, task } : {
+          ok: true,
+          task: {
+            course: requestedCourse,
+            importId,
+            status: "missing",
+            phase: "idle",
+            error: "",
+            message: "Course package task is no longer active.",
+          },
+        });
         return true;
       }
       const tasks = await latestCoursePackageTasks(requestedCourse);

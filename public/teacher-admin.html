@@ -3239,9 +3239,47 @@ pm2 restart ossd-course-portal --update-env</pre>
         uploadCoursePackage().catch((error) => write(`Error: ${error.message}`));
       });
       document.querySelector("#coursePackageCommitButton").addEventListener("click", () => {
-        runButtonAction("#coursePackageCommitButton", "正在导入整课 ZIP...", () => commitCoursePackage(), "整课导入完成").then(() => {
-          updateCoursePackageCommitState();
+        const button = document.querySelector("#coursePackageCommitButton");
+        setButtonBusy(button, true, "正在替换...");
+        setCoursePackageStatus({
+          title: "正在替换课程内容...",
+          detail: "服务器正在把确认预览写入正式课程目录，并刷新 manifest。",
+          percent: 100,
+          showProgress: true,
         });
+        commitCoursePackage()
+          .then((data) => {
+            if (data?.canceled) {
+              setCoursePackageStatus({
+                title: "小型课包已生成确认预览",
+                detail: data.message || "确认无误后点击“确认替换课程内容”。",
+                percent: 100,
+                showProgress: true,
+              });
+              return;
+            }
+            if (data?.ok === false) throw new Error(responseMessage(data, "服务器返回失败。"));
+            setCoursePackageStatus({
+              title: "整课导入完成",
+              detail: responseMessage(data, "正式课程目录已更新。"),
+              percent: 100,
+              showProgress: true,
+            });
+          })
+          .catch((error) => {
+            const message = errorMessage(error);
+            setCoursePackageStatus({
+              title: "整课导入失败",
+              detail: message,
+              showProgress: false,
+              error: true,
+            });
+            write(`Error: ${message}`);
+          })
+          .finally(() => {
+            setButtonBusy(button, false);
+            updateCoursePackageCommitState();
+          });
       });
       document.querySelector("#historyButton").addEventListener("click", () => {
         runButtonAction("#historyButton", "正在读取上传历史...", () => readHistory(), "上传历史已更新");
