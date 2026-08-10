@@ -3576,7 +3576,6 @@ async function generateContentWorkbench() {
 }
 
 async function finalizeEcsFirstCourseStorage(course, importId) {
-  if (coursePackageImportMode !== "ecs-first") return null;
   const scriptPath = join(projectRoot, "scripts", "finalize-ecs-first-course-storage.mjs");
   const args = [
     scriptPath,

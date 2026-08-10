@@ -198,7 +198,7 @@
 
       const importId = importIdFor(file);
       const chunkTotal = chunkCount(file.size, chunkBytes);
-      if (rawUpload && shouldUseRaw(file)) {
+      if (rawUpload && await shouldUseRaw(file)) {
         showStatus({
           title: "正在准备 OSS raw 上传",
           detail: "这个课包将先 multipart 直传 OSS raw package，再由 ECS worker 通过内网流式读取并导入。",

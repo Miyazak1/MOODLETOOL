@@ -2770,10 +2770,73 @@ pm2 restart ossd-course-portal --update-env</pre>
         return uploadTransport.uploadWithRetry({ url, blob, onProgress, onRetry });
       }
 
-      function shouldUseRawCoursePackageUpload(file) {
+      function normalizeCoursePackageEntryName(name) {
+        return String(name || "").replace(/\\/g, "/").replace(/^\.\/+/, "").toLowerCase();
+      }
+
+      function coursePackageEntryNeedsRaw(name) {
+        const entry = normalizeCoursePackageEntryName(name);
+        if (!entry || entry.endsWith("/")) return false;
+        if (/\.(mp4|webm|mov|m4v|h5p)$/i.test(entry)) return true;
+        if (/(^|\/)(html5-package|html5-package-admin|ispring-localized)\//i.test(entry)) return true;
+        if (/(^|\/)presentation\.html$/i.test(entry)) return true;
+        if (/(^|\/)(story|index)\.html$/i.test(entry) && /(^|\/)(data|story_content|res)\//i.test(entry)) return true;
+        return false;
+      }
+
+      async function coursePackageZipHasPlayableAssets(file) {
+        if (!file || !file.size) return false;
+        const decoder = new TextDecoder("utf-8");
+        const tailLength = Math.min(file.size, 1024 * 1024);
+        const tailOffset = file.size - tailLength;
+        const tail = new Uint8Array(await file.slice(tailOffset, file.size).arrayBuffer());
+        const eocdSignature = 0x06054b50;
+        let eocdOffset = -1;
+        for (let index = tail.length - 22; index >= 0; index -= 1) {
+          if (
+            tail[index] === 0x50 &&
+            tail[index + 1] === 0x4b &&
+            tail[index + 2] === 0x05 &&
+            tail[index + 3] === 0x06
+          ) {
+            eocdOffset = index;
+            break;
+          }
+        }
+        if (eocdOffset < 0) return false;
+
+        const eocd = new DataView(tail.buffer, tail.byteOffset + eocdOffset, tail.length - eocdOffset);
+        if (eocd.getUint32(0, true) !== eocdSignature) return false;
+        const centralDirectorySize = eocd.getUint32(12, true);
+        const centralDirectoryOffset = eocd.getUint32(16, true);
+        if (!centralDirectorySize || centralDirectoryOffset >= file.size) return false;
+
+        const maxCentralDirectoryBytes = 64 * 1024 * 1024;
+        if (centralDirectorySize > maxCentralDirectoryBytes) return false;
+        const centralEnd = Math.min(file.size, centralDirectoryOffset + centralDirectorySize);
+        const central = new Uint8Array(await file.slice(centralDirectoryOffset, centralEnd).arrayBuffer());
+        const view = new DataView(central.buffer, central.byteOffset, central.byteLength);
+        let offset = 0;
+        while (offset + 46 <= central.length) {
+          if (view.getUint32(offset, true) !== 0x02014b50) break;
+          const nameLength = view.getUint16(offset + 28, true);
+          const extraLength = view.getUint16(offset + 30, true);
+          const commentLength = view.getUint16(offset + 32, true);
+          const nameStart = offset + 46;
+          const nameEnd = nameStart + nameLength;
+          if (nameEnd > central.length) break;
+          const name = decoder.decode(central.slice(nameStart, nameEnd));
+          if (coursePackageEntryNeedsRaw(name)) return true;
+          offset = nameEnd + extraLength + commentLength;
+        }
+        return false;
+      }
+
+      async function shouldUseRawCoursePackageUpload(file) {
         const route = fields.coursePackageRoute?.value || "auto";
         if (route === "raw") return true;
         if (route === "ecs") return false;
+        if (await coursePackageZipHasPlayableAssets(file)) return true;
         const rawMinBytes = Number(mediaData?.config?.directUpload?.coursePackageRawMinBytes || 2 * 1024 * 1024 * 1024);
         return Number(file?.size || 0) >= rawMinBytes;
       }
