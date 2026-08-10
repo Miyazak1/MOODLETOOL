@@ -111,9 +111,14 @@ const mediaJobsLogTailBytes = Math.max(16 * 1024, Number(process.env.MEDIA_JOBS_
 const mediaJobsAutoPublishAfterUpload = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_UPLOAD === "1";
 const mediaJobsAutoPublishAfterPackage = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_PACKAGE === "1";
 const mediaJobsAutoPublishAfterActivate = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_ACTIVATE === "1";
-const configuredCoursePackageImportMode = String(process.env.COURSE_PACKAGE_IMPORT_MODE || "ecs-first").toLowerCase();
-const coursePackageImportMode = "ecs-first";
-if (configuredCoursePackageImportMode && !["ecs-first", "hybrid-worker"].includes(configuredCoursePackageImportMode)) {
+const configuredCoursePackageImportMode = String(process.env.COURSE_PACKAGE_IMPORT_MODE || "ecs-first")
+  .trim()
+  .toLowerCase();
+const supportedCoursePackageImportModes = new Set(["ecs-first", "hybrid-worker"]);
+const coursePackageImportMode = supportedCoursePackageImportModes.has(configuredCoursePackageImportMode)
+  ? configuredCoursePackageImportMode
+  : "ecs-first";
+if (configuredCoursePackageImportMode && !supportedCoursePackageImportModes.has(configuredCoursePackageImportMode)) {
   console.warn(`COURSE_PACKAGE_IMPORT_MODE=${configuredCoursePackageImportMode} is no longer supported; using ecs-first.`);
 }
 const rawCoursePackageImportRetries = Math.max(1, Number(process.env.COURSE_RAW_IMPORT_RETRIES || 3));
@@ -4700,7 +4705,7 @@ function startRawOssCoursePackageImport({ record, actor }) {
 }
 
 function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
-  if (coursePackageImportMode === "ecs-first" && !isRawCoursePackageUploadKind(record?.kind)) {
+  if (!isRawCoursePackageUploadKind(record?.kind)) {
     throw new Error("这个课程包记录来自已停用的历史导入接口，不能继续处理。请通过课程压缩包入口重新上传课程 ZIP。");
   }
   const course = safeSegment(record?.course || "").toUpperCase();
@@ -4710,7 +4715,7 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
   const filename = safeSegment(record.fileName || "course-package.zip") || "course-package.zip";
   if (extname(filename).toLowerCase() !== ".zip") throw new Error("Course package import requires a .zip file.");
 
-  if (coursePackageImportMode === "ecs-first" && isRawCoursePackageUploadKind(record?.kind)) {
+  if (isRawCoursePackageUploadKind(record?.kind)) {
     return startRawOssCoursePackageImport({ record, actor });
   }
 
@@ -6021,7 +6026,7 @@ async function handleAdminApi(req, res) {
         let coursePackageTask = null;
         if (wantsAutoPublish && isCoursePackageUploadKind(record.kind)) {
           ossUploadStore.writeRecord(record);
-          if (coursePackageImportMode === "ecs-first" && isRawCoursePackageUploadKind(record.kind)) {
+          if (isRawCoursePackageUploadKind(record.kind)) {
             record.status = "importing";
             record.importId = record.id;
             record.importStatus = "oss-raw-queued";
