@@ -6742,9 +6742,10 @@ async function handleAdminApi(req, res) {
       if (!importId) throw new Error("Missing course package importId.");
       await withOperationLock(`course:${requestedCourse}:write`, async () => {
         const result = await commitCoursePackageImport({ course: requestedCourse, importId, actor: adminActor(req) });
-        const media = mediaJobsAutoPublishAfterPackage && coursePackageImportMode !== "ecs-first"
-          ? tryCreateMediaJob({ type: "publish-course", course: requestedCourse, actor: adminActor(req) })
-          : { job: null, warning: "" };
+        // The manual "confirm/replace course package" path swaps the active manifest just like
+        // the raw-upload callback, so it must also queue the publish job. Otherwise iSpring/video
+        // entries remain on /courseware/... indefinitely instead of being rewritten to CDN.
+        const media = tryCreateMediaJob({ type: "publish-course", course: requestedCourse, actor: adminActor(req) });
         sendJson(res, 200, {
           ...result,
           mediaJob: media.job,
