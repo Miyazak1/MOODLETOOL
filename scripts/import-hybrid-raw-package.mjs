@@ -165,6 +165,11 @@ function publishKind(relPath, size) {
   return "";
 }
 
+function isPlayablePublishedPath(relPath) {
+  const ext = extname(relPath).toLowerCase();
+  return isIspringAsset(relPath) || videoExts.has(ext) || audioExts.has(ext) || ext === ".h5p";
+}
+
 function contentTypeFor(relPath) {
   const ext = extname(relPath).toLowerCase();
   const map = {
@@ -207,6 +212,68 @@ function cdnUrlForObjectKey(objectKey) {
     ? objectKey.slice(normalizedPrefix.length + 1)
     : objectKey;
   return `${cdnBaseUrl}/${encodeKey(relativeKey)}`;
+}
+
+function cdnUrlForCoursePath(relPath) {
+  return cdnUrlForObjectKey(`${objectPrefix}/${course}/${toPosix(relPath).replace(/^\/+/, "")}`);
+}
+
+function htmlReferenceValueToCoursePath(htmlPath, rawValue) {
+  const value = String(rawValue || "").trim();
+  if (
+    !value ||
+    value.startsWith("#") ||
+    /^(?:https?:|mailto:|tel:|data:|blob:|javascript:)/i.test(value)
+  ) {
+    return "";
+  }
+  let parsed;
+  try {
+    parsed = new URL(value, "https://courseware.local/");
+  } catch {
+    return "";
+  }
+  let decodedPath = "";
+  try {
+    decodedPath = decodeURIComponent(parsed.pathname || "").replace(/^\/+/, "");
+  } catch {
+    return "";
+  }
+  if (!decodedPath) return "";
+  const combined = value.startsWith("/")
+    ? decodedPath
+    : toPosix(join(dirname(htmlPath), decodedPath));
+  const normalized = toPosix(combined).replace(/^\/+/, "");
+  if (!normalized || normalized.startsWith("../") || normalized.includes("/../")) return "";
+  return normalized;
+}
+
+function rewriteHtmlPlayableReferences(html, htmlPath) {
+  let rewritten = 0;
+  const body = String(html || "").replace(/\b(href|src|poster)\s*=\s*(["'])([^"']+)\2/gi, (match, attr, quote, rawValue) => {
+    const coursePath = htmlReferenceValueToCoursePath(htmlPath, rawValue);
+    if (!coursePath || !isPlayablePublishedPath(coursePath)) return match;
+    rewritten += 1;
+    return `${attr}=${quote}${cdnUrlForCoursePath(coursePath)}${quote}`;
+  });
+  return { html: body, rewritten };
+}
+
+async function rewriteLocalHtmlPlayableReferences() {
+  const files = await listFiles(localStagingRoot);
+  let pages = 0;
+  let references = 0;
+  for (const absPath of files) {
+    if (!/\.(?:html?|htm)$/i.test(absPath)) continue;
+    const htmlPath = toPosix(relative(localStagingRoot, absPath));
+    const rewritten = rewriteHtmlPlayableReferences(readFileSync(absPath, "utf8"), htmlPath);
+    if (rewritten.rewritten > 0) {
+      writeFileSync(absPath, rewritten.html, "utf8");
+      pages += 1;
+      references += rewritten.rewritten;
+    }
+  }
+  return { pages, references };
 }
 
 function publishRecordFor(relPath, size, kind) {
@@ -593,6 +660,7 @@ if (!manifest) throw new Error("Overflow package must contain course-manifest.js
 
 const publishedByRelPath = new Map(uploaded.map((item) => [item.relativePath, item]));
 const rewrittenResources = rewriteManifestNode(manifest, publishedByRelPath);
+const htmlPlayableRefs = await rewriteLocalHtmlPlayableReferences();
 manifest.sourceAudit = {
   ...(manifest.sourceAudit || {}),
   importStatus: "imported",
@@ -605,6 +673,8 @@ manifest.sourceAudit = {
   latestUploadId: importId,
   publishedAssetCount: uploaded.length,
   rewrittenResources,
+  htmlPlayableRefsRewritten: htmlPlayableRefs.references,
+  htmlPlayablePagesRewritten: htmlPlayableRefs.pages,
   localCleanup: "streamed-no-media-local-copy",
   activeSwitch: "staging-copy-with-rollback",
 };
@@ -644,6 +714,8 @@ const report = {
     uploaded: uploaded.length,
     uploadedBytes: uploaded.reduce((sum, item) => sum + Number(item.bytes || 0), 0),
     rewrittenResources,
+    htmlPlayableRefsRewritten: htmlPlayableRefs.references,
+    htmlPlayablePagesRewritten: htmlPlayableRefs.pages,
     activeSwitch,
     staleOssObjects: staleCleanup.planned.length,
     deletedStaleOssObjects: staleCleanup.deleted.length,

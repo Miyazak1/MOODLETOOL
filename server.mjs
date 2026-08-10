@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { appendFile, cp, mkdir, readdir, readFile, rename, rm, stat, statfs } from "node:fs/promises";
+import { appendFile, cp, mkdir, readdir, readFile, rename, rm, stat, statfs, writeFile } from "node:fs/promises";
 import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, normalize, relative, resolve } from "node:path";
 import { spawn, spawnSync } from "node:child_process";
@@ -3128,6 +3128,44 @@ function rewriteManifestForHybridStorage(manifest, course) {
   return manifest;
 }
 
+function htmlReferenceValueToCoursePath(htmlPath, rawValue) {
+  const value = String(rawValue || "").trim();
+  if (
+    !value ||
+    value.startsWith("#") ||
+    /^(?:https?:|mailto:|tel:|data:|blob:|javascript:)/i.test(value)
+  ) {
+    return "";
+  }
+  let parsed;
+  try {
+    parsed = new URL(value, "https://courseware.local/");
+  } catch {
+    return "";
+  }
+  const decodedPath = decodePath(parsed.pathname || "").replace(/^\/+/, "");
+  if (!decodedPath) return "";
+  const combined = value.startsWith("/")
+    ? decodedPath
+    : normalize(toPosixPath(join(dirname(htmlPath), decodedPath)));
+  const normalized = toPosixPath(combined);
+  if (!normalized || normalized.startsWith("../") || normalized.includes("/../")) return "";
+  return normalized;
+}
+
+function rewriteHtmlPlayableReferencesForHybridStorage(html, course, htmlPath) {
+  let rewritten = 0;
+  const body = String(html || "").replace(/\b(href|src|poster)\s*=\s*(["'])([^"']+)\2/gi, (match, attr, quote, rawValue) => {
+    const coursePath = htmlReferenceValueToCoursePath(htmlPath, rawValue);
+    if (!coursePath || !isPlayableCoursewareAsset(coursePath)) return match;
+    const cdnUrl = generatedCoursewareAssetUrl(course, coursePath);
+    if (!cdnUrl) return match;
+    rewritten += 1;
+    return `${attr}=${quote}${cdnUrl}${quote}`;
+  });
+  return { html: body, rewritten };
+}
+
 async function importLightweightContentFromOssManifest({ course, manifestObjectKey, uploadId, actor }) {
   const code = safeSegment(course).toUpperCase();
   if (!courseLocalContentEnabled) return { status: "skipped", reason: "COURSE_LOCAL_CONTENT_ENABLED=0" };
@@ -3155,6 +3193,19 @@ async function importLightweightContentFromOssManifest({ course, manifestObjectK
     await downloadOssObjectToFile(client, item.objectKey, target);
   }
 
+  let lightweightHtmlPlayableRefsRewritten = 0;
+  for (const item of selectedFiles) {
+    if (!/\.(?:html?|htm)$/i.test(item.path)) continue;
+    const target = ensureInside(stagingRoot, join(stagingRoot, item.path));
+    if (!existsSync(target)) continue;
+    const currentHtml = await readFile(target, "utf8");
+    const rewritten = rewriteHtmlPlayableReferencesForHybridStorage(currentHtml, code, item.path);
+    if (rewritten.rewritten > 0) {
+      await writeFile(target, rewritten.html, "utf8");
+      lightweightHtmlPlayableRefsRewritten += rewritten.rewritten;
+    }
+  }
+
   const root = courseRoot(code);
   await mkdir(root, { recursive: true });
   const copiedTopLevelEntries = await copyLightweightStagingContent(stagingRoot, root);
@@ -3175,6 +3226,7 @@ async function importLightweightContentFromOssManifest({ course, manifestObjectK
     latestUploadId: uploadId,
     lightweightFilesImported: selectedFiles.length,
     lightweightBytes: totalBytes,
+    lightweightHtmlPlayableRefsRewritten,
     importManifestObjectKey: manifestObjectKey,
   };
   recomputeManifestSummaries(manifest);
@@ -3186,6 +3238,7 @@ async function importLightweightContentFromOssManifest({ course, manifestObjectK
     status: "imported",
     files: selectedFiles.length,
     bytes: totalBytes,
+    htmlPlayableRefsRewritten: lightweightHtmlPlayableRefsRewritten,
     copiedTopLevelEntries,
     catalogEntry,
     lifecycle,

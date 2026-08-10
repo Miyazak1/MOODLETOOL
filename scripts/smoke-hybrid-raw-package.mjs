@@ -51,6 +51,11 @@ try {
   }, null, 2)}\n`, "utf8");
   writeFixture(join(sourceCourseRoot, "docs", "ordinary.pdf"), Buffer.from("%PDF-1.7\n"));
   writeFixture(join(sourceCourseRoot, "media", "lesson-video.mp4"), Buffer.alloc(128, 1));
+  writeFixture(
+    join(sourceCourseRoot, "localized-moodle-activities", "assign", "lab", "index.html"),
+    '<!doctype html><video controls><source src="files/lab-video.mp4" type="video/mp4"><a href="files/lab-video.mp4">video</a></video>',
+  );
+  writeFixture(join(sourceCourseRoot, "localized-moodle-activities", "assign", "lab", "files", "lab-video.mp4"), Buffer.alloc(256, 3));
   writeFixture(join(sourceCourseRoot, "ispring-localized", "unit-01", "U01L01", "presentation.html"), "<!doctype html><title>slides</title>");
   writeFixture(join(sourceCourseRoot, "ispring-localized", "unit-01", "U01L01", "data", "slides.js"), "console.log('slides');");
   writeFixture(join(coursewareRoot, course, "old-active", "stale.txt"), "stale");
@@ -98,17 +103,23 @@ try {
   const stdout = JSON.parse(result.stdout);
   assert.equal(stdout.ok, true);
   assert.equal(stdout.mode, "hybrid-raw");
-  assert.equal(stdout.uploaded, 3);
+  assert.equal(stdout.uploaded, 4);
 
   const targetCourseRoot = join(coursewareRoot, course);
   assert.equal(existsSync(join(targetCourseRoot, "docs", "ordinary.pdf")), true);
   assert.equal(existsSync(join(targetCourseRoot, "media", "lesson-video.mp4")), false);
+  assert.equal(existsSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "index.html")), true);
+  assert.equal(existsSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "files", "lab-video.mp4")), false);
   assert.equal(existsSync(join(targetCourseRoot, "old-active", "stale.txt")), false);
   assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "keep.txt")), true);
   assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "raw-staging", "upl-raw-smoke", "previous-active")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "lesson-video.mp4")), true);
+  assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "localized-moodle-activities", "assign", "lab", "files", "lab-video.mp4")), true);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "ispring-localized", "unit-01", "U01L01", "presentation.html")), true);
+  const labHtml = readFileSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "index.html"), "utf8");
+  assert.match(labHtml, /src="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4"/);
+  assert.match(labHtml, /href="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4"/);
 
   const manifest = JSON.parse(readFileSync(join(targetCourseRoot, "course-manifest.json"), "utf8"));
   const lesson = manifest.units[0].lessons[0];
@@ -120,14 +131,18 @@ try {
   assert.equal(lesson.ispring[0].packagePath, undefined);
   assert.match(lesson.ispring[0].packageUrl, /\/ispring-localized\/unit-01\/U01L01\/$/);
   assert.equal(manifest.sourceAudit.importMode, "hybrid-raw");
+  assert.equal(manifest.sourceAudit.htmlPlayableRefsRewritten, 2);
+  assert.equal(manifest.sourceAudit.htmlPlayablePagesRewritten, 1);
 
   const registry = JSON.parse(readFileSync(registryPath, "utf8"));
-  assert.equal(registry.assetRecords.length, 4);
+  assert.equal(registry.assetRecords.length, 5);
   assert.equal(registry.assetRecords.some((item) => item.objectKey === `courseware-active/${course}/media/old-video.mp4`), false);
   assert.equal(registry.assetRecords.some((item) => item.objectKey === "courseware-active/OTHER/media/keep.mp4"), true);
   const report = JSON.parse(readFileSync(reportPath, "utf8"));
   assert.ok(report.uploaded.some((item) => item.relativePath === "media/lesson-video.mp4" && item.attempts === 2));
   assert.equal(report.summary.activeSwitch.rollback, "restored-on-switch-failure");
+  assert.equal(report.summary.htmlPlayableRefsRewritten, 2);
+  assert.equal(report.summary.htmlPlayablePagesRewritten, 1);
   assert.equal(report.summary.staleOssObjects, 1);
   assert.equal(report.summary.deletedStaleOssObjects, 1);
 
