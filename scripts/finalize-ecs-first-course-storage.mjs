@@ -144,6 +144,10 @@ function isIspringAsset(relPath) {
   return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/") || normalized.includes("/ispring-localized/");
 }
 
+function isIspringEntryHtml(relPath) {
+  return isIspringAsset(relPath) && toPosix(relPath).toLowerCase().endsWith("/presentation.html");
+}
+
 function publishKind(relPath, size) {
   const ext = extname(relPath).toLowerCase();
   if (isIspringAsset(relPath)) return "ispring";
@@ -282,6 +286,12 @@ function rewriteManifestValue(container, pathKey, urlKey, publishedByRelPath) {
   if (!published) return false;
   container[urlKey] = published.cdnUrl || published.url || "";
   container.source = "cdn";
+  if (published.kind === "ispring") {
+    if (container.packagePath) {
+      container.packageUrl = container[urlKey].replace(/\/[^/]*$/, "/");
+    }
+    return true;
+  }
   delete container[pathKey];
   return true;
 }
@@ -397,6 +407,7 @@ if (apply && !failed.length) {
   writeJson(manifestPath, manifest);
   if (deleteLocal) {
     for (const item of uploaded) {
+      if (isIspringEntryHtml(item.relativePath)) continue;
       if (!existsSync(item.localPath)) continue;
       rmSync(item.localPath, { force: true });
       deletedLocalFiles += 1;

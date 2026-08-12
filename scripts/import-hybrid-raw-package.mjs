@@ -4,6 +4,7 @@ import { execFileSync } from "node:child_process";
 import { createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { cp, mkdir, readdir, rename, rm } from "node:fs/promises";
 import { dirname, extname, join, relative, resolve } from "node:path";
+import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import unzipper from "unzipper";
 
@@ -154,6 +155,10 @@ function isIspringAsset(relPath) {
   return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/") || normalized.includes("/ispring-localized/");
 }
 
+function isIspringEntryHtml(relPath) {
+  return isIspringAsset(relPath) && toPosix(relPath).toLowerCase().endsWith("/presentation.html");
+}
+
 function publishKind(relPath, size) {
   const ext = extname(relPath).toLowerCase();
   if (isIspringAsset(relPath)) return "ispring";
@@ -218,6 +223,10 @@ function cdnUrlForCoursePath(relPath) {
   return cdnUrlForObjectKey(`${objectPrefix}/${course}/${toPosix(relPath).replace(/^\/+/, "")}`);
 }
 
+function localCoursewareUrlForCoursePath(relPath) {
+  return `/courseware/${encodeURIComponent(course)}/${encodeKey(toPosix(relPath).replace(/^\/+/, ""))}`;
+}
+
 function htmlReferenceValueToCoursePath(htmlPath, rawValue) {
   const value = String(rawValue || "").trim();
   if (
@@ -227,21 +236,17 @@ function htmlReferenceValueToCoursePath(htmlPath, rawValue) {
   ) {
     return "";
   }
-  let parsed;
-  try {
-    parsed = new URL(value, "https://courseware.local/");
-  } catch {
-    return "";
-  }
+  const rawPath = value.replace(/[?#].*$/, "");
+  if (!rawPath) return "";
   let decodedPath = "";
   try {
-    decodedPath = decodeURIComponent(parsed.pathname || "").replace(/^\/+/, "");
+    decodedPath = decodeURIComponent(rawPath);
   } catch {
     return "";
   }
   if (!decodedPath) return "";
   const combined = value.startsWith("/")
-    ? decodedPath
+    ? decodedPath.replace(/^\/+/, "")
     : toPosix(join(dirname(htmlPath), decodedPath));
   const normalized = toPosix(combined).replace(/^\/+/, "");
   if (!normalized || normalized.startsWith("../") || normalized.includes("/../")) return "";
@@ -254,6 +259,9 @@ function rewriteHtmlPlayableReferences(html, htmlPath) {
     const coursePath = htmlReferenceValueToCoursePath(htmlPath, rawValue);
     if (!coursePath || !isPlayablePublishedPath(coursePath)) return match;
     rewritten += 1;
+    if (attr.toLowerCase() === "src" && isIspringEntryHtml(coursePath)) {
+      return `${attr}=${quote}${localCoursewareUrlForCoursePath(coursePath)}${quote}`;
+    }
     return `${attr}=${quote}${cdnUrlForCoursePath(coursePath)}${quote}`;
   });
   return { html: body, rewritten };
@@ -391,11 +399,13 @@ function rewriteManifestValue(container, pathKey, urlKey, publishedByRelPath) {
   if (!published) return false;
   container[urlKey] = published.cdnUrl || published.url || "";
   container.source = "cdn";
-  delete container[pathKey];
-  if (container.packagePath && published.kind === "ispring") {
-    container.packageUrl = container[urlKey].replace(/\/[^/]*$/, "/");
-    delete container.packagePath;
+  if (published.kind === "ispring") {
+    if (container.packagePath) {
+      container.packageUrl = container[urlKey].replace(/\/[^/]*$/, "/");
+    }
+    return true;
   }
+  delete container[pathKey];
   return true;
 }
 
@@ -506,7 +516,7 @@ async function streamToBuffer(stream, maxBytes = 32 * 1024 * 1024) {
   let total = 0;
   for await (const chunk of stream) {
     total += chunk.length;
-    if (total > maxBytes) throw new Error("Manifest entry is too large.");
+    if (total > maxBytes) throw new Error("ZIP entry is too large to buffer.");
     chunks.push(Buffer.from(chunk));
   }
   return Buffer.concat(chunks);
@@ -617,7 +627,17 @@ for (const entry of packageEntries) {
   if (kind) {
     const record = publishRecordFor(relPath, size, kind);
     try {
-      uploaded.push({ ...(await publishEntryStream(record, entry.stream())), attempts: 1 });
+      if (isIspringEntryHtml(relPath)) {
+        const buffer = await streamToBuffer(entry.stream());
+        uploaded.push({ ...(await publishEntryStream(record, Readable.from(buffer))), attempts: 1 });
+        const target = assertInside(localStagingRoot, join(localStagingRoot, relPath));
+        mkdirSync(dirname(target), { recursive: true });
+        writeFileSync(target, buffer);
+        localFiles += 1;
+        localBytes += buffer.length;
+      } else {
+        uploaded.push({ ...(await publishEntryStream(record, entry.stream())), attempts: 1 });
+      }
     } catch (error) {
       failed.push({ ...record, error: error instanceof Error ? error.message : String(error) });
     }

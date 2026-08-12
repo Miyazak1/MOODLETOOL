@@ -83,7 +83,11 @@ try {
   assert.ok(published.has("ispring-localized/unit-01/U01L01/presentation.html"));
   assert.ok(published.has("ispring-localized/unit-01/U01L01/data/slides.js"));
   assert.ok(!published.has("docs/ordinary.pdf"));
+  assert.equal(existsSync(join(courseRoot, "docs", "ordinary.pdf")), true);
   assert.equal(existsSync(join(courseRoot, "media", "lesson-video.mp4")), true);
+  assert.equal(existsSync(join(courseRoot, "activities", "check.h5p")), true);
+  assert.equal(existsSync(join(courseRoot, "ispring-localized", "unit-01", "U01L01", "presentation.html")), true);
+  assert.equal(existsSync(join(courseRoot, "ispring-localized", "unit-01", "U01L01", "data", "slides.js")), true);
 
   console.log("ECS-first course storage smoke passed.");
 } finally {
