@@ -412,6 +412,68 @@ function coursewareAssetDirectoryHref(course, requestedPath) {
   return slash >= 0 ? `${assetUrl.slice(0, slash + 1)}` : "";
 }
 
+function isCoursewareCdnFallbackPath(requestedPath) {
+  const normalized = `/${toPosixPath(requestedPath).toLowerCase()}`;
+  return normalized.includes("/html5-package/")
+    || normalized.includes("/html5-package-admin/")
+    || normalized.includes("/ispring-localized/");
+}
+
+function coursewareCdnFallbackUrl(course, requestedPath) {
+  if (!coursewareAssetBaseUrl || coursewareAssetMode === "local") return "";
+  const assetUrl = coursewareAssetUrl(course, requestedPath);
+  if (assetUrl) return assetUrl;
+  if (!isCoursewareCdnFallbackPath(requestedPath)) return "";
+  return generatedCoursewareAssetUrl(course, requestedPath);
+}
+
+function shouldProxyCoursewareCdnFallback(requestedPath) {
+  return new Set([
+    ".css",
+    ".js",
+    ".json",
+    ".map",
+    ".wasm",
+    ".xml",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".otf",
+    ".eot",
+  ]).has(extname(requestedPath).toLowerCase());
+}
+
+async function sendCoursewareCdnFallback(req, res, course, requestedPath) {
+  const assetUrl = coursewareCdnFallbackUrl(course, requestedPath);
+  if (!assetUrl) return false;
+  if (!shouldProxyCoursewareCdnFallback(requestedPath)) {
+    res.writeHead(302, {
+      Location: assetUrl,
+      "Cache-Control": "public, max-age=300",
+    });
+    res.end();
+    return true;
+  }
+
+  const response = await fetch(assetUrl, { signal: AbortSignal.timeout(15000) });
+  if (!response.ok) return false;
+  const ext = extname(requestedPath).toLowerCase();
+  const headers = {
+    "Content-Type": response.headers.get("content-type") || mimeTypes[ext] || "application/octet-stream",
+    "Cache-Control": response.headers.get("cache-control") || "public, max-age=300",
+    "X-Content-Type-Options": "nosniff",
+  };
+  const contentLength = response.headers.get("content-length");
+  if (contentLength) headers["Content-Length"] = contentLength;
+  res.writeHead(200, headers);
+  if (req.method === "HEAD") {
+    res.end();
+    return true;
+  }
+  res.end(Buffer.from(await response.arrayBuffer()));
+  return true;
+}
+
 function sendRateLimitJson(res, retryAfterSeconds) {
   res.writeHead(429, {
     "Content-Type": "application/json; charset=utf-8",
@@ -1787,6 +1849,11 @@ function canGenerateMoodleEmbeds(session) {
 function courseFromCoursewarePath(pathname) {
   const match = /^\/courseware\/([^/]+)(?:\/|$)/i.exec(pathname);
   return match ? safeSegment(match[1]).toUpperCase() : null;
+}
+
+function pathFromCoursewarePath(pathname) {
+  const match = /^\/courseware\/[^/]+\/(.+)$/i.exec(pathname);
+  return match ? toPosixPath(match[1]) : "";
 }
 
 function shouldBypassPortalLogin(pathname) {
@@ -7183,7 +7250,12 @@ const server = createServer(async (req, res) => {
       res.end("Forbidden");
       return;
     }
-    await sendFile(req, res, filePath);
+    try {
+      await sendFile(req, res, filePath);
+    } catch (error) {
+      if (requestedCourse && await sendCoursewareCdnFallback(req, res, requestedCourse, pathFromCoursewarePath(pathname))) return;
+      throw error;
+    }
   } catch (error) {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     res.end(process.env.DEBUG_NOT_FOUND === "1" ? `Not found\n${error instanceof Error ? error.stack || error.message : String(error)}` : "Not found");
