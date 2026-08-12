@@ -3156,17 +3156,12 @@ function htmlReferenceValueToCoursePath(course, htmlPath, rawValue) {
   ) {
     return "";
   }
-  let parsed;
-  try {
-    parsed = new URL(value, "https://courseware.local/");
-  } catch {
-    return "";
-  }
-  const decodedPath = stripCoursewareReferencePrefix(course, decodePath(parsed.pathname || "").replace(/^\/+/, ""));
-  if (!decodedPath) return "";
-  const combined = value.startsWith("/")
-    ? decodedPath
-    : normalize(toPosixPath(join(dirname(htmlPath), decodedPath)));
+  const rawPath = decodePath(value.split(/[?#]/)[0] || "").replace(/\\/g, "/");
+  if (!rawPath) return "";
+  const strippedRootPath = stripCoursewareReferencePrefix(course, rawPath);
+  const combined = value.startsWith("/") || strippedRootPath !== rawPath.replace(/^\/+/, "")
+    ? strippedRootPath
+    : normalize(toPosixPath(join(dirname(htmlPath), rawPath)));
   const normalized = toPosixPath(combined);
   if (!normalized || normalized.startsWith("../") || normalized.includes("/../")) return "";
   return normalized;
