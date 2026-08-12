@@ -3128,7 +3128,26 @@ function rewriteManifestForHybridStorage(manifest, course) {
   return manifest;
 }
 
-function htmlReferenceValueToCoursePath(htmlPath, rawValue) {
+function stripCoursewareReferencePrefix(course, referencePath) {
+  const normalized = toPosixPath(referencePath || "").replace(/^\/+/, "");
+  const code = safeSegment(course).toUpperCase();
+  if (!normalized || !code) return normalized;
+
+  const coursewarePrefix = `courseware/${code}/`;
+  if (normalized.toUpperCase().startsWith(coursewarePrefix.toUpperCase())) {
+    return normalized.slice(coursewarePrefix.length);
+  }
+
+  const assetPrefix = toPosixPath(coursewareAssetPrefix || "courseware-active").replace(/^\/+|\/+$/g, "");
+  const assetCoursePrefix = assetPrefix ? `${assetPrefix}/${code}/` : "";
+  if (assetCoursePrefix && normalized.toUpperCase().startsWith(assetCoursePrefix.toUpperCase())) {
+    return normalized.slice(assetCoursePrefix.length);
+  }
+
+  return normalized;
+}
+
+function htmlReferenceValueToCoursePath(course, htmlPath, rawValue) {
   const value = String(rawValue || "").trim();
   if (
     !value ||
@@ -3143,7 +3162,7 @@ function htmlReferenceValueToCoursePath(htmlPath, rawValue) {
   } catch {
     return "";
   }
-  const decodedPath = decodePath(parsed.pathname || "").replace(/^\/+/, "");
+  const decodedPath = stripCoursewareReferencePrefix(course, decodePath(parsed.pathname || "").replace(/^\/+/, ""));
   if (!decodedPath) return "";
   const combined = value.startsWith("/")
     ? decodedPath
@@ -3156,7 +3175,7 @@ function htmlReferenceValueToCoursePath(htmlPath, rawValue) {
 function rewriteHtmlPlayableReferencesForHybridStorage(html, course, htmlPath) {
   let rewritten = 0;
   const body = String(html || "").replace(/\b(href|src|poster)\s*=\s*(["'])([^"']+)\2/gi, (match, attr, quote, rawValue) => {
-    const coursePath = htmlReferenceValueToCoursePath(htmlPath, rawValue);
+    const coursePath = htmlReferenceValueToCoursePath(course, htmlPath, rawValue);
     if (!coursePath || !isPlayableCoursewareAsset(coursePath)) return match;
     const cdnUrl = generatedCoursewareAssetUrl(course, coursePath);
     if (!cdnUrl) return match;
