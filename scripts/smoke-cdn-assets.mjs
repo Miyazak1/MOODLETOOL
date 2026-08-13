@@ -119,6 +119,8 @@ async function assertLocalMode(baseUrl) {
   const html = await fetchText(`${baseUrl}/embed/ispring/SMOKE/U01L01/test?token=${encodeURIComponent(token)}`);
   if (!html.includes("/embed/t/")) throw new Error("Expected local mode iSpring base to use /embed/t/.");
   if (html.includes(cdnBaseUrl)) throw new Error("Local mode should not emit CDN base URLs.");
+  const directHtml = await fetchText(`${baseUrl}/courseware/SMOKE/${encodePathSegments(ispringPath)}`);
+  if (directHtml.includes(cdnBaseUrl)) throw new Error("Local mode direct iSpring page should not emit CDN base URLs.");
 
   const videoToken = signEmbedPayload({
     v: 1,
@@ -146,6 +148,8 @@ async function assertCdnMode(baseUrl) {
   const html = await fetchText(`${baseUrl}/embed/ispring/SMOKE/U01L01/test?token=${encodeURIComponent(token)}`);
   const expectedBase = `${cdnBaseUrl}/SMOKE/${encodePathSegments(dirname(ispringPath))}/`;
   if (!html.includes(`<base href="${expectedBase}">`)) throw new Error(`Expected CDN iSpring base: ${expectedBase}`);
+  const directHtml = await fetchText(`${baseUrl}/courseware/SMOKE/${encodePathSegments(ispringPath)}`);
+  if (!directHtml.includes(`<base href="${expectedBase}">`)) throw new Error(`Expected direct CDN iSpring base: ${expectedBase}`);
 
   const videoToken = signEmbedPayload({
     v: 1,
@@ -160,6 +164,11 @@ async function assertCdnMode(baseUrl) {
 }
 
 async function assertHybridMode(baseUrl) {
+  const ispringPath = "Unit 1/Lesson 1/html5-package/presentation.html";
+  const expectedBase = `${cdnBaseUrl}/SMOKE/${encodePathSegments(dirname(ispringPath))}/`;
+  const directHtml = await fetchText(`${baseUrl}/courseware/SMOKE/${encodePathSegments(ispringPath)}`);
+  if (!directHtml.includes(`<base href="${expectedBase}">`)) throw new Error(`Expected hybrid direct CDN iSpring base: ${expectedBase}`);
+
   const registeredToken = signEmbedPayload({
     v: 1,
     course: "SMOKE",

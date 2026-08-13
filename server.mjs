@@ -362,6 +362,16 @@ function coursewareObjectKey(course, requestedPath) {
   return [coursewareAssetPrefix, coursePart, resourcePath].filter(Boolean).join("/");
 }
 
+function coursewareObjectKeyVariants(course, requestedPath) {
+  const coursePart = safeSegment(course).toUpperCase();
+  const rawPath = toPosixPath(requestedPath);
+  const encodedPath = encodePathSegments(requestedPath);
+  return Array.from(new Set([
+    [coursewareAssetPrefix, coursePart, rawPath].filter(Boolean).join("/"),
+    [coursewareAssetPrefix, coursePart, encodedPath].filter(Boolean).join("/"),
+  ]));
+}
+
 function generatedCoursewareAssetUrl(course, requestedPath) {
   if (!coursewareAssetBaseUrl) return "";
   return `${coursewareAssetBaseUrl}/${encodeURIComponent(safeSegment(course).toUpperCase())}/${encodePathSegments(requestedPath)}`;
@@ -398,7 +408,9 @@ function coursewareAssetUrl(course, requestedPath) {
   if (!path) return "";
   if (coursewareAssetMode === "hybrid") {
     const registry = readCoursewareAssetRegistry();
-    const asset = registry.byKey.get(coursewareObjectKey(course, path));
+    const asset = coursewareObjectKeyVariants(course, path)
+      .map((key) => registry.byKey.get(key))
+      .find(Boolean);
     if (!asset) return "";
     return asset.cdnUrl || generatedCoursewareAssetUrl(course, path);
   }
@@ -2147,6 +2159,12 @@ function shouldUseCoursewareViewerStyle(filePath) {
 function shouldUseCoursewareTextViewer(filePath) {
   if (![".md", ".txt"].includes(extname(filePath).toLowerCase())) return false;
   return Boolean(coursewareRelativePath(filePath));
+}
+
+function shouldUseCoursewareIspringCdnBase(course, requestedPath, filePath) {
+  if (basename(filePath).toLowerCase() !== "presentation.html") return false;
+  if (!isCoursewareCdnFallbackPath(requestedPath)) return false;
+  return Boolean(coursewareAssetDirectoryHref(course, requestedPath));
 }
 
 function titleFromText(filePath, text) {
@@ -7249,6 +7267,16 @@ const server = createServer(async (req, res) => {
       return;
     }
     try {
+      const requestedPath = requestedCourse ? pathFromCoursewarePath(pathname) : "";
+      if (
+        requestedCourse
+        && !requestUrl.searchParams.has("download")
+        && shouldUseCoursewareIspringCdnBase(requestedCourse, requestedPath, filePath)
+      ) {
+        const html = await readFile(filePath, "utf8");
+        sendHtml(res, 200, injectIspringEmbedCompatibility(html, coursewareAssetDirectoryHref(requestedCourse, requestedPath)));
+        return;
+      }
       await sendFile(req, res, filePath);
     } catch (error) {
       if (requestedCourse && await sendCoursewareCdnFallback(req, res, requestedCourse, pathFromCoursewarePath(pathname))) return;
