@@ -427,50 +427,14 @@ function coursewareCdnFallbackUrl(course, requestedPath) {
   return generatedCoursewareAssetUrl(course, requestedPath);
 }
 
-function shouldProxyCoursewareCdnFallback(requestedPath) {
-  return new Set([
-    ".css",
-    ".js",
-    ".json",
-    ".map",
-    ".wasm",
-    ".xml",
-    ".woff",
-    ".woff2",
-    ".ttf",
-    ".otf",
-    ".eot",
-  ]).has(extname(requestedPath).toLowerCase());
-}
-
 async function sendCoursewareCdnFallback(req, res, course, requestedPath) {
   const assetUrl = coursewareCdnFallbackUrl(course, requestedPath);
   if (!assetUrl) return false;
-  if (!shouldProxyCoursewareCdnFallback(requestedPath)) {
-    res.writeHead(302, {
-      Location: assetUrl,
-      "Cache-Control": "public, max-age=300",
-    });
-    res.end();
-    return true;
-  }
-
-  const response = await fetch(assetUrl, { signal: AbortSignal.timeout(15000) });
-  if (!response.ok) return false;
-  const ext = extname(requestedPath).toLowerCase();
-  const headers = {
-    "Content-Type": response.headers.get("content-type") || mimeTypes[ext] || "application/octet-stream",
-    "Cache-Control": response.headers.get("cache-control") || "public, max-age=300",
-    "X-Content-Type-Options": "nosniff",
-  };
-  const contentLength = response.headers.get("content-length");
-  if (contentLength) headers["Content-Length"] = contentLength;
-  res.writeHead(200, headers);
-  if (req.method === "HEAD") {
-    res.end();
-    return true;
-  }
-  res.end(Buffer.from(await response.arrayBuffer()));
+  res.writeHead(302, {
+    Location: assetUrl,
+    "Cache-Control": "no-store, max-age=0",
+  });
+  res.end();
   return true;
 }
 
