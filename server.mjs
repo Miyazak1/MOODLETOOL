@@ -4,7 +4,7 @@ import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync
 import { basename, dirname, extname, join, normalize, relative, resolve } from "node:path";
 import { spawn, spawnSync } from "node:child_process";
 import { finished, pipeline } from "node:stream/promises";
-import { Transform } from "node:stream";
+import { Readable, Transform } from "node:stream";
 import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import {
   directUploadKindCanAutoPublish,
@@ -427,14 +427,48 @@ function coursewareCdnFallbackUrl(course, requestedPath) {
   return generatedCoursewareAssetUrl(course, requestedPath);
 }
 
+function shouldProxyCoursewareCdnFallback(requestedPath) {
+  return new Set([
+    ".css",
+    ".js",
+    ".json",
+    ".map",
+    ".wasm",
+    ".xml",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".otf",
+    ".eot",
+  ]).has(extname(requestedPath).toLowerCase());
+}
+
 async function sendCoursewareCdnFallback(req, res, course, requestedPath) {
   const assetUrl = coursewareCdnFallbackUrl(course, requestedPath);
   if (!assetUrl) return false;
-  res.writeHead(302, {
-    Location: assetUrl,
+  if (!shouldProxyCoursewareCdnFallback(requestedPath)) {
+    res.writeHead(302, {
+      Location: assetUrl,
+      "Cache-Control": "public, max-age=300",
+    });
+    res.end();
+    return true;
+  }
+
+  const response = await fetch(assetUrl, { signal: AbortSignal.timeout(15000) });
+  if (!response.ok || !response.body) return false;
+  const ext = extname(requestedPath).toLowerCase();
+  const headers = {
+    "Content-Type": response.headers.get("content-type") || mimeTypes[ext] || "application/octet-stream",
     "Cache-Control": "no-store, max-age=0",
-  });
-  res.end();
+    "X-Content-Type-Options": "nosniff",
+  };
+  res.writeHead(200, headers);
+  if (req.method === "HEAD") {
+    res.end();
+    return true;
+  }
+  await pipeline(Readable.fromWeb(response.body), res);
   return true;
 }
 
