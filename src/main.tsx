@@ -595,7 +595,7 @@ function ISpringActions({
   const playItem = item.path || item.url
     ? {
         label,
-        path: item.path,
+        path: trustedRemote && item.url ? undefined : item.path,
         url: item.url,
       }
     : null;
