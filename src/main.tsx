@@ -168,6 +168,8 @@ function isVisibleISpringEntry(item: Lesson["ispring"][number]): boolean {
 function isEmptyMoodleActivityShell(item: LinkableResource): boolean {
   const category = (item.category || "").toLowerCase();
   if (!category.startsWith("moodle_") || category === "moodle_course_section") return false;
+  const type = (item.type || "").toLowerCase();
+  if ((item.path || item.previewPath || item.downloadPath) && type && type !== "html" && type !== "htm") return false;
   return !hasMeaningfulTextContent(item) && !visibleAttachments(item).length;
 }
 
