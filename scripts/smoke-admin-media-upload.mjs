@@ -48,6 +48,19 @@ assert.equal(preview.items[0].source, "filename");
 assert.match(preview.warnings.join("\n"), /当前左侧课程是 ENG3U/);
 assert.match(preview.warnings.join("\n"), /完整课件包会按文件名分别上传/);
 
+const rawPreview = upload.createDirectUploadPreview({
+  kind: "course-package-raw",
+  files: [
+    { name: "MCR3U-course-package.zip", size: 1024 },
+    { name: "MDM4U-course-package.zip", size: 2048 },
+  ],
+  selectedCourse: "ENG3U",
+  courseCodes: ["ENG3U", "MCR3U", "MDM4U"],
+});
+assert.equal(rawPreview.ok, true);
+assert.equal(rawPreview.files, 2);
+assert.equal(JSON.stringify(rawPreview.courses), JSON.stringify(["MCR3U", "MDM4U"]));
+
 const mismatchedPreview = upload.createDirectUploadPreview({
   kind: "course-package",
   files: [{ name: "ESLDO-course-package.zip", size: 1024 }],

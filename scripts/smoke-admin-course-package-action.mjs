@@ -14,7 +14,8 @@ vm.runInContext(source, context, { filename: "public/admin-course-package-action
 
 const mod = context.window.AdminCoursePackageAction;
 
-assert.match(teacherAdminSource, /onStatus:\s*\(title,\s*detail,\s*percent,\s*type\)\s*=>/);
+assert.match(teacherAdminSource, /onStatus:\s*\(statusOrTitle,\s*detail\s*=\s*"",\s*percent\s*=\s*null,\s*type\s*=\s*"info"\)\s*=>/);
+assert.match(teacherAdminSource, /typeof statusOrTitle === "object" && statusOrTitle/);
 assert.doesNotMatch(teacherAdminSource, /onStatus:\s*\(\{\s*title,\s*detail,\s*percent,\s*type\s*\}\)\s*=>/);
 
 function makeFile(overrides = {}) {

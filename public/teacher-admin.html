@@ -1737,9 +1737,14 @@
           </div>
           <div>
             <label for="coursePackageFile">课程压缩包</label>
-            <input id="coursePackageFile" type="file" accept=".zip" />
+            <input id="coursePackageFile" type="file" accept=".zip" multiple />
+            <p class="hint">可一次选择多门课程 ZIP。多文件会按文件名识别课程码，排队直传 OSS raw package；勾选下方选项后才会自动创建导入任务。</p>
           </div>
         </div>
+        <label class="inline-check">
+          <input id="coursePackageBatchAutoConfirm" type="checkbox" />
+          多文件上传完成后自动创建导入任务，会替换对应课程内容
+        </label>
         <div class="actions">
           <button id="coursePackageUploadButton" type="button">上传并导入</button>
           <button class="primary" id="coursePackageCommitButton" type="button" disabled hidden>确认替换课程内容</button>
@@ -1751,6 +1756,7 @@
           </div>
           <div class="meta-line" id="coursePackageStatusDetail"></div>
         </div>
+        <div id="coursePackageBatchQueue" class="oss-direct-queue" hidden></div>
         <div id="coursePackagePanel" hidden></div>
       </section>
 
@@ -1977,6 +1983,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         launchCourses: document.querySelector("#launchCourses"),
         lifecycleFilter: document.querySelector("#lifecycleFilter"),
         lifecycleSearch: document.querySelector("#lifecycleSearch"),
+        coursePackageBatchAutoConfirm: document.querySelector("#coursePackageBatchAutoConfirm"),
         coursePackageFile: document.querySelector("#coursePackageFile"),
         coursePackageRoute: document.querySelector("#coursePackageRoute"),
       };
@@ -2003,6 +2010,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       const coursePackageProgressBar = document.querySelector("#coursePackageProgressBar");
       const coursePackageUploadButton = document.querySelector("#coursePackageUploadButton");
       const coursePackageCommitButton = document.querySelector("#coursePackageCommitButton");
+      const coursePackageBatchQueue = document.querySelector("#coursePackageBatchQueue");
       const courseUploadTasks = document.querySelector("#courseUploadTasks");
       const adminFeedback = document.querySelector("#adminFeedback");
       const adminFeedbackTitle = document.querySelector("#adminFeedbackTitle");
@@ -2842,7 +2850,11 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       function updateRawCoursePackageQueueStatus(items, setStatus) {
-        const item = Array.isArray(items) ? items[0] : null;
+        const list = Array.isArray(items) ? items : [];
+        const item = list.find((entry) => ["authorizing", "uploading", "verifying"].includes(entry.status))
+          || list.find((entry) => entry.status === "failed")
+          || list.find((entry) => entry.status === "queued" || entry.status === "ready")
+          || list.at(-1);
         if (!item || typeof setStatus !== "function") return;
         const percent = Number.isFinite(Number(item.percent)) ? Number(item.percent) : null;
         const titleByStatus = {
@@ -2871,6 +2883,106 @@ pm2 restart ossd-course-portal --update-env</pre>
           percent,
           showProgress: percent !== null,
           error: item.status === "failed",
+        });
+      }
+
+      function selectedCoursePackageFiles() {
+        return Array.from(fields.coursePackageFile?.files || []);
+      }
+
+      function coursePackageBatchPreview(files) {
+        return window.AdminMediaUpload.createDirectUploadPreview({
+          kind: "course-package-raw",
+          files,
+          selectedCourse: fields.course.value,
+          courseCodes: knownAdminCourseCodes(),
+        });
+      }
+
+      function renderCoursePackageBatchQueue(items = []) {
+        if (!coursePackageBatchQueue) return;
+        if (!items.length) {
+          coursePackageBatchQueue.hidden = true;
+          coursePackageBatchQueue.innerHTML = "";
+          return;
+        }
+        const uploadable = items.filter((item) => item.uploadable !== false);
+        const done = items.filter((item) => item.status === "done" || item.status === "warning").length;
+        const skipped = items.filter((item) => item.status === "skipped").length;
+        const failed = items.filter((item) => item.status === "failed").length;
+        const totalBytes = uploadable.reduce((sum, item) => sum + Number(item.size || item.file?.size || 0), 0);
+        const loadedBytes = uploadable.reduce((sum, item) => {
+          if (item.status === "done" || item.status === "warning") return sum + Number(item.size || item.file?.size || 0);
+          return sum + Number(item.loaded || 0);
+        }, 0);
+        const overallPercent = totalBytes ? Math.max(0, Math.min(100, Math.round((loadedBytes / totalBytes) * 100))) : 0;
+        const rows = items.map((item) => {
+          const percent = Math.max(0, Math.min(100, Number(item.percent || 0)));
+          const statusText = {
+            authorizing: "授权中",
+            cancelled: "已取消",
+            done: "完成",
+            failed: "失败",
+            queued: "排队中",
+            ready: "待上传",
+            skipped: "已跳过",
+            uploading: "上传中",
+            verifying: "校验中",
+            warning: "已完成",
+          }[item.status] || item.status || "待上传";
+          const metrics = [
+            item.speedText,
+            item.etaText ? `剩余 ${item.etaText}` : "",
+            item.overallText ? `总进度 ${item.overallText}` : "",
+          ].filter(Boolean).join(" · ");
+          return `
+            <div class="oss-direct-queue-item ${escapeHtml(item.status || "ready")}">
+              <div>
+                <div class="oss-direct-queue-heading">
+                  <span class="oss-direct-course">${escapeHtml(item.course || "-")}</span>
+                  <strong>${escapeHtml(item.name || "")}</strong>
+                </div>
+                <small class="oss-direct-queue-detail">${escapeHtml(item.detail || "")}</small>
+                ${metrics ? `<small class="oss-direct-queue-metrics">${escapeHtml(metrics)}</small>` : ""}
+                <div class="oss-direct-queue-progress"><div class="oss-direct-queue-progress-bar" style="width:${percent}%"></div></div>
+              </div>
+              <strong class="oss-direct-queue-status">${escapeHtml(statusText)}</strong>
+            </div>
+          `;
+        }).join("");
+        coursePackageBatchQueue.innerHTML = `
+          <div class="oss-direct-queue-summary">
+            <span>队列 ${uploadable.length}/${items.length}</span>
+            <span>完成 ${done}</span>
+            <span>跳过 ${skipped}</span>
+            <span>失败 ${failed}</span>
+            <span>${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}</span>
+          </div>
+          <progress class="oss-direct-overall-progress" value="${overallPercent}" max="100"></progress>
+          ${rows}
+        `;
+        coursePackageBatchQueue.hidden = false;
+      }
+
+      function updateCoursePackageFileSelection() {
+        const files = selectedCoursePackageFiles();
+        coursePackageUploadButton.textContent = files.length > 1 ? `批量上传 ${files.length} 个课包` : "上传并导入";
+        if (files.length <= 1) {
+          renderCoursePackageBatchQueue([]);
+          return;
+        }
+        const preview = coursePackageBatchPreview(files);
+        renderCoursePackageBatchQueue(preview.items);
+        const uploadable = preview.items.filter((item) => item.uploadable !== false).length;
+        const warnings = preview.warnings?.length ? ` ${preview.warnings.join(" ")}` : "";
+        setCoursePackageStatus({
+          title: preview.ok ? "批量课包已就绪" : "批量课包预检失败",
+          detail: preview.ok
+            ? `将排队上传 ${uploadable} 个课包；重复课程会自动只保留最新包。${warnings}`.trim()
+            : preview.errors.join("；"),
+          percent: null,
+          showProgress: false,
+          error: !preview.ok,
         });
       }
 
@@ -2913,6 +3025,85 @@ pm2 restart ossd-course-portal --update-env</pre>
           },
         });
         return rawController.uploadSelected();
+      }
+
+      async function uploadCoursePackageBatch(files) {
+        const preview = coursePackageBatchPreview(files);
+        const autoImport = Boolean(fields.coursePackageBatchAutoConfirm.checked);
+        renderCoursePackageBatchQueue(preview.items);
+        if (!preview.ok) {
+          throw new Error(`批量课包预检未通过：${preview.errors[0]}`);
+        }
+        const uploadable = preview.items.filter((item) => item.uploadable !== false);
+        if (!uploadable.length) throw new Error("本次选择没有可上传的完整课件包。请检查文件名和重复课程。");
+        const courses = uploadable.map((item) => item.course).filter(Boolean);
+        const warningText = preview.warnings?.length ? `\n\n提示：\n${preview.warnings.join("\n")}` : "";
+        const actionText = autoImport
+          ? "上传完成后会自动创建导入任务并替换对应课程内容。"
+          : "本次只排队上传 OSS raw package，不会自动替换课程内容。";
+        const ok = confirm(
+          `确认开始批量上传 ${uploadable.length} 个课程压缩包？\n\n` +
+          `将按文件名识别课程：${courses.join("、")}。\n` +
+          `${actionText}${warningText}`
+        );
+        if (!ok) return { canceled: true, message: "已取消批量课程压缩包上传。" };
+
+        currentCoursePackageImport = null;
+        updateCoursePackageCommitState(null);
+        coursePackageUi.hidePreview();
+        coursePackageUploadButton.disabled = true;
+        coursePackageCommitButton.hidden = true;
+        const rawController = window.AdminMediaUpload.createDirectUploadController({
+          api: mediaApi,
+          confirm: () => true,
+          formatProgress: window.AdminMediaView.uploadProgressFormatter,
+          getAutoPublish: () => autoImport,
+          getCourseCodes: () => knownAdminCourseCodes(),
+          getFiles: () => files,
+          getKind: () => "course-package-raw",
+          getSelectedCourse: () => fields.course.value,
+          hasActiveWriteJob: () => null,
+          jobTypeLabel: window.AdminMediaView.jobTypeLabel,
+          onActiveUploadChange: () => {},
+          onQueueChange: (items) => {
+            renderCoursePackageBatchQueue(items);
+            updateRawCoursePackageQueueStatus(items, setCoursePackageStatus);
+          },
+          onRefresh: async () => {
+            await readMedia({ writeOutput: false, fromAutoRefresh: true });
+          },
+          onStartRefresh: () => {
+            startMediaAutoRefresh();
+          },
+          onStatus: (statusOrTitle, detail = "", percent = null, type = "info") => {
+            const status = typeof statusOrTitle === "object" && statusOrTitle
+              ? statusOrTitle
+              : { title: statusOrTitle, detail, percent, type };
+            setCoursePackageStatus({
+              title: status.title,
+              detail: status.detail,
+              percent: status.percent,
+              showProgress: status.percent !== null && status.percent !== undefined,
+              error: status.type === "error",
+            });
+          },
+          onWrite: write,
+        });
+
+        try {
+          const data = await rawController.uploadSelected();
+          write(data);
+          await readStorage({ writeOutput: false });
+          await readMedia({ writeOutput: false });
+          if (autoImport) {
+            await readStatus({ writeOutput: false });
+            startMediaAutoRefresh();
+          }
+          return data;
+        } finally {
+          coursePackageUploadButton.disabled = false;
+          updateCoursePackageFileSelection();
+        }
       }
 
       function reusableCoursePackageImportId(file) {
@@ -3270,6 +3461,8 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function uploadCoursePackage() {
+        const files = selectedCoursePackageFiles();
+        if (files.length > 1) return uploadCoursePackageBatch(files);
         return coursePackageAction.uploadCoursePackage();
       }
 
@@ -3301,6 +3494,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       coursePackageUploadButton.addEventListener("click", () => {
         uploadCoursePackage().catch((error) => write(`Error: ${error.message}`));
       });
+      fields.coursePackageFile.addEventListener("change", updateCoursePackageFileSelection);
       document.querySelector("#coursePackageCommitButton").addEventListener("click", () => {
         const button = document.querySelector("#coursePackageCommitButton");
         setButtonBusy(button, true, "正在替换...");

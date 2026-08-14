@@ -118,7 +118,7 @@
     });
     const errors = [];
     const warnings = [];
-    if (fileList.length > 1 && kind !== "course-package") {
+    if (fileList.length > 1 && kind !== "course-package" && kind !== "course-package-raw") {
       errors.push("批量直传目前只支持完整课件包 ZIP。视频、H5P 和 iSpring 单包请一次传一个。");
     }
     if (kind === "course-package" || kind === "course-package-raw") {
