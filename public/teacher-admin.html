@@ -2930,10 +2930,17 @@ pm2 restart ossd-course-portal --update-env</pre>
             verifying: "校验中",
             warning: "已完成",
           }[item.status] || item.status || "待上传";
+          const itemTotal = Number(item.total || item.size || item.file?.size || 0);
+          const itemLoaded = item.status === "done" || item.status === "warning"
+            ? itemTotal
+            : Math.min(itemTotal || Number.MAX_SAFE_INTEGER, Number(item.loaded || 0));
+          const loadedText = itemTotal > 0
+            ? `${formatBytes(itemLoaded)} / ${formatBytes(itemTotal)}`
+            : "";
           const metrics = [
-            item.speedText,
+            loadedText,
+            item.speedText ? `速度 ${item.speedText}` : "",
             item.etaText ? `剩余 ${item.etaText}` : "",
-            item.overallText ? `总进度 ${item.overallText}` : "",
           ].filter(Boolean).join(" · ");
           return `
             <div class="oss-direct-queue-item ${escapeHtml(item.status || "ready")}">
@@ -2956,7 +2963,7 @@ pm2 restart ossd-course-portal --update-env</pre>
             <span>完成 ${done}</span>
             <span>跳过 ${skipped}</span>
             <span>失败 ${failed}</span>
-            <span>${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}</span>
+            <span>总进度 ${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}</span>
           </div>
           <progress class="oss-direct-overall-progress" value="${overallPercent}" max="100"></progress>
           ${rows}

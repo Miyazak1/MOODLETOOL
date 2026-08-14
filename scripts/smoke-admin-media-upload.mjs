@@ -198,7 +198,7 @@ assert.equal(queueSnapshots[0][0].course, "ESLDO");
 assert.ok(queueSnapshots.some((items) => items[0].status === "uploading" && items[0].percent === 50));
 assert.ok(queueSnapshots.some((items) => items[0].loaded === 500 && items[0].total === 1000));
 assert.ok(queueSnapshots.some((items) => items[0].speedText === "2 MB/s" && items[0].etaText === "10秒"));
-assert.ok(queueSnapshots.some((items) => items[0].overallText === "500 B / 2.9 KB"));
+assert.ok(queueSnapshots.every((items) => items.every((item) => item.overallText === undefined)));
 assert.ok(queueSnapshots.at(-1).every((item) => item.status === "done"));
 
 const singleStatuses = [];

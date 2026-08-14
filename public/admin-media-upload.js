@@ -567,7 +567,7 @@
         ? initData.multipart.uploadedParts.length
         : 0;
       const resumeDetail = resumedParts ? ` · 已恢复 ${resumedParts} 个分片` : "";
-      updateQueueItem(queueItem, { detail: initData.upload.objectKey, percent: 1, status: "uploading" });
+      updateQueueItem(queueItem, { detail: initData.upload.objectKey, loaded: 0, percent: 1, status: "uploading", total: file.size || initData.multipart?.totalBytes || 0 });
       setUploadStatus(isMultipart ? (resumedParts ? "正在续传分片到 OSS" : "正在分片直传 OSS") : "正在直传 OSS", `${batchText}${initData.upload.course || course} · ${initData.upload.objectKey}${resumeDetail}`, 1);
       throwIfQueueItemCancelled(queueItem);
       const progressText = typeof formatProgress === "function" ? formatProgress(file) : null;
@@ -598,7 +598,6 @@
             detail: `${detail}${partText}${retryText}${resumeText}`,
             etaText: progressInfo?.etaText || "",
             loaded,
-            overallText,
             percent,
             speedText: progressInfo?.speedText || "",
             status: "uploading",
