@@ -442,7 +442,105 @@ When adding a new St.Mary/New Moodle course:
 
 Run or manually verify the following before considering a course done.
 
-### 11.1 Manifest Shape
+### 11.1 Source-to-Portal Gap Audit
+
+Every course handoff must include a source-to-portal gap audit. Do this even if
+the course looks correct at first glance, because Course Overview, Moodle book
+sections, activity pages, iSpring, H5P, and video can come from different source
+shapes.
+
+The audit must answer four questions:
+
+1. What does Moodle/source expose?
+2. What exists in local `courseware/<COURSE>`?
+3. What is registered in `course-manifest.json`?
+4. What is visible in the portal UI?
+
+Never assume lesson iSpring coverage means Course Overview iSpring is covered.
+Course Overview iSpring is its own required check.
+
+Use this local manifest inspection as the minimum baseline:
+
+```bash
+cd /path/to/ossd-course-portal
+
+COURSE=MCR3U
+ROOT=/path/to/courseware
+export COURSE ROOT
+
+node - <<'NODE'
+const fs = require("fs");
+const path = require("path");
+
+const course = process.env.COURSE;
+const root = process.env.ROOT;
+const manifestPath = path.join(root, course, "course-manifest.json");
+const m = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+
+const lessons = (m.units || []).flatMap((u) => (u.lessons || []).map((l) => ({ unit: u.unit, ...l })));
+const expectedSections = ["Lesson Expectations", "Lesson", "Hands On", "Consolidation", "Homework"];
+
+const overviewIspring = (m.courseSections || [])
+  .filter((x) => /overview/i.test(`${x.role || ""} ${x.label || ""} ${x.path || ""}`))
+  .flatMap((x) => x.ispring || []);
+
+const lessonRows = lessons.map((lesson) => {
+  const sections = lesson.bookSections || [];
+  const labels = sections.map((x) => x.sectionLabel || x.label || "");
+  const missingSections = expectedSections.filter((name) => !labels.some((label) => label.toLowerCase().includes(name.toLowerCase())));
+  return {
+    id: lesson.id,
+    title: lesson.title || lesson.label || "",
+    bookSections: sections.length,
+    missingSections,
+    lessonIspring: (lesson.ispring || []).length,
+    h5p: (lesson.h5p || []).length,
+    videos: (lesson.videos || []).length + (lesson.video || []).length,
+  };
+});
+
+console.log(JSON.stringify({
+  course,
+  courseOverviewPages: (m.courseSections || []).filter((x) => /overview/i.test(`${x.role || ""} ${x.label || ""} ${x.path || ""}`)).length,
+  courseOverviewIspring: overviewIspring.length,
+  lessons: lessons.length,
+  lessonsMissingBookSections: lessonRows.filter((x) => x.missingSections.length).slice(0, 30),
+  lessonsWithIspring: lessonRows.filter((x) => x.lessonIspring).length,
+  lessonsWithH5p: lessonRows.filter((x) => x.h5p).length,
+  lessonsWithVideo: lessonRows.filter((x) => x.videos).length,
+}, null, 2));
+NODE
+```
+
+If Moodle/source has a Course Overview presentation, the result must show
+`courseOverviewIspring > 0`, and the Course Overview HTML must contain an iframe
+or player block pointing at the localized presentation.
+
+Check local HTML pages directly:
+
+```bash
+COURSE=MCR3U
+ROOT=/path/to/courseware
+export COURSE ROOT
+
+find "$ROOT/$COURSE" -path '*course-overview*index.html' -o -path '*course-overview*presentation.html'
+grep -R "ispring-localized\\|localized-ispring\\|embedded-h5p-frame\\|embedded-video" -n "$ROOT/$COURSE/course-sections" "$ROOT/$COURSE/Unit "* 2>/dev/null | head -100
+```
+
+Interpretation:
+
+1. If `courseOverviewIspring` is zero but Moodle/source has an overview
+   presentation, the import/localization step missed Course Overview media.
+2. If `lesson.ispring`, `lesson.h5p`, or `lesson.videos` exists but the matching
+   book section HTML has no embedded block, run or fix the book-section embed
+   repair logic.
+3. If `Hands On`, `Consolidation`, or `Homework` has meaningful Moodle text but
+   is absent from `bookSections`, the crawler/importer flattened or skipped a
+   Moodle book page and must be fixed before packaging.
+4. If the manifest is correct but the portal UI hides the item, inspect frontend
+   visibility filtering. Do not add a course-specific exception.
+
+### 11.2 Manifest Shape
 
 Check:
 
@@ -453,7 +551,7 @@ Check:
 5. Text/material entries preserve all available materials.
 6. Evaluation/AOL and answer-key resources are separated.
 
-### 11.2 HTML Body Preservation
+### 11.3 HTML Body Preservation
 
 Open representative pages:
 
@@ -468,7 +566,7 @@ Open representative pages:
 
 Confirm that body text appears and media is embedded when present.
 
-### 11.3 Media References
+### 11.4 Media References
 
 For iSpring:
 
@@ -489,7 +587,7 @@ For OSS/CDN:
 2. Confirm videos and H5P assets are in OSS/CDN.
 3. Confirm stale old paths do not override new paths.
 
-### 11.4 Production Environment
+### 11.5 Production Environment
 
 Production portal must use the correct active course root:
 
