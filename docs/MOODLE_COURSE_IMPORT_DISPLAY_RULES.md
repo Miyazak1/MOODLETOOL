@@ -52,6 +52,10 @@ Rules:
 4. Do not leave iSpring referenced through stale nested paths such as
    `course-sections/course-overview/ispring-localized/...` if the published
    package is really at `<COURSE>/ispring-localized/...`.
+5. Course Overview iSpring must pass the same language-pack check as lesson
+   iSpring. Literal button labels such as `Roll.Player.Continue`,
+   `Roll.Player.Complete`, or `Roll.Player.GotoNextChapterLink` are a broken
+   iSpring/Roll i18n package, even when the presentation itself appears to play.
 
 ### 2.2 Course Outline, Learning Log, and Similar Resources
 
@@ -72,6 +76,12 @@ and course-level handouts follow these rules:
 5. Do not mark a Learning Log or Reflection page as complete when only the
    paragraph text was localized. The attached student template, sample, or
    tracking document is part of the teaching resource.
+6. If a Moodle course activity explicitly attaches a file whose internal content
+   appears to belong to another course, do not silently substitute a file from a
+   different course and do not drop the Moodle attachment from the student view.
+   Keep the source attachment, record the mismatch in `sourceAudit`, and report
+   it as a source-content issue. Only replace it when a verified same-course
+   source file is found.
 
 ## 3. Unit and Lesson Structure
 
@@ -259,7 +269,29 @@ For `assign`, `page`, `folder`, `resource`, and similar Moodle activities:
    source truly has no files. They commonly contain downloadable DOCX/PDF
    tracking forms and must be audited as text plus attachments.
 
-### 5.2 Single File Resources
+### 5.2 Attachment Rows, View, Download, and Deduplication
+
+Attachment rows must make a clear distinction between previewing and
+downloading.
+
+Rules:
+
+1. `View` opens `previewPath` when it exists. For DOCX/PPTX/XLSX and similar
+   Office files, this should be an HTML preview under `previews-html/...`.
+2. `Download` opens `downloadPath` or `path` and must preserve the original file.
+3. Do not point `View` at a raw Office document when an HTML preview exists,
+   because browsers commonly download Office files instead of displaying them.
+4. When Moodle exposes the same file more than once, for example with identical
+   filename, size, and content hash but different `?time=` query strings, show it
+   once. Keep one physical file, one manifest item, and one Files row.
+5. Deduplicate within the same teaching context or Moodle chapter. Do not merge
+   same-named files across different units, lessons, or chapters unless their
+   source intent is known to be shared.
+6. If page body links such as `HERE` point to a downloadable attachment and the
+   page also has a Files section, the Files section is still required. The
+   explicit Files row provides the separate `View` and `Download` actions.
+
+### 5.3 Single File Resources
 
 Flatten to a single file card only when:
 
@@ -267,7 +299,7 @@ Flatten to a single file card only when:
 2. The activity body is empty or only Moodle chrome.
 3. No teacher/student instructions would be lost.
 
-### 5.3 Submission and Student-Only Activities
+### 5.4 Submission and Student-Only Activities
 
 For dropboxes, quizzes, and student submission activities:
 
@@ -585,6 +617,15 @@ course-level pages, also confirm that every Moodle attachment is visible as a
 material row or attachment link. A page that says "Attached you will find..." but
 shows no downloadable material is incomplete.
 
+For any page with DOCX/PPTX/XLSX attachments, click both actions mentally or in
+a browser check:
+
+1. `View` must resolve to the HTML preview, not trigger a raw file download.
+2. `Download` must resolve to the original file.
+3. Repeated rows with the same label should be justified by different source
+   files. If they are byte-identical duplicates from Moodle cache-busting query
+   strings, remove the duplicate row and duplicate physical file.
+
 ### 11.4 Media References
 
 For iSpring:
@@ -675,6 +716,52 @@ Likely causes:
    or trusted `url`.
 2. Files exist on disk but manifest paths were not backfilled.
 3. Frontend filtering treats a material shell as empty.
+
+### 12.6 Course Overview iSpring Shows `Roll.Player.*` Button Keys
+
+Symptoms:
+
+1. The Course Overview presentation opens and may play.
+2. Buttons or adjacent labels show literal keys such as `Roll.Player.Continue`,
+   `Roll.Player.Complete`, or `Roll.Player.GotoNextChapterLink`.
+3. Console may show missing `lng/en-US*.json` or no obvious fatal error.
+
+Root cause:
+
+The localized Course Overview iSpring/Roll package is missing a valid language
+JSON file, points to a broken same-origin copy, or has no fallback from
+`LNG_MANIFEST[locale]` to the actual language file. This is not a normal
+translation issue and should not be hidden with frontend text replacement.
+
+Fix:
+
+1. Keep the Course Overview iSpring package under the canonical course-level
+   path, for example
+   `<COURSE>/ispring-localized/unit-00/course-overview/presentation.html`.
+2. Ensure a complete `lng/en-US*.json` file exists in that package and
+   `JSON.parse` succeeds.
+3. Patch the package HTML or repair script so the Roll player can resolve that
+   language file, for example by adding a fallback when `LNG_MANIFEST[locale]`
+   is empty or points to a stale file.
+4. If a same-origin proxied language file is shorter or invalid while the CDN
+   copy is valid, replace or regenerate the broken package copy and refresh the
+   uploaded asset.
+
+Verification:
+
+```js
+document.body.innerText.includes("Roll.Player.")
+```
+
+Expected result is `false`.
+
+Also check the loaded language resource:
+
+```js
+performance.getEntriesByType("resource")
+  .filter((r) => /lng\/en-US|presentation\.html|player\.js|lms\.js/i.test(r.name))
+  .map((r) => ({ url: r.name, type: r.initiatorType, size: r.transferSize }))
+```
 
 ## 13. Change Policy
 
