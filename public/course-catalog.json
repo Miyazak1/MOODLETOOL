@@ -48,6 +48,15 @@
       "notes": "Planning documents imported; iSpring not yet connected."
     },
     {
+      "code": "BAT4M",
+      "title": "Financial Accounting Principles, Grade 12, University/College",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/BAT4M/course-manifest.json",
+      "baseUrl": "/courseware/BAT4M/",
+      "notes": "St. Mary Moodle course localized: 4 units, 29 lessons, 145 book sections, 30 local iSpring presentations, 46 local H5P embeds."
+    },
+    {
       "code": "BBB4M",
       "title": "BBB4M · International Business Fundamentals",
       "level": "Grade 12",
