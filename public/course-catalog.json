@@ -282,6 +282,15 @@
       "notes": "Planning documents imported; iSpring not yet connected."
     },
     {
+      "code": "HSB4U",
+      "title": "Challenge and Change in Society, Grade 12, University Preparation",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/HSB4U/course-manifest.json",
+      "baseUrl": "/courseware/HSB4U/",
+      "notes": "St. Mary Moodle V2.0 course localized from course id 67: course overview, 4 Moodle units including Unit 4: Final Examination, 20 Moodle book lessons, teacher packet, local iSpring, Moodle H5P activities, external H5P embeds, DOCX/PDF resources, previews, and Ontario curriculum guidance document."
+    },
+    {
       "code": "ICS2O",
       "title": "ICS2O · ICS2O",
       "level": "Unknown",
