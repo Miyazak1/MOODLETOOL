@@ -39,6 +39,15 @@
       "notes": "Planning documents imported; iSpring not yet connected."
     },
     {
+      "code": "AVI4M",
+      "title": "Visual Arts, Grade 12, University",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/AVI4M/course-manifest.json",
+      "baseUrl": "/courseware/AVI4M/",
+      "notes": "St. Mary Moodle course localized: course overview, 4 units, 22 Moodle book lessons, local iSpring, local H5P, course/final/teacher/unit activities, DOCX/PDF resources, previews, and answer keys."
+    },
+    {
       "code": "BAF3M",
       "title": "BAF3M · BAF3M",
       "level": "Unknown",
@@ -517,3 +526,4 @@
     }
   ]
 }
+

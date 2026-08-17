@@ -191,6 +191,12 @@
       "planningFileCount": 0
     },
     {
+      "code": "AVI4M",
+      "title": "Visual Arts",
+      "grade": "Grade 12",
+      "planningFileCount": 0
+    },
+    {
       "code": "BAF3M",
       "title": "BAF3M",
       "grade": "Unknown",
@@ -336,3 +342,4 @@
     }
   ]
 }
+
