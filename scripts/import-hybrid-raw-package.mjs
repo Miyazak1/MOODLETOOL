@@ -140,6 +140,7 @@ function zipRelativePath(entryPath) {
   const raw = toPosix(entryPath).replace(/^\/+/, "");
   if (!raw || raw.includes("\0")) return "";
   const parts = raw.split("/").filter(Boolean);
+  while (parts[0] === ".") parts.shift();
   if (parts.some((part) => part === "." || part === "..")) return "";
   if (parts[0]?.toUpperCase() === course) parts.shift();
   return parts.join("/");

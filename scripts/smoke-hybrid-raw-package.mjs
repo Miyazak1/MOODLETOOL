@@ -82,7 +82,7 @@ try {
   }, null, 2)}\n`, "utf8");
 
   const tar = process.env.SystemRoot ? join(process.env.SystemRoot, "System32", "tar.exe") : "tar";
-  const zipResult = spawnSync(tar, ["-acf", zipPath, "-C", sourceRoot, course], { encoding: "utf8" });
+  const zipResult = spawnSync(tar, ["-acf", zipPath, "-C", sourceCourseRoot, "."], { encoding: "utf8" });
   if (zipResult.status !== 0) throw new Error(zipResult.stderr || zipResult.stdout || "zip fixture failed");
 
   const result = spawnSync("node", [
