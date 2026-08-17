@@ -65,6 +65,13 @@ and course-level handouts follow these rules:
    it to a file card.
 3. If a course-level resource is both a text page and a downloadable file, keep
    both: the page provides context, and the file remains downloadable.
+4. Learning Log is a mandatory attachment-aware resource. If Moodle text says a
+   sample/template/log is attached, the localized HTML page must list that
+   DOCX/PDF/XLSX attachment and the manifest must expose it through `path`,
+   `previewPath`, `downloadPath`, or an attachment record.
+5. Do not mark a Learning Log or Reflection page as complete when only the
+   paragraph text was localized. The attached student template, sample, or
+   tracking document is part of the teaching resource.
 
 ## 3. Unit and Lesson Structure
 
@@ -244,6 +251,13 @@ For `assign`, `page`, `folder`, `resource`, and similar Moodle activities:
 2. Attachments should be listed below the card or inside the HTML page.
 3. The activity should not disappear when the first attachment is missing if the
    activity body is valid.
+4. If the body text references an attachment with words such as "attached",
+   "sample", "template", "worksheet", "log", "outline", or "rubric", confirm
+   that the corresponding material exists locally and is connected in the
+   manifest.
+5. Learning Log and Reflection activities are not text-only unless the Moodle
+   source truly has no files. They commonly contain downloadable DOCX/PDF
+   tracking forms and must be audited as text plus attachments.
 
 ### 5.2 Single File Resources
 
@@ -565,6 +579,11 @@ Open representative pages:
 8. Course Outline or Learning Log.
 
 Confirm that body text appears and media is embedded when present.
+
+For Learning Log, Reflection, Course Outline, syllabus, and similar
+course-level pages, also confirm that every Moodle attachment is visible as a
+material row or attachment link. A page that says "Attached you will find..." but
+shows no downloadable material is incomplete.
 
 ### 11.4 Media References
 
