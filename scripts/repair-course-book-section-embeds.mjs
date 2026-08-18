@@ -320,7 +320,7 @@ function lessonIspringForSection(lesson, section) {
 }
 
 function hasIspringEmbed(html) {
-  return /ispring-localized\//i.test(html) || /class=["'][^"']*\b(?:localized-ispring|ispring-player|embedded-ispring)\b/i.test(html);
+  return /ispring-localized\//i.test(html);
 }
 
 function ispringEmbedHtml(item, pageRel, title) {
@@ -330,12 +330,23 @@ function ispringEmbedHtml(item, pageRel, title) {
 
 function insertLessonIspringFallback(html, course, unit, lesson, section) {
   const item = lessonIspringForSection(lesson, section);
-  if (!item || hasIspringEmbed(html)) return { html, inserted: 0 };
+  if (!item) return { html, inserted: 0, replacedStale: 0 };
 
   const title = `Lesson - ${course} Unit ${unit.unit} Lesson ${lesson.lesson || lesson.id}`;
   const embed = ispringEmbedHtml(item, section.path, title);
-  let inserted = 0;
+  let replacedStale = 0;
   let nextHtml = String(html || "").replace(
+    /<div\b[^>]*class=["'][^"']*\b(?:localized-ispring|ispring-player|embedded-ispring)\b[^"']*["'][^>]*>\s*<iframe\b[^>]*\bsrc=(["'])(?:(?!\1).)*html5-package\/presentation\.html(?:(?!\1).)*\1[^>]*>\s*<\/iframe>\s*<\/div>|<iframe\b[^>]*\bsrc=(["'])(?:(?!\2).)*html5-package\/presentation\.html(?:(?!\2).)*\2[^>]*>\s*<\/iframe>/gi,
+    () => {
+      replacedStale += 1;
+      return embed;
+    },
+  );
+  if (replacedStale) return { html: nextHtml, inserted: 0, replacedStale };
+
+  if (hasIspringEmbed(nextHtml)) return { html: nextHtml, inserted: 0, replacedStale: 0 };
+  let inserted = 0;
+  nextHtml = nextHtml.replace(
     /<div class="portal-note">Interactive media pending local package; external playback was not embedded\.<\/div>/,
     () => {
       inserted = 1;
@@ -353,7 +364,7 @@ function insertLessonIspringFallback(html, course, unit, lesson, section) {
     inserted = 1;
   }
 
-  return { html: nextHtml, inserted };
+  return { html: nextHtml, inserted, replacedStale: 0 };
 }
 
 function replaceStudentSubmissionPlaceholders(html, lesson, section) {
@@ -475,6 +486,7 @@ function repairCourse(course) {
     fallbackH5pPlaceholders: 0,
     fallbackH5pIframes: 0,
     fallbackIspringEmbeds: 0,
+    staleIspringEmbeds: 0,
     missingLessonIspringEmbeds: 0,
     before: countPlaceholders(courseRoot),
     missingPages: [],
@@ -546,7 +558,12 @@ function repairCourse(course) {
             report.ispringIframes += 1;
             report.fallbackIspringEmbeds += 1;
           }
-          if ((fallback.replaced || ispringFallback.inserted) && apply) {
+          if (ispringFallback.replacedStale) {
+            report.wouldRewrite += 1;
+            report.ispringIframes += 1;
+            report.staleIspringEmbeds += ispringFallback.replacedStale;
+          }
+          if ((fallback.replaced || ispringFallback.inserted || ispringFallback.replacedStale) && apply) {
             writeFileSync(pagePath, fallback.html, "utf8");
             section.bytes = statSync(pagePath).size;
             report.rewritten += 1;
