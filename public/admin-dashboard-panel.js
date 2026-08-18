@@ -33,7 +33,7 @@
     }
 
     function issue(label, value, okText = "OK") {
-      const n = count(value);
+      const n = Array.isArray(value) ? count(value) : number(value);
       return `
         <div class="readiness-card ${n ? "warn-card" : "ok"}">
           <span>${escapeHtml(label)}</span>
@@ -161,7 +161,9 @@
         ? number(readiness.courseCount) || count(lifecycleCourses) || count(storageCourses)
         : "读取中";
       const uploadedCourses = hasReadiness ? number(readinessSummary.uploadedCourses) || count(storageCourses) : "读取中";
-      const missingManifest = hasReadiness ? count(readinessSummary.missingManifestCourses) : "读取中";
+      const completedCourses = hasReadiness ? number(readinessSummary.completedCourses ?? readinessSummary.displayableCourses) : "读取中";
+      const displayGapCourses = hasReadiness ? number(readinessSummary.displayGapCourses) : "读取中";
+      const missingManifest = hasReadiness ? number(readinessSummary.missingManifestCourses) : "读取中";
       const activeDirectoryCourses = hasStorage
         ? number(storageSummary.activeDirectoryCourses) || count(storageCourses.filter((course) => number(course.activeBytes) > 0))
         : "读取中";
@@ -174,8 +176,8 @@
         <div class="dashboard-stack">
           <div class="stats">
             ${stat("课程列表", catalogCourseCount, "后台课程下拉与 catalog 口径")}
-            ${stat("有 manifest 课程", uploadedCourses, "catalog 内可读取 course-manifest")}
-            ${stat("缺 manifest", missingManifest, "需要重新导入或检查 course root")}
+            ${stat("线上完成课", completedCourses, "已上传、manifest 可解析且有可展示内容")}
+            ${stat("导入/展示缺口", displayGapCourses, `其中缺 manifest ${missingManifest} 门；有 manifest ${uploadedCourses} 门`)}
             ${stat("课程目录记录", activeDirectoryCourses, extraDirectoryCourses ? `含 ${extraDirectoryCourses} 个列表外目录` : "本地 course root 目录口径")}
           </div>
 

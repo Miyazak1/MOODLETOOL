@@ -3455,15 +3455,90 @@ function manifestReadiness(manifest) {
   };
 }
 
+function manifestDisplayability(manifest, manifestStatus) {
+  if (manifestStatus !== "ready") {
+    return {
+      ok: false,
+      reason: manifestStatus === "missing" ? "missing-manifest" : "manifest-not-ready",
+      units: 0,
+      lessons: 0,
+      bookSections: 0,
+      resources: 0,
+      ispring: 0,
+      videos: 0,
+      texts: 0,
+      textMaterials: 0,
+      courseDownloads: 0,
+    };
+  }
+
+  const units = Array.isArray(manifest.units) ? manifest.units : [];
+  const texts = Array.isArray(manifest.texts) ? manifest.texts : [];
+  const courseDownloads = Array.isArray(manifest.courseDownloads) ? manifest.courseDownloads : [];
+  let lessons = 0;
+  let bookSections = 0;
+  let resources = 0;
+  let ispring = 0;
+  let videos = 0;
+
+  for (const unit of units) {
+    for (const lesson of unit.lessons || []) {
+      lessons += 1;
+      bookSections += (lesson.bookSections || []).length;
+      ispring += (lesson.ispring || []).length;
+      for (const section of ["lesson", "downloads", "handsOn", "consolidation", "homework", "resources"]) {
+        const items = Array.isArray(lesson[section]) ? lesson[section] : [];
+        resources += items.length;
+        videos += items.filter((item) => {
+          const text = JSON.stringify(item || {});
+          return /\.(mp4|webm|mov|m4v)(\?|#|"|$)/i.test(text);
+        }).length;
+      }
+    }
+  }
+
+  const textMaterials = texts.reduce((sum, text) => sum + (text.materials?.length || 0), 0);
+  const ok = Boolean(
+    units.length &&
+      (
+        lessons ||
+        bookSections ||
+        resources ||
+        ispring ||
+        videos ||
+        texts.length ||
+        textMaterials ||
+        courseDownloads.length
+      ),
+  );
+
+  return {
+    ok,
+    reason: ok ? "" : "no-displayable-content",
+    units: units.length,
+    lessons,
+    bookSections,
+    resources,
+    ispring,
+    videos,
+    texts: texts.length,
+    textMaterials,
+    courseDownloads: courseDownloads.length,
+  };
+}
+
 async function courseReadinessRecord(course) {
   const { manifest, manifestStatus, manifestError } = await readManifestForAdminStatus(course.code);
   const readiness = manifestReadiness(manifest);
+  const displayable = manifestDisplayability(manifest, manifestStatus);
   return {
     code: course.code,
     title: course.title,
     status: course.status,
     level: course.level,
     uploaded: manifestStatus === "ready",
+    completed: displayable.ok,
+    displayable,
     manifestStatus,
     manifestError,
     units: manifest.units?.length || 0,
@@ -6320,6 +6395,7 @@ async function handleAdminApi(req, res) {
       const catalog = await readCourseCatalog();
       const courses = await Promise.all(visibleCatalogCourses(catalog).map((courseEntry) => courseReadinessRecord(courseEntry)));
       const uploadedCourses = courses.filter((courseEntry) => courseEntry.uploaded);
+      const completedCourses = courses.filter((courseEntry) => courseEntry.completed);
       sendJson(res, 200, {
         ok: true,
         generatedAt: new Date().toISOString(),
@@ -6327,6 +6403,10 @@ async function handleAdminApi(req, res) {
         courses,
         summary: {
           uploadedCourses: uploadedCourses.length,
+          completedCourses: completedCourses.length,
+          displayableCourses: completedCourses.length,
+          displayGapCourses: courses.length - completedCourses.length,
+          nonDisplayableUploadedCourses: uploadedCourses.filter((courseEntry) => !courseEntry.completed).length,
           missingManifestCourses: courses.filter((courseEntry) => !courseEntry.uploaded).length,
           missingCourseOutlines: uploadedCourses.filter((courseEntry) => !courseEntry.readiness.courseOutline.ok).length,
           missingIntroductions: uploadedCourses.filter((courseEntry) => !courseEntry.readiness.introduction.ok).length,
