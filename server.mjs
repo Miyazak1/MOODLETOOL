@@ -3883,9 +3883,13 @@ async function storageOverview() {
   const catalogMap = new Map(catalogCourses.map((course) => [String(course.code || "").toUpperCase(), course]));
   const activeDirs = await listDirectoryNames(courseActiveRoot);
   const archiveDirs = await listDirectoryNames(courseArchiveRoot);
+  const activeDirCourses = activeDirs
+    .map((name) => String(name || "").toUpperCase())
+    .filter((name) => name && !isExcludedCourseCode(name));
+  const extraActiveDirCourses = activeDirCourses.filter((course) => !catalogMap.has(course));
   const courseCodes = new Set([
     ...catalogCourses.map((course) => String(course.code || "").toUpperCase()).filter(Boolean),
-    ...activeDirs.map((name) => String(name || "").toUpperCase()).filter((name) => name && !isExcludedCourseCode(name)),
+    ...activeDirCourses,
     ...archiveDirs
       .map((name) => String(name || "").replace(/\.(tar\.gz|zip)$/i, "").toUpperCase())
       .filter((name) => name && !isExcludedCourseCode(name)),
@@ -3904,6 +3908,9 @@ async function storageOverview() {
     disk,
     summary: {
       courseCount: courses.length,
+      catalogCourses: catalogCourses.length,
+      activeDirectoryCourses: activeDirCourses.length,
+      extraActiveDirectoryCourses: extraActiveDirCourses.length,
       activeRootBytes,
       archiveRootBytes,
       adminUploadBytes,

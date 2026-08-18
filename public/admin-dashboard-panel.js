@@ -162,9 +162,10 @@
         : "读取中";
       const uploadedCourses = hasReadiness ? number(readinessSummary.uploadedCourses) || count(storageCourses) : "读取中";
       const missingManifest = hasReadiness ? count(readinessSummary.missingManifestCourses) : "读取中";
-      const activeCourses = count(storageCourses.filter((course) => String(course.status || "").toLowerCase() === "active"));
-      const archivedCourses = count(storageCourses.filter((course) => String(course.status || "").toLowerCase() === "archived"));
-      const activeCourseValue = hasStorage ? activeCourses || count(storageCourses) : "读取中";
+      const activeDirectoryCourses = hasStorage
+        ? number(storageSummary.activeDirectoryCourses) || count(storageCourses.filter((course) => number(course.activeBytes) > 0))
+        : "读取中";
+      const extraDirectoryCourses = hasStorage ? number(storageSummary.extraActiveDirectoryCourses) : 0;
       const storageMeter = hasStorage && typeof meterHtml === "function"
         ? meterHtml("数据盘", disk.usedBytes || 0, disk.totalBytes || 0)
         : renderPlaceholder(errors.storage || "存储统计读取中...");
@@ -173,9 +174,9 @@
         <div class="dashboard-stack">
           <div class="stats">
             ${stat("课程列表", catalogCourseCount, "后台课程下拉与 catalog 口径")}
-            ${stat("已上传完整课", uploadedCourses, "可读取 course-manifest 的课程")}
+            ${stat("有 manifest 课程", uploadedCourses, "catalog 内可读取 course-manifest")}
             ${stat("缺 manifest", missingManifest, "需要重新导入或检查 course root")}
-            ${stat("Active 课程", activeCourseValue, hasStorage && archivedCourses ? `${archivedCourses} 门 archived` : "")}
+            ${stat("课程目录记录", activeDirectoryCourses, extraDirectoryCourses ? `含 ${extraDirectoryCourses} 个列表外目录` : "本地 course root 目录口径")}
           </div>
 
           <div class="dashboard-grid">
