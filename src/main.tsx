@@ -830,35 +830,6 @@ function roleLabel(role: string, t: TFunction): string {
   return labels[role] || role.replaceAll("_", " ");
 }
 
-function statusLabel(status: string, t: TFunction): string {
-  const labels: Record<string, string> = {
-    public_domain: t("text.status.public_domain"),
-    copyrighted: t("text.status.copyrighted"),
-    downloadable: t("text.status.downloadable"),
-    school_licensed: t("text.status.school_licensed"),
-    link_only: t("text.status.link_only"),
-    needs_review: t("text.status.needs_review"),
-    pending_download: t("text.status.pending_download"),
-    unavailable: t("text.status.unavailable"),
-  };
-  return labels[status] || status || "Unknown";
-}
-
-function textMaterialStatus(text: TextRegistryEntry): string {
-  if (text.materials.length) return "downloadable";
-  return text.sourceStatus || "pending_download";
-}
-
-function textMaterialStatusLabel(text: TextRegistryEntry, t: TFunction): string {
-  if (text.materials.length) return t("text.status.downloadable");
-  return statusLabel(text.sourceStatus || "pending_download", t);
-}
-
-function missingTextMessage(text: TextRegistryEntry, t: TFunction): string {
-  if (text.sourceStatus === "unavailable") return t("text.noSource");
-  return t("text.missing");
-}
-
 function normalizeQuery(value: string): string {
   return value.trim().toLowerCase();
 }
@@ -1876,14 +1847,8 @@ function TextIndex({
             <p>
               {text.author} · Unit {text.units.join(", ")}
             </p>
-            <p>
-              <span className={`text-status ${text.copyrightStatus}`}>{statusLabel(text.copyrightStatus, t)}</span>{" "}
-              <span className={`text-status ${textMaterialStatus(text)}`}>
-                {textMaterialStatusLabel(text, t)}
-              </span>
-            </p>
             <p>{text.notes}</p>
-            {text.materials.length ? (
+            {text.materials.length > 0 && (
               <div className="text-materials">
                 {text.materials.map((item) => (
                   <ResourceActions
@@ -1895,8 +1860,6 @@ function TextIndex({
                   />
                 ))}
               </div>
-            ) : (
-              <p className="material-pending">{missingTextMessage(text, t)}</p>
             )}
           </article>
         ))}
@@ -1914,10 +1877,11 @@ function CompactTextIndex({ texts }: { texts: TextRegistryEntry[] }) {
       {texts.map((text) => (
         <div className="compact-text" key={text.id}>
           <strong>{text.title}</strong>
-          <span>
-            {statusLabel(text.copyrightStatus, t)} · {text.materials.length}{" "}
-            {text.materials.length === 1 ? t("label.file") : t("label.files")}
-          </span>
+          {text.materials.length > 0 && (
+            <span>
+              {text.materials.length} {text.materials.length === 1 ? t("label.file") : t("label.files")}
+            </span>
+          )}
         </div>
       ))}
     </section>
