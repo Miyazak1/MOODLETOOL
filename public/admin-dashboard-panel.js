@@ -6,6 +6,12 @@
     meterHtml,
   } = {}) {
     const root = elements.root;
+    let state = {
+      errors: {},
+      lifecycle: null,
+      readiness: null,
+      storage: null,
+    };
 
     function number(value) {
       const n = Number(value || 0);
@@ -80,6 +86,10 @@
       `;
     }
 
+    function renderPlaceholder(text) {
+      return `<div class="feedback-bar"><strong>${escapeHtml(text)}</strong></div>`;
+    }
+
     function renderRiskList(summary = {}) {
       return `
         <div class="readiness-grid">
@@ -105,8 +115,13 @@
 
     function renderLoading() {
       if (!root) return;
-      root.hidden = false;
-      root.innerHTML = '<div class="feedback-bar"><strong>正在读取后台总览...</strong></div>';
+      state = {
+        errors: {},
+        lifecycle: null,
+        readiness: null,
+        storage: null,
+      };
+      render(state);
     }
 
     function renderError(error) {
@@ -120,21 +135,39 @@
       `;
     }
 
-    function render({ storage = {}, readiness = {}, lifecycle = {} } = {}) {
+    function update(patch = {}) {
+      state = {
+        ...state,
+        ...patch,
+        errors: {
+          ...(state.errors || {}),
+          ...(patch.errors || {}),
+        },
+      };
+      render(state);
+    }
+
+    function render({ storage = null, readiness = null, lifecycle = null, errors = {} } = {}) {
       if (!root) return;
-      const disk = storage.disk || {};
-      const storageSummary = storage.summary || {};
-      const readinessSummary = readiness.summary || {};
-      const lifecycleCourses = lifecycle.courses || [];
-      const storageCourses = storage.courses || [];
-      const catalogCourseCount = number(readiness.courseCount) || count(lifecycleCourses) || count(storageCourses);
-      const uploadedCourses = number(readinessSummary.uploadedCourses) || count(storageCourses);
-      const missingManifest = count(readinessSummary.missingManifestCourses);
+      const hasStorage = Boolean(storage?.ok);
+      const hasReadiness = Boolean(readiness?.ok);
+      const hasLifecycle = Boolean(lifecycle?.ok);
+      const disk = hasStorage ? storage.disk || {} : {};
+      const storageSummary = hasStorage ? storage.summary || {} : {};
+      const readinessSummary = hasReadiness ? readiness.summary || {} : {};
+      const lifecycleCourses = hasLifecycle ? lifecycle.courses || [] : [];
+      const storageCourses = hasStorage ? storage.courses || [] : [];
+      const catalogCourseCount = hasReadiness
+        ? number(readiness.courseCount) || count(lifecycleCourses) || count(storageCourses)
+        : "读取中";
+      const uploadedCourses = hasReadiness ? number(readinessSummary.uploadedCourses) || count(storageCourses) : "读取中";
+      const missingManifest = hasReadiness ? count(readinessSummary.missingManifestCourses) : "读取中";
       const activeCourses = count(storageCourses.filter((course) => String(course.status || "").toLowerCase() === "active"));
       const archivedCourses = count(storageCourses.filter((course) => String(course.status || "").toLowerCase() === "archived"));
-      const storageMeter = typeof meterHtml === "function"
+      const activeCourseValue = hasStorage ? activeCourses || count(storageCourses) : "读取中";
+      const storageMeter = hasStorage && typeof meterHtml === "function"
         ? meterHtml("数据盘", disk.usedBytes || 0, disk.totalBytes || 0)
-        : "";
+        : renderPlaceholder(errors.storage || "存储统计读取中...");
 
       root.innerHTML = `
         <div class="dashboard-stack">
@@ -142,7 +175,7 @@
             ${stat("课程列表", catalogCourseCount, "后台课程下拉与 catalog 口径")}
             ${stat("已上传完整课", uploadedCourses, "可读取 course-manifest 的课程")}
             ${stat("缺 manifest", missingManifest, "需要重新导入或检查 course root")}
-            ${stat("Active 课程", activeCourses || count(storageCourses), archivedCourses ? `${archivedCourses} 门 archived` : "")}
+            ${stat("Active 课程", activeCourseValue, hasStorage && archivedCourses ? `${archivedCourses} 门 archived` : "")}
           </div>
 
           <div class="dashboard-grid">
@@ -153,22 +186,22 @@
             </div>
             <div class="dashboard-card">
               <h3>课程状态</h3>
-              <div class="badge-row">${renderLifecycle(lifecycleCourses)}</div>
+              <div class="badge-row">${hasLifecycle ? renderLifecycle(lifecycleCourses) : `<span class="badge">${escapeHtml(errors.lifecycle || "读取中")}</span>`}</div>
               <p class="meta-line">状态来自启用/归档列表；用于快速判断哪些课程已经对前台开放。</p>
             </div>
           </div>
 
           <div class="dashboard-card">
             <h3>完整性风险</h3>
-            ${renderRiskList(readinessSummary)}
+            ${hasReadiness ? renderRiskList(readinessSummary) : renderPlaceholder(errors.readiness || "完整性摘要读取中...")}
           </div>
 
           <div class="dashboard-card">
             <h3>占用空间最大的课程</h3>
-            ${renderLargestCourses(storageCourses)}
+            ${hasStorage ? renderLargestCourses(storageCourses) : renderPlaceholder(errors.storage || "课程空间排行读取中...")}
           </div>
 
-          <p class="meta-line">Updated: ${escapeHtml(storage.generatedAt || readiness.generatedAt || "")}</p>
+          <p class="meta-line">Updated: ${escapeHtml(storage?.generatedAt || readiness?.generatedAt || "")}</p>
         </div>
       `;
       root.hidden = false;
@@ -178,6 +211,7 @@
       render,
       renderError,
       renderLoading,
+      update,
     };
   }
 

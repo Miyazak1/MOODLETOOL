@@ -2523,6 +2523,13 @@ pm2 restart ossd-course-portal --update-env</pre>
         if (activeAdminPanel === "dashboard" && adminAuthenticated) {
           readDashboard({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
         }
+        if (activeAdminPanel === "overview" && adminAuthenticated) {
+          readAllCourseReadiness({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+        }
+        if (activeAdminPanel === "lifecycle" && adminAuthenticated) {
+          readCourseLifecycle({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+          readCourseLifecycleJobs({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+        }
         if (activeAdminPanel === "media" && adminAuthenticated) {
           readMedia({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
           startMediaAutoRefresh();
@@ -3304,28 +3311,46 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       async function readDashboard({ writeOutput = true } = {}) {
         dashboardPanel.renderLoading();
-        try {
-          const [storage, readiness, lifecycle] = await Promise.all([
-            adminApi.storage(),
-            adminApi.readiness(),
-            adminApi.courseLifecycle(),
-          ]);
-          if (storage?.ok) renderStorageOverview(storage);
-          if (readiness?.ok) renderAllCourseReadiness(readiness);
-          if (lifecycle?.ok) renderCourseLifecycle(lifecycle);
-          const data = {
-            ok: Boolean(storage?.ok && readiness?.ok && lifecycle?.ok),
-            storage,
-            readiness,
-            lifecycle,
-          };
-          dashboardPanel.render(data);
-          if (writeOutput) write(data);
-          return data;
-        } catch (error) {
-          dashboardPanel.renderError(error);
-          throw error;
-        }
+        const data = {
+          lifecycle: null,
+          readiness: null,
+          storage: null,
+        };
+        const tasks = [
+          adminApi.storage()
+            .then((storage) => {
+              data.storage = storage;
+              if (storage?.ok) renderStorageOverview(storage);
+              dashboardPanel.update({ storage });
+            })
+            .catch((error) => {
+              data.storage = { ok: false, error: errorMessage(error) };
+              dashboardPanel.update({ errors: { storage: errorMessage(error) } });
+            }),
+          adminApi.readiness()
+            .then((readiness) => {
+              data.readiness = readiness;
+              dashboardPanel.update({ readiness });
+            })
+            .catch((error) => {
+              data.readiness = { ok: false, error: errorMessage(error) };
+              dashboardPanel.update({ errors: { readiness: errorMessage(error) } });
+            }),
+          adminApi.courseLifecycle()
+            .then((lifecycle) => {
+              data.lifecycle = lifecycle;
+              if (lifecycle?.ok) courseLifecycleData = { ...lifecycle, courses: sortCoursesByCode(lifecycle.courses || []) };
+              dashboardPanel.update({ lifecycle });
+            })
+            .catch((error) => {
+              data.lifecycle = { ok: false, error: errorMessage(error) };
+              dashboardPanel.update({ errors: { lifecycle: errorMessage(error) } });
+            }),
+        ];
+        await Promise.all(tasks);
+        data.ok = Boolean(data.storage?.ok && data.readiness?.ok && data.lifecycle?.ok);
+        if (writeOutput) write(data);
+        return data;
       }
 
       async function readHistory() {
