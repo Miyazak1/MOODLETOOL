@@ -3317,10 +3317,9 @@ pm2 restart ossd-course-portal --update-env</pre>
           storage: null,
         };
         const tasks = [
-          adminApi.storage()
+          adminApi.storage({ summary: 1 })
             .then((storage) => {
               data.storage = storage;
-              if (storage?.ok) renderStorageOverview(storage);
               dashboardPanel.update({ storage });
             })
             .catch((error) => {

@@ -101,8 +101,8 @@
       status(course) {
         return request("/api/admin/status", { params: { course } });
       },
-      storage() {
-        return request("/api/admin/storage");
+      storage(params = {}) {
+        return request("/api/admin/storage", { params });
       },
       uploadGaps() {
         return request("/api/admin/upload-gaps");

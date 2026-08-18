@@ -3952,7 +3952,7 @@ async function courseStorageRecord(courseCode, catalogEntry = null) {
   };
 }
 
-async function storageOverview() {
+async function storageOverview({ summaryOnly = false } = {}) {
   const catalog = await readCourseCatalog();
   const catalogCourses = visibleCatalogCourses(catalog);
   const catalogMap = new Map(catalogCourses.map((course) => [String(course.code || "").toUpperCase(), course]));
@@ -3969,12 +3969,14 @@ async function storageOverview() {
       .map((name) => String(name || "").replace(/\.(tar\.gz|zip)$/i, "").toUpperCase())
       .filter((name) => name && !isExcludedCourseCode(name)),
   ]);
-  const courses = (await Promise.all([...courseCodes].map((course) => courseStorageRecord(course, catalogMap.get(course)))))
-    .sort((a, b) => b.totalBytes - a.totalBytes || a.course.localeCompare(b.course));
   const disk = await diskInfoFor(courseActiveRoot);
-  const activeRootBytes = await directorySize(courseActiveRoot);
-  const archiveRootBytes = await directorySize(courseArchiveRoot);
-  const adminUploadBytes = courses.reduce((sum, course) => sum + course.adminUploadBytes, 0);
+  const courses = summaryOnly
+    ? []
+    : (await Promise.all([...courseCodes].map((course) => courseStorageRecord(course, catalogMap.get(course)))))
+      .sort((a, b) => b.totalBytes - a.totalBytes || a.course.localeCompare(b.course));
+  const activeRootBytes = summaryOnly ? null : await directorySize(courseActiveRoot);
+  const archiveRootBytes = summaryOnly ? null : await directorySize(courseArchiveRoot);
+  const adminUploadBytes = summaryOnly ? null : courses.reduce((sum, course) => sum + course.adminUploadBytes, 0);
   return {
     ok: true,
     generatedAt: new Date().toISOString(),
@@ -3986,6 +3988,7 @@ async function storageOverview() {
       catalogCourses: catalogCourses.length,
       activeDirectoryCourses: activeDirCourses.length,
       extraActiveDirectoryCourses: extraActiveDirCourses.length,
+      lightweight: summaryOnly,
       activeRootBytes,
       archiveRootBytes,
       adminUploadBytes,
@@ -6420,7 +6423,8 @@ async function handleAdminApi(req, res) {
     }
 
     if (requestUrl.pathname === "/api/admin/storage" && req.method === "GET") {
-      sendJson(res, 200, await storageOverview());
+      const summaryOnly = ["1", "true", "yes"].includes(String(requestUrl.searchParams.get("summary") || "").toLowerCase());
+      sendJson(res, 200, await storageOverview({ summaryOnly }));
       return true;
     }
 

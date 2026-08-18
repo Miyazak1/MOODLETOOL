@@ -171,6 +171,9 @@
       const storageMeter = hasStorage && typeof meterHtml === "function"
         ? meterHtml("数据盘", disk.usedBytes || 0, disk.totalBytes || 0)
         : renderPlaceholder(errors.storage || "存储统计读取中...");
+      const storageDetail = storageSummary.lightweight
+        ? `可用 ${formatBytes(disk.freeBytes || 0)} · 课程目录精确大小请点“查看存储空间”`
+        : `可用 ${formatBytes(disk.freeBytes || 0)} · 课程目录 ${formatBytes(storageSummary.activeRootBytes || 0)} · 后台临时 ${formatBytes(storageSummary.adminUploadBytes || 0)}`;
 
       root.innerHTML = `
         <div class="dashboard-stack">
@@ -185,7 +188,7 @@
             <div class="dashboard-card">
               <h3>存储空间</h3>
               ${storageMeter}
-              <p class="meta-line">可用 ${formatBytes(disk.freeBytes || 0)} · 课程目录 ${formatBytes(storageSummary.activeRootBytes || 0)} · 后台临时 ${formatBytes(storageSummary.adminUploadBytes || 0)}</p>
+              <p class="meta-line">${escapeHtml(storageDetail)}</p>
             </div>
             <div class="dashboard-card">
               <h3>课程状态</h3>
@@ -201,7 +204,7 @@
 
           <div class="dashboard-card">
             <h3>占用空间最大的课程</h3>
-            ${hasStorage ? renderLargestCourses(storageCourses) : renderPlaceholder(errors.storage || "课程空间排行读取中...")}
+            ${hasStorage && !storageSummary.lightweight ? renderLargestCourses(storageCourses) : renderPlaceholder(errors.storage || "点击“查看存储空间”后读取课程空间排行。")}
           </div>
 
           <p class="meta-line">Updated: ${escapeHtml(storage?.generatedAt || readiness?.generatedAt || "")}</p>
