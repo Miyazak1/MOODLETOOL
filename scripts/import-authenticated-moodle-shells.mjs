@@ -263,21 +263,6 @@ const COURSES = [
     ],
   },
   {
-    code: "MBF3C",
-    moodleCourseId: 18,
-    title: "MBF3C · Foundations for College Mathematics",
-    manifestTitle: "Foundations for College Mathematics, Grade 11, College",
-    level: "Grade 11",
-    outlineText: "Course Outline",
-    outlineUrl: "https://www.esunnybrook.com/mod/assign/view.php?id=1598",
-    units: [
-      { title: "Trigonometry and Geometry", section: 1 },
-      { title: "Mathematical Models", section: 2 },
-      { title: "Personal Finance and Exponential Relations", section: 3 },
-      { title: "Data Management", section: 4 },
-    ],
-  },
-  {
     code: "BBI2O",
     moodleCourseId: 65,
     title: "BBI2O · Introduction to Business",
@@ -417,6 +402,12 @@ const COURSES = [
     ],
   },
 ];
+
+function isExcludedCourseCode(course) {
+  return /C$/i.test(String(course || "").trim());
+}
+
+const eligibleCourses = COURSES.filter((course) => !isExcludedCourseCode(course.code));
 
 function csvEscape(value) {
   const text = String(value ?? "");
@@ -587,7 +578,7 @@ function upsertCatalog() {
   const catalog = JSON.parse(readFileSync(catalogPath, "utf8"));
   const existing = new Map(catalog.courses.map((course, index) => [course.code, index]));
 
-  for (const course of COURSES) {
+  for (const course of eligibleCourses) {
     const item = {
       code: course.code,
       title: course.title,
@@ -613,7 +604,7 @@ function upsertMoodleIndex() {
   const rows = readCsv(moodleIndexPath);
   const byCourse = new Map(rows.map((row, index) => [row.course, index]));
 
-  for (const course of COURSES) {
+  for (const course of eligibleCourses) {
     const bookIds = course.bookIds || [];
     const row = {
       course: course.code,
@@ -639,7 +630,7 @@ function upsertMoodleIndex() {
   writeCsv(moodleIndexPath, rows);
 }
 
-for (const course of COURSES) {
+for (const course of eligibleCourses) {
   const courseDir = join(coursewareRoot, course.code);
   mkdirSync(courseDir, { recursive: true });
   writeFileSync(join(courseDir, "course-manifest.json"), `${JSON.stringify(buildManifest(course), null, 2)}\n`, "utf8");
@@ -648,4 +639,4 @@ for (const course of COURSES) {
 upsertCatalog();
 upsertMoodleIndex();
 
-console.log(`Imported ${COURSES.length} authenticated Moodle course shells.`);
+console.log(`Imported ${eligibleCourses.length} authenticated Moodle course shells; skipped ${COURSES.length - eligibleCourses.length} excluded course(s).`);

@@ -1,0 +1,21 @@
+{
+  "course": "LKBDU",
+  "moodleCourseId": 45,
+  "title": "International Languages, Simplified Chinese, Level 4, University",
+  "sections": [
+    { "id": 507, "unit": 0, "title": "Introduction" },
+    { "id": 508, "unit": 0, "title": "Unit 0 Placement Examination" },
+    { "id": 509, "unit": 1, "title": "Unit 1: Chinese poet Su Dongpo's poetry and biography" },
+    { "id": 510, "unit": 2, "title": "Unit 2: Drama study - Thunderstorm" },
+    { "id": 511, "unit": 3, "title": "Unit 3: Novel study - The Joy Luck Club" },
+    { "id": 512, "unit": 4, "title": "Unit 4: Prose appreciation and writing" },
+    { "id": 513, "unit": 5, "title": "Final Evaluation" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline|attendance|learning skills|learning log|exit card|teacher'?s file|lesson plans|recorded videos|placement", "role": "course_document" },
+    { "pattern": "Teacher Conversation|Observation Checklists|Learning Skills and work Habits Evaluation", "role": "teacher_feedback" },
+    { "pattern": "Assessment|AAL|AFL|AOL|Test|Exam|Final Project|submission|survey|questionnaire|Project|writing an essay|debate|presentation", "role": "assessment" },
+    { "pattern": "Lesson|poem|poetry|Su Dongpo|苏轼|苏东坡|Thunderstorm|雷雨|Joy Luck|喜福会|Moonlight|荷塘月色|我与地坛|合欢树|秋天的怀念|Reading material|chapter|Act|视频|文稿|课文|散文|小说|话剧", "role": "lesson_material" },
+    { "pattern": "video|videos|youtube|google|drive|链接", "role": "external_reference" }
+  ]
+}

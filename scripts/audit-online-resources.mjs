@@ -185,13 +185,8 @@ function auditIspringResource(course, courseRoot, scope, item) {
     issues.push("missing-ispring-play-source");
   }
 
-  if (item.downloadPath) {
-    const download = checkLocalPath(courseRoot, item.downloadPath);
-    if (!download.ok) issues.push(`missing-ispring-download-file: ${relProject(download.path)}`);
-  } else if (item.downloadUrl) {
-    issues.push("external-ispring-download-not-localized");
-  } else {
-    issues.push("ispring-download-missing");
+  if (item.downloadPath || item.downloadUrl) {
+    issues.push("ispring-download-should-not-be-exposed");
   }
 
   return {

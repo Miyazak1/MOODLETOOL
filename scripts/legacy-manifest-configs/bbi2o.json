@@ -1,0 +1,24 @@
+{
+  "course": "BBI2O",
+  "moodleCourseId": 65,
+  "title": "Introduction to Business, Grade 10, Open",
+  "sections": [
+    { "id": 712, "unit": 0, "title": "General" },
+    { "id": 713, "unit": 1, "title": "Unit 1: Business Fundamentals" },
+    { "id": 714, "unit": 2, "title": "Unit 2: Functions of a Business" },
+    { "id": 715, "unit": 3, "title": "Unit 3: Finance" },
+    { "id": 716, "unit": 4, "title": "Unit 4: Entrepreneurship" },
+    { "id": 717, "unit": 5, "title": "Culminating Project" },
+    { "id": 718, "unit": 6, "title": "Final Exam" },
+    { "id": 719, "unit": 7, "title": "Teacher Evaluation and Comments" },
+    { "id": 720, "unit": 8, "title": "MarkBook" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline", "role": "course_outline" },
+    { "pattern": "unit plans?", "role": "unit_plan" },
+    { "pattern": "mark\\s*book|markbook", "role": "teacher_resource" },
+    { "pattern": "learning log|observation|conversation|comments|learning skills", "role": "reflection" },
+    { "pattern": "final exam|test|culminating|project", "role": "assessment" },
+    { "pattern": "lesson|slides?|checklist|rubric|dictionary|presentation|reading|supporting documents?|success criteria|business|entrepreneur|finance|budget|marketing|human resources|production|accounting|consumer|ethics|international|trade|advertising|market|company|assignment|journal|worksheet|activity", "role": "lesson_material" }
+  ]
+}

@@ -38,12 +38,6 @@ const FOUND_OUTLINES = [
     label: "BBI1O/BBI2O Course Outline",
   },
   {
-    course: "MAP4C",
-    moodleCourseId: "17",
-    outlineUrl: "https://www.esunnybrook.com/mod/resource/view.php?id=1450",
-    label: "MAP4C Course Outline",
-  },
-  {
     course: "SNC1D",
     moodleCourseId: "62",
     outlineUrl: "https://www.esunnybrook.com/mod/resource/view.php?id=6350",
@@ -102,6 +96,10 @@ function writeCsv(path, headers, rows) {
   writeFileSync(path, `${headers.join(",")}\n${body}\n`, "utf8");
 }
 
+function isExcludedCourseCode(course) {
+  return /C$/i.test(String(course || "").trim());
+}
+
 function patchManifest(item) {
   const manifestPath = join(coursewareRoot, item.course, "course-manifest.json");
   if (!existsSync(manifestPath)) return false;
@@ -129,6 +127,7 @@ let patchedRows = 0;
 let patchedManifests = 0;
 
 for (const item of FOUND_OUTLINES) {
+  if (isExcludedCourseCode(item.course)) continue;
   const index = byCourse.get(item.course);
   if (index == null) continue;
   const row = rows[index];

@@ -1,0 +1,21 @@
+{
+  "course": "AVI2O",
+  "moodleCourseId": 4,
+  "title": "Visual Arts, Grade 10, Open",
+  "sections": [
+    { "id": 2, "unit": 0, "title": "Introduction" },
+    { "id": 3, "unit": 1, "title": "Unit 1: Drawing" },
+    { "id": 4, "unit": 2, "title": "Unit 2: Painting" },
+    { "id": 5, "unit": 3, "title": "Unit 3: Printmaking" },
+    { "id": 6, "unit": 4, "title": "Unit 4: Sculpture" },
+    { "id": 7, "unit": 5, "title": "Final Summative Project" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline", "role": "course_outline" },
+    { "pattern": "online attendance|list of supplies|learning log", "role": "course_document" },
+    { "pattern": "unit plan|weekly plan|lessons", "role": "lesson_plan_reference" },
+    { "pattern": "observation|conversation|self[- ]?evaluation|self[- ]?assessment|learning log", "role": "reflection" },
+    { "pattern": "exam|summative|culminating|rubric|submission|assignment|activity|exercise|essay|presentation|project|word bank", "role": "assessment" },
+    { "pattern": "elements|principles|drawing|painting|watercolor|acrylic|critical analysis|artist statement|printmaking|linocut|sculpture|plaster|mask|henry moore|perspective|shadow|value|color|colour|tutorial|lesson", "role": "lesson_material" }
+  ]
+}

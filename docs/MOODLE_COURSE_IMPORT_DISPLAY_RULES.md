@@ -82,6 +82,12 @@ and course-level handouts follow these rules:
    Keep the source attachment, record the mismatch in `sourceAudit`, and report
    it as a source-content issue. Only replace it when a verified same-course
    source file is found.
+7. When localizing activity attachments, scan the full authenticated Moodle
+   activity page for `pluginfile.php`/`draftfile.php` links, not only the cleaned
+   main-content fragment. Some St.Mary activity file lists sit outside the
+   extracted main body; Learning Log pages are a known example. Filter Moodle
+   chrome assets such as `/theme_moove/logo/` so site logos are not treated as
+   course materials.
 
 ## 3. Unit and Lesson Structure
 
@@ -116,6 +122,10 @@ Rules:
    teacher-visible.
 4. Lesson plans and teacher packets should appear at the top of the lesson or in
    a teacher-prep area, not mixed into student-facing files.
+5. If Moodle has a numbered unit section such as `Unit 4: Final Examination`,
+   keep it as a numbered portal unit even when it has no Moodle book lessons.
+   It may contain a single final-exam lesson/resource shell, but it should not
+   disappear into an unnumbered course-level section.
 
 ## 4. Moodle Book Section HTML
 
@@ -290,6 +300,10 @@ Rules:
 6. If page body links such as `HERE` point to a downloadable attachment and the
    page also has a Files section, the Files section is still required. The
    explicit Files row provides the separate `View` and `Download` actions.
+7. If an Office file has a misleading extension, for example a legacy Word CFB
+   file uploaded as `.docx`, `View` must still resolve to a local HTML preview
+   or download-instruction preview. Record the unsupported/legacy condition in
+   the preview report, but do not let `View` fall back to the raw document.
 
 ### 5.3 Single File Resources
 
@@ -307,6 +321,15 @@ For dropboxes, quizzes, and student submission activities:
 2. Do not pretend the portal can perform the original Moodle submission action.
 3. Use a neutral notice when the live student submission feature is omitted.
 4. Keep any teacher-use attachments or instructions.
+5. Do not display an assignment page that has no meaningful body text, no
+   attachments, and only Moodle submission-management UI such as `View all
+   submissions`, `Download all submissions`, or `Make a submission`.
+6. If the parent Moodle unit/section has meaningful exam or culminating
+   instructions, keep that parent unit/section page and skip only the empty
+   dropbox activity card.
+7. Record skipped empty submission-only activities in `sourceAudit` when useful,
+   but do not expose them as course downloads, unit resources, lesson downloads,
+   or teacher resources.
 
 ## 6. Texts, Materials, and Literary Works
 

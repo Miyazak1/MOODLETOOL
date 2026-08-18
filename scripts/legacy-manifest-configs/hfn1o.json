@@ -1,0 +1,23 @@
+{
+  "course": "HFN1O",
+  "moodleCourseId": 55,
+  "title": "Food and Nutrition, Grade 9 or 10, Open",
+  "sections": [
+    { "id": 591, "unit": 0, "title": "Introduction" },
+    { "id": 592, "unit": 1, "title": "Unit 1: Nutrition and Health" },
+    { "id": 593, "unit": 2, "title": "Unit 2: Food Choices" },
+    { "id": 594, "unit": 3, "title": "Unit 3: Local and Global Foods" },
+    { "id": 595, "unit": 4, "title": "Unit 4: Food Preparation Skills" },
+    { "id": 596, "unit": 5, "title": "Final Project" },
+    { "id": 597, "unit": 6, "title": "Exam Prep" },
+    { "id": 598, "unit": 7, "title": "Final Exam" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline|syllabus", "role": "course_outline" },
+    { "pattern": "unit plans?", "role": "unit_plan" },
+    { "pattern": "exam prep|review", "role": "exam_review" },
+    { "pattern": "final exam|final project|culminating|test", "role": "assessment" },
+    { "pattern": "discussion|forum", "role": "discussion" },
+    { "pattern": "nutrition|health|food|diet|recipe|cooking|kitchen|safety|meal|local|global|culture|choices|label|ingredient|preparation|skills|assignment|activity|worksheet|lesson|presentation|rubric|guide|journal|log", "role": "lesson_material" }
+  ]
+}

@@ -98,6 +98,26 @@ function validateManifest(course, manifest) {
     if (item.previewPath) {
       check(item.previewPath, `${label} preview`);
     }
+    for (const [index, attachment] of (item.attachments || []).entries()) {
+      checkAttachmentRecord(attachment, `${label} attachment ${index + 1}`);
+    }
+  }
+
+  function checkAttachmentRecord(item, label) {
+    if (!item || typeof item !== "object") {
+      errors.push(`${label} is not an object.`);
+      return;
+    }
+    for (const field of ["label", "type", "path"]) {
+      if (!item[field] || typeof item[field] !== "string") {
+        errors.push(`${label} is missing string field ${field}.`);
+      }
+    }
+    if (typeof item.bytes !== "number" || item.bytes < 0) {
+      errors.push(`${label} has invalid bytes.`);
+    }
+    if (item.path) check(item.path, label);
+    if (item.previewPath) check(item.previewPath, `${label} preview`);
   }
 
   function checkExternalLinkRecord(item, label) {
@@ -115,6 +135,22 @@ function validateManifest(course, manifest) {
     }
   }
 
+  function checkIspringRecord(item, label) {
+    if (!["page", "external"].includes(item.mode)) errors.push(`${label} iSpring entry must use page or external mode.`);
+    if (item.url) {
+      if (!/^https?:\/\//i.test(item.url)) errors.push(`${label} iSpring url must start with http:// or https://.`);
+    } else {
+      if (!item.path || !item.packagePath) errors.push(`${label} iSpring entry is missing path or packagePath.`);
+      check(item.path, `${label} iSpring page`);
+    }
+    if (item.downloadUrl && !/^https?:\/\//i.test(item.downloadUrl)) {
+      errors.push(`${label} iSpring downloadUrl must start with http:// or https://.`);
+    }
+    if (item.downloadPath) {
+      check(item.downloadPath, `${label} iSpring download`);
+    }
+  }
+
   if (manifest.navigation?.primary !== "unit" || manifest.navigation?.secondary !== "lesson") {
     errors.push(`${course.code} navigation must be unit-first with lesson as secondary.`);
   }
@@ -126,6 +162,12 @@ function validateManifest(course, manifest) {
   }
 
   for (const item of manifest.courseDownloads || []) checkFileRecord(item, "course download");
+  for (const item of manifest.courseSections || []) checkFileRecord(item, "course section");
+  for (const section of manifest.courseSections || []) {
+    for (const item of section.ispring || []) checkIspringRecord(item, `course section ${section.label || section.role || "section"}`);
+  }
+  for (const item of manifest.evaluations || []) checkFileRecord(item, "evaluation resource");
+  for (const item of manifest.teacherResources || []) checkFileRecord(item, "teacher resource");
   for (const text of manifest.texts || []) {
     if (!text.id || !text.title || !Array.isArray(text.units)) {
       errors.push(`Text entry is incomplete: ${JSON.stringify(text)}`);
@@ -138,6 +180,15 @@ function validateManifest(course, manifest) {
       errors.push(`Unit entry is incomplete: ${JSON.stringify({ unit: unit.unit, title: unit.title })}`);
     }
     if (unit.unitPlan) checkFileRecord(unit.unitPlan, `unit ${unit.unit} plan`);
+    for (const [key, value] of Object.entries(unit.unitResources || {})) {
+      if (Array.isArray(value)) {
+        for (const item of value) {
+          if (item && typeof item === "object") checkFileRecord(item, `unit ${unit.unit} resource ${key}`);
+        }
+      } else if (value && typeof value === "object") {
+        checkFileRecord(value, `unit ${unit.unit} resource ${key}`);
+      }
+    }
     for (const lesson of unit.lessons || []) {
       if (!lesson.id || typeof lesson.unit !== "number" || typeof lesson.lesson !== "number" || !lesson.title) {
         errors.push(`Lesson entry is incomplete: ${JSON.stringify({ id: lesson.id, title: lesson.title })}`);
@@ -147,20 +198,9 @@ function validateManifest(course, manifest) {
       }
       if (lesson.lessonPlan) checkFileRecord(lesson.lessonPlan, `${lesson.id} lesson plan`);
       for (const item of lesson.ispring || []) {
-        if (!["page", "external"].includes(item.mode)) errors.push(`${lesson.id} iSpring entry must use page or external mode.`);
-        if (item.url) {
-          if (!/^https?:\/\//i.test(item.url)) errors.push(`${lesson.id} iSpring url must start with http:// or https://.`);
-        } else {
-          if (!item.path || !item.packagePath) errors.push(`${lesson.id} iSpring entry is missing path or packagePath.`);
-          check(item.path, `${lesson.id} iSpring page`);
-        }
-        if (item.downloadUrl && !/^https?:\/\//i.test(item.downloadUrl)) {
-          errors.push(`${lesson.id} iSpring downloadUrl must start with http:// or https://.`);
-        }
-        if (item.downloadPath) {
-          check(item.downloadPath, `${lesson.id} iSpring download`);
-        }
+        checkIspringRecord(item, lesson.id);
       }
+      for (const item of lesson.bookSections || []) checkFileRecord(item, `${lesson.id} book section`);
       for (const item of lesson.downloads || []) checkFileRecord(item, `${lesson.id} download`);
       for (const item of lesson.textExports || []) checkFileRecord(item, `${lesson.id} text export`);
     }

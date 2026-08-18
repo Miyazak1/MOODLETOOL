@@ -91,43 +91,157 @@
         color: #17633a;
         display: block;
       }
+      .login-toolbar {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .language-switcher {
+        align-items: center;
+        display: inline-flex;
+        gap: 8px;
+        color: #4a5f7d;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .language-switcher select {
+        border: 1px solid #b9c7da;
+        border-radius: 6px;
+        color: #06244a;
+        min-height: 32px;
+        padding: 0 8px;
+      }
     </style>
   </head>
   <body>
     <main>
-      <p class="eyebrow">SunnyBrook OSSD</p>
-      <h1>课程资源平台登录</h1>
-      <p>请输入分配给你的账号。登录后只能查看已授权课程。</p>
+      <div class="login-toolbar">
+        <p class="eyebrow">SunnyBrook OSSD</p>
+        <label class="language-switcher">
+          <span data-i18n="languageLabel">语言</span>
+          <select id="localeSelect">
+            <option value="zh-CN">中文</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+      </div>
+      <h1 data-i18n="title">课程资源平台登录</h1>
+      <p data-i18n="description">请输入分配给你的账号。登录后只能查看已授权课程。</p>
       <form id="loginForm">
-        <label for="username">Username</label>
+        <label for="username" data-i18n="username">用户名</label>
         <input autocomplete="username" id="username" name="username" required />
-        <label for="password">Password</label>
+        <label for="password" data-i18n="password">密码</label>
         <input autocomplete="current-password" id="password" name="password" required type="password" />
-        <button id="submitButton" type="submit">登录</button>
+        <button id="submitButton" type="submit" data-i18n="submit">登录</button>
         <div class="message" id="message"></div>
       </form>
     </main>
     <script>
+      const LOCALE_STORAGE_KEY = "portalLocale";
+      const messages = {
+        "zh-CN": {
+          description: "请输入分配给你的账号。登录后只能查看已授权课程。",
+          languageLabel: "语言",
+          loginFailed: "登录失败",
+          loggingIn: "正在登录...",
+          password: "密码",
+          submit: "登录",
+          title: "课程资源平台登录",
+          username: "用户名",
+        },
+        en: {
+          description: "Enter the account assigned to you. After signing in, you can only view authorized courses.",
+          languageLabel: "Language",
+          loginFailed: "Login failed",
+          loggingIn: "Signing in...",
+          password: "Password",
+          submit: "Log in",
+          title: "Course Resource Portal Login",
+          username: "Username",
+        },
+      };
+
       const form = document.getElementById("loginForm");
       const message = document.getElementById("message");
       const submitButton = document.getElementById("submitButton");
+      const localeSelect = document.getElementById("localeSelect");
+      let locale = detectInitialLocale();
+
+      function normalizeLocale(value) {
+        const normalized = String(value || "").trim().toLowerCase();
+        if (!normalized) return null;
+        if (normalized === "en" || normalized.startsWith("en-")) return "en";
+        if (normalized === "zh" || normalized.startsWith("zh-")) return "zh-CN";
+        return null;
+      }
+
+      function detectInitialLocale() {
+        const params = new URLSearchParams(window.location.search);
+        const urlLocale = normalizeLocale(params.get("lang"));
+        if (urlLocale) return urlLocale;
+        try {
+          const storedLocale = normalizeLocale(window.localStorage.getItem(LOCALE_STORAGE_KEY));
+          if (storedLocale) return storedLocale;
+        } catch {}
+        const browserLocales = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+        for (const item of browserLocales) {
+          const detected = normalizeLocale(item);
+          if (detected) return detected;
+        }
+        return "en";
+      }
+
+      function t(key) {
+        return (messages[locale] && messages[locale][key]) || messages.en[key] || key;
+      }
+
+      function portalHref() {
+        const params = new URLSearchParams();
+        params.set("lang", locale);
+        return `/?${params.toString()}`;
+      }
+
+      function applyLocale(nextLocale) {
+        locale = nextLocale;
+        document.documentElement.lang = locale;
+        document.title = locale === "zh-CN" ? "OSSD 课程资源门户登录" : "OSSD Course Portal Login";
+        localeSelect.value = locale;
+        document.querySelectorAll("[data-i18n]").forEach((node) => {
+          node.textContent = t(node.dataset.i18n);
+        });
+        try {
+          window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+        } catch {}
+      }
 
       function showMessage(text, type) {
         message.textContent = text;
         message.className = `message ${type}`;
       }
 
+      localeSelect.addEventListener("change", (event) => {
+        const nextLocale = normalizeLocale(event.target.value) || "en";
+        applyLocale(nextLocale);
+        const params = new URLSearchParams(window.location.search);
+        params.set("lang", nextLocale);
+        window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+      });
+
+      applyLocale(locale);
+
       fetch("/api/portal/session", { credentials: "same-origin" })
         .then((response) => response.json())
         .then((data) => {
-          if (data.authenticated) window.location.href = "/";
+          if (data.authenticated) window.location.href = portalHref();
         })
         .catch(() => {});
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         submitButton.disabled = true;
-        showMessage("正在登录...", "ok");
+        showMessage(t("loggingIn"), "ok");
         const payload = {
           username: form.username.value,
           password: form.password.value,
@@ -140,10 +254,10 @@
             method: "POST",
           });
           const data = await response.json();
-          if (!response.ok || !data.ok) throw new Error(data.error || "登录失败");
-          window.location.href = "/";
+          if (!response.ok || !data.ok) throw new Error(data.error || t("loginFailed"));
+          window.location.href = portalHref();
         } catch (error) {
-          showMessage(error instanceof Error ? error.message : "登录失败", "error");
+          showMessage(error instanceof Error ? error.message : t("loginFailed"), "error");
         } finally {
           submitButton.disabled = false;
         }

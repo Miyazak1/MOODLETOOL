@@ -1,6 +1,9 @@
-import { StrictMode, useEffect, useMemo, useState } from "react";
+import { StrictMode, createContext, useContext, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
+import { SUPPORTED_LOCALES, detectInitialLocale, storeLocale, translate } from "./i18n";
+import type { PortalLocale } from "./i18n";
+import type { ReactNode } from "react";
 import type {
   CourseCatalog,
   CourseCatalogEntry,
@@ -13,6 +16,65 @@ import type {
 } from "./types";
 
 const CATALOG_URL = import.meta.env.VITE_COURSE_CATALOG_URL || "/course-catalog.json";
+type TFunction = (key: string, params?: Record<string, string | number>) => string;
+type PortalI18nValue = {
+  locale: PortalLocale;
+  setLocale: (locale: PortalLocale) => void;
+  t: TFunction;
+};
+
+const PortalI18nContext = createContext<PortalI18nValue>({
+  locale: "en",
+  setLocale: () => {},
+  t: (key) => translate("en", key),
+});
+
+function usePortalI18n(): PortalI18nValue {
+  return useContext(PortalI18nContext);
+}
+
+function PortalI18nProvider({
+  children,
+  locale,
+  setLocale,
+}: {
+  children: ReactNode;
+  locale: PortalLocale;
+  setLocale: (locale: PortalLocale) => void;
+}) {
+  const value = useMemo<PortalI18nValue>(
+    () => ({
+      locale,
+      setLocale,
+      t: (key, params) => translate(locale, key, params),
+    }),
+    [locale, setLocale],
+  );
+  return <PortalI18nContext.Provider value={value}>{children}</PortalI18nContext.Provider>;
+}
+
+function LanguageSwitcher() {
+  const { locale, setLocale, t } = usePortalI18n();
+  const handleChange = (nextLocale: PortalLocale) => {
+    setLocale(nextLocale);
+    const params = new URLSearchParams(window.location.search);
+    params.set("lang", nextLocale);
+    window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+  };
+  return (
+    <label className="language-switcher">
+      <span>{t("language.label")}</span>
+      <select onChange={(event) => handleChange(event.target.value as PortalLocale)} value={locale}>
+        {SUPPORTED_LOCALES.map((item) => (
+          <option key={item} value={item}>
+            {item === "zh-CN" ? t("language.chinese") : t("language.english")}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 type PortalSession = {
   authenticated: boolean;
   username: string | null;
@@ -111,6 +173,8 @@ function resourceHref(item: LinkableResource, baseUrl: string): string {
 function resourcePreviewHref(item: LinkableResource, baseUrl: string): string {
   if (item.previewPath) return resourceUrl(item.previewPath, baseUrl);
   if (item.previewUrl) return item.previewUrl;
+  const type = (item.type || "").toLowerCase();
+  if (item.path && OFFICE_PREVIEW_TYPES.has(type)) return resourceUrl(`previews-html/${item.path}.html`, baseUrl);
   return resourceHref(item, baseUrl);
 }
 
@@ -137,22 +201,72 @@ function hasLocalResource(item: LinkableResource): boolean {
   return Boolean(item.path || item.previewPath || item.downloadPath || (trustedRemote && (item.url || item.previewUrl)));
 }
 
-const BROWSER_PREVIEW_TYPES = new Set(["html", "htm", "pdf", "jpg", "jpeg", "png", "gif", "webp", "svg", "txt", "md", "mp4", "webm"]);
+const BROWSER_PREVIEW_TYPES = new Set([
+  "html",
+  "htm",
+  "pdf",
+  "jpg",
+  "jpeg",
+  "png",
+  "gif",
+  "webp",
+  "svg",
+  "bmp",
+  "ico",
+  "avif",
+  "tif",
+  "tiff",
+  "txt",
+  "md",
+  "csv",
+  "json",
+  "mp4",
+  "webm",
+]);
+
+const OFFICE_PREVIEW_TYPES = new Set(["doc", "docx", "ppt", "pptx", "xls", "xlsx"]);
+
+function isVideoResource(item: LinkableResource): boolean {
+  const type = (item.type || "").toLowerCase();
+  const category = (item.category || "").toLowerCase();
+  const path = `${item.path || ""} ${item.previewPath || ""} ${item.downloadPath || ""} ${item.url || ""} ${item.previewUrl || ""} ${item.downloadUrl || ""}`.toLowerCase();
+  return (
+    type === "mp4" ||
+    type === "webm" ||
+    type === "mov" ||
+    type === "m4v" ||
+    type === "video" ||
+    category.includes("video") ||
+    /\.(?:mp4|webm|mov|m4v)(?:$|[?#])/i.test(path)
+  );
+}
+
+function isISpringResource(item: LinkableResource): boolean {
+  const type = (item.type || "").toLowerCase();
+  const category = (item.category || "").toLowerCase();
+  const path = `${item.path || ""} ${item.previewPath || ""} ${item.downloadPath || ""} ${item.url || ""} ${item.previewUrl || ""} ${item.downloadUrl || ""}`.toLowerCase();
+  return type === "ispring" || category.includes("ispring") || path.includes("ispring-localized/");
+}
+
+function isPlayableOnlyResource(item: LinkableResource): boolean {
+  return isVideoResource(item) || isISpringResource(item);
+}
 
 function hasWebPreview(item: LinkableResource, moodleEmbed?: MoodleEmbedRow): boolean {
   if (moodleEmbed?.kind === "video" && Boolean(moodleEmbed.embedUrl)) return true;
   if (item.previewPath || item.previewUrl) return true;
   if (!item.path && !item.url) return false;
   const type = (item.type || "").toLowerCase();
-  return BROWSER_PREVIEW_TYPES.has(type);
+  if (OFFICE_PREVIEW_TYPES.has(type)) return false;
+  if (BROWSER_PREVIEW_TYPES.has(type)) return true;
+  return hasLocalResource(item) && !isPlayableOnlyResource(item);
 }
 
 function isDownloadableFile(item: LinkableResource): boolean {
   const type = (item.type || "").toLowerCase();
   const category = (item.category || "").toLowerCase();
-  if (type === "html" || type === "htm") return false;
-  if (type === "mp4" || type === "webm" || type === "mov" || type === "m4v" || type === "video" || category.includes("video")) return false;
-  if (type === "ispring" || category.includes("ispring")) return false;
+  if (type === "html" || type === "htm") return category === "moodle_resource" && Boolean(item.path || item.downloadPath);
+  if (isPlayableOnlyResource(item)) return false;
   return Boolean(item.path || item.url || item.downloadPath || item.downloadUrl);
 }
 
@@ -191,9 +305,11 @@ function isCourseLevelResource(item: LinkableResource): boolean {
     role === "course_outline_copy" ||
     role === "course_document" ||
     role === "course_resource" ||
+    role === "folder" ||
     role === "unit_plan_bundle" ||
     category === "course_document" ||
-    category === "course_resource"
+    category === "course_resource" ||
+    category === "moodle_folder"
   );
 }
 
@@ -253,6 +369,17 @@ function hasMeaningfulTextContent(item: LinkableResource): boolean {
   return Boolean((item.textPreview || "").trim());
 }
 
+function hasMoodleActivityPage(item: LinkableResource): boolean {
+  const type = (item.type || "").toLowerCase();
+  const category = (item.category || "").toLowerCase();
+  const role = (item.role || "").toLowerCase();
+  if (!item.path || !["html", "htm"].includes(type)) return false;
+  if (!category.startsWith("moodle_") || category === "moodle_course_section") return false;
+  if (["moodle_file", "moodle_resource"].includes(category)) return false;
+  if (["file", "document", "download"].includes(role)) return false;
+  return true;
+}
+
 type MoodleSectionGroup = {
   key: string;
   title: string;
@@ -260,11 +387,14 @@ type MoodleSectionGroup = {
   items: LinkableResource[];
 };
 
-function buildCourseMoodleSectionGroups(manifest: CourseManifest): MoodleSectionGroup[] {
+function buildCourseMoodleSectionGroups(manifest: CourseManifest, t: TFunction): MoodleSectionGroup[] {
   const downloads = manifest.courseDownloads || [];
   const courseSections = manifest.courseSections || [];
   const teacherResources = manifest.teacherResources || [];
   const groups: MoodleSectionGroup[] = [];
+  const courseOutlineDownloads = downloads.filter((item) => roleIn(item, ["course_outline", "course_outline_copy"]));
+  const moodleCourseOutlineDownloads = courseOutlineDownloads.filter((item) => (item.category || "").toLowerCase().startsWith("moodle_"));
+  const fallbackCourseOutlineDownloads = moodleCourseOutlineDownloads.length ? [] : courseOutlineDownloads;
 
   const makeGroup = (key: string, title: string, description: string, items: LinkableResource[]) => {
     const unique: LinkableResource[] = [];
@@ -281,22 +411,24 @@ function buildCourseMoodleSectionGroups(manifest: CourseManifest): MoodleSection
     if (unique.length) groups.push({ key, title, description, items: unique });
   };
 
-  makeGroup("course-overview", "Course Overview", "Moodle 课程开头区域：课程说明、大纲和 Learning Log。", [
+  makeGroup("introduction", "Introduction", t("moodle.group.introduction.description"), [
+    ...courseSections.filter((item) => roleIn(item, ["introduction"])),
+  ]);
+
+  makeGroup("course-overview", "Course Overview", t("moodle.group.courseOverview.description"), [
     ...courseSections.filter((item) => roleIn(item, ["course_overview"])),
-    ...downloads.filter(
-      (item) =>
-        roleIn(item, ["course_outline", "course_outline_copy", "learning_log"]) &&
-        (item.category || "").toLowerCase().startsWith("moodle_"),
-    ),
+    ...moodleCourseOutlineDownloads,
+    ...fallbackCourseOutlineDownloads,
+    ...downloads.filter((item) => roleIn(item, ["learning_log"])),
   ]);
 
-  makeGroup("final", "Final Examination & Culminating", "Moodle 期末与 culminating 区域：说明页、提交入口和配套文件。", [
-    ...courseSections.filter((item) => roleIn(item, ["final_examination_culminating"])),
-    ...downloads.filter((item) => roleIn(item, ["final_exam_submission", "culminating_submission", "culminating_assignment"])),
-    ...teacherResources.filter((item) => roleIn(item, ["final_exam_submission", "culminating_submission", "culminating_assignment"])),
+  makeGroup("final", "Final Examination & Culminating", t("moodle.group.final.description"), [
+    ...courseSections.filter((item) => roleIn(item, ["final_examination", "final_examination_culminating"])),
+    ...downloads.filter((item) => roleIn(item, ["final_exam_submission", "culminating_submission", "culminating_assignment", "exam_review"])),
+    ...teacherResources.filter((item) => roleIn(item, ["final_exam_submission", "culminating_submission", "culminating_assignment", "exam_review"])),
   ]);
 
-  makeGroup("teacher-packet", "Teacher Packet", "Moodle Teacher Packet 区域：教师备课和 answer key 资源。", [
+  makeGroup("teacher-packet", "Teacher Packet", t("moodle.group.teacherPacket.description"), [
     ...teacherResources.filter((item) => roleIn(item, ["answer_keys"])),
     ...downloads.filter((item) => roleIn(item, ["answer_keys"])),
   ]);
@@ -392,6 +524,7 @@ async function copyText(value: string) {
 
 function MoodleEmbedButton({ row }: { row?: MoodleEmbedRow }) {
   const [copied, setCopied] = useState(false);
+  const { t } = usePortalI18n();
   const moodleCode = row?.moodleShortcode || row?.moodleHtml;
   if (!moodleCode) return null;
 
@@ -402,7 +535,7 @@ function MoodleEmbedButton({ row }: { row?: MoodleEmbedRow }) {
   };
 
   return (
-    <button className="button-link moodle-copy" onClick={copy} title="复制可粘贴到 Moodle 的 Portal embed 短代码" type="button">
+    <button className="button-link moodle-copy" onClick={copy} title={t("action.copyShortcode")} type="button">
       <span className="button-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" focusable="false">
           <path d="m9 18-6-6 6-6" />
@@ -410,7 +543,7 @@ function MoodleEmbedButton({ row }: { row?: MoodleEmbedRow }) {
           <path d="m13 4-2 16" />
         </svg>
       </span>
-      <span>{copied ? "已复制" : "短代码"}</span>
+      <span>{copied ? t("action.copied") : t("action.copyShortcode")}</span>
     </button>
   );
 }
@@ -425,14 +558,15 @@ function PublicShareButton({
   kind?: MoodleEmbedRow["kind"];
 }) {
   const [status, setStatus] = useState<"idle" | "working" | "copied" | "failed">("idle");
+  const { t } = usePortalI18n();
   if (!item.path && !item.previewPath && !item.url && !item.previewUrl) return null;
 
   const createShare = async () => {
-    const input = window.prompt("公开分享有效期（天）。到期后链接自动失效。", "30");
+    const input = window.prompt(t("prompt.shareDays"), "30");
     if (input === null) return;
     const days = Number(input.trim() || "30");
     if (!Number.isFinite(days) || days <= 0) {
-      window.alert("请输入大于 0 的天数。");
+      window.alert(t("prompt.shareDaysInvalid"));
       return;
     }
     setStatus("working");
@@ -460,14 +594,14 @@ function PublicShareButton({
       window.setTimeout(() => setStatus("idle"), 1800);
     } catch (error) {
       setStatus("failed");
-      window.alert(error instanceof Error ? error.message : "生成分享链接失败。");
+      window.alert(error instanceof Error ? error.message : t("prompt.shareFailed"));
       window.setTimeout(() => setStatus("idle"), 1800);
     }
   };
 
-  const label = status === "working" ? "生成中" : status === "copied" ? "已复制" : status === "failed" ? "失败" : "分享";
+  const label = status === "working" ? t("action.working") : status === "copied" ? t("action.copied") : status === "failed" ? t("action.failed") : t("action.share");
   return (
-    <button className="button-link share-copy" disabled={status === "working"} onClick={createShare} title="生成不需要登录的公开分享链接" type="button">
+    <button className="button-link share-copy" disabled={status === "working"} onClick={createShare} title={t("action.share")} type="button">
       <span className="button-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" focusable="false">
           <circle cx="18" cy="5" r="3" />
@@ -492,6 +626,8 @@ function ResourceActions({
   variant,
   moodleEmbed,
   showDownload = true,
+  showAttachmentDownload = true,
+  showPlayableAttachments = true,
 }: {
   item: LinkableResource;
   courseBaseUrl: string;
@@ -502,7 +638,10 @@ function ResourceActions({
   variant?: string;
   moodleEmbed?: MoodleEmbedRow;
   showDownload?: boolean;
+  showAttachmentDownload?: boolean;
+  showPlayableAttachments?: boolean;
 }) {
+  const { t } = usePortalI18n();
   if (!isTeacherVisibleResource(item)) return null;
 
   const title = displayLabel
@@ -510,16 +649,24 @@ function ResourceActions({
     : labelPrefix && !item.label.toLowerCase().startsWith(`${labelPrefix.toLowerCase()} -`) && item.label.toLowerCase() !== labelPrefix.toLowerCase()
       ? `${labelPrefix} · ${item.label}`
       : item.label;
-  const attachments = visibleAttachments(item);
+  const attachments = visibleAttachments(item).filter((attachment) => showPlayableAttachments || !isPlayableOnlyResource(attachment));
+  const hasMediaAttachments = attachments.some(isPlayableOnlyResource);
+  const hasNonMediaAttachments = attachments.some((attachment) => !isPlayableOnlyResource(attachment));
+  const attachmentHeading = hasMediaAttachments && !hasNonMediaAttachments ? t("attachment.media") : hasMediaAttachments ? t("attachment.mediaAttachments") : t("attachment.attachments");
   const category = (item.category || "").toLowerCase();
   const isMoodleFileOnlyContainer =
-    attachments.length > 0 && category.startsWith("moodle_") && category !== "moodle_course_section" && !hasMeaningfulTextContent(item);
+    attachments.length > 0 &&
+    category.startsWith("moodle_") &&
+    category !== "moodle_course_section" &&
+    !hasMeaningfulTextContent(item) &&
+    !hasMoodleActivityPage(item);
   const primaryActionItem = item;
   const primaryActionEmbed = moodleEmbed;
   const displayType = primaryActionItem.type || item.type;
   const canViewPrimary = hasWebPreview(primaryActionItem, primaryActionEmbed);
   const canDownloadPrimary = showDownload && isDownloadableFile(primaryActionItem);
   const canSharePrimary = canShare && isShareableResource(primaryActionItem);
+  const primaryViewLabel = isVideoResource(primaryActionItem) ? t("action.play") : t("action.view");
 
   return (
     <span className={`resource-actions resource-card ${variant || ""}`}>
@@ -531,12 +678,12 @@ function ResourceActions({
         <span className="resource-card-actions">
           {canViewPrimary ? (
             <a className="button-link view" {...localOpenProps(primaryActionItem, courseBaseUrl, primaryActionEmbed)}>
-              查看
+              {primaryViewLabel}
             </a>
           ) : null}
           {canDownloadPrimary && (
             <a className="button-link download" {...localDownloadProps(primaryActionItem, courseBaseUrl)}>
-              下载
+              {t("action.download")}
             </a>
           )}
           <MoodleEmbedButton row={moodleEmbed} />
@@ -545,19 +692,21 @@ function ResourceActions({
       ) : null}
       {attachments.length ? (
         <span className="resource-card-attachments">
-          <span className="attachment-heading">附件</span>
+          <span className="attachment-heading">{attachmentHeading}</span>
           {attachments.map((attachment) => (
             <span className="attachment-row" key={resourceKey(attachment)}>
               <span className="attachment-label">{attachment.label}</span>
               <span className="attachment-actions">
                 {hasWebPreview(attachment) ? (
                   <a className="attachment-link" {...localOpenProps(attachment, courseBaseUrl)}>
-                    查看
+                    {isVideoResource(attachment) ? t("action.play") : t("action.view")}
                   </a>
                 ) : null}
-                <a className="attachment-link" {...localDownloadProps(attachment, courseBaseUrl)}>
-                  下载
-                </a>
+                {showAttachmentDownload && isDownloadableFile(attachment) ? (
+                  <a className="attachment-link" {...localDownloadProps(attachment, courseBaseUrl)}>
+                    {t("action.download")}
+                  </a>
+                ) : null}
                 {canShare && isShareableResource(attachment) ? (
                   <PublicShareButton courseCode={courseCode || courseCodeFromBaseUrl(courseBaseUrl)} item={attachment} />
                 ) : null}
@@ -585,6 +734,7 @@ function ISpringActions({
   label: string;
   moodleEmbed?: MoodleEmbedRow;
 }) {
+  const { t } = usePortalI18n();
   const externalOnly = item.mode === "external" || Boolean(item.url && !item.path);
   const trustedRemote = item.source === "cdn" || item.source === "oss";
   if (externalOnly && !trustedRemote) return null;
@@ -619,7 +769,7 @@ function ISpringActions({
       <span className="resource-card-main">
         <span className="resource-card-label">
           {label}
-          {item.slideCount ? ` · ${item.slideCount} slides` : ""}
+          {item.slideCount ? ` · ${item.slideCount} ${t("label.slides")}` : ""}
           {item.videoSegmentCount ? ` · ${item.videoSegmentCount} videos` : ""}
         </span>
         <span className="resource-card-meta">iSpring</span>
@@ -627,12 +777,12 @@ function ISpringActions({
       <span className="resource-card-actions">
       {playItem ? (
         <a className="button-link ispring" {...localOpenProps(playItem, courseBaseUrl)}>
-          播放课件
+          {t("action.playCourseware")}
         </a>
       ) : null}
       {downloadItem ? (
         <a className="button-link download" {...localDownloadProps(downloadItem, courseBaseUrl)}>
-          下载包
+          {t("action.downloadPackage")}
         </a>
       ) : null}
       <MoodleEmbedButton row={moodleEmbed} />
@@ -656,40 +806,40 @@ function formatBytes(bytes: number): string {
   return `${size.toFixed(size >= 10 || unit === 0 ? 0 : 1)} ${units[unit]}`;
 }
 
-function roleLabel(role: string): string {
+function roleLabel(role: string, t: TFunction): string {
   const labels: Record<string, string> = {
-    overview: "Lesson Expectations",
-    lesson: "Lesson",
-    handsOn: "Hands On",
-    hands_on: "Hands On",
-    homework: "Homework",
-    consolidation: "Consolidation",
+    overview: t("label.lessonExpectations"),
+    lesson: t("label.lesson"),
+    handsOn: t("label.handsOn"),
+    hands_on: t("label.handsOn"),
+    homework: t("label.homework"),
+    consolidation: t("label.consolidation"),
     teacher_notes: "Teacher Notes",
-    lesson_book: "Lesson Book",
-    lesson_book_section: "Lesson Book Section",
-    course_outline: "Course Outline",
-    introduction: "Lesson Expectations",
-    course_document: "Course Document",
-    core_text: "Core Text",
-    plan: "Plan",
-    download: "Downloads",
-    h5p: "H5P",
-    video: "Video",
-    other: "Other",
+    lesson_book: t("label.lessonBook"),
+    lesson_book_section: t("label.lessonBookSection"),
+    course_outline: t("label.courseOutline"),
+    introduction: t("label.lessonExpectations"),
+    course_document: t("label.courseDocument"),
+    core_text: t("label.coreText"),
+    plan: t("label.plan"),
+    download: t("label.downloads"),
+    h5p: t("label.h5p"),
+    video: t("label.video"),
+    other: t("label.other"),
   };
   return labels[role] || role.replaceAll("_", " ");
 }
 
-function statusLabel(status: string): string {
+function statusLabel(status: string, t: TFunction): string {
   const labels: Record<string, string> = {
-    public_domain: "Public domain",
-    copyrighted: "Copyrighted",
-    downloadable: "Downloadable",
-    school_licensed: "School licensed",
-    link_only: "Link only",
-    needs_review: "Needs review",
-    pending_download: "Pending download",
-    unavailable: "Unavailable",
+    public_domain: t("text.status.public_domain"),
+    copyrighted: t("text.status.copyrighted"),
+    downloadable: t("text.status.downloadable"),
+    school_licensed: t("text.status.school_licensed"),
+    link_only: t("text.status.link_only"),
+    needs_review: t("text.status.needs_review"),
+    pending_download: t("text.status.pending_download"),
+    unavailable: t("text.status.unavailable"),
   };
   return labels[status] || status || "Unknown";
 }
@@ -699,14 +849,14 @@ function textMaterialStatus(text: TextRegistryEntry): string {
   return text.sourceStatus || "pending_download";
 }
 
-function textMaterialStatusLabel(text: TextRegistryEntry): string {
-  if (text.materials.length) return "Downloadable";
-  return statusLabel(text.sourceStatus || "pending_download");
+function textMaterialStatusLabel(text: TextRegistryEntry, t: TFunction): string {
+  if (text.materials.length) return t("text.status.downloadable");
+  return statusLabel(text.sourceStatus || "pending_download", t);
 }
 
-function missingTextMessage(text: TextRegistryEntry): string {
-  if (text.sourceStatus === "unavailable") return "No source-text file available in local/Moodle resources.";
-  return "No downloadable text file added yet.";
+function missingTextMessage(text: TextRegistryEntry, t: TFunction): string {
+  if (text.sourceStatus === "unavailable") return t("text.noSource");
+  return t("text.missing");
 }
 
 function normalizeQuery(value: string): string {
@@ -740,12 +890,12 @@ function lessonMatches(lesson: Lesson, query: string): boolean {
 }
 
 const LESSON_FLOW = [
-  { key: "expectations", label: "Lesson Expectations", roles: ["expectations", "introduction", "overview"] },
-  { key: "lesson", label: "Lesson", roles: ["lesson"] },
-  { key: "resources", label: "Files / Activities", roles: ["resource", "resources", "activity", "activities", "download"] },
-  { key: "handsOn", label: "Hands On", roles: ["handsOn", "hands_on"] },
-  { key: "consolidation", label: "Consolidation", roles: ["consolidation"] },
-  { key: "homework", label: "Homework", roles: ["homework"] },
+  { key: "expectations", labelKey: "label.lessonExpectations", roles: ["expectations", "introduction", "overview"] },
+  { key: "lesson", labelKey: "label.lesson", roles: ["lesson"] },
+  { key: "resources", labelKey: "label.resources", roles: ["resource", "resources", "activity", "activities", "download"] },
+  { key: "handsOn", labelKey: "label.handsOn", roles: ["handsOn", "hands_on"] },
+  { key: "consolidation", labelKey: "label.consolidation", roles: ["consolidation"] },
+  { key: "homework", labelKey: "label.homework", roles: ["homework"] },
 ] as const;
 
 function flowKeyForRole(role?: string): string {
@@ -780,20 +930,21 @@ function downloadFlowKey(item: LinkableResource): string {
   return roleFlowKey;
 }
 
-function flowLabelForKey(key: string): string {
-  return LESSON_FLOW.find((section) => section.key === key)?.label || roleLabel(key);
+function flowLabelForKey(key: string, t: TFunction): string {
+  const labelKey = LESSON_FLOW.find((section) => section.key === key)?.labelKey;
+  return labelKey ? t(labelKey) : roleLabel(key, t);
 }
 
-function flowGuideForKey(key: string): string {
+function flowGuideForKey(key: string, t: TFunction): string {
   const guides: Record<string, string> = {
-    expectations: "先看本节学习目标和成功标准，确认老师备课时要覆盖的重点。",
-    lesson: "课堂主体内容。这里通常包含 Moodle lesson 说明、iSpring 课件和直接配套文件。",
-    resources: "本节配套文件、活动表、外部资源本地化副本等，适合课前整理。",
-    handsOn: "练习、测验或课堂活动。能在线播放的活动会放在这里，文件可下载备用。",
-    consolidation: "巩固环节、总结视频、H5P 或 exit activity，适合课尾复盘。",
-    homework: "课后作业、提交说明和学生需要完成的材料。",
+    expectations: t("flow.expectations.guide"),
+    lesson: t("flow.lesson.guide"),
+    resources: t("flow.resources.guide"),
+    handsOn: t("flow.handsOn.guide"),
+    consolidation: t("flow.consolidation.guide"),
+    homework: t("flow.homework.guide"),
   };
-  return guides[key] || "本节其他可用资源。";
+  return guides[key] || t("flow.other.guide");
 }
 
 function ispringFlowKey(item: Lesson["ispring"][number]): string {
@@ -863,10 +1014,30 @@ function LessonFlowPanel({
   visibleTextExports: FileResource[];
   visibleISpring: Lesson["ispring"];
 }) {
+  const { t } = usePortalI18n();
   const bookSections = visibleBookSectionsForLesson(lesson);
+  const bookSectionAttachmentKeys = new Set<string>();
+  const playableAttachmentFlowByKey = new Map<string, string>();
+  bookSections.forEach((section) => {
+    const sectionFlowKey = bookSectionFlowKey(section);
+    visibleAttachments(section).forEach((attachment) => {
+      if (isPlayableOnlyResource(attachment)) {
+        playableAttachmentFlowByKey.set(resourceIdentity(attachment), sectionFlowKey);
+        const sourceKey = resourceSourceIdentity(attachment);
+        if (sourceKey) playableAttachmentFlowByKey.set(sourceKey, sectionFlowKey);
+        return;
+      }
+      addResourceKeys(bookSectionAttachmentKeys, attachment);
+    });
+  });
+  const flowKeyForDownload = (item: LinkableResource) =>
+    playableAttachmentFlowByKey.get(resourceIdentity(item)) ||
+    (resourceSourceIdentity(item) ? playableAttachmentFlowByKey.get(resourceSourceIdentity(item)) : undefined) ||
+    downloadFlowKey(item);
   const regularDownloads = dedupeResources(
     [...visibleDownloads, ...visibleTextExports].filter((item) => {
       if (item.role === "lesson_book" || item.role === "lesson_book_section") return false;
+      if (isGroupedResource(item, bookSectionAttachmentKeys)) return false;
       return true;
     }),
   );
@@ -874,7 +1045,7 @@ function LessonFlowPanel({
 
   const sectionHasContent = (key: string) => {
     if (bookSections.some((item) => bookSectionFlowKey(item) === key)) return true;
-    if (regularDownloads.some((item) => downloadFlowKey(item) === key)) return true;
+    if (regularDownloads.some((item) => flowKeyForDownload(item) === key)) return true;
     if (visibleISpring.some((item) => ispringFlowKey(item) === key)) return true;
     return false;
   };
@@ -882,25 +1053,25 @@ function LessonFlowPanel({
   const keys = orderedKeys.filter(sectionHasContent);
 
   if (!keys.length) {
-    return <div className="empty-state">No local downloadable resources indexed for this lesson yet.</div>;
+    return <div className="empty-state">{t("empty.lessonResources")}</div>;
   }
 
   return (
     <div className="lesson-flow">
       {keys.map((key) => {
         const sectionBookPages = bookSections.filter((item) => bookSectionFlowKey(item) === key);
-        const sectionDownloads = regularDownloads.filter((item) => downloadFlowKey(item) === key);
+        const sectionDownloads = regularDownloads.filter((item) => flowKeyForDownload(item) === key);
         const sectionISpring = visibleISpring.filter((item) => ispringFlowKey(item) === key);
         return (
           <section className="lesson-flow-section" key={key}>
             <header>
               <div>
-                <span>{flowLabelForKey(key)}</span>
-                <p>{flowGuideForKey(key)}</p>
+                <span>{flowLabelForKey(key, t)}</span>
+                <p>{flowGuideForKey(key, t)}</p>
               </div>
               <strong>
-                {sectionBookPages.length + sectionDownloads.length + sectionISpring.length} item
-                {sectionBookPages.length + sectionDownloads.length + sectionISpring.length === 1 ? "" : "s"}
+                {sectionBookPages.length + sectionDownloads.length + sectionISpring.length}{" "}
+                {sectionBookPages.length + sectionDownloads.length + sectionISpring.length === 1 ? t("label.item") : t("label.items")}
               </strong>
             </header>
             <div className="lesson-flow-items">
@@ -909,15 +1080,16 @@ function LessonFlowPanel({
                   courseBaseUrl={courseBaseUrl}
                   courseCode={courseCode}
                   canShare={canShare}
-                  displayLabel={item.label || item.sectionLabel || flowLabelForKey(bookSectionFlowKey(item))}
+                  displayLabel={item.label || item.sectionLabel || flowLabelForKey(bookSectionFlowKey(item), t)}
                   item={item}
                   key={resourceKey(item)}
                   moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
                   showDownload={false}
+                  showPlayableAttachments={false}
                 />
               ))}
               {sectionISpring.map((item, index) => {
-                const label = sectionISpring.length > 1 ? `Lesson ${index + 1}` : "Lesson";
+                const label = sectionISpring.length > 1 ? t("lesson.lessonNumber", { number: index + 1 }) : t("label.lesson");
                 return (
                   <ISpringActions
                     courseBaseUrl={courseBaseUrl}
@@ -937,7 +1109,7 @@ function LessonFlowPanel({
                   canShare={canShare}
                   item={item}
                   key={resourceKey(item)}
-                  labelPrefix={downloadFlowKey(item) === "resources" ? undefined : roleLabel(item.role)}
+                  labelPrefix={isPlayableOnlyResource(item) || flowKeyForDownload(item) === "resources" ? undefined : roleLabel(item.role, t)}
                   moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
                 />
               ))}
@@ -968,12 +1140,13 @@ function ActivityResourcePanel({
   visibleTextExports: FileResource[];
   visibleISpring: Lesson["ispring"];
 }) {
+  const { t } = usePortalI18n();
   const bookSections = visibleBookSectionsForLesson(lesson);
   const files = dedupeResources([...bookSections, ...visibleDownloads, ...visibleTextExports]);
   const totalItems = files.length + visibleISpring.length;
 
   if (!totalItems) {
-    return <div className="empty-state">No local resources indexed for this Moodle activity yet.</div>;
+    return <div className="empty-state">{t("empty.activityResources")}</div>;
   }
 
   return (
@@ -985,7 +1158,7 @@ function ActivityResourcePanel({
           canShare={canShare}
           item={item}
           key={resourceKey(item)}
-          label={visibleISpring.length > 1 ? `Activity package ${index + 1}` : "Activity package"}
+          label={visibleISpring.length > 1 ? t("lesson.activityPackageNumber", { number: index + 1 }) : t("lesson.activityPackage")}
           moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
         />
       ))}
@@ -1010,14 +1183,14 @@ function courseTitleLabel(course: CourseCatalogEntry): string {
     : `${course.code} · ${course.title}`;
 }
 
-function courseStatusLabel(status?: string): string {
+function courseStatusLabel(status: string | undefined, t: TFunction): string {
   const labels: Record<string, string> = {
-    ready: "Ready",
-    "planning-only": "Planning only",
-    "moodle-shell": "Source shell",
-    "textbook-shell": "Textbook shell",
+    ready: t("course.status.ready"),
+    "planning-only": t("course.status.planning-only"),
+    "moodle-shell": t("course.status.moodle-shell"),
+    "textbook-shell": t("course.status.textbook-shell"),
   };
-  return labels[status || ""] || status || "Draft";
+  return labels[status || ""] || status || t("course.status.draft");
 }
 
 type CourseStructureLabels = {
@@ -1028,7 +1201,7 @@ type CourseStructureLabels = {
   displayMode: "lesson" | "activity" | "hybrid";
 };
 
-function courseStructureLabels(manifest: CourseManifest): CourseStructureLabels {
+function courseStructureLabels(manifest: CourseManifest, t: TFunction): CourseStructureLabels {
   const secondary = manifest.navigation?.secondary?.toLowerCase();
   const note = manifest.sourceAudit?.structureNote?.toLowerCase() || "";
   const activityBased = secondary === "activity" || note.includes("moodle course sections");
@@ -1037,17 +1210,17 @@ function courseStructureLabels(manifest: CourseManifest): CourseStructureLabels 
   );
   if (activityBased) {
     return {
-      secondarySingular: "Activity",
-      secondaryPlural: "Activities",
-      secondaryPluralLower: "activities",
+      secondarySingular: t("label.activity"),
+      secondaryPlural: t("label.activities"),
+      secondaryPluralLower: t("label.activitiesLower"),
       secondaryKind: "activity",
       displayMode: "activity",
     };
   }
   return {
-    secondarySingular: "Lesson",
-    secondaryPlural: "Lessons",
-    secondaryPluralLower: "lessons",
+    secondarySingular: t("label.lesson"),
+    secondaryPlural: t("label.lessons"),
+    secondaryPluralLower: t("label.lessonsLower"),
     secondaryKind: "lesson",
     displayMode: hasEnhancedUnitResources ? "hybrid" : "lesson",
   };
@@ -1086,16 +1259,17 @@ function CourseMoodleSections({
   canShare: boolean;
   units: Unit[];
 }) {
+  const { t } = usePortalI18n();
   if (!groups.length) return null;
   const unitTitle = (unitNumber: number) => units.find((unit) => unit.unit === unitNumber)?.title || `Unit ${unitNumber}`;
   return (
     <section className="moodle-section-map" id="course-resources" aria-label="Course resource entry points">
       <div className="moodle-section-map-header">
         <div>
-          <p className="eyebrow dark">Course Resources</p>
-          <h3>课程资料入口</h3>
+          <p className="eyebrow dark">{t("course.resources")}</p>
+          <h3>{t("course.resourceEntry")}</h3>
         </div>
-        <span>{groups.reduce((sum, group) => sum + group.items.length, 0)} items</span>
+        <span>{groups.reduce((sum, group) => sum + group.items.length, 0)} {t("label.items")}</span>
       </div>
       <div className="moodle-section-groups">
         {groups.map((group) => (
@@ -1114,7 +1288,7 @@ function CourseMoodleSections({
                     <div className="moodle-unit-subgroup-header">
                       <span>Unit {unitGroup.unit}</span>
                       <strong>{unitTitle(unitGroup.unit)}</strong>
-                      <em>{unitGroup.items.length} items</em>
+                      <em>{unitGroup.items.length} {t("label.items")}</em>
                     </div>
                     <div className="moodle-section-items">
                       {unitGroup.items.map((item) => (
@@ -1159,32 +1333,44 @@ function TeacherStartPanel({
   manifest: CourseManifest;
   structureLabels: CourseStructureLabels;
 }) {
-  const courseResourceCount = groups.reduce((sum, group) => sum + group.items.length, 0);
+  const { t } = usePortalI18n();
+  const groupedKeys = groupedResourceIdentitySet(groups);
+  const visibleUngroupedCourseDownloads = manifest.courseDownloads.filter(
+    (item) =>
+      isTeacherVisibleResource(item) &&
+      isCourseLevelResource(item) &&
+      !isGroupedResource(item, groupedKeys) &&
+      !isLegacyCourseShellResource(item, groups),
+  );
+  const courseResourceCount = groups.reduce((sum, group) => sum + group.items.length, 0) + visibleUngroupedCourseDownloads.length;
   const textCount = manifest.texts.length;
   const firstUnit = manifest.units[0];
   const actions = [
     {
       href: "#course-resources",
-      short: "资料",
-      label: "课程资料",
-      meta: `${courseResourceCount} 项`,
-      detail: "课程说明、大纲、Learning Log、期末与教师资料",
+      short: t("course.quick.courseResources.short"),
+      label: t("course.quick.courseResources.label"),
+      meta: `${courseResourceCount} ${t("label.items")}`,
+      detail: t("course.quick.courseResources.detail"),
     },
     {
       href: "#unit-roadmap",
-      short: "单元",
-      label: "单元备课",
-      meta: `${manifest.units.length} 个 Unit`,
-      detail: firstUnit ? `从 Unit ${firstUnit.unit}: ${firstUnit.title} 开始` : `查看 ${structureLabels.secondaryPlural}`,
+      short: t("course.quick.units.short"),
+      label: t("course.quick.units.label"),
+      meta: `${manifest.units.length} ${t("label.units")}`,
+      detail: t("course.quick.units.detail", {
+        firstUnit: firstUnit ? `Unit ${firstUnit.unit}: ${firstUnit.title}` : "",
+        secondaryPlural: structureLabels.secondaryPlural,
+      }),
     },
     ...(textCount
       ? [
           {
             href: "#text-index",
-            short: "文本",
-            label: "教材文本",
-            meta: `${textCount} 项`,
-            detail: "教材、文学作品和本地文件",
+            short: t("course.quick.texts.short"),
+            label: t("course.quick.texts.label"),
+            meta: `${textCount} ${t("label.items")}`,
+            detail: t("course.quick.texts.detail"),
           },
         ]
       : []),
@@ -1216,8 +1402,9 @@ function Overview({
   canShare: boolean;
   structureLabels: CourseStructureLabels;
 }) {
+  const { t } = usePortalI18n();
   const audit = manifest.sourceAudit || {};
-  const moodleSectionGroups = buildCourseMoodleSectionGroups(manifest);
+  const moodleSectionGroups = buildCourseMoodleSectionGroups(manifest, t);
   const groupedKeys = groupedResourceIdentitySet(moodleSectionGroups);
   const visibleCourseDownloads = manifest.courseDownloads.filter(
     (item) =>
@@ -1232,9 +1419,7 @@ function Overview({
         <div>
           <p className="eyebrow">{manifest.course.code}</p>
           <h2>{manifest.course.title}</h2>
-          <p>
-            {manifest.course.audience}. 当前课程按 Unit 和 {structureLabels.secondarySingular} 展示；旧 Moodle activity 课程会保留原活动顺序。
-          </p>
+          <p>{t("course.summary", { audience: manifest.course.audience, secondarySingular: structureLabels.secondarySingular })}</p>
           <p className="course-note">
             {course.level ? `${course.level} · ` : ""}
             {course.notes || manifest.course.source}
@@ -1242,12 +1427,12 @@ function Overview({
         </div>
         <div className="overview-tags">
           <div className="tag text">Unit-first</div>
-          <div className={`tag ${course.status === "ready" ? "text" : "warn"}`}>{courseStatusLabel(course.status)}</div>
+          <div className={`tag ${course.status === "ready" ? "text" : "warn"}`}>{courseStatusLabel(course.status, t)}</div>
         </div>
       </div>
       <div className="stats-grid">
         <div className="stat">
-          <span>Units</span>
+          <span>{t("label.units")}</span>
           <strong>{manifest.units.length}</strong>
         </div>
         <div className="stat">
@@ -1261,7 +1446,7 @@ function Overview({
           </strong>
         </div>
         <div className="stat">
-          <span>Resources</span>
+          <span>{t("label.resources")}</span>
           <strong>
             {audit.resourceCoverage?.uniqueCovered || 0}/{audit.resourceCoverage?.uniqueTotal || 0}
           </strong>
@@ -1283,7 +1468,7 @@ function Overview({
       />
       {visibleCourseDownloads.length ? (
         <div className="course-downloads">
-          <h3>其他课程级文件</h3>
+          <h3>{t("course.otherFiles")}</h3>
           <div className="lesson-tools">
             {visibleCourseDownloads.map((item) => (
               <ResourceActions
@@ -1292,7 +1477,7 @@ function Overview({
                 canShare={canShare}
                 item={item}
                 key={resourceKey(item)}
-                labelPrefix={roleLabel(item.role)}
+                labelPrefix={roleLabel(item.role, t)}
               />
             ))}
           </div>
@@ -1311,9 +1496,10 @@ function CourseSelector({
   selectedCourseCode: string;
   onSelect: (courseCode: string) => void;
 }) {
+  const { t } = usePortalI18n();
   return (
     <section className="course-selector">
-      <label htmlFor="courseSelect">课程</label>
+      <label htmlFor="courseSelect">{t("course.label")}</label>
       <select id="courseSelect" onChange={(event) => onSelect(event.target.value)} value={selectedCourseCode}>
         {catalog.courses.map((course) => (
           <option key={course.code} value={course.code}>
@@ -1326,17 +1512,18 @@ function CourseSelector({
 }
 
 function CurrentCourseCard({ course, manifest }: { course: CourseCatalogEntry; manifest?: CourseManifest | null }) {
+  const { t } = usePortalI18n();
   return (
     <section className="current-course-card">
-      <span>当前课程</span>
+      <span>{t("course.current")}</span>
       <strong>{course.code}</strong>
       <p>{course.title}</p>
       {manifest ? (
         <div className="current-course-stats">
-          <span>{manifest.units.length} Units</span>
-          <span>{countLessons(manifest.units)} Lessons</span>
+          <span>{manifest.units.length} {t("label.units")}</span>
+          <span>{countLessons(manifest.units)} {t("label.lessons")}</span>
           <span>{countIspringEntries(manifest.units)} iSpring</span>
-          <span>{countLocalResources(manifest.units)} Files</span>
+          <span>{countLocalResources(manifest.units)} {t("label.files")}</span>
         </div>
       ) : null}
     </section>
@@ -1356,19 +1543,20 @@ function UnitRoadmap({
   onSelect: (unit: number) => void;
   structureLabels: CourseStructureLabels;
 }) {
+  const { t } = usePortalI18n();
   return (
     <section className="unit-roadmap panel" id="unit-roadmap" aria-label="Course unit roadmap">
       <div className="unit-roadmap-header">
         <div>
-          <p className="eyebrow dark">Unit Roadmap</p>
-          <h2>课程备课路径</h2>
+          <p className="eyebrow dark">{t("unit.roadmap")}</p>
+          <h2>{t("unit.roadmapTitle")}</h2>
           <p>
             {structureLabels.secondaryKind === "activity"
-              ? "先选 Unit，再按 Moodle activity 顺序查看每个活动、文件和媒体。"
-              : "先选 Unit，再展开 Lesson。每个 Lesson 按 Moodle book 的教学环节组织。"}
+              ? t("unit.roadmapActivityHelp")
+              : t("unit.roadmapLessonHelp")}
           </p>
         </div>
-        <span>{units.length} units</span>
+        <span>{units.length} {t("label.units")}</span>
       </div>
       <div className="unit-roadmap-grid">
         {units.map((unit) => {
@@ -1384,7 +1572,7 @@ function UnitRoadmap({
               <strong>{unit.title}</strong>
               <p>
                 {visibleCount}/{unit.lessons.length} {structureLabels.secondaryPluralLower} · {unit.summary.ispring} iSpring ·{" "}
-                {unitLocalDownloadCount(unit)} files
+                {unitLocalDownloadCount(unit)} {t("label.files")}
               </p>
             </button>
           );
@@ -1407,6 +1595,7 @@ function UnitNav({
   onSelect: (unit: number) => void;
   structureLabels: CourseStructureLabels;
 }) {
+  const { t } = usePortalI18n();
   return (
     <nav className="unit-nav" aria-label="Unit navigation">
       {units.map((unit) => {
@@ -1422,7 +1611,7 @@ function UnitNav({
             <span>
               <span className="unit-title">{unit.title}</span>
               <span className="unit-meta">
-                {visibleCount}/{unit.lessons.length} {structureLabels.secondaryPluralLower} · {unitLocalDownloadCount(unit)} files
+                {visibleCount}/{unit.lessons.length} {structureLabels.secondaryPluralLower} · {unitLocalDownloadCount(unit)} {t("label.files")}
               </span>
             </span>
           </button>
@@ -1449,6 +1638,7 @@ function LessonRow({
   moodleEmbedByPath?: MoodleEmbedMap;
   structureLabels: CourseStructureLabels;
 }) {
+  const { t } = usePortalI18n();
   const [open, setOpen] = useState(defaultOpen);
   const visibleDownloads = lesson.downloads.filter(isTeacherVisibleResource);
   const visibleTextExports = lesson.textExports.filter(isTeacherVisibleResource);
@@ -1465,12 +1655,12 @@ function LessonRow({
         <span>
           <span className="lesson-title">{lesson.title}</span>
           <span className="lesson-counts">
-            {structureLabels.secondaryKind === "lesson" ? <span className="count-chip">{visibleBookPageCount} book pages</span> : null}
+            {structureLabels.secondaryKind === "lesson" ? <span className="count-chip">{visibleBookPageCount} {t("label.bookPages")}</span> : null}
             {visibleISpring.length ? <span className="count-chip">{visibleISpring.length} iSpring</span> : null}
-            <span className="count-chip">{lessonLocalDownloadCount(lesson)} resources</span>
+            <span className="count-chip">{lessonLocalDownloadCount(lesson)} {t("label.resources")}</span>
             {structureLabels.secondaryKind === "lesson" ? (
               <span className={`count-chip ${lesson.lessonPlan ? "ready" : unitOverview ? "" : "pending"}`}>
-                {lesson.lessonPlan ? "Plan ready" : unitOverview ? "Unit slot" : "Plan pending"}
+                {lesson.lessonPlan ? t("label.planReady") : unitOverview ? t("label.unitSlot") : t("label.planPending")}
               </span>
             ) : null}
           </span>
@@ -1480,20 +1670,20 @@ function LessonRow({
       <div className="lesson-body">
         <div className="lesson-tools">
           {structureLabels.secondaryKind === "activity" ? (
-            <span className="tag text">Moodle activity</span>
+            <span className="tag text">{t("label.moodleActivity")}</span>
           ) : lesson.lessonPlan ? (
             <ResourceActions
               courseBaseUrl={courseBaseUrl}
               courseCode={courseCode}
               canShare={canShare}
               item={lesson.lessonPlan}
-              labelPrefix="Lesson Plan"
+              labelPrefix={t("label.lessonPlan")}
               variant="plan"
             />
           ) : unitOverview ? (
-            <span className="tag text">Unit-level iSpring slot</span>
+            <span className="tag text">{t("label.unitLevelISpringSlot")}</span>
           ) : (
-            <span className="tag warn">Lesson plan pending</span>
+            <span className="tag warn">{t("label.planPending")}</span>
           )}
         </div>
         {structureLabels.displayMode === "activity" ? (
@@ -1535,17 +1725,18 @@ function UnitMoodleResources({
   courseCode: string;
   canShare: boolean;
 }) {
+  const { t } = usePortalI18n();
   const groups = [
     {
       key: "evaluations",
       title: "Evaluation",
-      description: "本 Unit 在 Moodle Evaluation 区域对应的 AOL、quiz、rubric 和 assignment 文件。",
+      description: t("unit.resources.evaluations.description"),
       items: unitResourcesFor(unit, "evaluations"),
     },
     {
       key: "reflectionAndLogs",
       title: "Reflection / Learning Log",
-      description: "本 Unit 对应的 KWL、reflection summary 和学习日志相关提交材料。",
+      description: t("unit.resources.reflection.description"),
       items: unitResourcesFor(unit, "reflectionAndLogs"),
     },
   ].filter((group) => group.items.some(isTeacherVisibleResource));
@@ -1599,6 +1790,7 @@ function UnitDetail({
   moodleEmbedByPath?: MoodleEmbedMap;
   structureLabels: CourseStructureLabels;
 }) {
+  const { t } = usePortalI18n();
   const visibleLessons = unit.lessons.filter((lesson) => lessonMatches(lesson, query));
   const textTags = unit.coreTexts
     .map((id) => texts.find((text) => text.id === id))
@@ -1613,23 +1805,23 @@ function UnitDetail({
         <p className="eyebrow">Unit {unit.unit}</p>
         <h2>{unit.title}</h2>
         <p>
-          {unit.lessons.length} {structureLabels.secondaryPluralLower} · {unit.summary.ispring} iSpring modules ·{" "}
-          {unitLocalDownloadCount(unit)} downloadable resources
+          {unit.lessons.length} {structureLabels.secondaryPluralLower} · {unit.summary.ispring} {t("label.iSpringModules")} ·{" "}
+          {unitLocalDownloadCount(unit)} {t("label.downloadableResources")}
         </p>
         {hasUnitActions ? (
           <div className="unit-actions">
-            {textTags.length ? textTags.map((text) => <span className="tag text" key={text.id}>{text.title}</span>) : structuredUnit ? <span className="tag warn">No core text assigned</span> : null}
+            {textTags.length ? textTags.map((text) => <span className="tag text" key={text.id}>{text.title}</span>) : structuredUnit ? <span className="tag warn">{t("label.noCoreText")}</span> : null}
             {unit.unitPlan ? (
               <ResourceActions
                 courseBaseUrl={courseBaseUrl}
                 courseCode={courseCode}
                 canShare={canShare}
                 item={unit.unitPlan}
-                labelPrefix="Unit Plan"
+                labelPrefix={t("label.unitPlan")}
                 variant="plan"
               />
             ) : structuredUnit ? (
-              <span className="tag warn">Unit plan pending</span>
+              <span className="tag warn">{t("label.unitPlanPending")}</span>
             ) : null}
           </div>
         ) : null}
@@ -1652,8 +1844,8 @@ function UnitDetail({
         ) : (
           <div className="empty-state">
             {query
-              ? `当前搜索没有匹配这个 Unit 的 ${structureLabels.secondaryPluralLower}。`
-              : `此 Unit 暂无 ${structureLabels.secondarySingular.toLowerCase()} 级资料，可先使用上方 Unit Plan。`}
+              ? t("empty.unitSearch", { secondaryPluralLower: structureLabels.secondaryPluralLower })
+              : t("empty.unitNoResources", { secondarySingular: structureLabels.secondarySingular })}
           </div>
         )}
       </div>
@@ -1672,10 +1864,11 @@ function TextIndex({
   canShare: boolean;
   texts: TextRegistryEntry[];
 }) {
+  const { t } = usePortalI18n();
   if (!texts.length) return null;
   return (
     <section className="text-index panel" id="text-index">
-      <h2>教材与文学作品索引</h2>
+      <h2>{t("text.index")}</h2>
       <div className="text-grid">
         {texts.map((text) => (
           <article className="text-row" key={text.id}>
@@ -1684,9 +1877,9 @@ function TextIndex({
               {text.author} · Unit {text.units.join(", ")}
             </p>
             <p>
-              <span className={`text-status ${text.copyrightStatus}`}>{statusLabel(text.copyrightStatus)}</span>{" "}
+              <span className={`text-status ${text.copyrightStatus}`}>{statusLabel(text.copyrightStatus, t)}</span>{" "}
               <span className={`text-status ${textMaterialStatus(text)}`}>
-                {textMaterialStatusLabel(text)}
+                {textMaterialStatusLabel(text, t)}
               </span>
             </p>
             <p>{text.notes}</p>
@@ -1703,7 +1896,7 @@ function TextIndex({
                 ))}
               </div>
             ) : (
-              <p className="material-pending">{missingTextMessage(text)}</p>
+              <p className="material-pending">{missingTextMessage(text, t)}</p>
             )}
           </article>
         ))}
@@ -1713,15 +1906,17 @@ function TextIndex({
 }
 
 function CompactTextIndex({ texts }: { texts: TextRegistryEntry[] }) {
+  const { t } = usePortalI18n();
   if (!texts.length) return null;
   return (
     <section className="text-index-compact">
-      <h2>核心文本</h2>
+      <h2>{t("text.core")}</h2>
       {texts.map((text) => (
         <div className="compact-text" key={text.id}>
           <strong>{text.title}</strong>
           <span>
-            {statusLabel(text.copyrightStatus)} · {text.materials.length} file{text.materials.length === 1 ? "" : "s"}
+            {statusLabel(text.copyrightStatus, t)} · {text.materials.length}{" "}
+            {text.materials.length === 1 ? t("label.file") : t("label.files")}
           </span>
         </div>
       ))}
@@ -1730,6 +1925,7 @@ function CompactTextIndex({ texts }: { texts: TextRegistryEntry[] }) {
 }
 
 function App() {
+  const [locale, setLocale] = useState<PortalLocale>(() => detectInitialLocale());
   const [catalog, setCatalog] = useState<CourseCatalog | null>(null);
   const [portalSession, setPortalSession] = useState<PortalSession | null>(null);
   const [selectedCourseCode, setSelectedCourseCode] = useState(FALLBACK_COURSE.code);
@@ -1738,6 +1934,13 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [selectedUnit, setSelectedUnit] = useState(1);
   const [query, setQuery] = useState("");
+  const t = useMemo<TFunction>(() => (key, params) => translate(locale, key, params), [locale]);
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    document.title = locale === "zh-CN" ? "OSSD 课程资源门户" : "OSSD Course Portal";
+    storeLocale(locale);
+  }, [locale]);
 
   useEffect(() => {
     fetch("/api/portal/session", { credentials: "same-origin" })
@@ -1840,7 +2043,7 @@ function App() {
 
   const normalizedQuery = useMemo(() => normalizeQuery(query), [query]);
   const unit = manifest?.units.find((item) => item.unit === selectedUnit) ?? manifest?.units[0];
-  const structureLabels = manifest ? courseStructureLabels(manifest) : null;
+  const structureLabels = manifest ? courseStructureLabels(manifest, t) : null;
   const adminCanShare = canGenerateMoodleEmbeds(portalSession);
   const moodleEmbedByPath = useMemo(() => {
     const rowsByPath: MoodleEmbedMap = new Map();
@@ -1866,13 +2069,14 @@ function App() {
   };
 
   return (
-    <>
+    <PortalI18nProvider locale={locale} setLocale={setLocale}>
       <header className="topbar">
         <div>
           <p className="eyebrow">SunnyBrook OSSD</p>
-          <h1>课程备课资源门户</h1>
+          <h1>{t("app.title")}</h1>
         </div>
         <div className="topbar-actions">
+          <LanguageSwitcher />
           {portalSession?.authenticated ? (
             <>
               <span className="user-chip">
@@ -1880,17 +2084,17 @@ function App() {
                 {portalSession.role ? ` · ${portalSession.role}` : ""}
               </span>
               <button className="admin-entry logout-button" onClick={handleLogout} type="button">
-                退出
+                {t("action.logout")}
               </button>
             </>
           ) : null}
           {canOpenAdminBackend(portalSession) ? (
             <a className="admin-entry" href="/teacher-admin" rel="noopener" target="_blank">
-              管理后台
+              {t("action.admin")}
             </a>
           ) : null}
           <div className={`status-pill ${error ? "error" : ""}`}>
-            {error ? "Manifest error" : manifest ? `${manifest.course.code} loaded` : "Loading course"}
+            {error ? t("status.manifestError") : manifest ? t("status.loaded", { course: manifest.course.code }) : t("status.loadingCourse")}
           </div>
         </div>
       </header>
@@ -1905,11 +2109,11 @@ function App() {
           ) : null}
           <CurrentCourseCard course={selectedCourse} manifest={manifest} />
           <div className="search-box">
-            <label htmlFor="searchInput">搜索课程资源</label>
+            <label htmlFor="searchInput">{t("search.label")}</label>
             <input
               id="searchInput"
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Unit, lesson, Macbeth, PDF..."
+              placeholder={t("search.placeholder")}
               type="search"
               value={query}
             />
@@ -1920,7 +2124,7 @@ function App() {
                 onSelect={setSelectedUnit}
                 query={normalizedQuery}
                 selectedUnit={selectedUnit}
-                structureLabels={courseStructureLabels(manifest)}
+                structureLabels={structureLabels || courseStructureLabels(manifest, t)}
                 units={manifest.units}
               />
               <CompactTextIndex texts={manifest.texts} />
@@ -1930,7 +2134,7 @@ function App() {
         <section className="content">
           {error ? (
             <section className="course-overview panel error">
-              <div className="empty-state">无法读取课程 manifest。请确认课程目录和资源地址可访问。</div>
+              <div className="empty-state">{t("empty.manifest")}</div>
             </section>
           ) : null}
           {manifest && unit && structureLabels ? (
@@ -1969,12 +2173,12 @@ function App() {
           ) : null}
           {manifest && !unit ? (
             <section className="course-overview panel">
-              <div className="empty-state">课程已建立，暂无可展示的单元资源或可播放媒体。</div>
+              <div className="empty-state">{t("empty.courseEstablished")}</div>
             </section>
           ) : null}
         </section>
       </main>
-    </>
+    </PortalI18nProvider>
   );
 }
 

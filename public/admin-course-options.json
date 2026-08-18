@@ -89,12 +89,6 @@
       "planningFileCount": 3
     },
     {
-      "code": "HSB4U",
-      "title": "Challenge and Change in Society",
-      "grade": "Grade 12",
-      "planningFileCount": 0
-    },
-    {
       "code": "ICS3U",
       "title": "Introduction to Computer Studies",
       "grade": "Grade 11",
@@ -275,6 +269,12 @@
       "planningFileCount": 0
     },
     {
+      "code": "HSB4U",
+      "title": "Challenge and Change in Society",
+      "grade": "Grade 12",
+      "planningFileCount": 0
+    },
+    {
       "code": "ICS2O",
       "title": "ICS2O",
       "grade": "Unknown",
@@ -289,18 +289,6 @@
     {
       "code": "LKBCU",
       "title": "LKBCU",
-      "grade": "Unknown",
-      "planningFileCount": 0
-    },
-    {
-      "code": "MAP4C",
-      "title": "Foundations for College Mathematics",
-      "grade": "Grade 12",
-      "planningFileCount": 0
-    },
-    {
-      "code": "MBF3C",
-      "title": "MBF3C",
       "grade": "Unknown",
       "planningFileCount": 0
     },
@@ -335,6 +323,12 @@
       "planningFileCount": 0
     },
     {
+      "code": "SES4U",
+      "title": "SES4U",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
       "code": "SNC1D",
       "title": "Science",
       "grade": "Grade 9",
@@ -348,4 +342,3 @@
     }
   ]
 }
-

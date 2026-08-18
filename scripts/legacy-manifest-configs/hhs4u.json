@@ -1,0 +1,25 @@
+{
+  "course": "HHS4U",
+  "moodleCourseId": 54,
+  "title": "Families in Canada, Grade 12, University Preparation",
+  "sections": [
+    { "id": 582, "unit": 0, "title": "Introduction" },
+    { "id": 583, "unit": 0, "title": "Resources" },
+    { "id": 584, "unit": 1, "title": "Unit 1: An Approach to the Study of Individuals and Families" },
+    { "id": 585, "unit": 2, "title": "Unit 2: Individuals in a Diverse Society" },
+    { "id": 586, "unit": 3, "title": "Unit 3: Intimate Relationships and Marriage in a Diverse Society" },
+    { "id": 587, "unit": 4, "title": "Unit 4: Parent-Child Relationships in a Diverse Society" },
+    { "id": 588, "unit": 5, "title": "Unit 5: Individuals and Families From Mid to Late Adulthood" },
+    { "id": 589, "unit": 6, "title": "Culminating Project" },
+    { "id": 590, "unit": 7, "title": "Final Examination" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline", "role": "course_outline" },
+    { "pattern": "course planning|curriculum|learning goals|glossary|plagiarism|citation|reference examples", "role": "course_document" },
+    { "pattern": "lesson plans?", "role": "lesson_plan_reference" },
+    { "pattern": "chapter \\d+|research skills|theoretical perspectives|social science inquiry|apa", "role": "lesson_material" },
+    { "pattern": "final exam|test|summative|culminating", "role": "assessment" },
+    { "pattern": "discussion", "role": "discussion" },
+    { "pattern": "activity|assignment|case study|kwl|organizer|project|report|portfolio|seminar|proposal|bibliography|photo essay", "role": "assignment" }
+  ]
+}

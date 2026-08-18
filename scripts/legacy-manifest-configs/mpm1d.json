@@ -1,0 +1,25 @@
+{
+  "course": "MPM1D",
+  "moodleCourseId": 19,
+  "title": "Principles of Mathematics, Grade 9, Academic",
+  "sections": [
+    { "id": 175, "unit": 0, "title": "Introduction" },
+    { "id": 177, "unit": 1, "title": "Week One" },
+    { "id": 178, "unit": 2, "title": "Unit 1: Week Two" },
+    { "id": 180, "unit": 3, "title": "Unit 2: Week Three" },
+    { "id": 181, "unit": 4, "title": "Unit 2: Week Four" },
+    { "id": 183, "unit": 5, "title": "Unit 3: Week Five" },
+    { "id": 184, "unit": 6, "title": "Unit 3: Week Six" },
+    { "id": 186, "unit": 7, "title": "Unit 4: Week Eight - Optimization and 2D Measurement" },
+    { "id": 187, "unit": 8, "title": "Unit 4: Week Eight - 3D Measurement and Geometry" },
+    { "id": 188, "unit": 9, "title": "Independent Student Project" },
+    { "id": 189, "unit": 10, "title": "Final Exam" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline", "role": "course_outline" },
+    { "pattern": "attendance|textbook|learning log", "role": "course_document" },
+    { "pattern": "conversation|observation|learning log|exit card", "role": "reflection" },
+    { "pattern": "final exam|test|assignment|aol|afl|aal|practice|solutions|answers|review|isp", "role": "assessment" },
+    { "pattern": "video|integers|exponents|equations|algebra|percentage|polynomials|unit rates|proportions|linear|slope|graph|intercepts|systems|parallel|perpendicular|measurement|geometry|optimization|theorem|triangles", "role": "lesson_material" }
+  ]
+}

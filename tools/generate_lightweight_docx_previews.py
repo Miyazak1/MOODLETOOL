@@ -1184,7 +1184,14 @@ def main() -> int:
                     blocks = extract_docx_blocks(source_path)
                 except zipfile.BadZipFile:
                     skipped.append({"path": source_rel, "reason": "encrypted-or-unsupported-docx"})
-                    if item.pop("previewPath", None):
+                    title = item.get("label") or Path(source_rel).stem
+                    notice = "This Word file could not be opened as a standard DOCX package in the local preview generator. Use the download button to open the original file in Word or a compatible viewer."
+                    preview_path.parent.mkdir(parents=True, exist_ok=True)
+                    preview_path.write_text(render_preview_html(title, source_rel, preview_rel, [], notice), encoding="utf-8")
+                    generated_by_type["docx"] += 1
+                    generated[source_rel] = preview_rel
+                    if item.get("previewPath") != preview_rel:
+                        item["previewPath"] = preview_rel
                         updated += 1
                     continue
                 title = item.get("label") or Path(source_rel).stem

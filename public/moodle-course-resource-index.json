@@ -3,10 +3,10 @@
   "generatedAt": "2026-07-23T04:30:37.337Z",
   "source": "Generated from deployment/moodle-course-resource-index.csv and deployment/moodle-lesson-title-summary.csv",
   "totals": {
-    "courses": 54,
-    "readyOutlines": 51,
+    "courses": 52,
+    "readyOutlines": 49,
     "needsUrl": 3,
-    "lessonBooks": 91,
+    "lessonBooks": 90,
     "numberedLessons": 593
   },
   "courses": [
@@ -979,27 +979,6 @@
       "notes": "Moodle shell visible; Course Outline attachment and 4 generic Lessons Moodle Book containers found."
     },
     {
-      "course": "MAP4C",
-      "moodleCourseId": 17,
-      "coursePage": "https://www.esunnybrook.com/course/view.php?id=17",
-      "outlineStatus": "ready",
-      "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=1450",
-      "bookCount": 1,
-      "bookIds": [
-        1456
-      ],
-      "books": [
-        {
-          "id": 1456,
-          "url": "https://www.esunnybrook.com/mod/book/view.php?id=1456",
-          "chapterLinkCount": 2,
-          "numberedLessonCount": 0
-        }
-      ],
-      "numberedLessonCount": 0,
-      "notes": "Visible Moodle shell found; textbook Moodle Book container found, but no Course Outline attachment was exposed in this scan. Found Course Outline link during authenticated rescan."
-    },
-    {
       "course": "SNC1D",
       "moodleCourseId": 62,
       "coursePage": "https://www.esunnybrook.com/course/view.php?id=62",
@@ -1182,18 +1161,6 @@
       "coursePage": "https://www.esunnybrook.com/course/view.php?id=19",
       "outlineStatus": "ready",
       "outlineUrl": "https://www.esunnybrook.com/mod/url/view.php?id=1686",
-      "bookCount": 0,
-      "bookIds": [],
-      "books": [],
-      "numberedLessonCount": 0,
-      "notes": "Authenticated Moodle shell visible; no Moodle Book containers found; section structure imported."
-    },
-    {
-      "course": "MBF3C",
-      "moodleCourseId": 18,
-      "coursePage": "https://www.esunnybrook.com/course/view.php?id=18",
-      "outlineStatus": "ready",
-      "outlineUrl": "https://www.esunnybrook.com/mod/assign/view.php?id=1598",
       "bookCount": 0,
       "bookIds": [],
       "books": [],

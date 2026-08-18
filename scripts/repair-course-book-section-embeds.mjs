@@ -278,10 +278,11 @@ ${sectionHtml}
 
 function sectionRole(section) {
   const text = `${section.sectionLabel || ""} ${section.label || ""} ${section.path || ""}`.toLowerCase();
+  if (/lesson[\s_-]*expectations?/.test(text)) return "lesson_expectations";
   if (/hands[\s_-]*on/.test(text)) return "hands_on";
   if (/consolidation/.test(text)) return "consolidation";
   if (/homework/.test(text)) return "homework";
-  if (/lesson/.test(text)) return "lesson";
+  if (String(section.sectionLabel || "").trim().toLowerCase() === "lesson" || /\/02-lesson\.html$/i.test(toPosix(section.path || ""))) return "lesson";
   return "";
 }
 
@@ -306,6 +307,53 @@ function h5pEmbedHtml(item, pageRel) {
   const src = `${relativeHref(pageRel, item.previewPath)}?embed=1`;
   const title = item.label || item.path || "H5P activity";
   return `<div class="embedded-h5p embedded-h5p-frame"><iframe src="${escapeHtml(src, true)}" loading="lazy" allowfullscreen="allowfullscreen" title="${escapeHtml(title, true)}"></iframe></div>`;
+}
+
+function lessonIspringForSection(lesson, section) {
+  const label = String(section.sectionLabel || section.label || "").trim().toLowerCase();
+  if (label !== "lesson" && !/\/02-lesson\.html$/i.test(toPosix(section.path || ""))) return null;
+  const items = [
+    ...(lesson.ispring || []),
+    ...(lesson.resources?.ispring || []),
+  ].filter((item) => item?.path);
+  return items.length === 1 ? items[0] : null;
+}
+
+function hasIspringEmbed(html) {
+  return /ispring-localized\//i.test(html) || /class=["'][^"']*\b(?:localized-ispring|ispring-player|embedded-ispring)\b/i.test(html);
+}
+
+function ispringEmbedHtml(item, pageRel, title) {
+  const src = relativeHref(pageRel, item.path);
+  return `<div class="localized-ispring"><iframe src="${escapeHtml(src, true)}" width="1500" height="600" frameborder="0" scrolling="auto" allowfullscreen="allowfullscreen" loading="lazy" title="${escapeHtml(title || item.label || "Lesson iSpring", true)}"></iframe></div>`;
+}
+
+function insertLessonIspringFallback(html, course, unit, lesson, section) {
+  const item = lessonIspringForSection(lesson, section);
+  if (!item || hasIspringEmbed(html)) return { html, inserted: 0 };
+
+  const title = `Lesson - ${course} Unit ${unit.unit} Lesson ${lesson.lesson || lesson.id}`;
+  const embed = ispringEmbedHtml(item, section.path, title);
+  let inserted = 0;
+  let nextHtml = String(html || "").replace(
+    /<div class="portal-note">Interactive media pending local package; external playback was not embedded\.<\/div>/,
+    () => {
+      inserted = 1;
+      return embed;
+    },
+  );
+
+  if (!inserted && /<\/article>/.test(nextHtml)) {
+    nextHtml = nextHtml.replace(/<\/article>/, `${embed}</article>`);
+    inserted = 1;
+  }
+
+  if (!inserted && /<section class="files">/.test(nextHtml)) {
+    nextHtml = nextHtml.replace(/\s*<section class="files">/, `\n    ${embed}\n    <section class="files">`);
+    inserted = 1;
+  }
+
+  return { html: nextHtml, inserted };
 }
 
 function replaceStudentSubmissionPlaceholders(html, lesson, section) {
@@ -426,6 +474,8 @@ function repairCourse(course) {
     rewrittenAggregateSections: 0,
     fallbackH5pPlaceholders: 0,
     fallbackH5pIframes: 0,
+    fallbackIspringEmbeds: 0,
+    missingLessonIspringEmbeds: 0,
     before: countPlaceholders(courseRoot),
     missingPages: [],
     missingRawSections: [],
@@ -436,19 +486,31 @@ function repairCourse(course) {
     report.reason = "missing manifest";
     return report;
   }
+  const manifest = readJson(manifestPath);
+  report.missingLessonIspringEmbeds = (manifest.units || []).reduce((sum, unit) => {
+    return sum + (unit.lessons || []).filter((lesson) => {
+      const section = (lesson.bookSections || []).find((item) => item.path && lessonIspringForSection(lesson, item));
+      const ispring = section ? lessonIspringForSection(lesson, section) : null;
+      if (!section || !ispring) return false;
+      const pagePath = join(courseRoot, section.path);
+      if (!existsSync(pagePath)) return false;
+      return !hasIspringEmbed(readFileSync(pagePath, "utf8"));
+    }).length;
+  }, 0);
+
   const hasRaw = courseHasRaw(course);
-  if (!hasRaw && report.before.omitted === 0) {
+  if (!hasRaw && report.before.omitted === 0 && report.missingLessonIspringEmbeds === 0) {
     report.skipped = true;
     report.reason = "missing moodle book raw files";
     return report;
   }
-  if (!force && report.before.omitted + report.before.videoMissing + report.before.embedNote === 0) {
+  const placeholderTotal = report.before.omitted + report.before.videoMissing + report.before.embedNote;
+  const fallbackOnly = !force && placeholderTotal === 0 && report.missingLessonIspringEmbeds > 0;
+  if (!force && placeholderTotal === 0 && report.missingLessonIspringEmbeds === 0) {
     report.skipped = true;
     report.reason = "no placeholder notes; use --force to rebuild clean book sections";
     return report;
   }
-
-  const manifest = readJson(manifestPath);
   let changedManifest = false;
 
   for (const unit of manifest.units || []) {
@@ -468,20 +530,27 @@ function repairCourse(course) {
           continue;
         }
 
-        if (!rawLesson) {
+        if (!rawLesson || fallbackOnly) {
           const existing = readFileSync(pagePath, "utf8");
-          const fallback = replaceStudentSubmissionPlaceholders(existing, lesson, section);
+          let fallback = replaceStudentSubmissionPlaceholders(existing, lesson, section);
+          const ispringFallback = insertLessonIspringFallback(fallback.html, course, unit, lesson, section);
+          fallback = { ...fallback, html: ispringFallback.html };
           if (fallback.replaced) {
             report.wouldRewrite += 1;
             report.h5pIframes += fallback.h5pIframes;
             report.fallbackH5pPlaceholders += fallback.replaced;
             report.fallbackH5pIframes += fallback.h5pIframes;
-            if (apply) {
-              writeFileSync(pagePath, fallback.html, "utf8");
-              section.bytes = statSync(pagePath).size;
-              report.rewritten += 1;
-              changedManifest = true;
-            }
+          }
+          if (ispringFallback.inserted) {
+            report.wouldRewrite += 1;
+            report.ispringIframes += 1;
+            report.fallbackIspringEmbeds += 1;
+          }
+          if ((fallback.replaced || ispringFallback.inserted) && apply) {
+            writeFileSync(pagePath, fallback.html, "utf8");
+            section.bytes = statSync(pagePath).size;
+            report.rewritten += 1;
+            changedManifest = true;
           }
           continue;
         }
@@ -593,9 +662,11 @@ const summary = {
     h5pIframes: report.h5pIframes,
     ispringIframes: report.ispringIframes,
     videos: report.videos,
-    fallbackH5pPlaceholders: report.fallbackH5pPlaceholders,
-    fallbackH5pIframes: report.fallbackH5pIframes,
-    before: report.before,
+        fallbackH5pPlaceholders: report.fallbackH5pPlaceholders,
+        fallbackH5pIframes: report.fallbackH5pIframes,
+        fallbackIspringEmbeds: report.fallbackIspringEmbeds,
+        missingLessonIspringEmbeds: report.missingLessonIspringEmbeds,
+        before: report.before,
     after: report.after,
     missingPages: report.missingPages.length,
     missingRawSections: report.missingRawSections.length,

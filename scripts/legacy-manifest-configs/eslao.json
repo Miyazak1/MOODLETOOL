@@ -1,0 +1,24 @@
+{
+  "course": "ESLAO",
+  "moodleCourseId": 48,
+  "title": "English as a Second Language, ESL Level 1, Open",
+  "sections": [
+    { "id": 526, "unit": 0, "title": "Introduction" },
+    { "id": 527, "unit": 0, "title": "Course Outline" },
+    { "id": 528, "unit": 0, "title": "Student Syllabus" },
+    { "id": 529, "unit": 0, "title": "Lesson Plans" },
+    { "id": 530, "unit": 1, "title": "Unit 1: Writing" },
+    { "id": 531, "unit": 2, "title": "Unit 2: Canada and Me" },
+    { "id": 532, "unit": 3, "title": "Unit 3: Short Stories - Fiction and Non-Fiction" },
+    { "id": 533, "unit": 4, "title": "Unit 4: Media Introduction and Course Review" },
+    { "id": 534, "unit": 5, "title": "Unit 5: ISP" },
+    { "id": 535, "unit": 6, "title": "Unit 6: Final Exam" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline", "role": "course_outline" },
+    { "pattern": "success criteria|syllabus|attendance|learning skills|learning log|exit card|cheat sheet|note taking", "role": "course_document" },
+    { "pattern": "lesson plans|unit overview", "role": "lesson_plan_reference" },
+    { "pattern": "final exam|test", "role": "assessment" },
+    { "pattern": "video", "role": "video_reference" }
+  ]
+}

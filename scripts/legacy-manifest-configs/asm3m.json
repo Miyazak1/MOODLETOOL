@@ -1,0 +1,19 @@
+{
+  "course": "ASM3M",
+  "moodleCourseId": 66,
+  "title": "Media Arts, Grade 11, University/College",
+  "sections": [
+    { "id": 721, "unit": 0, "title": "General" },
+    { "id": 722, "unit": 1, "title": "Unit 1: Design" },
+    { "id": 723, "unit": 2, "title": "Unit 2: Character Design" },
+    { "id": 724, "unit": 3, "title": "Unit 3: Video Art and Animation" },
+    { "id": 725, "unit": 4, "title": "Unit 4: Video Game" },
+    { "id": 726, "unit": 5, "title": "Final Evaluation" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline", "role": "course_outline" },
+    { "pattern": "teacher.*conversation|teacher.*observation|checklists?|learning log|exit card|self reflection", "role": "reflection" },
+    { "pattern": "final exam|final project|isp|assessment|submission|test", "role": "assessment" },
+    { "pattern": "elements|principles|design|colour|color|space|shape|typography|line|value|form|texture|character|portrait|video|animation|narrative|contemporary|installation|performance|game|logo|storyboard|worksheet|lesson|slides|project|assignment|activity", "role": "lesson_material" }
+  ]
+}
