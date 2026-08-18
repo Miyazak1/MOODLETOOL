@@ -642,6 +642,30 @@
         margin-top: 4px;
         font-size: 16px;
       }
+      .dashboard-stack {
+        display: grid;
+        gap: 14px;
+      }
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+        gap: 12px;
+      }
+      .dashboard-card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: #fff;
+      }
+      .dashboard-card h3 {
+        margin: 0 0 10px;
+        font-size: 17px;
+      }
+      .badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
       .gap-list {
         display: grid;
         gap: 6px;
@@ -1448,6 +1472,7 @@
         <nav class="admin-nav" aria-label="Admin sections">
           <button class="active" type="button" data-admin-nav="login">登录状态</button>
           <div class="nav-group-label">课程上下文</div>
+          <button type="button" data-admin-nav="dashboard" data-auth-required="1" disabled>总览</button>
           <button type="button" data-admin-nav="course" data-auth-required="1" disabled>选择当前课程</button>
           <div class="nav-group-label">当前课程操作</div>
           <button type="button" data-admin-nav="media" data-auth-required="1" disabled>媒体发布</button>
@@ -1517,6 +1542,21 @@
         <div class="actions">
           <button id="logoutButton" type="button" hidden>退出登录</button>
         </div>
+      </section>
+
+      <section class="admin-panel auth-required" data-admin-panel="dashboard" hidden>
+        <div class="panel-heading">
+          <div>
+            <h2>后台总览</h2>
+            <p class="meta-line">汇总课程上线、完整性缺口与存储空间。这里不修改课程内容，只帮助先判断今天要处理哪里。</p>
+          </div>
+          <div class="actions">
+            <button id="dashboardRefreshButton" type="button">刷新总览</button>
+            <button type="button" data-switch-panel="storage">查看存储空间</button>
+            <button type="button" data-switch-panel="overview">查看全课程缺口</button>
+          </div>
+        </div>
+        <div id="dashboardPanel" hidden></div>
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="course" hidden>
@@ -1949,6 +1989,7 @@ pm2 restart ossd-course-portal --update-env</pre>
     <script src="/admin-course-package-panel.js"></script>
     <script src="/admin-course-package-action.js"></script>
     <script src="/admin-storage-panel.js"></script>
+    <script src="/admin-dashboard-panel.js"></script>
     <script src="/admin-course-lifecycle-panel.js"></script>
     <script src="/admin-readiness-panel.js"></script>
     <script src="/admin-upload-form-panel.js"></script>
@@ -1995,6 +2036,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       const statusStats = document.querySelector("#statusStats");
       const uploadStorageMini = document.querySelector("#uploadStorageMini");
       const packageStorageMini = document.querySelector("#packageStorageMini");
+      const dashboardPanelElement = document.querySelector("#dashboardPanel");
       const storageSummary = document.querySelector("#storageSummary");
       const storageCourseTable = document.querySelector("#storageCourseTable");
       const readinessPanel = document.querySelector("#readinessPanel");
@@ -2076,6 +2118,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       let coursePackageUi = null;
       let coursePackageAction = null;
       let storagePanel = null;
+      let dashboardPanel = null;
       let lifecyclePanel = null;
       let readinessUi = null;
       let uploadFormPanel = null;
@@ -2159,6 +2202,14 @@ pm2 restart ossd-course-portal --update-env</pre>
         },
         escapeHtml,
         formatBytes,
+      });
+      dashboardPanel = window.AdminDashboardPanel.createPanel({
+        elements: {
+          root: dashboardPanelElement,
+        },
+        escapeHtml,
+        formatBytes,
+        meterHtml,
       });
       readinessUi = window.AdminReadinessPanel.createPanel({
         elements: {
@@ -2468,6 +2519,9 @@ pm2 restart ossd-course-portal --update-env</pre>
         }
         if (activeAdminPanel === "storage" && adminAuthenticated) {
           readStorage({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+        }
+        if (activeAdminPanel === "dashboard" && adminAuthenticated) {
+          readDashboard({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
         }
         if (activeAdminPanel === "media" && adminAuthenticated) {
           readMedia({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
@@ -3184,7 +3238,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         adminAuthenticated = Boolean(isAuthenticated);
         currentAdminSession = adminAuthenticated ? { ...(currentAdminSession || {}), ...(sessionData || {}) } : null;
         if (!adminAuthenticated && activeAdminPanel !== "output") activeAdminPanel = "login";
-        if (adminAuthenticated && activeAdminPanel === "login") activeAdminPanel = "course";
+        if (adminAuthenticated && activeAdminPanel === "login") activeAdminPanel = "dashboard";
         if (!adminAuthenticated) stopMediaAutoRefresh();
         document.querySelector("#logoutButton").hidden = !isAuthenticated;
         document.querySelector("#loginButton").hidden = isAuthenticated;
@@ -3197,9 +3251,8 @@ pm2 restart ossd-course-portal --update-env</pre>
         setAuthenticated(Boolean(data.authenticated), data);
         if (data.authenticated) {
           await readUsers({ writeOutput: false });
-          await readCourseLifecycle({ writeOutput: false });
+          await readDashboard({ writeOutput: false });
           await readCourseLifecycleJobs({ writeOutput: false });
-          await readStorage({ writeOutput: false });
           await readMedia({ writeOutput: false });
           await restoreCoursePackageTask({ writeOutput: false });
           write(`已登录：${data.username}`);
@@ -3215,9 +3268,8 @@ pm2 restart ossd-course-portal --update-env</pre>
         setAuthenticated(Boolean(data.ok), data);
         if (data.ok) {
           await readUsers({ writeOutput: false });
-          await readCourseLifecycle({ writeOutput: false });
+          await readDashboard({ writeOutput: false });
           await readCourseLifecycleJobs({ writeOutput: false });
-          await readStorage({ writeOutput: false });
           await readMedia({ writeOutput: false });
           await restoreCoursePackageTask({ writeOutput: false });
         }
@@ -3248,6 +3300,32 @@ pm2 restart ossd-course-portal --update-env</pre>
         if (data.ok) renderStorageOverview(data);
         if (writeOutput) write(data);
         return data;
+      }
+
+      async function readDashboard({ writeOutput = true } = {}) {
+        dashboardPanel.renderLoading();
+        try {
+          const [storage, readiness, lifecycle] = await Promise.all([
+            adminApi.storage(),
+            adminApi.readiness(),
+            adminApi.courseLifecycle(),
+          ]);
+          if (storage?.ok) renderStorageOverview(storage);
+          if (readiness?.ok) renderAllCourseReadiness(readiness);
+          if (lifecycle?.ok) renderCourseLifecycle(lifecycle);
+          const data = {
+            ok: Boolean(storage?.ok && readiness?.ok && lifecycle?.ok),
+            storage,
+            readiness,
+            lifecycle,
+          };
+          dashboardPanel.render(data);
+          if (writeOutput) write(data);
+          return data;
+        } catch (error) {
+          dashboardPanel.renderError(error);
+          throw error;
+        }
       }
 
       async function readHistory() {
@@ -3482,6 +3560,9 @@ pm2 restart ossd-course-portal --update-env</pre>
       });
       document.querySelector("#storageButton").addEventListener("click", () => {
         runButtonAction("#storageButton", "正在刷新存储容量...", () => readStorage(), "存储容量已更新");
+      });
+      document.querySelector("#dashboardRefreshButton").addEventListener("click", () => {
+        runButtonAction("#dashboardRefreshButton", "正在刷新后台总览...", () => readDashboard(), "后台总览已更新");
       });
       document.querySelector("#fillLocalLogin").addEventListener("click", () => {
         fields.username.value = "admin";
