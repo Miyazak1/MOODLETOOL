@@ -76,6 +76,8 @@ const portalUsersPath = resolve(process.env.PORTAL_USERS_FILE || join(portalData
 const courseStatusPath = resolve(process.env.COURSE_STATUS_FILE || join(portalDataRoot, "course-status.json"));
 const courseActiveRoot = resolve(process.env.COURSE_ACTIVE_ROOT || join(workspaceRoot, "courseware"));
 const courseArchiveRoot = resolve(process.env.COURSE_ARCHIVE_ROOT || join(workspaceRoot, "courseware-archive"));
+const storageOverviewCacheVersion = 1;
+const storageOverviewCachePath = resolve(process.env.STORAGE_OVERVIEW_CACHE_FILE || join(portalDataRoot, "storage-overview-cache.json"));
 const xAccelCoursewarePrefix = process.env.X_ACCEL_COURSEWARE_PREFIX || "";
 const coursewareAssetBaseUrl = String(process.env.COURSEWARE_ASSET_BASE_URL || "").replace(/\/+$/, "");
 const coursewareAssetMode = ["local", "hybrid", "cdn"].includes(String(process.env.COURSEWARE_ASSET_MODE || "").toLowerCase())
@@ -3952,7 +3954,7 @@ async function courseStorageRecord(courseCode, catalogEntry = null) {
   };
 }
 
-async function storageOverview({ summaryOnly = false } = {}) {
+async function storageCourseIndex() {
   const catalog = await readCourseCatalog();
   const catalogCourses = visibleCatalogCourses(catalog);
   const catalogMap = new Map(catalogCourses.map((course) => [String(course.code || "").toUpperCase(), course]));
@@ -3969,33 +3971,179 @@ async function storageOverview({ summaryOnly = false } = {}) {
       .map((name) => String(name || "").replace(/\.(tar\.gz|zip)$/i, "").toUpperCase())
       .filter((name) => name && !isExcludedCourseCode(name)),
   ]);
-  const disk = await diskInfoFor(courseActiveRoot);
-  const courses = summaryOnly
-    ? []
-    : (await Promise.all([...courseCodes].map((course) => courseStorageRecord(course, catalogMap.get(course)))))
-      .sort((a, b) => b.totalBytes - a.totalBytes || a.course.localeCompare(b.course));
-  const activeRootBytes = summaryOnly ? null : await directorySize(courseActiveRoot);
-  const archiveRootBytes = summaryOnly ? null : await directorySize(courseArchiveRoot);
-  const adminUploadBytes = summaryOnly ? null : courses.reduce((sum, course) => sum + course.adminUploadBytes, 0);
+  return {
+    catalogCourses,
+    catalogMap,
+    activeDirCourses,
+    extraActiveDirCourses,
+    courseCodes,
+  };
+}
+
+function summarizeStorageCourses(courses, index) {
+  return {
+    courseCount: courses.length,
+    catalogCourses: index.catalogCourses.length,
+    activeDirectoryCourses: index.activeDirCourses.length,
+    extraActiveDirectoryCourses: index.extraActiveDirCourses.length,
+    activeRootBytes: courses.reduce((sum, course) => sum + Number(course.activeBytes || 0), 0),
+    archiveRootBytes: courses.reduce((sum, course) => sum + Number(course.archiveBytes || 0), 0),
+    adminUploadBytes: courses.reduce((sum, course) => sum + Number(course.adminUploadBytes || 0), 0),
+    courseTotalBytes: courses.reduce((sum, course) => sum + Number(course.totalBytes || 0), 0),
+  };
+}
+
+function normalizeStorageCourseRecord(record) {
+  return {
+    course: safeSegment(record?.course || "").toUpperCase(),
+    title: String(record?.title || ""),
+    status: String(record?.status || "active"),
+    activeBytes: Number(record?.activeBytes || 0),
+    adminUploadBytes: Number(record?.adminUploadBytes || 0),
+    archiveBytes: Number(record?.archiveBytes || 0),
+    totalBytes: Number(record?.totalBytes || 0),
+  };
+}
+
+function storageCacheMeta(status, cache = null) {
+  const updatedAt = cache?.updatedAt || cache?.generatedAt || null;
+  const ageSeconds = updatedAt ? Math.max(0, Math.round((Date.now() - Date.parse(updatedAt)) / 1000)) : null;
+  const usable = ["ready", "rebuilt", "updated"].includes(status);
+  return {
+    path: storageOverviewCachePath,
+    exists: Boolean(cache),
+    usable,
+    status,
+    updatedAt,
+    ageSeconds,
+  };
+}
+
+function storageCacheIsUsable(cache) {
+  return Boolean(
+    cache
+      && cache.version === storageOverviewCacheVersion
+      && cache.activeRoot === courseActiveRoot
+      && cache.archiveRoot === courseArchiveRoot
+      && Array.isArray(cache.courses)
+      && cache.summary
+  );
+}
+
+function readStorageOverviewCache() {
+  const cache = readJsonFileSync(storageOverviewCachePath, null);
+  if (!cache) return { cache: null, meta: storageCacheMeta("missing") };
+  if (!storageCacheIsUsable(cache)) return { cache: null, meta: storageCacheMeta("stale", cache) };
+  return { cache, meta: storageCacheMeta("ready", cache) };
+}
+
+async function writeStorageOverviewCache(cache) {
+  await mkdir(dirname(storageOverviewCachePath), { recursive: true });
+  writeJsonFile(storageOverviewCachePath, cache);
+  return cache;
+}
+
+async function rebuildStorageOverviewCache() {
+  const index = await storageCourseIndex();
+  const courses = (await Promise.all([...index.courseCodes].map((course) => courseStorageRecord(course, index.catalogMap.get(course)))))
+    .map(normalizeStorageCourseRecord)
+    .filter((course) => course.course)
+    .sort((a, b) => b.totalBytes - a.totalBytes || a.course.localeCompare(b.course));
+  const now = new Date().toISOString();
+  const cache = {
+    ok: true,
+    version: storageOverviewCacheVersion,
+    generatedAt: now,
+    updatedAt: now,
+    activeRoot: courseActiveRoot,
+    archiveRoot: courseArchiveRoot,
+    summary: summarizeStorageCourses(courses, index),
+    courses,
+    warnings: [],
+  };
+  return writeStorageOverviewCache(cache);
+}
+
+function publicStorageOverview(cache, { disk, summaryOnly, cacheMeta }) {
   return {
     ok: true,
-    generatedAt: new Date().toISOString(),
+    generatedAt: cache.generatedAt || cache.updatedAt || new Date().toISOString(),
+    updatedAt: cache.updatedAt || cache.generatedAt || null,
     activeRoot: courseActiveRoot,
     archiveRoot: courseArchiveRoot,
     disk,
     summary: {
-      courseCount: courses.length,
-      catalogCourses: catalogCourses.length,
-      activeDirectoryCourses: activeDirCourses.length,
-      extraActiveDirectoryCourses: extraActiveDirCourses.length,
+      ...(cache.summary || {}),
       lightweight: summaryOnly,
-      activeRootBytes,
-      archiveRootBytes,
-      adminUploadBytes,
-      courseTotalBytes: courses.reduce((sum, course) => sum + course.totalBytes, 0),
+      cached: Boolean(cacheMeta?.usable),
     },
+    cache: cacheMeta,
+    courses: summaryOnly ? [] : cache.courses || [],
+    warnings: cache.warnings || [],
+  };
+}
+
+async function storageOverview({ summaryOnly = false, refresh = false } = {}) {
+  const disk = await diskInfoFor(courseActiveRoot);
+  if (refresh || !summaryOnly) {
+    const cached = readStorageOverviewCache();
+    if (!refresh && cached.cache) return publicStorageOverview(cached.cache, { disk, summaryOnly, cacheMeta: cached.meta });
+    const rebuilt = await rebuildStorageOverviewCache();
+    return publicStorageOverview(rebuilt, { disk, summaryOnly, cacheMeta: storageCacheMeta("rebuilt", rebuilt) });
+  }
+
+  const cached = readStorageOverviewCache();
+  if (cached.cache) return publicStorageOverview(cached.cache, { disk, summaryOnly, cacheMeta: cached.meta });
+
+  const index = await storageCourseIndex();
+  const now = new Date().toISOString();
+  const lightweightCache = {
+    ok: true,
+    version: storageOverviewCacheVersion,
+    generatedAt: now,
+    updatedAt: now,
+    activeRoot: courseActiveRoot,
+    archiveRoot: courseArchiveRoot,
+    summary: {
+      courseCount: 0,
+      catalogCourses: index.catalogCourses.length,
+      activeDirectoryCourses: index.activeDirCourses.length,
+      extraActiveDirectoryCourses: index.extraActiveDirCourses.length,
+      activeRootBytes: null,
+      archiveRootBytes: null,
+      adminUploadBytes: null,
+      courseTotalBytes: null,
+    },
+    courses: [],
+    warnings: ["Storage cache is missing; open the storage page or rebuild the cache to calculate course sizes."],
+  };
+  return publicStorageOverview(lightweightCache, { disk, summaryOnly, cacheMeta: cached.meta });
+}
+
+async function refreshStorageCacheForCourse(courseCode) {
+  const course = safeSegment(courseCode || "").toUpperCase();
+  if (!course) return null;
+  const current = readStorageOverviewCache();
+  if (!current.cache) return null;
+  const index = await storageCourseIndex();
+  const record = normalizeStorageCourseRecord(await courseStorageRecord(course, index.catalogMap.get(course)));
+  const courses = (current.cache.courses || [])
+    .map(normalizeStorageCourseRecord)
+    .filter((item) => item.course && item.course !== course);
+  if (record.activeBytes || record.adminUploadBytes || record.archiveBytes || index.catalogMap.has(course)) {
+    courses.push(record);
+  }
+  courses.sort((a, b) => b.totalBytes - a.totalBytes || a.course.localeCompare(b.course));
+  const now = new Date().toISOString();
+  const next = {
+    ...current.cache,
+    updatedAt: now,
+    activeRoot: courseActiveRoot,
+    archiveRoot: courseArchiveRoot,
+    summary: summarizeStorageCourses(courses, index),
     courses,
   };
+  return writeStorageOverviewCache(next);
 }
 
 async function appendAdminHistory(course, entry) {
@@ -6424,7 +6572,13 @@ async function handleAdminApi(req, res) {
 
     if (requestUrl.pathname === "/api/admin/storage" && req.method === "GET") {
       const summaryOnly = ["1", "true", "yes"].includes(String(requestUrl.searchParams.get("summary") || "").toLowerCase());
-      sendJson(res, 200, await storageOverview({ summaryOnly }));
+      const refresh = ["1", "true", "yes"].includes(String(requestUrl.searchParams.get("refresh") || "").toLowerCase());
+      sendJson(res, 200, await storageOverview({ summaryOnly, refresh }));
+      return true;
+    }
+
+    if (requestUrl.pathname === "/api/admin/storage/rebuild" && req.method === "POST") {
+      sendJson(res, 200, await storageOverview({ summaryOnly: false, refresh: true }));
       return true;
     }
 
@@ -6987,12 +7141,21 @@ async function handleAdminApi(req, res) {
       if (!importId) throw new Error("Missing course package importId.");
       await withOperationLock(`course:${requestedCourse}:write`, async () => {
         const result = await commitCoursePackageImport({ course: requestedCourse, importId, actor: adminActor(req) });
+        let storageCache = null;
+        let storageCacheWarning = null;
+        try {
+          storageCache = await refreshStorageCacheForCourse(requestedCourse);
+        } catch (error) {
+          storageCacheWarning = error instanceof Error ? error.message : String(error);
+        }
         // The manual "confirm/replace course package" path swaps the active manifest just like
         // the raw-upload callback, so it must also queue the publish job. Otherwise iSpring/video
         // entries remain on /courseware/... indefinitely instead of being rewritten to CDN.
         const media = tryCreateMediaJob({ type: "publish-course", course: requestedCourse, actor: adminActor(req) });
         sendJson(res, 200, {
           ...result,
+          storageCache: storageCache ? storageCacheMeta("updated", storageCache) : null,
+          storageCacheWarning,
           mediaJob: media.job,
           mediaJobWarning: media.warning || null,
         });
@@ -7068,6 +7231,13 @@ async function handleAdminApi(req, res) {
           preview: preview?.stdout?.trim() || null,
           previewWarning,
         });
+        let storageCache = null;
+        let storageCacheWarning = null;
+        try {
+          storageCache = await refreshStorageCacheForCourse(upload.course);
+        } catch (error) {
+          storageCacheWarning = error instanceof Error ? error.message : String(error);
+        }
         const media = mediaJobsAutoPublishAfterUpload
           ? tryCreateMediaJob({ type: "publish-course", course: upload.course, actor: adminActor(req) })
           : { job: null, warning: "" };
@@ -7083,6 +7253,8 @@ async function handleAdminApi(req, res) {
           lightweightPreviewWarning,
           preview: preview?.stdout?.trim() || null,
           previewWarning,
+          storageCache: storageCache ? storageCacheMeta("updated", storageCache) : null,
+          storageCacheWarning,
           mediaJob: media.job,
           mediaJobWarning: media.warning || null,
         });
