@@ -78,6 +78,7 @@ function LanguageSwitcher() {
 type PortalSession = {
   authenticated: boolean;
   username: string | null;
+  displayName?: string | null;
   role: string | null;
   courses: string[];
 };
@@ -1917,6 +1918,7 @@ function App() {
         setPortalSession({
           authenticated: data.authenticated,
           username: data.username,
+          displayName: data.displayName,
           role: data.role,
           courses: data.courses || [],
         });
@@ -2044,7 +2046,8 @@ function App() {
           {portalSession?.authenticated ? (
             <>
               <span className="user-chip">
-                {portalSession.username}
+                {portalSession.displayName || portalSession.username}
+                {portalSession.displayName && portalSession.username ? ` · ${portalSession.username}` : ""}
                 {portalSession.role ? ` · ${portalSession.role}` : ""}
               </span>
               <button className="admin-entry logout-button" onClick={handleLogout} type="button">

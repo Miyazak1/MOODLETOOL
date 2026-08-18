@@ -1832,6 +1832,10 @@
             <input id="portalUsername" placeholder="teacher1" />
           </div>
           <div>
+            <label for="portalDisplayName">老师名字 / 昵称</label>
+            <input id="portalDisplayName" placeholder="Ms. Smith" />
+          </div>
+          <div>
             <label for="portalPassword">Password</label>
             <input id="portalPassword" type="password" placeholder="新用户必填；留空则不改密码" />
           </div>
@@ -2017,6 +2021,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         textId: document.querySelector("#textId"),
         file: document.querySelector("#file"),
         portalUsername: document.querySelector("#portalUsername"),
+        portalDisplayName: document.querySelector("#portalDisplayName"),
         portalPassword: document.querySelector("#portalPassword"),
         portalRole: document.querySelector("#portalRole"),
         portalStatus: document.querySelector("#portalStatus"),
@@ -2295,6 +2300,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       usersPanel = window.AdminUsersPanel.createPanel({
         elements: {
           coursesContainer: userCourseCheckboxes,
+          displayName: fields.portalDisplayName,
           password: fields.portalPassword,
           role: fields.portalRole,
           status: fields.portalStatus,
@@ -3262,7 +3268,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           await readCourseLifecycleJobs({ writeOutput: false });
           await readMedia({ writeOutput: false });
           await restoreCoursePackageTask({ writeOutput: false });
-          write(`已登录：${data.username}`);
+          write(`已登录：${data.displayName || data.username}`);
         }
         return data;
       }

@@ -695,8 +695,10 @@ function loadPortalUsers() {
 }
 
 function normalizePortalUser(user) {
+  const displayName = String(user.displayName || user.nickname || user.name || user.fullName || "").trim();
   return {
     username: String(user.username || "").trim(),
+    displayName,
     password: user.password ? String(user.password) : undefined,
     passwordHash: user.passwordHash ? String(user.passwordHash) : undefined,
     role: String(user.role || "teacher").trim() || "teacher",
@@ -710,6 +712,7 @@ function normalizePortalUser(user) {
 function publicPortalUser(user) {
   return {
     username: user.username,
+    displayName: user.displayName || "",
     role: user.role,
     courses: user.courses,
     status: user.status || "active",
@@ -1789,6 +1792,7 @@ function readPortalSession(req) {
     if (!user) return null;
     return {
       username: user.username,
+      displayName: user.displayName || "",
       role: user.role,
       courses: user.courses,
     };
@@ -1832,12 +1836,14 @@ function publicPortalSession(session) {
     ? {
         authenticated: true,
         username: session.username,
+        displayName: session.displayName || "",
         role: session.role,
         courses: session.courses,
       }
     : {
         authenticated: false,
         username: null,
+        displayName: null,
         role: null,
         courses: [],
       };
@@ -2854,6 +2860,7 @@ function adminPrincipal(req) {
   if (legacySession) {
     return {
       username: legacySession.username,
+      displayName: legacySession.username,
       role: "admin",
       courses: ["*"],
       source: "admin",
@@ -3682,6 +3689,10 @@ function upsertPortalUser(users, input) {
   const next = normalizePortalUser({
     ...(existing || {}),
     username,
+    displayName:
+      input.displayName !== undefined || input.nickname !== undefined || input.name !== undefined || input.fullName !== undefined
+        ? String(input.displayName || input.nickname || input.name || input.fullName || "").trim()
+        : existing?.displayName || "",
     role,
     courses,
     status: input.status === "disabled" ? "disabled" : "active",
@@ -6225,6 +6236,7 @@ async function handleAdminApi(req, res) {
         authenticated: Boolean(principal),
         loginEnabled: adminLoginConfigured(),
         username: principal?.username || null,
+        displayName: principal?.displayName || null,
         role: principal?.role || null,
         authSource: principal?.source || null,
       });
@@ -6248,7 +6260,7 @@ async function handleAdminApi(req, res) {
       if (legacyUsernameOk && legacyPasswordOk) {
         clearLoginFailures(rateKeys);
         setSessionCookie(res, adminUsername);
-        sendJson(res, 200, { ok: true, username: adminUsername, role: "admin", authSource: "admin" });
+        sendJson(res, 200, { ok: true, username: adminUsername, displayName: adminUsername, role: "admin", authSource: "admin" });
         return true;
       }
 
@@ -6260,6 +6272,7 @@ async function handleAdminApi(req, res) {
         sendJson(res, 200, {
           ok: true,
           username: portalUser.username,
+          displayName: portalUser.displayName || "",
           role: portalUser.role,
           courses: portalUser.courses,
           authSource: "portal",
@@ -6670,6 +6683,7 @@ async function handleAdminApi(req, res) {
           actor: adminActor(req),
           action: "portal-user-upsert",
           username: user.username,
+          displayName: user.displayName || "",
           role: user.role,
           courses: user.courses,
           status: user.status,
@@ -7310,6 +7324,7 @@ async function handlePortalApi(req, res) {
         ok: true,
         ...publicPortalSession({
           username: user.username,
+          displayName: user.displayName || "",
           role: user.role,
           courses: user.courses,
         }),

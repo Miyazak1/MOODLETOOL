@@ -86,10 +86,10 @@ assert.equal(sidebarCode.textContent, "ENG4U");
 assert.equal(contextTitle.textContent, "English");
 assert.match(contextNote.textContent, /ENG4U 是当前课程/);
 
-panel.renderAuthState({ authenticated: true, session: { username: "admin<script>", authSource: "env" } });
-assert.equal(topAuthStatus.textContent, "已登录：admin<script>");
+panel.renderAuthState({ authenticated: true, session: { username: "admin<script>", displayName: "Admin User", authSource: "env" } });
+assert.equal(topAuthStatus.textContent, "已登录：Admin User · admin<script>");
 assert.equal(topAuthStatus.classList.has("signed-out"), false);
-assert.match(sidebarSessionStatus.innerHTML, /admin&lt;script>/);
+assert.match(sidebarSessionStatus.innerHTML, /Admin User · admin&lt;script>/);
 assert.equal(loginForm.hidden, true);
 assert.equal(courseContextBar.hidden, false);
 

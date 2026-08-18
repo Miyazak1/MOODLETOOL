@@ -41,13 +41,15 @@
 
     function renderAuthState({ authenticated, session }) {
       const username = session?.username || "admin";
+      const displayName = session?.displayName || username;
+      const accountSuffix = session?.displayName && session.displayName !== username ? ` · ${username}` : "";
       if (topAuthStatus) {
-        topAuthStatus.textContent = authenticated ? `已登录：${username}` : "未登录";
+        topAuthStatus.textContent = authenticated ? `已登录：${displayName}${accountSuffix}` : "未登录";
         topAuthStatus.classList.toggle("signed-out", !authenticated);
       }
       if (sidebarSessionStatus) {
         sidebarSessionStatus.innerHTML = authenticated
-          ? `<span>登录状态</span><strong>已登录 · ${escapeHtml(username)}</strong>`
+          ? `<span>登录状态</span><strong>已登录 · ${escapeHtml(displayName)}${escapeHtml(accountSuffix)}</strong>`
           : "<span>登录状态</span><strong>未登录</strong>";
       }
       if (adminSessionStatus) {
@@ -55,7 +57,7 @@
         adminSessionStatus.innerHTML = authenticated
           ? `
             <strong>已登录</strong>
-            <span>当前管理员：${escapeHtml(username)}${session?.authSource ? ` · ${escapeHtml(session.authSource)}` : ""}。左侧功能已解锁，可以继续上传、导入、管理课程。</span>
+            <span>当前管理员：${escapeHtml(displayName)}${escapeHtml(accountSuffix)}${session?.authSource ? ` · ${escapeHtml(session.authSource)}` : ""}。左侧功能已解锁，可以继续上传、导入、管理课程。</span>
           `
           : `
             <strong>未登录</strong>

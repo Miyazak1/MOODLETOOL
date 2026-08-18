@@ -32,6 +32,7 @@
 
     function clearForm() {
       if (elements.username) elements.username.value = "";
+      if (elements.displayName) elements.displayName.value = "";
       if (elements.password) elements.password.value = "";
       if (elements.role) elements.role.value = "teacher";
       if (elements.status) elements.status.value = "active";
@@ -42,6 +43,7 @@
       const user = data.users.find((item) => item.username === username);
       if (!user) return null;
       if (elements.username) elements.username.value = user.username;
+      if (elements.displayName) elements.displayName.value = user.displayName || "";
       if (elements.password) elements.password.value = "";
       if (elements.role) elements.role.value = user.role || "teacher";
       if (elements.status) elements.status.value = user.status || "active";
@@ -53,6 +55,7 @@
       return {
         course,
         username: String(elements.username?.value || "").trim(),
+        displayName: String(elements.displayName?.value || "").trim(),
         password: elements.password?.value || "",
         role: elements.role?.value || "teacher",
         status: elements.status?.value || "active",
@@ -74,6 +77,7 @@
           (user) => `
               <tr>
                 <td><strong>${escapeHtml(user.username)}</strong></td>
+                <td>${escapeHtml(user.displayName || "")}</td>
                 <td>${escapeHtml(user.role)}</td>
                 <td>${escapeHtml(user.status)}</td>
                 <td>${escapeHtml((user.courses || []).join(", "))}</td>
@@ -89,6 +93,7 @@
               <thead>
                 <tr>
                   <th>Username</th>
+                  <th>Display name</th>
                   <th>Role</th>
                   <th>Status</th>
                   <th>Courses</th>
@@ -96,7 +101,7 @@
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>${rows || '<tr><td colspan="6">No users configured.</td></tr>'}</tbody>
+              <tbody>${rows || '<tr><td colspan="7">No users configured.</td></tr>'}</tbody>
             </table>
           </div>
           <p class="meta-line">Users file: ${escapeHtml(data.usersFile || "")}</p>
