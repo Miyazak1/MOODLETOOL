@@ -444,6 +444,10 @@ function teacherPacketResourcesForManifest(manifest: CourseManifest): LinkableRe
   const items: LinkableResource[] = [];
   const teacherResources = (manifest.teacherResources || []).filter((item) => !isHomeworkSubmissionResource(item));
   const answerResources = teacherResources.filter((item) => roleIn(item, ["answer_key", "answer_keys"]));
+  const teacherPacketResources = teacherResources.filter((item) => {
+    const scope = `${item.parentSection || ""} ${item.sourceGroup || ""} ${item.role || ""}`.toLowerCase();
+    return /teacher[\s_-]*packet/.test(scope) || roleIn(item, ["teacher_resource", "teacher_reference"]);
+  });
   const usedAnswerKeys = new Set<string>();
 
   for (const unit of manifest.units || []) {
@@ -462,6 +466,7 @@ function teacherPacketResourcesForManifest(manifest: CourseManifest): LinkableRe
     if (usedAnswerKeys.has(itemKey) || (sourceKey && usedAnswerKeys.has(sourceKey))) return;
     addUniqueResource(items, item);
   });
+  addUniqueResources(items, teacherPacketResources);
   addUniqueResources(items, (manifest.courseDownloads || []).filter((item) => !isHomeworkSubmissionResource(item) && roleIn(item, ["answer_keys", "answer_key"])));
   return items;
 }
