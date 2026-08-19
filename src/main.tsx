@@ -409,10 +409,15 @@ function isNumberedLessonAnswerActivity(item: LinkableResource): boolean {
 }
 
 function isHomeworkSubmissionResource(item: LinkableResource): boolean {
-  const scope = `${item.parentSection || ""} ${item.sourceGroup || ""} ${item.teacherUse || ""} ${item.role || ""}`.toLowerCase();
-  if (/homework|submission/.test(scope)) return true;
-  if (["homework_submission_page", "homework_answer_page"].includes((item.role || "").toLowerCase())) return true;
-  return (isNumberedLessonActivity(item) || isNumberedLessonAnswerActivity(item)) && /student_submission/.test(scope);
+  const role = (item.role || "").toLowerCase();
+  const parentSection = (item.parentSection || "").toLowerCase();
+  const sourceGroup = (item.sourceGroup || "").toLowerCase();
+  const teacherUse = (item.teacherUse || "").toLowerCase();
+  const scope = `${parentSection} ${sourceGroup} ${teacherUse} ${role}`;
+  if (["homework_submission_page", "homework_answer_page", "homework_submission", "homework_submission_answer"].includes(role)) return true;
+  if (/homework[\s_-]*submission[\s_-]*folder/.test(`${parentSection} ${sourceGroup}`)) return true;
+  if (/homework[\s_-]*(?:submission|answer)/.test(role)) return true;
+  return (isNumberedLessonActivity(item) || isNumberedLessonAnswerActivity(item)) && /(?:student[\s_-]*submission|homework)/.test(scope);
 }
 
 function homeworkSubmissionResourcesForManifest(manifest: CourseManifest): LinkableResource[] {
