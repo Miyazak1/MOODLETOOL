@@ -141,10 +141,10 @@ for (const relativeDir of [...dirs].sort()) {
 }
 
 fs.mkdirSync(packagesRoot, { recursive: true });
-const zipPath = path.join(packagesRoot, `${course}-course-package-${timestamp()}.zip`);
+const zipPath = path.join(packagesRoot, `${course}-course-package-fixed-root-${timestamp()}.zip`);
 const tar = process.env.SystemRoot ? path.join(process.env.SystemRoot, 'System32', 'tar.exe') : 'tar';
 const result = await new Promise((resolve) => {
-  const child = spawn(tar, ['-acf', zipPath, '-C', stagingRoot, course], { stdio: 'inherit' });
+  const child = spawn(tar, ['-acf', zipPath, '-C', stagingCourse, '.'], { stdio: 'inherit' });
   child.on('exit', (code) => resolve(code ?? 1));
 });
 if (result !== 0) throw new Error(`tar exited with ${result}`);

@@ -145,11 +145,25 @@ function normalizeEmbeddedMedia(html, section) {
   let out = String(html || "");
 
   out = out.replace(/<iframe\b([^>]*)>\s*<\/iframe>/gi, (match, attrs) => {
-    if (!/(h5p_embed|hexstruct\.ispring\.com|ispring-localized|\/h5p\/|localized-moodle\/h5p|welcome\.hexstruct)/i.test(attrs)) return match;
+    const src = iframeAttr(attrs, "src");
+    const isKnownPlayable = /(h5p_embed|hexstruct\.ispring\.com|ispring-localized|\/h5p\/|localized-moodle\/h5p|welcome\.hexstruct)/i.test(attrs);
+    const isExternalInteractive = isExternalInteractiveIframeSrc(src);
+    if (!isKnownPlayable && !isExternalInteractive) return match;
     let nextAttrs = attrs;
     if (!/\bloading\s*=/i.test(nextAttrs)) nextAttrs += ' loading="lazy"';
     if (!/\ballowfullscreen\b/i.test(nextAttrs)) nextAttrs += ' allowfullscreen="allowfullscreen"';
     if (!/\btitle\s*=/i.test(nextAttrs)) nextAttrs += ` title="${escapeHtml(section.label || section.sectionLabel || "Embedded activity", true)}"`;
+    if (isExternalInteractive) {
+      nextAttrs = addIframeClass(nextAttrs, "embedded-external-iframe");
+      if (!/\breferrerpolicy\s*=/i.test(nextAttrs)) nextAttrs += ' referrerpolicy="strict-origin-when-cross-origin"';
+      if (!/\ballow\s*=/i.test(nextAttrs)) nextAttrs += ' allow="clipboard-write; fullscreen"';
+      const href = escapeHtml(src, true);
+      const blockedReason = externalInteractiveFrameBlockedReason(src);
+      if (blockedReason) {
+        return `<div class="embedded-external-card" data-frame-blocked-reason="${escapeHtml(blockedReason, true)}"><strong>External interactive activity</strong><a href="${href}" target="_blank" rel="noopener noreferrer">Open activity in a new tab</a></div>`;
+      }
+      return `<div class="embedded-external-frame"><iframe${nextAttrs}></iframe><p class="embedded-fallback"><a href="${href}" target="_blank" rel="noopener noreferrer">Open activity in a new tab</a></p></div>`;
+    }
     const klass = /ispring|embed_player/i.test(nextAttrs) ? "localized-ispring" : "embedded-h5p-frame";
     return `<div class="${klass}"><iframe${nextAttrs}></iframe></div>`;
   });
@@ -162,7 +176,44 @@ function normalizeEmbeddedMedia(html, section) {
 
   return out
     .replace(/<script\b[^>]*h5p-resizer\.js[^>]*>\s*<\/script>/gi, "")
+    .replace(/<p>\s*(<div class="(?:embedded-external-card|embedded-external-frame|embedded-h5p-frame|localized-ispring|embedded-video)"[\s\S]*?<\/div>)\s*<\/p>/gi, "$1")
     .replace(/\s(?:data-localized-link)=["']removed["']/gi, "");
+}
+
+function iframeAttr(attrs, name) {
+  const pattern = new RegExp(`\\b${name}\\s*=\\s*(["'])(.*?)\\1`, "i");
+  return pattern.exec(String(attrs || ""))?.[2]?.replaceAll("&amp;", "&") || "";
+}
+
+function addIframeClass(attrs, className) {
+  const value = String(attrs || "");
+  const pattern = /\bclass\s*=\s*(["'])(.*?)\1/i;
+  const match = pattern.exec(value);
+  if (!match) return `${value} class="${className}"`;
+  const classes = match[2].split(/\s+/).filter(Boolean);
+  if (classes.includes(className)) return value;
+  const nextClasses = [...classes, className].join(" ");
+  return `${value.slice(0, match.index)}class=${match[1]}${escapeHtml(nextClasses, true)}${match[1]}${value.slice(match.index + match[0].length)}`;
+}
+
+function isExternalInteractiveIframeSrc(src) {
+  const value = String(src || "").toLowerCase();
+  if (!/^https?:\/\//.test(value) && !/^\/\//.test(value)) return false;
+  return (
+    /(^|\/\/)(?:www\.)?quizlet\.com\/[^"'\s<>]*\/(?:flashcards|test|learn|match|spell)\/embed\b/.test(value) ||
+    /(^|\/\/)(?:www\.)?wordwall\.net\/embed\//.test(value) ||
+    /(^|\/\/)(?:view\.)?genially\.com\//.test(value) ||
+    /(^|\/\/)(?:www\.)?youtube(?:-nocookie)?\.com\/embed\//.test(value) ||
+    /(^|\/\/)player\.vimeo\.com\/video\//.test(value)
+  );
+}
+
+function externalInteractiveFrameBlockedReason(src) {
+  const value = String(src || "").toLowerCase();
+  if (/(^|\/\/)(?:www\.)?quizlet\.com\//.test(value)) {
+    return "quizlet-rejects-portal-frame";
+  }
+  return "";
 }
 
 function buildSectionBody(lesson, section, rawSection, pageRel) {
@@ -190,9 +241,14 @@ function renderPage(title, bodyHtml) {
     .content { border-top: 1px solid #e0e8f2; padding-top: 18px; }
     .content img, .content video { display: block; height: auto; margin-left: auto; margin-right: auto; max-width: 100%; }
     .content .mediaplugin, .content .mediaplugin > div { margin-left: auto; margin-right: auto; }
-    .localized-ispring, .embedded-h5p-frame, .embedded-video { display: block; margin: 16px auto 24px; max-width: 100%; width: 100%; }
-    .localized-ispring iframe, .embedded-h5p-frame iframe { border: 0; display: block; min-height: 640px; width: 100%; }
+    .localized-ispring, .embedded-h5p-frame, .embedded-external-frame, .embedded-video { display: block; margin: 16px auto 24px; max-width: 100%; width: 100%; }
+    .localized-ispring iframe, .embedded-h5p-frame iframe, .embedded-external-frame iframe, .embedded-external-iframe { border: 0; display: block; min-height: 640px; width: 100%; }
     .localized-ispring iframe { height: min(72vh, 760px); }
+    .embedded-external-frame iframe, .embedded-external-iframe { border: 1px solid #d6e2f0; min-height: 500px; }
+    .embedded-fallback { margin: 8px 0 0; text-align: center; }
+    .embedded-fallback a { color: #00396f; font-weight: 700; }
+    .embedded-external-card { align-items: center; background: #f4f8fc; border: 1px solid #cfddeb; border-radius: 8px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin: 16px auto 24px; max-width: 760px; padding: 14px 16px; }
+    .embedded-external-card a { border: 1px solid #9bbce3; border-radius: 6px; color: #00396f; font-weight: 700; padding: 8px 12px; text-decoration: none; }
     .embedded-video video { background: #000; width: 100%; }
     .content table { border-collapse: collapse; display: block; max-width: 100%; overflow-x: auto; }
     .content td, .content th { border: 1px solid #d6e2f0; padding: 8px 10px; }
@@ -247,9 +303,14 @@ function renderLessonPage(course, unit, lesson, sections) {
     .moodle-content td, .moodle-content th { border: 1px solid #d9e2ef; padding: 6px 8px; }
     .moodle-content img, .moodle-content video { display: block; height: auto; margin-left: auto; margin-right: auto; max-width: 100%; }
     .moodle-content .mediaplugin, .moodle-content .mediaplugin > div { margin-left: auto; margin-right: auto; }
-    .localized-ispring, .embedded-h5p-frame, .embedded-video { display: block; margin: 16px auto 24px; max-width: 100%; width: 100%; }
-    .localized-ispring iframe, .embedded-h5p-frame iframe { border: 0; display: block; min-height: 640px; width: 100%; }
+    .localized-ispring, .embedded-h5p-frame, .embedded-external-frame, .embedded-video { display: block; margin: 16px auto 24px; max-width: 100%; width: 100%; }
+    .localized-ispring iframe, .embedded-h5p-frame iframe, .embedded-external-frame iframe, .embedded-external-iframe { border: 0; display: block; min-height: 640px; width: 100%; }
     .localized-ispring iframe { height: min(72vh, 760px); }
+    .embedded-external-frame iframe, .embedded-external-iframe { border: 1px solid #d6e2f0; min-height: 500px; }
+    .embedded-fallback { margin: 8px 0 0; text-align: center; }
+    .embedded-fallback a { color: #00396f; font-weight: 700; }
+    .embedded-external-card { align-items: center; background: #f4f8fc; border: 1px solid #cfddeb; border-radius: 8px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; margin: 16px auto 24px; max-width: 760px; padding: 14px 16px; }
+    .embedded-external-card a { border: 1px solid #9bbce3; border-radius: 6px; color: #00396f; font-weight: 700; padding: 8px 12px; text-decoration: none; }
     .embedded-video video { background: #000; width: 100%; }
     .localized-resource-note { border: 1px solid #b7cbe5; border-radius: 6px; background: #f2f7fc; color: #264461; margin: 12px 0; padding: 10px 12px; }
     a:not([href]) { color: inherit; text-decoration: none; }
