@@ -16,14 +16,70 @@ scripts so the same course shape works consistently across local and production.
 Do not apply one Moodle shape to every course. First identify the source Moodle
 family, then validate against that family's expected structure.
 
+### 0.0 Standard-First Decision Model
+
+MDM4U is the current standard template for legacy esunnybrook course structure.
+Use it as the default mental model for course-resource grouping, lesson flow,
+attachment placement, and teacher/homework boundaries unless the source Moodle
+family proves otherwise.
+
+The standard-first rule is:
+
+1. Start with the MDM4U legacy esunnybrook shape.
+2. Compare the authenticated Moodle side navigation, parent sections, and raw
+   activity/book-section data against that shape.
+3. If the source course matches legacy esunnybrook, normalize it into the MDM4U
+   shape. Do not create course-specific frontend exceptions.
+4. If the source course is St.Mary/New Moodle or another verified family, apply
+   the family-specific exception rules below while still preserving the shared
+   resource rules: ordinary documents stay attached to their owning page, and
+   only iSpring, H5P, and video become standalone playable resources.
+5. If a single activity differs from the template, treat that difference as a
+   localized exception on that activity or source family. Do not let one odd
+   activity redefine the whole course model.
+
+The MDM4U template establishes these default expectations:
+
+1. Course-level resources are grouped by Moodle parent section, not by title
+   keyword alone.
+2. `Course Overview`, `Course Resources`, `Homework Submission Folder`, `Final
+   Examination & Culminating`, and `Teacher Packet` are distinct groups when
+   Moodle provides them.
+3. Lesson flow pages come from Moodle book sections and should preserve:
+   `Lesson Expectations`, `Lesson`, `Hands On`, `Consolidation`, and
+   `Homework`.
+4. `Unit X - Lesson Y` and `Unit X - Lesson Y (Answer)` under `Homework
+   Submission Folder` are homework-submission activities. They must be paired
+   there and must not be duplicated in the ordinary lesson flow or moved into
+   Teacher Packet.
+5. Teacher Packet is reserved for teacher-facing material such as lesson plans,
+   quiz/lab/test/final exam answer keys, evaluation answer material, and
+   teacher-only packets.
+6. Learning Log, Course Outline, textbook, and similar course-level materials
+   must retain body text plus attachments.
+7. External interactive SaaS embeds such as Quizlet are preserved or given an
+   explicit external-open fallback according to the provider-specific rules in
+   section 4. They are not crawled into local static courseware as if they were
+   Moodle packages.
+
+Exceptions must be documented with evidence. A valid exception record includes:
+
+1. The source family or course that requires the exception.
+2. The Moodle parent section or raw activity evidence that proves the exception.
+3. The normalized manifest/HTML shape that should result.
+4. A validation check that prevents the exception from leaking into unrelated
+   courses.
+
 ### 0.1 Legacy esunnybrook Courses
 
 Legacy esunnybrook courses usually do not have a meaningful course-introduction
 section before Course Overview. The absence of a section 0 / Course
 Introduction page is not, by itself, a missing-content defect.
 
-Use MDM4U as the current baseline for this family when checking a completed
-course.
+Use MDM4U as the current baseline and template for this family when checking a
+completed course. If another legacy esunnybrook course differs from MDM4U, first
+verify the Moodle parent section and raw activity data before changing the
+standard shape.
 
 Expected legacy esunnybrook shape:
 
@@ -107,6 +163,26 @@ Minimum St.Mary/New Moodle validation:
    placeholders.
 5. Compare against a known-good same-family course such as SBI3U/SBI4U before
    applying an old esunnybrook assumption.
+
+### 0.3 Known Exception Registry
+
+Use this registry to decide whether a course should follow the MDM4U template
+directly or enter a documented exception path.
+
+| Case | Applies When | Standard Handling |
+| --- | --- | --- |
+| Legacy esunnybrook baseline | Source navigation resembles MDM4U and does not have meaningful pre-overview section 0 content | Use the MDM4U template for course-resource groups, lesson flow, attachment placement, Homework Submission Folder, and Teacher Packet boundaries. |
+| St.Mary/New Moodle section 0 | Authenticated source shows meaningful section 0 text, images, starter templates, or course-introduction activities before Course Overview | Preserve section 0 as Course Introduction / Introduction resources. Do not merge it into Course Overview unless Moodle does. |
+| Course Overview iSpring | Source Course Overview HTML/book/page contains iSpring, Roll player files, H5P, video, or media placeholders | Treat Course Overview media as its own required check. Lesson iSpring coverage does not prove overview iSpring coverage. |
+| Learning Log/Course Outline attachments | Source text mentions a log, template, sample, reflection file, or attached document | Preserve the attachment under the owning page. Do not mark the activity complete with text only. |
+| Homework lesson/answer pages | `Unit X - Lesson Y` and `Unit X - Lesson Y (Answer)` appear under Moodle `Homework Submission Folder` | Pair them in Homework Submission Folder. Do not move them to Teacher Packet and do not duplicate them in the unit lesson flow. |
+| Teacher Packet material | Moodle parent section is Teacher Packet or title/content proves teacher-only quiz, lab, test, final, answer key, or lesson-plan material | Keep under Teacher Packet. Do not mix homework-submission lesson pages into this group by title keyword alone. |
+| Quizlet and live external interactives | Source page embeds Quizlet or another third-party SaaS interactive | Preserve original embed data when frameable; when verified blocked in the portal, show an external-open card with a machine-readable blocked reason. Do not crawl it into local static courseware. |
+| Ordinary document-heavy resources | Source provides DOCX, PDF, PPTX, XLSX, TXT, worksheet, rubric, template, answer document, KWL chart, or similar files | Attach documents under the owning HTML/activity card. Do not promote them to standalone lesson media cards. |
+
+When a new exception appears, add it here only after source evidence confirms it
+is not an import bug. The exception entry must say which course family it
+applies to, how to detect it, and what the normalized output should look like.
 
 ## 1. Core Principles
 
