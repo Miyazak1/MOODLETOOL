@@ -8,6 +8,7 @@ const course = "MDM4U";
 const moodleCourseId = 78;
 const courseRoot = join(workspaceRoot, "courseware", course);
 const manifestPath = join(courseRoot, "course-manifest.json");
+const requestTimeoutMs = Number(process.env.MOODLE_REQUEST_TIMEOUT_MS || 15000);
 
 loadEnvFile(join(projectRoot, ".env"));
 
@@ -61,6 +62,18 @@ function stripTags(value) {
     .trim();
 }
 
+function decodeHtml(value) {
+  return String(value || "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#0?39;|&apos;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function sanitizeSegment(value) {
   return (
     String(value || "resource")
@@ -68,6 +81,122 @@ function sanitizeSegment(value) {
       .replace(/^-+|-+$/g, "")
       .slice(0, 96) || "resource"
   );
+}
+
+function collectActivityLinks(html, source) {
+  const links = [];
+  const seen = new Set();
+  for (const match of String(html || "").matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
+    const attrs = match[1] || "";
+    const hrefRaw = /\bhref\s*=\s*["']([^"']+)["']/i.exec(attrs)?.[1];
+    if (!hrefRaw) continue;
+    let href = "";
+    try {
+      href = new URL(hrefRaw.replaceAll("&amp;", "&"), source).toString();
+    } catch {
+      continue;
+    }
+    const parsed = /\/mod\/([^/]+)\/view\.php\?id=(\d+)/i.exec(href);
+    if (!parsed) continue;
+    const text = decodeHtml(stripTags(match[2] || ""));
+    if (!text) continue;
+    const key = `${parsed[1].toLowerCase()}|${parsed[2]}|${text}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    links.push({ mod: parsed[1].toLowerCase(), id: Number(parsed[2]), href, text });
+  }
+  return links;
+}
+
+async function collectCourseActivityLinks() {
+  const urls = [
+    `https://www.esunnybrook.com/course/view.php?id=${moodleCourseId}`,
+    ...Array.from({ length: 8 }, (_, index) => `https://www.esunnybrook.com/course/view.php?id=${moodleCourseId}&section=${index + 1}`),
+  ];
+  const links = [];
+  const seen = new Set();
+  for (const url of urls) {
+    const response = await request(url);
+    const html = await response.text();
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
+    if (isLoginPageContent(html)) throw new Error(`Moodle login page returned for ${url}`);
+    for (const link of collectActivityLinks(html, url)) {
+      const key = `${link.mod}|${link.id}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      links.push(link);
+    }
+  }
+  return links;
+}
+
+function parseLessonActivityLabel(label) {
+  const match = /^Unit\s+(\d+)\s*-\s*Lesson\s+(\d+)\s*(?:\((Answer)\))?\s*$/i.exec(String(label || "").trim());
+  if (!match) return null;
+  return {
+    unit: Number(match[1]),
+    lesson: Number(match[2]),
+    answer: Boolean(match[3]),
+  };
+}
+
+function parseUnitActivityLabel(label) {
+  const match = /^Unit\s+(\d+)\s*-\s*(.+)$/i.exec(String(label || "").trim());
+  if (!match) return null;
+  return {
+    unit: Number(match[1]),
+    rest: match[2].trim(),
+  };
+}
+
+function classifySupplementalActivity(link) {
+  const label = String(link?.text || "").trim();
+  const unitActivity = parseUnitActivityLabel(label);
+  if (/^Exam Submission Dropbox$/i.test(label)) {
+    return {
+      role: "final_exam_submission",
+      target: "courseDownloads",
+      parentSection: "Final Examination",
+      sourceGroup: "final_examination",
+      teacherUse: "student_final_submission",
+      targetDir: `localized-moodle-activities/${link.mod}/course-${link.id}-exam-submission-dropbox`,
+    };
+  }
+  if (/^Reflection\s*\(AOL\)$/i.test(label)) {
+    return {
+      unit: 1,
+      role: "evaluation",
+      target: "evaluations",
+      parentSection: "Evaluation",
+      sourceGroup: "evaluation",
+      teacherUse: "student_evaluation",
+      targetDir: `localized-moodle-activities/${link.mod}/${link.mod}-${link.id}-unit-1-reflection-aol`,
+    };
+  }
+  if (!unitActivity) return null;
+  if (/^(?:Assignment\s*(?:\(AOL\))?|Test Part \d+\s*(?:\(AOL\))?(?:\s*v\d+)?)$/i.test(unitActivity.rest)) {
+    return {
+      unit: unitActivity.unit,
+      role: "evaluation",
+      target: "evaluations",
+      parentSection: "Evaluation",
+      sourceGroup: "evaluation",
+      teacherUse: "student_evaluation",
+      targetDir: `localized-moodle-activities/${link.mod}/${link.mod}-${link.id}-${sanitizeSegment(label).toLowerCase()}`,
+    };
+  }
+  if (/^(?:KWL Dropbox|Reflection Summary Dropbox)$/i.test(unitActivity.rest)) {
+    return {
+      unit: unitActivity.unit,
+      role: /kwl/i.test(unitActivity.rest) ? "reflection_kwl" : "reflection_summary",
+      target: "reflectionAndLogs",
+      parentSection: "Reflection / Learning Log",
+      sourceGroup: "reflection_learning_log",
+      teacherUse: "student_reflection",
+      targetDir: `localized-moodle-activities/${link.mod}/${link.mod}-${link.id}-${sanitizeSegment(label).toLowerCase()}`,
+    };
+  }
+  return null;
 }
 
 function filenameFromUrl(url) {
@@ -137,12 +266,18 @@ async function request(url, options = {}, redirects = 0) {
   const useMoodleCookies = hostname === "www.esunnybrook.com";
   const cookie = useMoodleCookies ? jar.header() : "";
   if (cookie) headers.set("cookie", cookie);
-  const response = await fetch(url, { ...options, headers, redirect: "manual" });
-  if (useMoodleCookies) jar.store(response.headers);
-  if ([301, 302, 303, 307, 308].includes(response.status) && response.headers.get("location") && redirects < 8) {
-    return request(new URL(response.headers.get("location"), url).toString(), options, redirects + 1);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), requestTimeoutMs);
+  try {
+    const response = await fetch(url, { ...options, headers, redirect: "manual", signal: options.signal || controller.signal });
+    if (useMoodleCookies) jar.store(response.headers);
+    if ([301, 302, 303, 307, 308].includes(response.status) && response.headers.get("location") && redirects < 8) {
+      return request(new URL(response.headers.get("location"), url).toString(), options, redirects + 1);
+    }
+    return response;
+  } finally {
+    clearTimeout(timeout);
   }
-  return response;
 }
 
 function parseHiddenToken(html) {
@@ -195,6 +330,48 @@ function googleSpreadsheetUrls(html, baseUrl) {
     }
   }
   return [...urls];
+}
+
+function iframeAttr(attrs, name) {
+  const pattern = new RegExp(`\\b${name}\\s*=\\s*(["'])(.*?)\\1`, "i");
+  return pattern.exec(String(attrs || ""))?.[2]?.replaceAll("&amp;", "&") || "";
+}
+
+function isExternalInteractiveIframeSrc(src) {
+  const value = String(src || "").toLowerCase();
+  if (!/^https?:\/\//.test(value) && !/^\/\//.test(value)) return false;
+  return (
+    /(^|\/\/)(?:www\.)?quizlet\.com\/[^"'\s<>]*\/(?:flashcards|test|learn|match|spell)\/embed\b/.test(value) ||
+    /(^|\/\/)(?:www\.)?wordwall\.net\/embed\//.test(value) ||
+    /(^|\/\/)(?:view\.)?genially\.com\//.test(value) ||
+    /(^|\/\/)(?:www\.)?youtube(?:-nocookie)?\.com\/embed\//.test(value) ||
+    /(^|\/\/)player\.vimeo\.com\/video\//.test(value)
+  );
+}
+
+function externalInteractiveIframes(html, baseUrl) {
+  const result = [];
+  const seen = new Set();
+  for (const match of String(html || "").matchAll(/<iframe\b([^>]*)>\s*<\/iframe>/gi)) {
+    const attrs = match[1] || "";
+    const rawSrc = iframeAttr(attrs, "src");
+    if (!isExternalInteractiveIframeSrc(rawSrc)) continue;
+    let url = rawSrc;
+    try {
+      url = new URL(rawSrc.replaceAll("&amp;", "&"), baseUrl).toString();
+    } catch {
+      // Keep the original src if URL parsing fails.
+    }
+    if (seen.has(url)) continue;
+    seen.add(url);
+    result.push({
+      url,
+      width: iframeAttr(attrs, "width"),
+      height: iframeAttr(attrs, "height"),
+      title: iframeAttr(attrs, "title"),
+    });
+  }
+  return result;
 }
 
 async function downloadFile(url, targetDir) {
@@ -377,16 +554,33 @@ ${rows
 async function localizeGoogleSpreadsheet(url, targetDir) {
   let html = "";
   const csvUrl = url.replace(/\/pubhtml(?:\?.*)?$/i, "/pub?output=csv");
-  const csvResponse = await request(csvUrl);
-  const csv = await csvResponse.text();
-  if (csvResponse.ok && csv.trim() && !/<html/i.test(csv.slice(0, 200))) {
-    html = spreadsheetTableHtml(csv);
+  try {
+    const csvResponse = await request(csvUrl);
+    const csv = await csvResponse.text();
+    if (csvResponse.ok && csv.trim() && !/<html/i.test(csv.slice(0, 200))) {
+      html = spreadsheetTableHtml(csv);
+    }
+  } catch (error) {
+    html = "";
   }
   if (!html) {
-    const response = await request(url);
-    html = await response.text();
-    if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
-    html = cleanEmbeddedHtml(html, url);
+    try {
+      const response = await request(url);
+      html = await response.text();
+      if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);
+      html = cleanEmbeddedHtml(html, url);
+    } catch (error) {
+      return {
+        label: "Published Google spreadsheet",
+        type: "html",
+        category: "external_reference",
+        role: "embedded_reference",
+        url,
+        previewUrl: url,
+        source: url,
+        error: error?.message || String(error),
+      };
+    }
   } else {
     html = cleanEmbeddedHtml(html, url);
   }
@@ -410,7 +604,7 @@ function pageHtml(title, body, attachments) {
     ? `<section class="attachments"><h2>Files</h2><ul>${attachments
         .map((item) => {
           const view = item.previewHref || item.href;
-          return `<li><span>${htmlEscape(item.label)}</span><span><a href="${htmlEscape(view, true)}">View</a> <a href="${htmlEscape(item.href, true)}" download>Download</a></span></li>`;
+          return `<li><span class="file-label">${htmlEscape(item.label)}</span><span class="file-actions"><a class="file-action" href="${htmlEscape(view, true)}">查看</a><a class="file-action" href="${htmlEscape(item.href, true)}" download>下载</a></span></li>`;
         })
         .join("")}</ul></section>`
     : "";
@@ -431,6 +625,10 @@ function pageHtml(title, body, attachments) {
     .attachments { border-top: 1px solid #edf1f6; margin-top: 18px; padding-top: 12px; }
     .attachments ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
     .attachments li { align-items: center; background: #f8fbff; border: 1px solid #d9e6f5; border-radius: 8px; display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; }
+    .file-label { overflow-wrap: anywhere; }
+    .file-actions { display: inline-flex; flex: 0 0 auto; gap: 8px; }
+    .file-action { border: 1px solid #9bbce3; border-radius: 6px; color: #00396f; display: inline-flex; font-size: 14px; font-weight: 700; line-height: 1; padding: 7px 12px; text-decoration: none; }
+    .file-action:hover { background: #eef6ff; }
   </style>
 </head>
 <body>
@@ -524,13 +722,40 @@ function extractIntro(html) {
   return /<div\b[^>]*\bclass=["'][^"']*\bactivity-description\b[^"']*["'][^>]*\bid=["']intro["'][^>]*>([\s\S]*?)<\/div>\s*<\/div>/i.exec(html)?.[1] || "";
 }
 
+function extractFirstUsefulNoOverflow(html) {
+  let best = "";
+  for (const match of String(html || "").matchAll(/<div\b[^>]*class=["'][^"']*\bno-overflow\b[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi)) {
+    const block = match[1] || "";
+    const text = stripTags(block);
+    if ((text.length > stripTags(best).length && text.length > 20) || /<a\b|<img\b|<video\b|<iframe\b/i.test(block)) {
+      best = block;
+    }
+  }
+  return best;
+}
+
+function extractMoodleActivityBody(html) {
+  const intro = extractIntro(html);
+  if (intro && stripTags(intro).length > 20) return intro;
+
+  const main =
+    /<div\b[^>]*\brole=["']main["'][^>]*>([\s\S]*?)(?:<div\b[^>]*\bid=["']region-main-box["']|<section\b[^>]*\bdata-region=["']blocks-column["']|<\/main>|$)/i.exec(html)?.[1] ||
+    /<section\b[^>]*\bid=["']region-main["'][^>]*>([\s\S]*?)(?:<section\b[^>]*\bdata-region=["']blocks-column["']|<\/section>\s*<\/div>\s*<\/div>|$)/i.exec(html)?.[1] ||
+    "";
+  const fromMain = extractFirstUsefulNoOverflow(main);
+  if (fromMain) return fromMain;
+
+  const fallback = extractFirstUsefulNoOverflow(html);
+  return fallback || "";
+}
+
 async function buildActivityPage({ id, mod = "assign", title, role, targetDir, teacherUse }) {
   const source = `https://www.esunnybrook.com/mod/${mod}/view.php?id=${id}`;
   const response = await request(source);
   const rawHtml = await response.text();
   if (!response.ok) throw new Error(`HTTP ${response.status}: ${source}`);
   if (isLoginPageContent(rawHtml)) throw new Error(`Moodle login page returned for ${source}`);
-  const bodyRaw = extractIntro(rawHtml) || rawHtml;
+  const bodyRaw = extractMoodleActivityBody(rawHtml);
   const attachments = [];
   const localByUrl = new Map();
   for (const url of pluginfileUrls(bodyRaw, source)) {
@@ -599,6 +824,82 @@ function dedupeList(list) {
   return result;
 }
 
+function sectionBucket(section) {
+  const label = String(section?.sectionLabel || section?.label || section?.path || "").toLowerCase();
+  if (/hands[\s_-]*on/.test(label)) return "handsOn";
+  if (/consolidation/.test(label)) return "consolidation";
+  if (/homework/.test(label)) return "homework";
+  if (String(section?.sectionLabel || "").trim().toLowerCase() === "lesson" || /\/02-lesson\.html$/i.test(toPosix(section?.path || ""))) return "lesson";
+  return "";
+}
+
+function labelForExternalActivity(section, external) {
+  if (/quizlet\.com\//i.test(external.url)) return `${section.sectionLabel || "Activity"} - Quizlet Activity`;
+  if (/wordwall\.net\//i.test(external.url)) return `${section.sectionLabel || "Activity"} - Wordwall Activity`;
+  if (/genially\.com\//i.test(external.url)) return `${section.sectionLabel || "Activity"} - Genially Activity`;
+  if (/youtube(?:-nocookie)?\.com\/embed\//i.test(external.url)) return `${section.sectionLabel || "Activity"} - Video Embed`;
+  if (/player\.vimeo\.com\/video\//i.test(external.url)) return `${section.sectionLabel || "Activity"} - Vimeo Embed`;
+  return `${section.sectionLabel || "Activity"} - External Activity`;
+}
+
+function upsertExternalBookSectionActivities(manifest) {
+  const patched = [];
+  for (const unit of manifest.units || []) {
+    for (const lesson of unit.lessons || []) {
+      for (const section of lesson.bookSections || []) {
+        const bucket = sectionBucket(section);
+        if (!bucket) continue;
+        const htmlPath = section.path ? join(courseRoot, section.path) : "";
+        if (!htmlPath || !existsSync(htmlPath)) continue;
+        const html = readFileSync(htmlPath, "utf8");
+        const baseUrl = `https://www.esunnybrook.com/mod/book/view.php?id=${moodleCourseId}`;
+        const externals = externalInteractiveIframes(html, baseUrl);
+        if (!externals.length) continue;
+        lesson[bucket] ||= [];
+        for (const external of externals) {
+          const record = {
+            label: labelForExternalActivity(section, external),
+            type: "external",
+            category: "external_interactive",
+            role: "external_interactive",
+            mode: "external",
+            source: "external_interactive",
+            url: external.url,
+            previewUrl: external.url,
+            parentSection: section.sectionLabel || bucket,
+            sourceGroup: "book_section_embed",
+            unit: Number(unit.unit ?? unit.unitNo),
+            lesson: Number(lesson.lesson),
+            textPreview: section.label || "",
+          };
+          upsertByIdentity(lesson[bucket], record);
+          patched.push({ lesson: lesson.id || lesson.lesson, bucket, label: record.label, url: record.url });
+        }
+      }
+    }
+  }
+  return patched;
+}
+
+function findManifestLesson(manifest, unitNo, lessonNo) {
+  const unit = (manifest.units || []).find((entry) => Number(entry.unit ?? entry.unitNo) === unitNo);
+  const lesson = (unit?.lessons || []).find((entry) => Number(entry.lesson) === lessonNo || String(entry.id || "").toUpperCase() === `U${unitNo}L${lessonNo}`);
+  return { unit, lesson };
+}
+
+function findManifestUnit(manifest, unitNo) {
+  return (manifest.units || []).find((entry) => Number(entry.unit ?? entry.unitNo) === Number(unitNo));
+}
+
+function isUsefulActivityPage(item) {
+  if (!item) return false;
+  if ((item.attachments || []).length) return true;
+  const text = String(item.textPreview || "").replace(/\s+/g, " ").trim();
+  if (!text) return false;
+  if (/^(?:make a submission|assignment|grading summary|submission status|grade)$/i.test(text)) return false;
+  return text.length >= 40;
+}
+
 await loginIfNeeded();
 
 const manifest = readJson(manifestPath);
@@ -647,14 +948,112 @@ const courseOutline = await buildActivityPage({
 for (const section of [courseOverview, finalSection]) upsertByIdentity(manifest.courseSections, section);
 upsertByIdentity(manifest.courseDownloads, courseOutline);
 
+manifest.teacherResources ||= [];
+manifest.evaluations ||= [];
+const courseActivityLinks = await collectCourseActivityLinks();
+const lessonActivityResults = [];
+const homeworkActivityKeys = new Set(
+  courseActivityLinks
+    .filter((link) => parseLessonActivityLabel(link.text))
+    .map((link) => String(link.id))
+);
+function isHomeworkActivityResource(item) {
+  if (!item) return false;
+  if (homeworkActivityKeys.has(String(item.moodleActivityId || ""))) return true;
+  if (["homework_submission_page", "homework_answer_page"].includes(String(item.role || "").toLowerCase())) return true;
+  const scope = [item.parentSection, item.sourceGroup, item.teacherUse, item.role].filter(Boolean).join(" ").toLowerCase();
+  return /homework|submission/.test(scope) && parseLessonActivityLabel(item.label || item.title || "");
+}
+manifest.teacherResources = manifest.teacherResources.filter((item) => !isHomeworkActivityResource(item));
+manifest.courseDownloads = manifest.courseDownloads.filter((item) => !isHomeworkActivityResource(item));
+for (const link of courseActivityLinks) {
+  const lessonInfo = parseLessonActivityLabel(link.text);
+  if (!lessonInfo) continue;
+  const role = lessonInfo.answer ? "homework_answer_page" : "homework_submission_page";
+  const targetDir = `localized-moodle-activities/${link.mod}/${link.mod}-${link.id}-${sanitizeSegment(link.text).toLowerCase()}`;
+  const activity = await buildActivityPage({
+    id: link.id,
+    mod: link.mod,
+    title: link.text,
+    role,
+    targetDir,
+    teacherUse: lessonInfo.answer ? "homework_answer_reference" : "student_submission",
+  });
+  activity.unit = lessonInfo.unit;
+  activity.lesson = lessonInfo.lesson;
+  activity.parentSection = "Homework Submission Folder";
+  activity.sourceGroup = "homework_submission_folder";
+  if (lessonInfo.answer) activity.teacherOnly = true;
+  if (!isUsefulActivityPage(activity)) {
+    lessonActivityResults.push({ label: link.text, id: link.id, skipped: "empty-activity-page" });
+    continue;
+  }
+  upsertByIdentity(manifest.courseDownloads, activity);
+  lessonActivityResults.push({ label: link.text, id: link.id, target: "courseDownloads.homeworkSubmissionFolder", answer: lessonInfo.answer, attachments: activity.attachments?.length || 0 });
+}
+
+const supplementalActivityResults = [];
+for (const link of courseActivityLinks) {
+  if (parseLessonActivityLabel(link.text)) continue;
+  if (/^(?:MDM4U Course Outline|Learning Log|Lessons|Final Examination)$/i.test(String(link.text || "").trim())) continue;
+  const info = classifySupplementalActivity(link);
+  if (!info) continue;
+  const activity = await buildActivityPage({
+    id: link.id,
+    mod: link.mod,
+    title: link.text,
+    role: info.role,
+    targetDir: info.targetDir,
+    teacherUse: info.teacherUse,
+  });
+  activity.parentSection = info.parentSection;
+  activity.sourceGroup = info.sourceGroup;
+  if (info.unit) activity.unit = info.unit;
+  if (!isUsefulActivityPage(activity) && !["quiz", "forum"].includes(link.mod)) {
+    supplementalActivityResults.push({ label: link.text, id: link.id, skipped: "empty-activity-page", target: info.target });
+    continue;
+  }
+  if (info.target === "courseDownloads") {
+    upsertByIdentity(manifest.courseDownloads, activity);
+  } else {
+    const unit = findManifestUnit(manifest, info.unit);
+    if (!unit) {
+      supplementalActivityResults.push({ label: link.text, id: link.id, skipped: "missing-unit", target: info.target });
+      continue;
+    }
+    unit.unitResources ||= {};
+    unit.unitResources[info.target] ||= [];
+    upsertByIdentity(unit.unitResources[info.target], activity);
+    if (info.target === "evaluations") upsertByIdentity(manifest.evaluations, activity);
+  }
+  supplementalActivityResults.push({
+    label: link.text,
+    id: link.id,
+    mod: link.mod,
+    target: info.target,
+    unit: info.unit || "",
+    role: info.role,
+    attachments: activity.attachments?.length || 0,
+  });
+}
+
 const learningLog = manifest.courseDownloads.find((item) => item.role === "learning_log");
 const finalExam = manifest.courseDownloads.find((item) => item.role === "final_exam_submission");
 for (const item of [learningLog, finalExam]) {
   if (item?.path) delete item.url;
 }
 
+const externalBookSectionActivities = upsertExternalBookSectionActivities(manifest);
+
 manifest.courseSections = dedupeList(manifest.courseSections);
 manifest.courseDownloads = dedupeList(manifest.courseDownloads);
+manifest.teacherResources = dedupeList(manifest.teacherResources);
+manifest.evaluations = dedupeList(manifest.evaluations);
+for (const unit of manifest.units || []) {
+  for (const key of ["evaluations", "reflectionAndLogs"]) {
+    if (Array.isArray(unit.unitResources?.[key])) unit.unitResources[key] = dedupeList(unit.unitResources[key]);
+  }
+}
 
 manifest.sourceAudit ||= {};
 manifest.sourceAudit.courseResourcesPatchedAt = new Date().toISOString();
@@ -662,6 +1061,17 @@ manifest.sourceAudit.courseResourceExpectedActivities = {
   courseOutline: 8195,
   learningLog: 8196,
   finalExamSubmission: 8301,
+  evaluations: [8200, 8201, 8202, 8220, 8224, 8225, 8226, 8243, 8244, 8245, 8264, 8265, 8266, 8284, 8285, 8286, 8299, 8300],
+  reflectionAndLogs: [8218, 8219, 8238, 8239, 8259, 8260, 8279, 8280, 8297, 8298],
+};
+manifest.sourceAudit.lessonActivityLocalization = {
+  patchedAt: new Date().toISOString(),
+  moodleCourseId,
+  matched: lessonActivityResults.length,
+  regularLessonActivities: lessonActivityResults.filter((item) => item.target === "courseDownloads.homeworkSubmissionFolder" && !item.answer).length,
+  answerPages: lessonActivityResults.filter((item) => item.target === "courseDownloads.homeworkSubmissionFolder" && item.answer).length,
+  skipped: lessonActivityResults.filter((item) => item.skipped).length,
+  note: "Independent Moodle side-nav activities named Unit X - Lesson Y and Unit X - Lesson Y (Answer) are Homework Submission Folder resources. They are paired in course resources, not Teacher Packet and not lesson-flow peer cards.",
 };
 manifest.sourceAudit.courseSectionLocalization = {
   patchedAt: new Date().toISOString(),
@@ -671,6 +1081,22 @@ manifest.sourceAudit.courseSectionLocalization = {
     { sectionNumber: 7, role: "final_examination", path: finalSection.path, attachments: finalSection.attachments.length },
   ],
   note: "Course-level pages are localized from Moodle section pages, matching the ENG3U/ENG4U/MHF4U structure. Synthetic section index pages are not used.",
+};
+manifest.sourceAudit.evaluationActivityLocalization = {
+  patchedAt: new Date().toISOString(),
+  moodleCourseId,
+  matched: supplementalActivityResults.filter((item) => item.target === "evaluations").length,
+  finalSubmissions: supplementalActivityResults.filter((item) => item.target === "courseDownloads" && item.role === "final_exam_submission").length,
+  reflectionAndLogs: supplementalActivityResults.filter((item) => item.target === "reflectionAndLogs").length,
+  skipped: supplementalActivityResults.filter((item) => item.skipped).length,
+  items: supplementalActivityResults,
+  note: "Moodle Evaluation/AOL quiz, assignment, and forum activities are preserved as unit Evaluation resources. Quiz pages are localized as Moodle activity entry/description pages; the script does not crawl private quiz question banks or student attempts.",
+};
+manifest.sourceAudit.externalBookSectionActivities = {
+  patchedAt: new Date().toISOString(),
+  count: externalBookSectionActivities.length,
+  items: externalBookSectionActivities,
+  note: "External interactive iframes embedded in Moodle book sections, such as Quizlet, are preserved in the HTML page and registered under the owning lesson section.",
 };
 manifest.sourceAudit.ispringDownloadPackages = 0;
 manifest.sourceAudit.ispringDownloadPolicy = "playback-only-no-download";
@@ -682,4 +1108,7 @@ console.log(JSON.stringify({
   course,
   courseSections: manifest.courseSections.map((item) => ({ label: item.label, role: item.role, path: item.path, bytes: item.bytes, attachments: item.attachments?.length || 0 })),
   courseOutline: { path: courseOutline.path, attachments: courseOutline.attachments.length, bytes: courseOutline.bytes },
+  lessonActivities: lessonActivityResults,
+  supplementalActivities: supplementalActivityResults,
+  externalBookSectionActivities,
 }, null, 2));

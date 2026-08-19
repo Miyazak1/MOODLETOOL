@@ -55,9 +55,17 @@ The MDM4U template establishes these default expectations:
 5. Teacher Packet is reserved for teacher-facing material such as lesson plans,
    quiz/lab/test/final exam answer keys, evaluation answer material, and
    teacher-only packets.
-6. Learning Log, Course Outline, textbook, and similar course-level materials
+6. Unit-level Evaluation/AOL activities such as quizzes, tests, assignments,
+   and assessment forums must appear under the owning Unit, in
+   `unit.unitResources.evaluations` and the manifest-level `evaluations` index.
+   They must not be moved into Course Resources, Teacher Packet, or Homework
+   Submission Folder.
+7. Unit-level KWL, reflection, and reflection-summary dropboxes must appear
+   under the owning Unit, usually in `unit.unitResources.reflectionAndLogs`,
+   unless Moodle clearly places them as course-level Learning Log resources.
+8. Learning Log, Course Outline, textbook, and similar course-level materials
    must retain body text plus attachments.
-7. External interactive SaaS embeds such as Quizlet are preserved or given an
+9. External interactive SaaS embeds such as Quizlet are preserved or given an
    explicit external-open fallback according to the provider-specific rules in
    section 4. They are not crawled into local static courseware as if they were
    Moodle packages.
@@ -105,10 +113,19 @@ Expected legacy esunnybrook shape:
    homework-submission activities, not Teacher Packet materials. They must be
    crawled, localized, and shown together in the Homework Submission Folder
    course-resource group, not duplicated inside the lesson learning flow.
-8. Empty submission-only pages such as blank dropboxes are skipped from teacher
+8. Unit-level Evaluation/AOL activities are Unit resources. For MDM4U, Moodle
+   exposes them inside the Unit sections, so the normalized manifest must have
+   Evaluation/AOL entries under the matching Unit and in the manifest-level
+   `evaluations` index. A repaired MDM4U should not show these as Course
+   Resources.
+9. Unit-level KWL and Reflection Summary dropboxes are Unit reflection/log
+   resources. They should not disappear merely because they are Moodle
+   assignment/forum pages, and they should not be flattened into Teacher Packet
+   or course-level files.
+10. Empty submission-only pages such as blank dropboxes are skipped from teacher
    resource display unless they contain meaningful instructions or attached
    teaching files.
-9. Course Overview iSpring and lesson iSpring must both be checked. A course can
+11. Course Overview iSpring and lesson iSpring must both be checked. A course can
    have working lesson iSpring while Course Overview iSpring is missing,
    referenced through a stale path, or missing its Roll/iSpring language files.
 
@@ -124,6 +141,12 @@ Minimum legacy esunnybrook validation:
    with `Unit X - Lesson Y (Answer)` when both exist there.
 6. Confirm Teacher Packet contains only teacher prep, quiz/lab/test/final exam
    answer keys, evaluation answer material, and teacher-only packets.
+7. Confirm Evaluation/AOL activities appear under the owning Unit and are also
+   represented in `manifest.evaluations`; zero Unit-level Evaluation/AOL in a
+   source course that has Moodle Unit tests/assignments/forums is an import
+   defect.
+8. Confirm KWL and Reflection Summary activities appear under the owning Unit
+   when Moodle lists them inside that Unit.
 
 ### 0.2 St.Mary / New Moodle Courses
 
@@ -176,6 +199,8 @@ directly or enter a documented exception path.
 | Course Overview iSpring | Source Course Overview HTML/book/page contains iSpring, Roll player files, H5P, video, or media placeholders | Treat Course Overview media as its own required check. Lesson iSpring coverage does not prove overview iSpring coverage. |
 | Learning Log/Course Outline attachments | Source text mentions a log, template, sample, reflection file, or attached document | Preserve the attachment under the owning page. Do not mark the activity complete with text only. |
 | Homework lesson/answer pages | `Unit X - Lesson Y` and `Unit X - Lesson Y (Answer)` appear under Moodle `Homework Submission Folder` | Pair them in Homework Submission Folder. Do not move them to Teacher Packet and do not duplicate them in the unit lesson flow. |
+| Unit Evaluation / AOL | Moodle Unit section contains quiz/test/assignment/forum items such as `Unit X - Test`, `Unit X - Assignment`, or `Reflection (AOL)` | Localize them as Unit-level Evaluation/AOL resources under the owning Unit and index them in `manifest.evaluations`. Do not show them in Course Resources or Teacher Packet. |
+| Unit KWL / Reflection Summary | Moodle Unit section contains `KWL Dropbox`, `Reflection Summary Dropbox`, or similar reflection/log activities | Localize them under the owning Unit, usually as `unit.unitResources.reflectionAndLogs`. Preserve useful body text and attachments. |
 | Teacher Packet material | Moodle parent section is Teacher Packet or title/content proves teacher-only quiz, lab, test, final, answer key, or lesson-plan material | Keep under Teacher Packet. Do not mix homework-submission lesson pages into this group by title keyword alone. |
 | Quizlet and live external interactives | Source page embeds Quizlet or another third-party SaaS interactive | Preserve original embed data when frameable; when verified blocked in the portal, show an external-open card with a machine-readable blocked reason. Do not crawl it into local static courseware. |
 | Ordinary document-heavy resources | Source provides DOCX, PDF, PPTX, XLSX, TXT, worksheet, rubric, template, answer document, KWL chart, or similar files | Attach documents under the owning HTML/activity card. Do not promote them to standalone lesson media cards. |
@@ -924,6 +949,24 @@ Rules:
    clearly places it inside a lesson book.
 3. AOL/Evaluation items should remain discoverable by unit and by evaluation
    category.
+4. Evaluation/AOL is not a Course Resources bucket for legacy esunnybrook
+   courses. If Moodle lists the item inside a Unit section, the portal must show
+   it inside that Unit. In the manifest this means:
+   `unit.unitResources.evaluations[]` for the owning Unit, plus a matching
+   manifest-level `evaluations[]` index entry.
+5. Do not repair a missing Unit Evaluation by moving it into Teacher Packet,
+   Homework Submission Folder, Course Overview, Final Examination, or generic
+   Course Resources. That hides the assessment from the lesson sequence and
+   recreates the original defect in a different place.
+6. KWL Dropbox and Reflection Summary Dropbox are Unit reflection/log resources
+   when Moodle lists them inside a Unit. Put them in
+   `unit.unitResources.reflectionAndLogs[]` and keep any instructions or
+   attachments.
+7. MDM4U baseline check: a current repaired MDM4U manifest should have Unit
+   Evaluation/AOL counts by Unit, no Evaluation/AOL entries in course-level
+   downloads, and KWL/Reflection Summary entries under their owning Units. Use
+   this as the first comparison point for legacy esunnybrook courses, then
+   document source-proven exceptions.
 
 ## 8. OSS, CDN, and Hybrid Storage Rules
 
@@ -1219,6 +1262,13 @@ Check:
 9. Course-level H5P in pages/resources is represented locally and attached to
    the owning course resource.
 10. Evaluation/AOL and answer-key resources are separated.
+11. Unit-level Evaluation/AOL exists in `unit.unitResources.evaluations` when
+   Moodle Unit sections have tests, quizzes, assignments, assessment forums, or
+   other AOL activities. A manifest-level `evaluations` index alone is not
+   enough if the Unit view cannot display the resources.
+12. Unit-level KWL/Reflection Summary exists in
+   `unit.unitResources.reflectionAndLogs` when Moodle Unit sections provide
+   those activities.
 
 ### 11.3 HTML Body Preservation
 
