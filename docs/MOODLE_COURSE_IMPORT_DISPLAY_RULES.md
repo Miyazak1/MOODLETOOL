@@ -45,6 +45,10 @@ The MDM4U template establishes these default expectations:
 2. `Course Overview`, `Course Resources`, `Homework Submission Folder`, `Final
    Examination & Culminating`, and `Teacher Packet` are distinct groups when
    Moodle provides them.
+   `Teacher Packet` is the same course-level hierarchy as
+   `Final Examination & Culminating`; when both are present, display Teacher
+   Packet immediately below Final Examination & Culminating, not nested inside
+   a Unit and not mixed into Homework Submission Folder.
 3. Lesson flow pages come from Moodle book sections and should preserve:
    `Lesson Expectations`, `Lesson`, `Hands On`, `Consolidation`, and
    `Homework`.
@@ -99,8 +103,11 @@ Current MDM4U baseline:
    Unit KWL, Unit Reflection Summary, ordinary lesson documents, or Teacher
    Packet material.
 4. `teacherResources[]` is populated only when Moodle has true teacher-facing
-   resources. It can be empty for a course whose source has no usable Teacher
-   Packet material. Do not fill it by moving homework answer pages there.
+   resources. If the primary legacy source lacks a usable Teacher Packet but a
+   verified same-course supplemental source is provided, localize that
+   supplemental Teacher Packet into `teacherResources[]` and record the source
+   in `sourceAudit`. Do not fill `teacherResources[]` by moving homework answer
+   pages there.
 5. `units[].lessons[].bookSections[]` preserves the Moodle book lesson flow:
    `Lesson Expectations`, `Lesson`, `Hands On`, `Consolidation`, and
    `Homework`, when those sections contain source content or attached/embedded
@@ -277,6 +284,7 @@ directly or enter a documented exception path.
 | Homework lesson/answer pages | `Unit X - Lesson Y` and `Unit X - Lesson Y (Answer)` appear under Moodle `Homework Submission Folder` | Pair them in Homework Submission Folder. Do not move them to Teacher Packet and do not duplicate them in the unit lesson flow. |
 | Unit Evaluation / AOL | Moodle Unit section contains quiz/test/assignment/forum items such as `Unit X - Test`, `Unit X - Assignment`, or `Reflection (AOL)` | Localize them as Unit-level Evaluation/AOL resources under the owning Unit and index them in `manifest.evaluations`. Do not show them in Course Resources or Teacher Packet. |
 | Unit KWL / Reflection Summary | Moodle Unit section contains `KWL Dropbox`, `Reflection Summary Dropbox`, or similar reflection/log activities | Localize them under the owning Unit, usually as `unit.unitResources.reflectionAndLogs`. Preserve useful body text and attachments. |
+| Teacher Packet supplement | Primary source lacks Teacher Packet, but a verified same-course supplemental Moodle page is provided, such as MDM4U St.Mary Answer Keys activity `http://34.30.231.58/mod/assign/view.php?id=9812` | Localize the page and attachments into `teacherResources[]` with `parentSection: "Teacher Packet"`, `teacherOnly: true`, and a `sourceAudit` record. Do not move Homework Submission answer pages or Unit Evaluation into Teacher Packet as a substitute. |
 | Teacher Packet material | Moodle parent section is Teacher Packet or title/content proves teacher-only quiz, lab, test, final, answer key, or lesson-plan material | Keep under Teacher Packet. Do not mix homework-submission lesson pages into this group by title keyword alone. |
 | Quizlet and live external interactives | Source page embeds Quizlet or another third-party SaaS interactive | Preserve original embed data when frameable; when verified blocked in the portal, show an external-open card with a machine-readable blocked reason. Do not crawl it into local static courseware. |
 | Ordinary document-heavy resources | Source provides DOCX, PDF, PPTX, XLSX, TXT, worksheet, rubric, template, answer document, KWL chart, or similar files | Attach documents under the owning HTML/activity card. Do not promote them to standalone lesson media cards. |

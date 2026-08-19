@@ -545,9 +545,9 @@ function buildCourseMoodleSectionGroups(manifest: CourseManifest, t: TFunction):
     ...teacherResources.filter((item) => roleIn(item, ["final_exam_submission", "culminating_submission", "culminating_assignment", "exam_review"])),
   ]);
 
-  makeGroup("homework-submission", "Homework Submission Folder", t("moodle.group.homeworkSubmission.description"), homeworkSubmissionResourcesForManifest(manifest));
-
   makeGroup("teacher-packet", "Teacher Packet", t("moodle.group.teacherPacket.description"), teacherPacketResourcesForManifest(manifest));
+
+  makeGroup("homework-submission", "Homework Submission Folder", t("moodle.group.homeworkSubmission.description"), homeworkSubmissionResourcesForManifest(manifest));
 
   return groups;
 }
