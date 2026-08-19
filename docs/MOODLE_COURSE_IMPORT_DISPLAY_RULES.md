@@ -78,6 +78,82 @@ Exceptions must be documented with evidence. A valid exception record includes:
 4. A validation check that prevents the exception from leaking into unrelated
    courses.
 
+### 0.0.1 MDM4U `course-manifest.json` Baseline
+
+For legacy esunnybrook courses, the standard is the manifest shape, not a visual
+screenshot and not a title-keyword heuristic. Use the repaired MDM4U
+`course-manifest.json` as the baseline contract, then compare each course's
+authenticated Moodle source against it.
+
+Current MDM4U baseline:
+
+1. `courseSections[]` contains course-level HTML sections such as
+   `Course Overview` and `Final Examination` when Moodle provides meaningful
+   section/page content.
+2. `courseDownloads[]` contains course-level resources and Moodle parent-section
+   groups. For MDM4U, standalone `Unit X - Lesson Y` and
+   `Unit X - Lesson Y (Answer)` pages under Moodle `Homework Submission Folder`
+   stay in `courseDownloads[]` with
+   `parentSection: "Homework Submission Folder"`.
+3. `courseDownloads[]` must not be used as a dumping area for Unit Evaluation,
+   Unit KWL, Unit Reflection Summary, ordinary lesson documents, or Teacher
+   Packet material.
+4. `teacherResources[]` is populated only when Moodle has true teacher-facing
+   resources. It can be empty for a course whose source has no usable Teacher
+   Packet material. Do not fill it by moving homework answer pages there.
+5. `units[].lessons[].bookSections[]` preserves the Moodle book lesson flow:
+   `Lesson Expectations`, `Lesson`, `Hands On`, `Consolidation`, and
+   `Homework`, when those sections contain source content or attached/embedded
+   resources.
+6. `units[].unitResources.evaluations[]` contains Unit-level Evaluation/AOL
+   activities from the Moodle Unit section. MDM4U currently has Evaluation/AOL
+   counts `4,3,3,3,5` across Units 1-5.
+7. `manifest.evaluations[]` is an index of those Evaluation/AOL resources for
+   cross-course discovery. It does not replace
+   `units[].unitResources.evaluations[]`; both are required when the Unit view
+   must display the assessment.
+8. `units[].unitResources.reflectionAndLogs[]` contains Unit-level KWL and
+   Reflection Summary activities from the Moodle Unit section. MDM4U currently
+   has counts `2,2,2,2,2` across Units 1-5.
+9. `texts[]` and any textbook/material cards use course-qualified names, so a
+   user can tell the material belongs to this course even outside the course
+   page.
+10. Resource records keep enough classification metadata for the frontend to
+   render without course-specific exceptions: use `role`, `category`,
+   `sourceGroup`, `parentSection`, `unit`, `lesson`, `path`, `previewPath`,
+   `downloadPath`, and `url` consistently.
+11. Moodle shortcode and public share actions are available only for iSpring,
+   video, and H5P resources. HTML pages, PDF/DOC/PPT/XLS/TXT documents,
+   Homework Submission pages, Evaluation/AOL pages, Course Overview HTML,
+   book-section HTML, textbooks, Learning Log pages, Teacher Packet materials,
+   and external SaaS activities such as Quizlet must not expose shortcode or
+   public-share controls.
+
+MDM4U baseline field ownership:
+
+| Manifest field | Owns | Must not contain |
+| --- | --- | --- |
+| `courseSections[]` | Course-level HTML sections such as Course Overview and Final Examination pages | Unit tests, Unit assignments, Unit KWL/reflection, Homework Submission lesson/answer pages |
+| `courseDownloads[]` | Course-level materials, Course Outline/Learning Log/text references, and parent-section groups such as Homework Submission Folder | Unit Evaluation/AOL, ordinary lesson documents with an owning lesson page, Teacher Packet material |
+| `teacherResources[]` | Teacher-only packets, answer keys, lesson plans, tests/quizzes/labs/finals intended for teachers | Homework Submission Folder lesson/answer pages, Unit Evaluation/AOL, student reflection/dropbox activities |
+| `units[].lessons[].bookSections[]` | Moodle book section HTML for Lesson Expectations, Lesson, Hands On, Consolidation, Homework | Standalone Moodle side-nav activity pages that belong to Homework Submission Folder or Evaluation/AOL |
+| `units[].unitResources.evaluations[]` | Unit tests, quizzes, assignments, AOL forums, assessment activities | Teacher answer keys, Homework Submission lesson/answer pages, Course Overview resources |
+| `units[].unitResources.reflectionAndLogs[]` | Unit KWL, Reflection Summary, and comparable Unit reflection/log dropboxes | Course-level Learning Log unless Moodle places it inside the Unit |
+| `manifest.evaluations[]` | Cross-course index of Unit Evaluation/AOL resources | The only copy of a Unit assessment; Unit views still need `unitResources.evaluations[]` |
+| `texts[]` | Course-qualified textbook/source records | Ambiguous names such as only `Textbook` or publisher/title without course identity |
+
+Validation against the baseline is evidence-driven:
+
+1. First read the source Moodle side navigation and parent sections.
+2. Then inspect the course manifest fields above.
+3. If the source has MDM4U-like legacy structure, the normalized manifest should
+   match this field ownership.
+4. If the source is St.Mary/New Moodle, keep the shared field ownership but add
+   the new-site section 0 / Course Introduction exception described below.
+5. If the manifest differs from MDM4U, do not assume either course is wrong by
+   appearance alone. The deciding evidence is authenticated Moodle source
+   location plus the normalized field ownership table.
+
 ### 0.1 Legacy esunnybrook Courses
 
 Legacy esunnybrook courses usually do not have a meaningful course-introduction
@@ -223,6 +299,10 @@ applies to, how to detect it, and what the normalized output should look like.
 6. Avoid per-course frontend special cases. Course-specific normalization is
    allowed only when it produces the standard manifest/HTML shape described
    here.
+7. Public share links and Moodle shortcodes are media-only. Generate them only
+   for iSpring, video, and H5P. Do not generate or display them for ordinary
+   HTML pages, documents, external interactive fallbacks, or course/activity
+   pages.
 
 ## 2. Course Overview and Course Resources
 

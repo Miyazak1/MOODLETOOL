@@ -163,11 +163,9 @@ function courseCodeFromBaseUrl(baseUrl: string): string {
 }
 
 function shareKindForItem(item: LinkableResource): MoodleEmbedRow["kind"] {
-  const type = (item.type || "").toLowerCase();
-  const role = (item.role || "").toLowerCase();
-  if (type === "mp4" || type === "webm" || type === "video") return "video";
-  if (type === "h5p") return "h5p";
-  if (role === "lesson_book_section" || role === "lesson_book") return "book-section";
+  if (isISpringResource(item)) return "ispring";
+  if (isVideoResource(item)) return "video";
+  if (isH5PResource(item)) return "h5p";
   return "file";
 }
 
@@ -299,7 +297,12 @@ function isDownloadableFile(item: LinkableResource): boolean {
 }
 
 function isShareableResource(item: LinkableResource): boolean {
-  return Boolean(item.path || item.previewPath || item.url || item.previewUrl || item.downloadPath || item.downloadUrl);
+  if (isExternalInteractiveResource(item)) return false;
+  return isPlayableOnlyResource(item) && Boolean(item.path || item.previewPath || item.url || item.previewUrl || item.downloadPath || item.downloadUrl);
+}
+
+function isShareableMoodleEmbedRow(row?: MoodleEmbedRow): boolean {
+  return row?.kind === "ispring" || row?.kind === "video" || row?.kind === "h5p";
 }
 
 function isVisibleISpringEntry(item: Lesson["ispring"][number]): boolean {
@@ -639,6 +642,7 @@ function MoodleEmbedButton({ row }: { row?: MoodleEmbedRow }) {
   const [copied, setCopied] = useState(false);
   const { t } = usePortalI18n();
   const moodleCode = row?.moodleShortcode || row?.moodleHtml;
+  if (!isShareableMoodleEmbedRow(row)) return null;
   if (!moodleCode) return null;
 
   const copy = async () => {
@@ -672,6 +676,7 @@ function PublicShareButton({
 }) {
   const [status, setStatus] = useState<"idle" | "working" | "copied" | "failed">("idle");
   const { t } = usePortalI18n();
+  if (!isShareableResource(item)) return null;
   if (!item.path && !item.previewPath && !item.url && !item.previewUrl) return null;
 
   const createShare = async () => {

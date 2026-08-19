@@ -1952,6 +1952,22 @@ function cleanExternalUrl(value) {
   return /^https?:\/\//i.test(url) ? url : "";
 }
 
+const shareableEmbedKinds = new Set(["ispring", "video", "h5p"]);
+
+function pathTextForResource(item) {
+  return `${item?.path || ""} ${item?.previewPath || ""} ${item?.downloadPath || ""} ${item?.url || ""} ${item?.previewUrl || ""} ${item?.downloadUrl || ""}`.toLowerCase();
+}
+
+function embedKindForShareableItem(item) {
+  const type = String(item?.type || "").toLowerCase();
+  const category = String(item?.category || "").toLowerCase();
+  const path = pathTextForResource(item);
+  if (type === "ispring" || category.includes("ispring") || path.includes("ispring-localized/")) return "ispring";
+  if (type === "mp4" || type === "webm" || type === "mov" || type === "m4v" || type === "video" || category.includes("video") || /\.(?:mp4|webm|mov|m4v)(?:$|[?#])/i.test(path)) return "video";
+  if (type === "h5p" || type === "h5pactivity" || category.includes("h5p") || path.includes("/h5p/") || /\.h5p(?:$|[?#])/i.test(path)) return "h5p";
+  return "";
+}
+
 function shareTokenForResource({ course, kind, path, previewPath, url, previewUrl, downloadUrl, label, expiresInSeconds }) {
   const rawPath = toPosixPath(path || previewPath || "");
   const viewPath = toPosixPath(previewPath || path || "");
@@ -2439,13 +2455,9 @@ function localResourceCandidatesForLesson(lesson) {
   }
   for (const item of lesson.downloads || []) {
     if (!item.path && !item.url) continue;
-    const type = String(item.type || "").toLowerCase();
-    const ext = extname(item.path || item.url || "").toLowerCase();
-    const kind = type === "mp4" || type === "webm" || type === "video" || [".mp4", ".webm"].includes(ext) ? "video" : type === "h5p" ? "h5p" : "file";
+    const kind = embedKindForShareableItem(item);
+    if (!shareableEmbedKinds.has(kind)) continue;
     candidates.push({ kind, role: item.role || "download", item });
-  }
-  for (const item of lesson.bookSections || []) {
-    if (item.path || item.url) candidates.push({ kind: "book-section", role: item.role || "lesson_book_section", item });
   }
   return candidates;
 }
@@ -2524,20 +2536,12 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
           moodleIframeHtml = moodleContentIframeHtml(embedUrl, { height: 540 });
           moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 540 });
           moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video", mimeTypes[ext] || "video/mp4");
-        } else if (candidate.kind === "book-section") {
-          moodleIframeHtml = moodleContentIframeHtml(embedUrl);
-          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 750 });
-          moodleHtml = moodleShortcode;
         } else if (candidate.kind === "h5p") {
           moodleIframeHtml = moodleH5pIframeHtml(embedUrl);
           moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 560 });
           moodleHtml = moodleShortcode;
-        } else if (String(item.type || "").toLowerCase() === "pdf") {
-          moodleIframeHtml = moodleContentIframeHtml(fileUrl);
-          moodleShortcode = moodlePortalIframeShortcode(fileUrl, { width: "100%", height: 750 });
-          moodleHtml = moodleShortcode;
         } else {
-          moodleHtml = `<a href="${fileUrl}" target="_blank" rel="noopener">${htmlEscape(item.label || "Download resource")}</a>`;
+          continue;
         }
         rows.push({
           course,
@@ -6635,9 +6639,8 @@ async function handleAdminApi(req, res) {
           total: rows.length,
           ispring: rows.filter((row) => row.kind === "ispring").length,
           video: rows.filter((row) => row.kind === "video").length,
-          files: rows.filter((row) => row.kind === "file").length,
+          h5p: rows.filter((row) => row.kind === "h5p").length,
           h5pNeedsRuntime: rows.filter((row) => row.status === "needs-h5p-runtime").length,
-          bookSections: rows.filter((row) => row.kind === "book-section").length,
         },
       });
       return true;
@@ -7363,8 +7366,6 @@ async function handlePortalApi(req, res) {
           ispring: rows.filter((row) => row.kind === "ispring").length,
           video: rows.filter((row) => row.kind === "video").length,
           h5p: rows.filter((row) => row.kind === "h5p").length,
-          file: rows.filter((row) => row.kind === "file").length,
-          bookSection: rows.filter((row) => row.kind === "book-section").length,
         },
       });
       return true;
@@ -7391,11 +7392,16 @@ async function handlePortalApi(req, res) {
         sendJson(res, 400, { ok: false, error: "A local resource path, preview path, or trusted URL is required." });
         return true;
       }
+      const kind = String(body.kind || "").toLowerCase();
+      if (!shareableEmbedKinds.has(kind)) {
+        sendJson(res, 400, { ok: false, error: "Only iSpring, video, and H5P resources can generate public share links." });
+        return true;
+      }
       const days = Number(body.expiresInDays || 30);
       const expiresInSeconds = Math.round(Math.max(1, Math.min(days, 3650)) * 24 * 60 * 60);
       const token = shareTokenForResource({
         course: requestedCourse,
-        kind: body.kind || "file",
+        kind,
         label: body.label || basename(path || previewPath),
         path,
         previewPath,
