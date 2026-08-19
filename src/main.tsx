@@ -154,6 +154,7 @@ type LinkableResource = {
   teacherOnly?: boolean;
   teacherUse?: string;
   textPreview?: string;
+  sortOrder?: number;
   mode?: string;
 };
 
@@ -408,6 +409,15 @@ function isNumberedLessonAnswerActivity(item: LinkableResource): boolean {
   return /^Unit\s+\d+\s*-\s*Lesson\s+\d+\s*\(Answer\)$/i.test(String(item.label || "").trim());
 }
 
+function numberedLessonPosition(item: LinkableResource): { unit: number; lesson: number } {
+  const label = String(item.label || "").trim();
+  const match = /^Unit\s+(\d+)\s*-\s*Lesson\s+(\d+)/i.exec(label);
+  return {
+    unit: Number(item.unit || match?.[1] || 0),
+    lesson: Number(item.lesson || match?.[2] || 0),
+  };
+}
+
 function isHomeworkSubmissionResource(item: LinkableResource): boolean {
   const role = (item.role || "").toLowerCase();
   const parentSection = (item.parentSection || "").toLowerCase();
@@ -434,9 +444,11 @@ function homeworkSubmissionResourcesForManifest(manifest: CourseManifest): Linka
     }
   }
   return items.sort((a, b) => {
-    const unitDelta = Number(a.unit || 0) - Number(b.unit || 0);
+    const aPosition = numberedLessonPosition(a);
+    const bPosition = numberedLessonPosition(b);
+    const unitDelta = aPosition.unit - bPosition.unit;
     if (unitDelta) return unitDelta;
-    const lessonDelta = Number(a.lesson || 0) - Number(b.lesson || 0);
+    const lessonDelta = aPosition.lesson - bPosition.lesson;
     if (lessonDelta) return lessonDelta;
     const aAnswer = isNumberedLessonAnswerActivity(a) ? 1 : 0;
     const bAnswer = isNumberedLessonAnswerActivity(b) ? 1 : 0;
@@ -485,6 +497,17 @@ function resourceList(value: unknown): LinkableResource[] {
 
 function unitResourcesFor(unit: Unit, key: string): LinkableResource[] {
   return resourceList(unit.unitResources?.[key]);
+}
+
+function orderedUnitResourcesFor(unit: Unit, key: string): LinkableResource[] {
+  return unitResourcesFor(unit, key)
+    .map((item, index) => ({ item, index }))
+    .sort((left, right) => {
+      const leftOrder = Number.isFinite(left.item.sortOrder) ? Number(left.item.sortOrder) : left.index;
+      const rightOrder = Number.isFinite(right.item.sortOrder) ? Number(right.item.sortOrder) : right.index;
+      return leftOrder - rightOrder || left.index - right.index;
+    })
+    .map(({ item }) => item);
 }
 
 function visibleAttachments(item: LinkableResource): LinkableResource[] {
@@ -1835,13 +1858,13 @@ function UnitMoodleResources({
       key: "evaluations",
       title: "Evaluation",
       description: t("unit.resources.evaluations.description"),
-      items: unitResourcesFor(unit, "evaluations"),
+      items: orderedUnitResourcesFor(unit, "evaluations"),
     },
     {
       key: "reflectionAndLogs",
       title: "Reflection / Learning Log",
       description: t("unit.resources.reflection.description"),
-      items: unitResourcesFor(unit, "reflectionAndLogs"),
+      items: orderedUnitResourcesFor(unit, "reflectionAndLogs"),
     },
   ].filter((group) => group.items.some(isTeacherVisibleResource));
 

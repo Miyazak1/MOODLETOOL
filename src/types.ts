@@ -18,6 +18,7 @@ export interface FileResource {
   teacherOnly?: boolean;
   teacherUse?: string;
   textPreview?: string;
+  sortOrder?: number;
 }
 
 export interface MoodleEmbedRow {
