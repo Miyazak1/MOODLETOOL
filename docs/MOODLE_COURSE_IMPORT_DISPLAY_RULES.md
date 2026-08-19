@@ -89,7 +89,37 @@ screenshot and not a title-keyword heuristic. Use the repaired MDM4U
 `course-manifest.json` as the baseline contract, then compare each course's
 authenticated Moodle source against it.
 
-Current MDM4U baseline:
+MDM4U is the structure reference, not the source of truth for counts. The
+required number of lessons, homework-submission pages, answer pages,
+Evaluation/AOL activities, KWL/reflection activities, Teacher Packet files, and
+attachments must come from the authenticated Moodle source navigation and raw
+activity data for the course being repaired. Do not copy MDM4U counts into
+another course, and do not treat a current MDM4U manifest count as correct until
+it has been checked against Moodle.
+
+Current MDM4U structure reference:
+
+1. `courseSections[]` owns course-level HTML such as `Course Overview` and
+   `Final Examination`.
+2. `courseDownloads[]` owns student/course-level records such as
+   `Homework Submission Folder` lesson/answer activity pages. When both
+   `Unit X - Lesson Y` and `Unit X - Lesson Y (Answer)` exist in Moodle, they
+   must display immediately together. Any missing partner must be checked
+   against the authenticated source before packaging; do not auto-create it or
+   replace it with Teacher Packet material.
+3. `teacherResources[]` owns course-level `Teacher Packet` records. For MDM4U,
+   the verified supplemental example is `Answer Keys`, `role: "teacher_packet"`,
+   `sourceGroup: "teacher_packet"`, `parentSection: "Teacher Packet"`,
+   `teacherOnly: true`, from
+   `http://34.30.231.58/mod/assign/view.php?id=9812`.
+4. `units[].unitResources.evaluations[]` owns Unit Evaluation/AOL activities.
+   Required counts are whatever Moodle exposes under each Unit.
+5. `units[].unitResources.reflectionAndLogs[]` owns Unit KWL/Reflection Summary
+   activities. Required counts are whatever Moodle exposes under each Unit.
+6. The core textbook/material display name is course-qualified, for example
+   `MDM4U · Mathematics of Data Management · McGraw-Hill Ryerson Data Management 12 Textbook (2014)`.
+
+Current MDM4U field contract:
 
 1. `courseSections[]` contains course-level HTML sections such as
    `Course Overview` and `Final Examination` when Moodle provides meaningful
@@ -103,8 +133,11 @@ Current MDM4U baseline:
    Unit KWL, Unit Reflection Summary, ordinary lesson documents, or Teacher
    Packet material.
 4. `teacherResources[]` is populated only when Moodle has true teacher-facing
-   resources. If the primary legacy source lacks a usable Teacher Packet but a
-   verified same-course supplemental source is provided, localize that
+   resources. It is a course-level group with the same hierarchy as
+   `Final Examination & Culminating`; the portal should display it immediately
+   below Final Examination & Culminating, not nested inside Final and not nested
+   inside a Unit. If the primary legacy source lacks a usable Teacher Packet but
+   a verified same-course supplemental source is provided, localize that
    supplemental Teacher Packet into `teacherResources[]` and record the source
    in `sourceAudit`. Do not fill `teacherResources[]` by moving homework answer
    pages there.
@@ -113,15 +146,14 @@ Current MDM4U baseline:
    `Homework`, when those sections contain source content or attached/embedded
    resources.
 6. `units[].unitResources.evaluations[]` contains Unit-level Evaluation/AOL
-   activities from the Moodle Unit section. MDM4U currently has Evaluation/AOL
-   counts `4,3,3,3,5` across Units 1-5.
+   activities from the Moodle Unit section. Unit Evaluation belongs in the Unit
+   display, not in Course Resources.
 7. `manifest.evaluations[]` is an index of those Evaluation/AOL resources for
    cross-course discovery. It does not replace
    `units[].unitResources.evaluations[]`; both are required when the Unit view
    must display the assessment.
 8. `units[].unitResources.reflectionAndLogs[]` contains Unit-level KWL and
-   Reflection Summary activities from the Moodle Unit section. MDM4U currently
-   has counts `2,2,2,2,2` across Units 1-5.
+   Reflection Summary activities from the Moodle Unit section.
 9. `texts[]` and any textbook/material cards use course-qualified names, so a
    user can tell the material belongs to this course even outside the course
    page.
@@ -130,8 +162,8 @@ Current MDM4U baseline:
    `sourceGroup`, `parentSection`, `unit`, `lesson`, `path`, `previewPath`,
    `downloadPath`, and `url` consistently.
 11. Moodle shortcode and public share actions are available only for iSpring,
-   video, and H5P resources. HTML pages, PDF/DOC/PPT/XLS/TXT documents,
-   Homework Submission pages, Evaluation/AOL pages, Course Overview HTML,
+    video, and H5P resources. HTML pages, PDF/DOC/PPT/XLS/TXT documents,
+    Homework Submission pages, Evaluation/AOL pages, Course Overview HTML,
    book-section HTML, textbooks, Learning Log pages, Teacher Packet materials,
    and external SaaS activities such as Quizlet must not expose shortcode or
    public-share controls.
@@ -142,7 +174,7 @@ MDM4U baseline field ownership:
 | --- | --- | --- |
 | `courseSections[]` | Course-level HTML sections such as Course Overview and Final Examination pages | Unit tests, Unit assignments, Unit KWL/reflection, Homework Submission lesson/answer pages |
 | `courseDownloads[]` | Course-level materials, Course Outline/Learning Log/text references, and parent-section groups such as Homework Submission Folder | Unit Evaluation/AOL, ordinary lesson documents with an owning lesson page, Teacher Packet material |
-| `teacherResources[]` | Teacher-only packets, answer keys, lesson plans, tests/quizzes/labs/finals intended for teachers | Homework Submission Folder lesson/answer pages, Unit Evaluation/AOL, student reflection/dropbox activities |
+| `teacherResources[]` | Course-level Teacher Packet material: teacher-only packets, answer keys, lesson plans, tests/quizzes/labs/finals intended for teachers | Homework Submission Folder lesson/answer pages, Unit Evaluation/AOL, student reflection/dropbox activities |
 | `units[].lessons[].bookSections[]` | Moodle book section HTML for Lesson Expectations, Lesson, Hands On, Consolidation, Homework | Standalone Moodle side-nav activity pages that belong to Homework Submission Folder or Evaluation/AOL |
 | `units[].unitResources.evaluations[]` | Unit tests, quizzes, assignments, AOL forums, assessment activities | Teacher answer keys, Homework Submission lesson/answer pages, Course Overview resources |
 | `units[].unitResources.reflectionAndLogs[]` | Unit KWL, Reflection Summary, and comparable Unit reflection/log dropboxes | Course-level Learning Log unless Moodle places it inside the Unit |
@@ -160,6 +192,22 @@ Validation against the baseline is evidence-driven:
 5. If the manifest differs from MDM4U, do not assume either course is wrong by
    appearance alone. The deciding evidence is authenticated Moodle source
    location plus the normalized field ownership table.
+
+Use this as the minimum manifest inspection checklist for MDM4U-like courses.
+Every count is compared against the authenticated Moodle source for that course;
+MDM4U contributes the shape, not the expected quantity:
+
+| Check | Expected Result |
+| --- | --- |
+| Course-level HTML | `courseSections[]` includes Course Overview and Final Examination when Moodle exposes them. |
+| Homework Submission Folder | `courseDownloads[]` keeps `Unit X - Lesson Y` and `Unit X - Lesson Y (Answer)` under `parentSection: "Homework Submission Folder"`; display matching pairs together when both exist, and document any source-proven missing partner. |
+| Teacher Packet | `teacherResources[]` contains only teacher-facing records, displayed as a course-level group immediately below Final Examination & Culminating. |
+| Unit Evaluation | Each Unit keeps Evaluation/AOL in `unit.unitResources.evaluations[]`; the top-level `evaluations[]` array is only an index. |
+| Unit reflection/logs | KWL and Reflection Summary stay in `unit.unitResources.reflectionAndLogs[]` when Moodle lists them in a Unit. |
+| Text/material names | `texts[]` and material cards are course-qualified, not generic. |
+| Attachments | DOC/PDF/PPT/XLS/TXT files stay under the owning HTML/activity/book-section card. |
+| Play/share controls | Only iSpring, video, and H5P expose standalone playable cards, public share links, or Moodle shortcodes. |
+| Exceptions | Any supplemental source or family-specific structure is recorded in `sourceAudit` or this registry before packaging. |
 
 ### 0.1 Legacy esunnybrook Courses
 
@@ -257,6 +305,14 @@ Expected new-site shape:
 7. New-site courses still follow the same attachment rule: ordinary documents
    remain attached to their owning page; only iSpring, H5P, and video are
    standalone playable resources.
+8. New-site section 0 is additive. It can add Course Introduction records, but it
+   does not change the MDM4U field ownership for Homework Submission Folder,
+   Teacher Packet, Unit Evaluation/AOL, KWL/Reflection, or ordinary document
+   attachments.
+9. New-site courses can be used as supplemental evidence only when the user or
+   source audit proves the material is the same course and same teaching role.
+   Record the source URL, reason, and attachment count in `sourceAudit` before
+   mixing supplemental material into a legacy esunnybrook manifest.
 
 Minimum St.Mary/New Moodle validation:
 
@@ -284,9 +340,11 @@ directly or enter a documented exception path.
 | Homework lesson/answer pages | `Unit X - Lesson Y` and `Unit X - Lesson Y (Answer)` appear under Moodle `Homework Submission Folder` | Pair them in Homework Submission Folder. Do not move them to Teacher Packet and do not duplicate them in the unit lesson flow. |
 | Unit Evaluation / AOL | Moodle Unit section contains quiz/test/assignment/forum items such as `Unit X - Test`, `Unit X - Assignment`, or `Reflection (AOL)` | Localize them as Unit-level Evaluation/AOL resources under the owning Unit and index them in `manifest.evaluations`. Do not show them in Course Resources or Teacher Packet. |
 | Unit KWL / Reflection Summary | Moodle Unit section contains `KWL Dropbox`, `Reflection Summary Dropbox`, or similar reflection/log activities | Localize them under the owning Unit, usually as `unit.unitResources.reflectionAndLogs`. Preserve useful body text and attachments. |
-| Teacher Packet supplement | Primary source lacks Teacher Packet, but a verified same-course supplemental Moodle page is provided, such as MDM4U St.Mary Answer Keys activity `http://34.30.231.58/mod/assign/view.php?id=9812` | Localize the page and attachments into `teacherResources[]` with `parentSection: "Teacher Packet"`, `teacherOnly: true`, and a `sourceAudit` record. Do not move Homework Submission answer pages or Unit Evaluation into Teacher Packet as a substitute. |
+| Teacher Packet supplement | Primary source lacks Teacher Packet, but a verified same-course supplemental Moodle page is provided, such as MDM4U St.Mary Answer Keys activity `http://34.30.231.58/mod/assign/view.php?id=9812` | Localize the page and attachments into `teacherResources[]` with `parentSection: "Teacher Packet"`, `teacherOnly: true`, and a `sourceAudit` record. Display Teacher Packet as its own course-level group immediately below Final Examination & Culminating. Do not move Homework Submission answer pages or Unit Evaluation into Teacher Packet as a substitute. |
 | Teacher Packet material | Moodle parent section is Teacher Packet or title/content proves teacher-only quiz, lab, test, final, answer key, or lesson-plan material | Keep under Teacher Packet. Do not mix homework-submission lesson pages into this group by title keyword alone. |
 | Quizlet and live external interactives | Source page embeds Quizlet or another third-party SaaS interactive | Preserve original embed data when frameable; when verified blocked in the portal, show an external-open card with a machine-readable blocked reason. Do not crawl it into local static courseware. |
+| Media-only sharing | Resource is iSpring, video, or H5P | Allow standalone playable card, Moodle shortcode, and public share controls when storage URLs are valid. |
+| Non-media activity/page/document | Resource is HTML activity, Course Overview HTML, Evaluation page, Homework Submission page, Teacher Packet page, Quizlet/external fallback, or ordinary document | Keep view/download behavior as appropriate, but do not show Moodle shortcode or public share controls. |
 | Ordinary document-heavy resources | Source provides DOCX, PDF, PPTX, XLSX, TXT, worksheet, rubric, template, answer document, KWL chart, or similar files | Attach documents under the owning HTML/activity card. Do not promote them to standalone lesson media cards. |
 
 When a new exception appears, add it here only after source evidence confirms it
@@ -993,11 +1051,13 @@ Rules:
 9. Localized activity HTML pages must render attached files with portal-style
    action buttons. Do not leave raw English `View Download` text in the page.
 
-Teacher Packet is separate. It should contain teacher preparation pages and
-answer keys for quizzes, lab tests, unit tests, final exams, culminating
-evaluations, evaluation rubrics, and other teacher-only packets. Do not place
-Homework Submission Folder lesson activities into Teacher Packet merely because
-the label contains `(Answer)`.
+Teacher Packet is separate. It is a course-level group at the same hierarchy as
+Final Examination & Culminating and should render immediately below Final when
+both are present. It should contain teacher preparation pages and answer keys for
+quizzes, lab tests, unit tests, final exams, culminating evaluations, evaluation
+rubrics, and other teacher-only packets. Do not place Homework Submission Folder
+lesson activities into Teacher Packet merely because the label contains
+`(Answer)`.
 
 ## 6. Texts, Materials, and Literary Works
 
@@ -1012,7 +1072,10 @@ Rules:
    material exists.
 3. Material buttons should be generated from actual `path`, `previewPath`,
    `downloadPath`, or trusted `url` fields.
-4. Public-domain and copyright status should remain visible where known.
+4. Public-domain/copyright/source status belongs in source-audit metadata or
+   internal notes. Do not show visible public-domain, copyright, unavailable, or
+   no-material status labels on course cards; if there is no usable material,
+   simply omit the missing material card.
 5. Text import patches should update the manifest, not rely on frontend title
    matching.
 
@@ -1252,6 +1315,15 @@ const allCourseItems = [
   ...(m.teacherResources || []),
   ...lessons.flatMap((lesson) => lesson.downloads || []),
 ];
+const teacherResources = m.teacherResources || [];
+const unitEvaluationCounts = (m.units || []).map((u) => ({
+  unit: u.unit || u.title || "",
+  evaluations: (((u.unitResources || {}).evaluations) || []).length,
+}));
+const unitReflectionCounts = (m.units || []).map((u) => ({
+  unit: u.unit || u.title || "",
+  reflectionAndLogs: (((u.unitResources || {}).reflectionAndLogs) || []).length,
+}));
 const parentText = (x) => `${x.parentSection || ""} ${x.sourceGroup || ""} ${x.teacherUse || ""} ${x.role || ""}`.toLowerCase();
 const numberedLesson = (x) => /^Unit\s+\d+\s*-\s*Lesson\s+\d+$/i.test(String(x.label || ""));
 const numberedLessonAnswer = (x) => /^Unit\s+\d+\s*-\s*Lesson\s+\d+\s*\(Answer\)$/i.test(String(x.label || ""));
@@ -1280,6 +1352,16 @@ console.log(JSON.stringify({
   courseIntroductionPages: courseIntroduction.length,
   courseOverviewPages: (m.courseSections || []).filter((x) => /overview/i.test(`${x.role || ""} ${x.label || ""} ${x.path || ""}`)).length,
   courseOverviewIspring: overviewIspring.length,
+  courseDownloads: (m.courseDownloads || []).length,
+  teacherResources: teacherResources.map((x) => ({
+    label: x.label || x.title || "",
+    role: x.role || "",
+    parentSection: x.parentSection || "",
+    sourceGroup: x.sourceGroup || "",
+    attachments: (x.attachments || []).length,
+  })),
+  unitEvaluationCounts,
+  unitReflectionCounts,
   homeworkLessonActivities: homeworkLessonActivities.length,
   homeworkAnswerActivities: homeworkAnswerActivities.length,
   legacyNumberedLessonActivities: legacyNumberedLessonActivities.length,
@@ -1296,6 +1378,25 @@ NODE
 If Moodle/source has a Course Overview presentation, the result must show
 `courseOverviewIspring > 0`, and the Course Overview HTML must contain an iframe
 or player block pointing at the localized presentation.
+
+For a course that claims to use the MDM4U shape, set `COURSE=<COURSE_CODE>` and
+compare the output against that course's Moodle source:
+
+1. Legacy esunnybrook courses may legitimately have `courseIntroductionPages: 0`;
+   St.Mary/New Moodle courses with meaningful section 0 content may not.
+2. `courseOverviewPages` should match Moodle Course Overview pages.
+3. `homeworkLessonActivities` and `homeworkAnswerActivities` should match
+   Moodle `Homework Submission Folder`; existing matching pairs must render
+   together, and unpaired entries must be source-checked rather than moved into
+   another group.
+4. `teacherResources[]` should match Moodle Teacher Packet or a verified
+   same-course supplemental source recorded in `sourceAudit`.
+5. Unit Evaluation/AOL counts should match Moodle Unit sections.
+6. Unit KWL/Reflection Summary counts should match Moodle Unit sections.
+
+If the manifest shape differs from MDM4U, inspect source parent sections before
+changing UI code. Fix the importer, repair script, or manifest generation so the
+course matches the source-proven standard shape for its family.
 
 Check local HTML pages directly:
 
