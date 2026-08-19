@@ -11,7 +11,11 @@ export interface FileResource {
   bytes?: number;
   attachments?: FileResource[];
   unit?: number;
+  lesson?: number;
   moodleActivityId?: string;
+  parentSection?: string;
+  sourceGroup?: string;
+  teacherOnly?: boolean;
   teacherUse?: string;
   textPreview?: string;
 }

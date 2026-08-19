@@ -802,6 +802,10 @@ input {
   white-space: nowrap;
 }
 
+.lesson-summary-content {
+  min-width: 0;
+}
+
 .lesson-title {
   display: block;
   font-weight: 800;

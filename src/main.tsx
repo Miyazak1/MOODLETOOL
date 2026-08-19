@@ -148,7 +148,13 @@ type LinkableResource = {
   bytes?: number;
   attachments?: LinkableResource[];
   unit?: number;
+  lesson?: number;
+  parentSection?: string;
+  sourceGroup?: string;
+  teacherOnly?: boolean;
+  teacherUse?: string;
   textPreview?: string;
+  mode?: string;
 };
 
 function courseCodeFromBaseUrl(baseUrl: string): string {
@@ -195,11 +201,6 @@ function moodleEmbedForResource(rowsByPath: MoodleEmbedMap | undefined, item: Li
     .filter((value): value is string => Boolean(value))
     .map((value) => rowsByPath.get(value))
     .find(Boolean);
-}
-
-function hasLocalResource(item: LinkableResource): boolean {
-  const trustedRemote = item.source === "cdn" || item.source === "oss";
-  return Boolean(item.path || item.previewPath || item.downloadPath || (trustedRemote && (item.url || item.previewUrl)));
 }
 
 const BROWSER_PREVIEW_TYPES = new Set([
@@ -249,8 +250,33 @@ function isISpringResource(item: LinkableResource): boolean {
   return type === "ispring" || category.includes("ispring") || path.includes("ispring-localized/");
 }
 
+function isH5PResource(item: LinkableResource): boolean {
+  const type = (item.type || "").toLowerCase();
+  const category = (item.category || "").toLowerCase();
+  const path = `${item.path || ""} ${item.previewPath || ""} ${item.downloadPath || ""} ${item.url || ""} ${item.previewUrl || ""} ${item.downloadUrl || ""}`.toLowerCase();
+  return type === "h5p" || type === "h5pactivity" || category.includes("h5p") || path.includes("/h5p/") || /\.(?:h5p)(?:$|[?#])/i.test(path);
+}
+
 function isPlayableOnlyResource(item: LinkableResource): boolean {
-  return isVideoResource(item) || isISpringResource(item);
+  return isVideoResource(item) || isISpringResource(item) || isH5PResource(item);
+}
+
+function isExternalInteractiveResource(item: LinkableResource): boolean {
+  const category = (item.category || "").toLowerCase();
+  const role = (item.role || "").toLowerCase();
+  const source = (item.source || "").toLowerCase();
+  const path = `${item.url || ""} ${item.previewUrl || ""}`.toLowerCase();
+  return (
+    category === "external_interactive" ||
+    role === "external_interactive" ||
+    source === "external_interactive" ||
+    /(?:quizlet\.com\/|wordwall\.net\/embed\/|genially\.com\/|youtube(?:-nocookie)?\.com\/embed\/|player\.vimeo\.com\/video\/)/i.test(path)
+  );
+}
+
+function hasLocalResource(item: LinkableResource): boolean {
+  const trustedRemote = item.source === "cdn" || item.source === "oss";
+  return Boolean(item.path || item.previewPath || item.downloadPath || isExternalInteractiveResource(item) || (trustedRemote && (item.url || item.previewUrl)));
 }
 
 function hasWebPreview(item: LinkableResource, moodleEmbed?: MoodleEmbedRow): boolean {
@@ -266,6 +292,7 @@ function hasWebPreview(item: LinkableResource, moodleEmbed?: MoodleEmbedRow): bo
 function isDownloadableFile(item: LinkableResource): boolean {
   const type = (item.type || "").toLowerCase();
   const category = (item.category || "").toLowerCase();
+  if (isExternalInteractiveResource(item)) return false;
   if (type === "html" || type === "htm") return category === "moodle_resource" && Boolean(item.path || item.downloadPath);
   if (isPlayableOnlyResource(item)) return false;
   return Boolean(item.path || item.url || item.downloadPath || item.downloadUrl);
@@ -288,6 +315,12 @@ function isEmptyMoodleActivityShell(item: LinkableResource): boolean {
   const type = (item.type || "").toLowerCase();
   if ((item.path || item.previewPath || item.downloadPath) && type && type !== "html" && type !== "htm") return false;
   return !hasMeaningfulTextContent(item) && !visibleAttachments(item).length;
+}
+
+function isStandaloneNumberedLessonActivity(item: LinkableResource): boolean {
+  if (!roleIn(item, ["lesson"])) return false;
+  const label = String(item.label || "").trim();
+  return /^Unit\s+\d+\s*-\s*Lesson\s+\d+$/i.test(label);
 }
 
 function isExternalOnlyResource(item: LinkableResource): boolean {
@@ -349,6 +382,85 @@ function addUniqueResources(items: LinkableResource[], resources: LinkableResour
 
 function roleIn(item: LinkableResource, roles: string[]): boolean {
   return roles.includes((item.role || "").toLowerCase());
+}
+
+function answerResourcesForLesson(teacherResources: LinkableResource[], unit: Unit, lesson: Lesson): LinkableResource[] {
+  const unitNumber = Number(unit.unit);
+  const lessonNumber = Number(lesson.lesson);
+  return teacherResources.filter((item) => {
+    if (!roleIn(item, ["answer_key", "answer_keys"])) return false;
+    return Number(item.unit) === unitNumber && Number(item.lesson) === lessonNumber;
+  });
+}
+
+function lessonActivityPagesForLesson(lesson: Lesson): LinkableResource[] {
+  return dedupeResources((lesson.downloads || []).filter((item) => roleIn(item, ["lesson"]) && !isHomeworkSubmissionResource(item) && hasMoodleActivityPage(item)));
+}
+
+function isNumberedLessonActivity(item: LinkableResource): boolean {
+  return /^Unit\s+\d+\s*-\s*Lesson\s+\d+$/i.test(String(item.label || "").trim());
+}
+
+function isNumberedLessonAnswerActivity(item: LinkableResource): boolean {
+  return /^Unit\s+\d+\s*-\s*Lesson\s+\d+\s*\(Answer\)$/i.test(String(item.label || "").trim());
+}
+
+function isHomeworkSubmissionResource(item: LinkableResource): boolean {
+  const scope = `${item.parentSection || ""} ${item.sourceGroup || ""} ${item.teacherUse || ""} ${item.role || ""}`.toLowerCase();
+  if (/homework|submission/.test(scope)) return true;
+  if (["homework_submission_page", "homework_answer_page"].includes((item.role || "").toLowerCase())) return true;
+  return (isNumberedLessonActivity(item) || isNumberedLessonAnswerActivity(item)) && /student_submission/.test(scope);
+}
+
+function homeworkSubmissionResourcesForManifest(manifest: CourseManifest): LinkableResource[] {
+  const items: LinkableResource[] = [];
+  const addCandidate = (item?: LinkableResource | null) => {
+    if (item && isHomeworkSubmissionResource(item)) addUniqueResource(items, item);
+  };
+  (manifest.courseDownloads || []).forEach(addCandidate);
+  (manifest.courseSections || []).forEach(addCandidate);
+  (manifest.teacherResources || []).forEach(addCandidate);
+  for (const unit of manifest.units || []) {
+    for (const lesson of unit.lessons || []) {
+      (lesson.downloads || []).forEach(addCandidate);
+    }
+  }
+  return items.sort((a, b) => {
+    const unitDelta = Number(a.unit || 0) - Number(b.unit || 0);
+    if (unitDelta) return unitDelta;
+    const lessonDelta = Number(a.lesson || 0) - Number(b.lesson || 0);
+    if (lessonDelta) return lessonDelta;
+    const aAnswer = isNumberedLessonAnswerActivity(a) ? 1 : 0;
+    const bAnswer = isNumberedLessonAnswerActivity(b) ? 1 : 0;
+    if (aAnswer !== bAnswer) return aAnswer - bAnswer;
+    return String(a.label || "").localeCompare(String(b.label || ""));
+  });
+}
+
+function teacherPacketResourcesForManifest(manifest: CourseManifest): LinkableResource[] {
+  const items: LinkableResource[] = [];
+  const teacherResources = (manifest.teacherResources || []).filter((item) => !isHomeworkSubmissionResource(item));
+  const answerResources = teacherResources.filter((item) => roleIn(item, ["answer_key", "answer_keys"]));
+  const usedAnswerKeys = new Set<string>();
+
+  for (const unit of manifest.units || []) {
+    for (const lesson of unit.lessons || []) {
+      lessonActivityPagesForLesson(lesson).forEach((item) => addUniqueResource(items, item));
+      answerResourcesForLesson(answerResources, unit, lesson).forEach((item) => {
+        addUniqueResource(items, item);
+        addResourceKeys(usedAnswerKeys, item);
+      });
+    }
+  }
+
+  answerResources.forEach((item) => {
+    const itemKey = resourceIdentity(item);
+    const sourceKey = resourceSourceIdentity(item);
+    if (usedAnswerKeys.has(itemKey) || (sourceKey && usedAnswerKeys.has(sourceKey))) return;
+    addUniqueResource(items, item);
+  });
+  addUniqueResources(items, (manifest.courseDownloads || []).filter((item) => !isHomeworkSubmissionResource(item) && roleIn(item, ["answer_keys", "answer_key"])));
+  return items;
 }
 
 function resourceList(value: unknown): LinkableResource[] {
@@ -414,6 +526,7 @@ function buildCourseMoodleSectionGroups(manifest: CourseManifest, t: TFunction):
 
   makeGroup("introduction", "Introduction", t("moodle.group.introduction.description"), [
     ...courseSections.filter((item) => roleIn(item, ["introduction"])),
+    ...downloads.filter((item) => roleIn(item, ["introduction"])),
   ]);
 
   makeGroup("course-overview", "Course Overview", t("moodle.group.courseOverview.description"), [
@@ -429,10 +542,9 @@ function buildCourseMoodleSectionGroups(manifest: CourseManifest, t: TFunction):
     ...teacherResources.filter((item) => roleIn(item, ["final_exam_submission", "culminating_submission", "culminating_assignment", "exam_review"])),
   ]);
 
-  makeGroup("teacher-packet", "Teacher Packet", t("moodle.group.teacherPacket.description"), [
-    ...teacherResources.filter((item) => roleIn(item, ["answer_keys"])),
-    ...downloads.filter((item) => roleIn(item, ["answer_keys"])),
-  ]);
+  makeGroup("homework-submission", "Homework Submission Folder", t("moodle.group.homeworkSubmission.description"), homeworkSubmissionResourcesForManifest(manifest));
+
+  makeGroup("teacher-packet", "Teacher Packet", t("moodle.group.teacherPacket.description"), teacherPacketResourcesForManifest(manifest));
 
   return groups;
 }
@@ -483,7 +595,7 @@ function localDownloadCount(items: LinkableResource[] = []): number {
 }
 
 function lessonLocalDownloadCount(lesson: Lesson): number {
-  const downloads = dedupeResources(lesson.downloads || []);
+  const downloads = dedupeResources(visibleLessonDownloadsForLesson(lesson));
   return localDownloadCount([...downloads, ...visibleBookSectionsForLesson(lesson)]);
 }
 
@@ -940,6 +1052,10 @@ function visibleBookSectionsForLesson(lesson: Lesson): NonNullable<Lesson["bookS
   return (lesson.bookSections || []).filter(isTeacherVisibleResource);
 }
 
+function visibleLessonDownloadsForLesson(lesson: Lesson): FileResource[] {
+  return (lesson.downloads || []).filter((item) => isTeacherVisibleResource(item) && !isStandaloneNumberedLessonActivity(item));
+}
+
 function normalizedResourceName(item: LinkableResource): string {
   const name = item.label || item.path?.split(/[\\/]/).pop() || item.url || "";
   return name.toLowerCase().replace(/\.[a-z0-9]+$/i, "").replace(/[^a-z0-9]+/g, "");
@@ -1009,6 +1125,7 @@ function LessonFlowPanel({
   const regularDownloads = dedupeResources(
     [...visibleDownloads, ...visibleTextExports].filter((item) => {
       if (item.role === "lesson_book" || item.role === "lesson_book_section") return false;
+      if (isStandaloneNumberedLessonActivity(item)) return false;
       if (isGroupedResource(item, bookSectionAttachmentKeys)) return false;
       return true;
     }),
@@ -1034,6 +1151,7 @@ function LessonFlowPanel({
         const sectionBookPages = bookSections.filter((item) => bookSectionFlowKey(item) === key);
         const sectionDownloads = regularDownloads.filter((item) => flowKeyForDownload(item) === key);
         const sectionISpring = visibleISpring.filter((item) => ispringFlowKey(item) === key);
+        const sectionItemCount = sectionBookPages.length + sectionDownloads.length + sectionISpring.length;
         return (
           <section className="lesson-flow-section" key={key}>
             <header>
@@ -1042,8 +1160,7 @@ function LessonFlowPanel({
                 <p>{flowGuideForKey(key, t)}</p>
               </div>
               <strong>
-                {sectionBookPages.length + sectionDownloads.length + sectionISpring.length}{" "}
-                {sectionBookPages.length + sectionDownloads.length + sectionISpring.length === 1 ? t("label.item") : t("label.items")}
+                {sectionItemCount} {sectionItemCount === 1 ? t("label.item") : t("label.items")}
               </strong>
             </header>
             <div className="lesson-flow-items">
@@ -1215,7 +1332,7 @@ function isUnitOverviewLesson(lesson: Lesson): boolean {
 }
 
 function displayLessonId(id: string): string {
-  return id.replace(/^U0*(\d+)L0*(\d+)$/i, "U$1L$2");
+  return id.replace(/-\d+$/, "").replace(/^U0*(\d+)L0*(\d+)$/i, "U$1L$2");
 }
 
 function CourseMoodleSections({
@@ -1612,7 +1729,7 @@ function LessonRow({
 }) {
   const { t } = usePortalI18n();
   const [open, setOpen] = useState(defaultOpen);
-  const visibleDownloads = lesson.downloads.filter(isTeacherVisibleResource);
+  const visibleDownloads = visibleLessonDownloadsForLesson(lesson);
   const visibleTextExports = lesson.textExports.filter(isTeacherVisibleResource);
   const visibleISpring = lesson.ispring.filter(isVisibleISpringEntry);
   const visibleBookPageCount = lesson.bookSections?.length ? visibleBookSectionsForLesson(lesson).length : lesson.bookPageCount;
@@ -1624,7 +1741,7 @@ function LessonRow({
         <span className="lesson-code">
           {structureLabels.secondaryKind === "activity" ? `A${lesson.lesson}` : displayLessonId(lesson.id)}
         </span>
-        <span>
+        <span className="lesson-summary-content">
           <span className="lesson-title">{lesson.title}</span>
           <span className="lesson-counts">
             {structureLabels.secondaryKind === "lesson" ? <span className="count-chip">{visibleBookPageCount} {t("label.bookPages")}</span> : null}
