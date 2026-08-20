@@ -1952,7 +1952,7 @@ function cleanExternalUrl(value) {
   return /^https?:\/\//i.test(url) ? url : "";
 }
 
-const shareableEmbedKinds = new Set(["ispring", "video", "h5p"]);
+const shareableEmbedKinds = new Set(["ispring", "video", "h5p", "interactive"]);
 
 function pathTextForResource(item) {
   return `${item?.path || ""} ${item?.previewPath || ""} ${item?.downloadPath || ""} ${item?.url || ""} ${item?.previewUrl || ""} ${item?.downloadUrl || ""}`.toLowerCase();
@@ -1961,10 +1961,21 @@ function pathTextForResource(item) {
 function embedKindForShareableItem(item) {
   const type = String(item?.type || "").toLowerCase();
   const category = String(item?.category || "").toLowerCase();
+  const role = String(item?.role || "").toLowerCase();
   const path = pathTextForResource(item);
   if (type === "ispring" || category.includes("ispring") || path.includes("ispring-localized/")) return "ispring";
   if (type === "mp4" || type === "webm" || type === "mov" || type === "m4v" || type === "video" || category.includes("video") || /\.(?:mp4|webm|mov|m4v)(?:$|[?#])/i.test(path)) return "video";
   if (type === "h5p" || type === "h5pactivity" || category.includes("h5p") || path.includes("/h5p/") || /\.h5p(?:$|[?#])/i.test(path)) return "h5p";
+  if (
+    type === "interactive_lab" ||
+    type === "geogebra_lab" ||
+    category === "localized_external_lab" ||
+    category === "interactive_lab" ||
+    role === "interactive_lab" ||
+    path.includes("/external-labs/")
+  ) {
+    return "interactive";
+  }
   return "";
 }
 
@@ -2006,6 +2017,7 @@ function shareKindLabel(kind) {
   const labels = {
     ispring: "iSpring Courseware",
     h5p: "H5P Activity",
+    interactive: "Interactive Activity",
     video: "Video",
     "book-section": "Lesson Page",
     file: "Course Resource",
@@ -2451,13 +2463,49 @@ async function sendEmbedCoursewareFile(req, res, course, requestedPath, payload)
 function localResourceCandidatesForLesson(lesson) {
   const candidates = [];
   for (const item of lesson.ispring || []) {
-    if (item.path || item.url) candidates.push({ kind: "ispring", role: item.role || "lesson_ispring", item });
+    candidates.push(...localResourceCandidatesFromResource(item, item.role || "lesson_ispring"));
   }
-  for (const item of lesson.downloads || []) {
-    if (!item.path && !item.url) continue;
-    const kind = embedKindForShareableItem(item);
-    if (!shareableEmbedKinds.has(kind)) continue;
-    candidates.push({ kind, role: item.role || "download", item });
+  for (const item of [
+    lesson.lessonPlan,
+    ...(lesson.lessonText || []),
+    ...(lesson.textExports || []),
+    ...(lesson.downloads || []),
+    ...(lesson.bookSections || []),
+  ]) {
+    candidates.push(...localResourceCandidatesFromResource(item, item?.role || "download"));
+  }
+  return candidates;
+}
+
+function localResourceCandidatesFromResource(resource, fallbackRole = "resource", parentResource = null) {
+  if (!resource) return [];
+  const candidates = [];
+  if (resource.path || resource.url || resource.previewPath || resource.previewUrl || resource.downloadPath || resource.downloadUrl) {
+    const kind = embedKindForShareableItem(resource);
+    if (shareableEmbedKinds.has(kind)) {
+      candidates.push({
+        kind,
+        role: resource.role || fallbackRole,
+        item: parentResource && !resource.sectionLabel
+          ? { ...resource, sectionLabel: parentResource.label || parentResource.sectionLabel || fallbackRole }
+          : resource,
+      });
+    }
+  }
+  for (const attachment of resource.attachments || []) {
+    candidates.push(...localResourceCandidatesFromResource(attachment, attachment.role || `${resource.role || fallbackRole}_attachment`, resource));
+  }
+  return candidates;
+}
+
+function localResourceCandidatesFromResources(resources, fallbackRole = "resource") {
+  const candidates = [];
+  for (const resource of resources || []) {
+    if (Array.isArray(resource)) {
+      candidates.push(...localResourceCandidatesFromResources(resource, fallbackRole));
+    } else {
+      candidates.push(...localResourceCandidatesFromResource(resource, resource?.role || fallbackRole));
+    }
   }
   return candidates;
 }
@@ -2504,64 +2552,92 @@ function moodleContentIframeHtml(src, { height = 750 } = {}) {
 function moodleEmbedRowsForCourse(req, course, manifest) {
   const origin = publicOrigin(req);
   const rows = [];
+  const appendRows = ({ unit = 0, lesson = 0, lessonId = "COURSE", lessonTitle = "Course Resources" }, candidates) => {
+    for (const candidate of candidates) {
+      const item = candidate.item;
+      const token = embedTokenForResource({
+        course,
+        kind: candidate.kind,
+        path: item.path || item.previewPath || item.downloadPath,
+        url: item.previewUrl || item.url,
+        downloadUrl: item.downloadUrl || item.url,
+        label: item.label,
+        section: item.sectionLabel || candidate.role,
+        lessonId,
+      });
+      const resourceKey = item.path || item.previewPath || item.downloadPath || item.previewUrl || item.url || item.downloadUrl || item.label || candidate.role;
+      const resourceId = resourceIdFor(resourceKey);
+      const embedUrl = `${origin}/embed/${candidate.kind}/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
+      const fileUrl = `${origin}/embed/file/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
+      let moodleHtml = "";
+      let moodleIframeHtml = "";
+      let moodleShortcode = "";
+      let status = "ready";
+      if (candidate.kind === "ispring") {
+        moodleIframeHtml = moodleIspringIframeHtml(embedUrl);
+        moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: 1500, height: 750 });
+        moodleHtml = moodleShortcode;
+      } else if (candidate.kind === "video") {
+        const ext = extname(item.path || item.url || "").toLowerCase();
+        moodleIframeHtml = moodleContentIframeHtml(embedUrl, { height: 540 });
+        moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 540 });
+        moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video", mimeTypes[ext] || "video/mp4");
+      } else if (candidate.kind === "h5p") {
+        moodleIframeHtml = moodleH5pIframeHtml(embedUrl);
+        moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 560 });
+        moodleHtml = moodleShortcode;
+      } else if (candidate.kind === "interactive") {
+        moodleIframeHtml = moodleContentIframeHtml(embedUrl, { height: 700 });
+        moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 700 });
+        moodleHtml = moodleShortcode;
+      } else {
+        continue;
+      }
+      rows.push({
+        course,
+        unit,
+        lesson,
+        lessonId,
+        lessonTitle,
+        kind: candidate.kind,
+        role: candidate.role,
+        label: item.label || "",
+        path: item.path || item.previewPath || item.downloadPath || item.previewUrl || item.url || item.downloadUrl,
+        source: item.source || null,
+        status,
+        embedUrl,
+        fileUrl,
+        moodleShortcode,
+        moodleIframeHtml,
+        moodleHtml,
+      });
+    }
+  };
+
+  appendRows(
+    { lessonId: "COURSE", lessonTitle: "Course Resources" },
+    localResourceCandidatesFromResources([
+      ...(manifest.courseSections || []),
+      ...(manifest.courseDownloads || []),
+      ...(manifest.teacherResources || []),
+      ...((manifest.texts || []).flatMap((text) => [text, ...(text.materials || [])])),
+    ], "course_resource"),
+  );
   for (const unit of manifest.units || []) {
+    const unitId = `U${String(unit.unit).padStart(2, "0")}`;
+    appendRows(
+      { unit: unit.unit, lesson: 0, lessonId: unitId, lessonTitle: unit.title || `Unit ${unit.unit}` },
+      localResourceCandidatesFromResources([
+        unit.unitPlan,
+        ...Object.values(unit.unitResources || {}),
+      ], "unit_resource"),
+    );
     for (const lesson of unit.lessons || []) {
       const lessonId = `U${String(unit.unit).padStart(2, "0")}L${String(lesson.lesson).padStart(2, "0")}`;
-      for (const candidate of localResourceCandidatesForLesson(lesson)) {
-        const item = candidate.item;
-        const token = embedTokenForResource({
-          course,
-          kind: candidate.kind,
-          path: item.path,
-          url: item.previewUrl || item.url,
-          downloadUrl: item.downloadUrl || item.url,
-          label: item.label,
-          section: item.sectionLabel || candidate.role,
-          lessonId,
-        });
-        const resourceKey = item.path || item.previewUrl || item.url || item.downloadUrl || item.label || candidate.role;
-        const resourceId = resourceIdFor(resourceKey);
-        const embedUrl = `${origin}/embed/${candidate.kind}/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
-        const fileUrl = `${origin}/embed/file/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
-        let moodleHtml = "";
-        let moodleIframeHtml = "";
-        let moodleShortcode = "";
-        let status = "ready";
-        if (candidate.kind === "ispring") {
-          moodleIframeHtml = moodleIspringIframeHtml(embedUrl);
-          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: 1500, height: 750 });
-          moodleHtml = moodleShortcode;
-        } else if (candidate.kind === "video") {
-          const ext = extname(item.path || item.url || "").toLowerCase();
-          moodleIframeHtml = moodleContentIframeHtml(embedUrl, { height: 540 });
-          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 540 });
-          moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video", mimeTypes[ext] || "video/mp4");
-        } else if (candidate.kind === "h5p") {
-          moodleIframeHtml = moodleH5pIframeHtml(embedUrl);
-          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 560 });
-          moodleHtml = moodleShortcode;
-        } else {
-          continue;
-        }
-        rows.push({
-          course,
-          unit: unit.unit,
-          lesson: lesson.lesson,
-          lessonId,
-          lessonTitle: lesson.title,
-          kind: candidate.kind,
-          role: candidate.role,
-          label: item.label || "",
-          path: item.path || item.previewUrl || item.url || item.downloadUrl,
-          source: item.source || null,
-          status,
-          embedUrl,
-          fileUrl,
-          moodleShortcode,
-          moodleIframeHtml,
-          moodleHtml,
-        });
-      }
+      appendRows(
+        { unit: unit.unit, lesson: lesson.lesson, lessonId, lessonTitle: lesson.title },
+        localResourceCandidatesForLesson(lesson),
+      );
     }
   }
   return rows;
@@ -2591,7 +2667,7 @@ async function handleEmbedRequest(req, res, requestUrl) {
     return sendEmbedCoursewareFile(req, res, course, requestedPath, payload);
   }
 
-  const match = /^\/embed\/(ispring|video|file|book-section|h5p)\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/i.exec(requestUrl.pathname);
+  const match = /^\/embed\/(ispring|video|file|book-section|h5p|interactive)\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/i.exec(requestUrl.pathname);
   if (!match) {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     res.end("Unknown embed endpoint");
@@ -2600,7 +2676,7 @@ async function handleEmbedRequest(req, res, requestUrl) {
   const kind = match[1].toLowerCase();
   const course = safeSegment(match[2]).toUpperCase();
   const lessonId = match[3];
-  if (payload.kind !== kind && !(kind === "file" && ["file", "h5p"].includes(payload.kind))) {
+  if (payload.kind !== kind && !(kind === "file" && (payload.kind === "file" || shareableEmbedKinds.has(payload.kind)))) {
     res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
     res.end("Forbidden: embed token kind mismatch");
     return true;
@@ -7394,7 +7470,7 @@ async function handlePortalApi(req, res) {
       }
       const kind = String(body.kind || "").toLowerCase();
       if (!shareableEmbedKinds.has(kind)) {
-        sendJson(res, 400, { ok: false, error: "Only iSpring, video, and H5P resources can generate public share links." });
+        sendJson(res, 400, { ok: false, error: "Only iSpring, video, H5P, and interactive resources can generate public share links." });
         return true;
       }
       const days = Number(body.expiresInDays || 30);

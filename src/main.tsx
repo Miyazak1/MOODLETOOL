@@ -167,6 +167,7 @@ function shareKindForItem(item: LinkableResource): MoodleEmbedRow["kind"] {
   if (isISpringResource(item)) return "ispring";
   if (isVideoResource(item)) return "video";
   if (isH5PResource(item)) return "h5p";
+  if (isInteractiveLabResource(item)) return "interactive";
   return "file";
 }
 
@@ -256,8 +257,23 @@ function isH5PResource(item: LinkableResource): boolean {
   return type === "h5p" || type === "h5pactivity" || category.includes("h5p") || path.includes("/h5p/") || /\.(?:h5p)(?:$|[?#])/i.test(path);
 }
 
+function isInteractiveLabResource(item: LinkableResource): boolean {
+  const type = (item.type || "").toLowerCase();
+  const category = (item.category || "").toLowerCase();
+  const role = (item.role || "").toLowerCase();
+  const path = `${item.path || ""} ${item.previewPath || ""} ${item.url || ""} ${item.previewUrl || ""}`.toLowerCase();
+  return (
+    type === "interactive_lab" ||
+    type === "geogebra_lab" ||
+    category === "localized_external_lab" ||
+    category === "interactive_lab" ||
+    role === "interactive_lab" ||
+    path.includes("/external-labs/")
+  );
+}
+
 function isPlayableOnlyResource(item: LinkableResource): boolean {
-  return isVideoResource(item) || isISpringResource(item) || isH5PResource(item);
+  return isVideoResource(item) || isISpringResource(item) || isH5PResource(item) || isInteractiveLabResource(item);
 }
 
 function isExternalInteractiveResource(item: LinkableResource): boolean {
@@ -303,7 +319,15 @@ function isShareableResource(item: LinkableResource): boolean {
 }
 
 function isShareableMoodleEmbedRow(row?: MoodleEmbedRow): boolean {
-  return row?.kind === "ispring" || row?.kind === "video" || row?.kind === "h5p";
+  return row?.kind === "ispring" || row?.kind === "video" || row?.kind === "h5p" || row?.kind === "interactive";
+}
+
+function resourceTypeLabel(item: LinkableResource, t: TFunction): string {
+  if (isISpringResource(item)) return "iSpring";
+  if (isVideoResource(item)) return t("label.video");
+  if (isH5PResource(item)) return t("label.h5p");
+  if (isInteractiveLabResource(item)) return t("label.interactiveActivity");
+  return item.type ? item.type.toUpperCase() : "";
 }
 
 function isVisibleISpringEntry(item: Lesson["ispring"][number]): boolean {
@@ -777,6 +801,7 @@ function ResourceActions({
   labelPrefix,
   variant,
   moodleEmbed,
+  moodleEmbedByPath,
   showDownload = true,
   showAttachmentDownload = true,
   showPlayableAttachments = true,
@@ -789,6 +814,7 @@ function ResourceActions({
   labelPrefix?: string;
   variant?: string;
   moodleEmbed?: MoodleEmbedRow;
+  moodleEmbedByPath?: MoodleEmbedMap;
   showDownload?: boolean;
   showAttachmentDownload?: boolean;
   showPlayableAttachments?: boolean;
@@ -814,7 +840,7 @@ function ResourceActions({
     !hasMoodleActivityPage(item);
   const primaryActionItem = item;
   const primaryActionEmbed = moodleEmbed;
-  const displayType = primaryActionItem.type || item.type;
+  const displayType = resourceTypeLabel(primaryActionItem, t);
   const canViewPrimary = hasWebPreview(primaryActionItem, primaryActionEmbed);
   const canDownloadPrimary = showDownload && isDownloadableFile(primaryActionItem);
   const canSharePrimary = canShare && isShareableResource(primaryActionItem);
@@ -845,26 +871,30 @@ function ResourceActions({
       {attachments.length ? (
         <span className="resource-card-attachments">
           <span className="attachment-heading">{attachmentHeading}</span>
-          {attachments.map((attachment) => (
-            <span className="attachment-row" key={resourceKey(attachment)}>
-              <span className="attachment-label">{attachment.label}</span>
-              <span className="attachment-actions">
-                {hasWebPreview(attachment) ? (
-                  <a className="attachment-link" {...localOpenProps(attachment, courseBaseUrl)}>
-                    {isVideoResource(attachment) ? t("action.play") : t("action.view")}
-                  </a>
-                ) : null}
-                {showAttachmentDownload && isDownloadableFile(attachment) ? (
-                  <a className="attachment-link" {...localDownloadProps(attachment, courseBaseUrl)}>
-                    {t("action.download")}
-                  </a>
-                ) : null}
-                {canShare && isShareableResource(attachment) ? (
-                  <PublicShareButton courseCode={courseCode || courseCodeFromBaseUrl(courseBaseUrl)} item={attachment} />
-                ) : null}
+          {attachments.map((attachment) => {
+            const attachmentMoodleEmbed = moodleEmbedForResource(moodleEmbedByPath, attachment);
+            return (
+              <span className="attachment-row" key={resourceKey(attachment)}>
+                <span className="attachment-label">{attachment.label}</span>
+                <span className="attachment-actions">
+                  {hasWebPreview(attachment, attachmentMoodleEmbed) ? (
+                    <a className="attachment-link" {...localOpenProps(attachment, courseBaseUrl, attachmentMoodleEmbed)}>
+                      {isVideoResource(attachment) ? t("action.play") : t("action.view")}
+                    </a>
+                  ) : null}
+                  {showAttachmentDownload && isDownloadableFile(attachment) ? (
+                    <a className="attachment-link" {...localDownloadProps(attachment, courseBaseUrl)}>
+                      {t("action.download")}
+                    </a>
+                  ) : null}
+                  <MoodleEmbedButton row={attachmentMoodleEmbed} />
+                  {canShare && isShareableResource(attachment) ? (
+                    <PublicShareButton courseCode={courseCode || courseCodeFromBaseUrl(courseBaseUrl)} item={attachment} />
+                  ) : null}
+                </span>
               </span>
-            </span>
-          ))}
+            );
+          })}
         </span>
       ) : null}
     </span>
@@ -1217,6 +1247,7 @@ function LessonFlowPanel({
                   item={item}
                   key={resourceKey(item)}
                   moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+                  moodleEmbedByPath={moodleEmbedByPath}
                   showDownload={false}
                   showPlayableAttachments={false}
                 />
@@ -1244,6 +1275,7 @@ function LessonFlowPanel({
                   key={resourceKey(item)}
                   labelPrefix={isPlayableOnlyResource(item) || flowKeyForDownload(item) === "resources" ? undefined : roleLabel(item.role, t)}
                   moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+                  moodleEmbedByPath={moodleEmbedByPath}
                 />
               ))}
             </div>
@@ -1303,6 +1335,7 @@ function ActivityResourcePanel({
           item={item}
           key={resourceKey(item)}
           moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+          moodleEmbedByPath={moodleEmbedByPath}
           showDownload={(item.type || "").toLowerCase() !== "html"}
         />
       ))}
@@ -1388,12 +1421,14 @@ function CourseMoodleSections({
   courseBaseUrl,
   courseCode,
   canShare,
+  moodleEmbedByPath,
   units,
 }: {
   groups: MoodleSectionGroup[];
   courseBaseUrl: string;
   courseCode: string;
   canShare: boolean;
+  moodleEmbedByPath?: MoodleEmbedMap;
   units: Unit[];
 }) {
   const { t } = usePortalI18n();
@@ -1435,6 +1470,8 @@ function CourseMoodleSections({
                           canShare={canShare}
                           item={item}
                           key={resourceKey(item)}
+                          moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+                          moodleEmbedByPath={moodleEmbedByPath}
                         />
                       ))}
                     </div>
@@ -1450,6 +1487,8 @@ function CourseMoodleSections({
                     canShare={canShare}
                     item={item}
                     key={resourceKey(item)}
+                    moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+                    moodleEmbedByPath={moodleEmbedByPath}
                   />
                 ))}
               </div>
@@ -1531,12 +1570,14 @@ function Overview({
   manifest,
   courseBaseUrl,
   canShare,
+  moodleEmbedByPath,
   structureLabels,
 }: {
   course: CourseCatalogEntry;
   manifest: CourseManifest;
   courseBaseUrl: string;
   canShare: boolean;
+  moodleEmbedByPath?: MoodleEmbedMap;
   structureLabels: CourseStructureLabels;
 }) {
   const { t } = usePortalI18n();
@@ -1601,6 +1642,7 @@ function Overview({
         courseBaseUrl={courseBaseUrl}
         courseCode={manifest.course.code}
         groups={moodleSectionGroups}
+        moodleEmbedByPath={moodleEmbedByPath}
         units={manifest.units}
       />
       {visibleCourseDownloads.length ? (
@@ -1615,6 +1657,8 @@ function Overview({
                 item={item}
                 key={resourceKey(item)}
                 labelPrefix={roleLabel(item.role, t)}
+                moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+                moodleEmbedByPath={moodleEmbedByPath}
               />
             ))}
           </div>
@@ -1817,6 +1861,8 @@ function LessonRow({
               canShare={canShare}
               item={lesson.lessonPlan}
               labelPrefix={t("label.lessonPlan")}
+              moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, lesson.lessonPlan)}
+              moodleEmbedByPath={moodleEmbedByPath}
               variant="plan"
             />
           ) : unitOverview ? (
@@ -1858,11 +1904,13 @@ function UnitMoodleResources({
   courseBaseUrl,
   courseCode,
   canShare,
+  moodleEmbedByPath,
 }: {
   unit: Unit;
   courseBaseUrl: string;
   courseCode: string;
   canShare: boolean;
+  moodleEmbedByPath?: MoodleEmbedMap;
 }) {
   const { t } = usePortalI18n();
   const groups = [
@@ -1901,6 +1949,8 @@ function UnitMoodleResources({
                 canShare={canShare}
                 item={item}
                 key={resourceKey(item)}
+                moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+                moodleEmbedByPath={moodleEmbedByPath}
               />
             ))}
           </div>
@@ -1957,6 +2007,8 @@ function UnitDetail({
                 canShare={canShare}
                 item={unit.unitPlan}
                 labelPrefix={t("label.unitPlan")}
+                moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, unit.unitPlan)}
+                moodleEmbedByPath={moodleEmbedByPath}
                 variant="plan"
               />
             ) : structuredUnit ? (
@@ -1965,7 +2017,7 @@ function UnitDetail({
           </div>
         ) : null}
       </div>
-      {enhancedUnitResources ? <UnitMoodleResources courseBaseUrl={courseBaseUrl} courseCode={courseCode} canShare={canShare} unit={unit} /> : null}
+      {enhancedUnitResources ? <UnitMoodleResources courseBaseUrl={courseBaseUrl} courseCode={courseCode} canShare={canShare} moodleEmbedByPath={moodleEmbedByPath} unit={unit} /> : null}
       <div className="lesson-list">
         {visibleLessons.length ? (
           visibleLessons.map((lesson, index) => (
@@ -1997,11 +2049,13 @@ function TextIndex({
   courseBaseUrl,
   courseCode,
   canShare,
+  moodleEmbedByPath,
   texts,
 }: {
   courseBaseUrl: string;
   courseCode: string;
   canShare: boolean;
+  moodleEmbedByPath?: MoodleEmbedMap;
   texts: TextRegistryEntry[];
 }) {
   const { t } = usePortalI18n();
@@ -2026,6 +2080,8 @@ function TextIndex({
                     canShare={canShare}
                     item={item}
                     key={resourceKey(item)}
+                    moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+                    moodleEmbedByPath={moodleEmbedByPath}
                   />
                 ))}
               </div>
@@ -2279,6 +2335,7 @@ function App() {
                 course={selectedCourse}
                 courseBaseUrl={selectedCourse.baseUrl}
                 manifest={manifest}
+                moodleEmbedByPath={moodleEmbedByPath}
                 structureLabels={structureLabels}
               />
               <UnitRoadmap
@@ -2302,6 +2359,7 @@ function App() {
                 canShare={adminCanShare}
                 courseBaseUrl={selectedCourse.baseUrl}
                 courseCode={manifest.course.code}
+                moodleEmbedByPath={moodleEmbedByPath}
                 texts={manifest.texts}
               />
             </>
