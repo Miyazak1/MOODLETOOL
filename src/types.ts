@@ -19,6 +19,8 @@ export interface FileResource {
   teacherUse?: string;
   textPreview?: string;
   sortOrder?: number;
+  mode?: string;
+  localizedPackagePath?: string;
 }
 
 export interface MoodleEmbedRow {
@@ -27,7 +29,7 @@ export interface MoodleEmbedRow {
   lesson: number;
   lessonId: string;
   lessonTitle: string;
-  kind: "ispring" | "video" | "h5p" | "book-section" | "file";
+  kind: "ispring" | "video" | "h5p" | "interactive" | "book-section" | "file";
   label: string;
   path: string;
   status: string;
@@ -84,6 +86,7 @@ export interface Lesson {
   lessonPlan: FileResource | null;
   ispring: ISpringEntry[];
   downloads: FileResource[];
+  handsOn?: FileResource[];
   bookSections?: BookSectionResource[];
   resourceCounts: Record<string, number>;
 }
