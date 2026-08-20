@@ -656,7 +656,7 @@ function localDownloadCount(items: LinkableResource[] = []): number {
 }
 
 function lessonLocalDownloadCount(lesson: Lesson): number {
-  const downloads = dedupeResources(visibleLessonDownloadsForLesson(lesson));
+  const downloads = dedupeResources([...visibleLessonDownloadsForLesson(lesson), ...visibleHandsOnForLesson(lesson)]);
   return localDownloadCount([...downloads, ...visibleBookSectionsForLesson(lesson)]);
 }
 
@@ -1025,6 +1025,7 @@ function lessonMatches(lesson: Lesson, query: string): boolean {
   if (itemMatches(lesson.title, query) || itemMatches(lesson.id, query)) return true;
   const files: LinkableResource[] = [
     ...lesson.downloads,
+    ...(lesson.handsOn || []),
     ...lesson.textExports,
     ...(lesson.bookSections || []),
     ...lesson.lessonText.map(lessonTextResource),
@@ -1125,6 +1126,10 @@ function visibleLessonDownloadsForLesson(lesson: Lesson): FileResource[] {
   return (lesson.downloads || []).filter((item) => isTeacherVisibleResource(item) && !isStandaloneNumberedLessonActivity(item));
 }
 
+function visibleHandsOnForLesson(lesson: Lesson): FileResource[] {
+  return (lesson.handsOn || []).filter(isTeacherVisibleResource);
+}
+
 function normalizedResourceName(item: LinkableResource): string {
   const name = item.label || item.path?.split(/[\\/]/).pop() || item.url || "";
   return name.toLowerCase().replace(/\.[a-z0-9]+$/i, "").replace(/[^a-z0-9]+/g, "");
@@ -1159,6 +1164,7 @@ function LessonFlowPanel({
   canShare,
   moodleEmbedByPath,
   visibleDownloads,
+  visibleHandsOn,
   visibleTextExports,
   visibleISpring,
 }: {
@@ -1168,6 +1174,7 @@ function LessonFlowPanel({
   canShare: boolean;
   moodleEmbedByPath?: MoodleEmbedMap;
   visibleDownloads: FileResource[];
+  visibleHandsOn: FileResource[];
   visibleTextExports: FileResource[];
   visibleISpring: Lesson["ispring"];
 }) {
@@ -1197,7 +1204,7 @@ function LessonFlowPanel({
     );
   };
   const regularDownloads = dedupeResources(
-    [...visibleDownloads, ...visibleTextExports].filter((item) => {
+    [...visibleDownloads, ...visibleHandsOn, ...visibleTextExports].filter((item) => {
       if (item.role === "lesson_book" || item.role === "lesson_book_section") return false;
       if (isStandaloneNumberedLessonActivity(item)) return false;
       if (isGroupedResource(item, bookSectionAttachmentKeys)) return false;
@@ -1824,6 +1831,7 @@ function LessonRow({
   const { t } = usePortalI18n();
   const [open, setOpen] = useState(defaultOpen);
   const visibleDownloads = visibleLessonDownloadsForLesson(lesson);
+  const visibleHandsOn = visibleHandsOnForLesson(lesson);
   const visibleTextExports = lesson.textExports.filter(isTeacherVisibleResource);
   const visibleISpring = lesson.ispring.filter(isVisibleISpringEntry);
   const visibleBookPageCount = lesson.bookSections?.length ? visibleBookSectionsForLesson(lesson).length : lesson.bookPageCount;
@@ -1890,6 +1898,7 @@ function LessonRow({
             lesson={lesson}
             moodleEmbedByPath={moodleEmbedByPath}
             visibleDownloads={visibleDownloads}
+            visibleHandsOn={visibleHandsOn}
             visibleISpring={visibleISpring}
             visibleTextExports={visibleTextExports}
           />

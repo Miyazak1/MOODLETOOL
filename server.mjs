@@ -2470,6 +2470,7 @@ function localResourceCandidatesForLesson(lesson) {
     ...(lesson.lessonText || []),
     ...(lesson.textExports || []),
     ...(lesson.downloads || []),
+    ...(lesson.handsOn || []),
     ...(lesson.bookSections || []),
   ]) {
     candidates.push(...localResourceCandidatesFromResource(item, item?.role || "download"));

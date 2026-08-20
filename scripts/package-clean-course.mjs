@@ -52,6 +52,7 @@ function collectResource(files, dirs, resource) {
   addFile(files, resource.path);
   addFile(files, resource.previewPath);
   addFile(files, resource.downloadPath);
+  addFile(files, resource.localizedPackagePath);
   for (const attachment of resource.attachments ?? []) {
     addFile(files, attachment.path);
     addFile(files, attachment.previewPath);
@@ -122,6 +123,7 @@ for (const unit of manifest.units ?? []) {
     for (const resource of lesson.lessonText ?? []) collectResource(files, dirs, resource);
     for (const resource of lesson.textExports ?? []) collectResource(files, dirs, resource);
     for (const resource of lesson.downloads ?? []) collectResource(files, dirs, resource);
+    for (const resource of lesson.handsOn ?? []) collectResource(files, dirs, resource);
     for (const resource of lesson.ispring ?? []) collectResource(files, dirs, resource);
     for (const resource of lesson.bookSections ?? []) collectResource(files, dirs, resource);
   }
