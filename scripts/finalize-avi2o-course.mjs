@@ -11,6 +11,8 @@ const manifestPath = join(courseRoot, "course-manifest.json");
 const catalogPath = join(projectRoot, "public", "course-catalog.json");
 const roadmapPath = join(projectRoot, "public", "course-roadmap.json");
 const sourcesPath = join(courseRoot, "texts", "SOURCES.md");
+const officialCurriculumPath = "texts/ontario-arts-curriculum-9-10/arts910curr2010.pdf";
+const officialCurriculumSource = "https://www.edu.gov.on.ca/eng/curriculum/secondary/arts910curr2010.pdf";
 const unresolvedUrlIds = new Set(["4", "5", "24", "27", "29", "41"]);
 
 loadEnvFile(join(projectRoot, ".env"));
@@ -571,6 +573,19 @@ function updateUnitSummaries(manifest) {
   }
 }
 
+function fixLegacyLessonPaths(manifest) {
+  let fixed = 0;
+  for (const unit of manifest.units || []) {
+    for (const lesson of unit.lessons || []) {
+      const primaryActivityPath = lesson.downloads?.[0]?.path;
+      if (!primaryActivityPath || lesson.path === primaryActivityPath) continue;
+      lesson.path = primaryActivityPath;
+      fixed += 1;
+    }
+  }
+  return fixed;
+}
+
 function collectStats(manifest) {
   const resources = [];
   eachResource(manifest, (item) => {
@@ -613,6 +628,7 @@ function writeSources(stats, localizeResult, unavailableItems, folderPagesRewrit
 - Structure: legacy Moodle activity/resource course organized by Introduction, Unit 1 Drawing, Unit 2 Painting, Unit 3 Printmaking, Unit 4 Sculpture, and Final Summative Project.
 - Localized structure: ${stats.units} units, ${stats.lessons} lesson/activity groups, ${stats.resources} local resource records, including ${stats.attachments} retained downloaded attachments.
 - Course documents: Moodle-exposed course outline, attendance policy, list-of-supplies/learning-log URL records, unit weekly plans, lesson folders, assignments, and final assessment pages were localized where accessible.
+- Official curriculum guidance: The Ontario Curriculum, Grades 9 and 10: The Arts, 2010 (Revised), Ontario Ministry of Education, is included at ${officialCurriculumPath}.
 - Unit plans: ${stats.unitPlans} current Unit Plan/Weekly Plan DOCX files were downloaded from Moodle. No separate lesson-plan files were exposed beyond the Moodle lesson folders.
 - External URL localization: ${localizeResult.localized.length} external URL target file(s) were downloaded into the package where the target exposed a direct file/export. YouTube/SFU-style public references remain external where no downloadable source file was exposed.
 - Unavailable URL targets: ${stats.unavailable} URL activity target(s) were unavailable or resolved to a Moodle help fallback during localization.
@@ -622,6 +638,48 @@ ${failedLines}
 - Cleanup: rewrote ${folderPagesRewritten} Moodle folder page(s), excluded ${removedTransientAttachments} transient preview/theme files, and removed Moodle source URLs from local HTML/manifest fields so local files are the primary course content.
 `;
   writeFileSync(sourcesPath, content, "utf8");
+}
+
+function officialCurriculumDownload(bytes) {
+  return {
+    label: "The Ontario Curriculum, Grades 9 and 10: The Arts, 2010 (Revised)",
+    type: "pdf",
+    category: "official_curriculum",
+    role: "curriculum_reference",
+    path: officialCurriculumPath,
+    previewPath: officialCurriculumPath,
+    downloadPath: officialCurriculumPath,
+    bytes,
+    source: officialCurriculumSource,
+    textPreview: "Official Ontario Ministry curriculum guidance for Grades 9 and 10 The Arts, including Visual Arts, Grade 10, Open (AVI2O).",
+  };
+}
+
+function ensureOfficialCurriculum(manifest) {
+  const absolutePath = join(courseRoot, ...officialCurriculumPath.split("/"));
+  if (!existsSync(absolutePath)) return false;
+  const bytes = statSync(absolutePath).size;
+  const download = officialCurriculumDownload(bytes);
+  manifest.courseDownloads = (manifest.courseDownloads || []).filter((item) => item.path !== officialCurriculumPath);
+  manifest.courseDownloads.unshift(download);
+  manifest.texts = (manifest.texts || []).filter((item) => item.id !== "ontario-arts-curriculum-9-10");
+  manifest.texts.unshift({
+    id: "ontario-arts-curriculum-9-10",
+    title: "The Ontario Curriculum, Grades 9 and 10: The Arts, 2010 (Revised)",
+    author: "Ontario Ministry of Education",
+    publisher: "Ontario Ministry of Education",
+    type: "curriculum",
+    units: [1, 2, 3, 4, 5],
+    copyrightStatus: "official_public_document",
+    sourceStatus: "localized_from_public_official_source",
+    notes: "Official Ontario curriculum reference containing AVI2O Visual Arts, Grade 10, Open expectations.",
+    materials: [download],
+    path: officialCurriculumPath,
+    bytes,
+    category: "official_curriculum",
+    role: "curriculum_reference",
+  });
+  return true;
 }
 
 function ensureSources(manifest) {
@@ -689,7 +747,9 @@ const removedTransientAttachments = removeTransientAttachments(manifest);
 const folderPagesRewritten = rewriteFolderPages(manifest);
 const htmlFilesChanged = sanitizeHtml(courseRoot);
 const scrubbedSourceUrls = scrubManifestSources(manifest);
+const legacyLessonPathsFixed = fixLegacyLessonPaths(manifest);
 updateUnitSummaries(manifest);
+const officialCurriculumIncluded = ensureOfficialCurriculum(manifest);
 let stats = collectStats(manifest);
 let unavailableItems = collectUnavailableItems(manifest);
 writeSources(stats, localizeResult, unavailableItems, folderPagesRewritten, namedStudentChecklistsRemoved, removedTransientAttachments);
@@ -716,8 +776,17 @@ manifest.sourceAudit = {
   removedTransientAttachments,
   htmlFilesChanged,
   scrubbedSourceUrls,
+  legacyLessonPathsFixed,
   localImportStatus: "localized-package-ready",
+  officialCurriculumLocalized: officialCurriculumIncluded,
+  officialCurriculumUrl: officialCurriculumSource,
+  officialCurriculumPath,
   textbookStatus: "Moodle visual arts activity/resource files localized; no separate textbook package exposed",
+  avi2oLegacyActivityTitlePatch: {
+    fixedAt: manifest.generatedAt,
+    basis: "Matched BBI2O legacy-course presentation: each lesson row preserves the Moodle activity title/order and opens the localized Moodle activity page instead of a synthetic lesson route.",
+    lessonPathsFixed: legacyLessonPathsFixed,
+  },
 };
 writeJson(manifestPath, manifest);
 updateCatalog(stats);

@@ -316,6 +316,7 @@ function isEmptyMoodleActivityShell(item: LinkableResource): boolean {
   if (!category.startsWith("moodle_") || category === "moodle_course_section") return false;
   const role = (item.role || "").toLowerCase();
   if ((category === "moodle_book_section" || role === "lesson_book_section") && (item.path || item.previewPath)) return false;
+  if (hasMoodleActivityPage(item)) return false;
   const type = (item.type || "").toLowerCase();
   if ((item.path || item.previewPath || item.downloadPath) && type && type !== "html" && type !== "htm") return false;
   return !hasMeaningfulTextContent(item) && !visibleAttachments(item).length;
@@ -1331,7 +1332,11 @@ type CourseStructureLabels = {
 function courseStructureLabels(manifest: CourseManifest, t: TFunction): CourseStructureLabels {
   const secondary = manifest.navigation?.secondary?.toLowerCase();
   const note = manifest.sourceAudit?.structureNote?.toLowerCase() || "";
-  const activityBased = secondary === "activity" || note.includes("moodle course sections");
+  const auditNotes = manifest.sourceAudit?.notes?.toLowerCase() || "";
+  const legacyActivityCourse =
+    auditNotes.includes("legacy moodle activity course") ||
+    (Number(manifest.sourceAudit?.moodleBookCount || 0) === 0 && Number(manifest.sourceAudit?.activityItemCount || 0) > 0);
+  const activityBased = secondary === "activity" || note.includes("moodle course sections") || legacyActivityCourse;
   const hasEnhancedUnitResources = manifest.units.some((unit) =>
     ["evaluations", "reflectionAndLogs"].some((key) => unitResourcesFor(unit, key).some(isTeacherVisibleResource)),
   );
@@ -1750,6 +1755,7 @@ function UnitNav({
 
 function LessonRow({
   lesson,
+  activityIndex,
   defaultOpen,
   courseBaseUrl,
   courseCode,
@@ -1758,6 +1764,7 @@ function LessonRow({
   structureLabels,
 }: {
   lesson: Lesson;
+  activityIndex: number;
   defaultOpen: boolean;
   courseBaseUrl: string;
   courseCode: string;
@@ -1777,7 +1784,7 @@ function LessonRow({
     <article className={`lesson-row ${open ? "open" : ""}`}>
       <button className="lesson-summary" type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
         <span className="lesson-code">
-          {structureLabels.secondaryKind === "activity" ? `A${lesson.lesson}` : displayLessonId(lesson.id)}
+          {structureLabels.secondaryKind === "activity" ? `A${activityIndex + 1}` : displayLessonId(lesson.id)}
         </span>
         <span className="lesson-summary-content">
           <span className="lesson-title">{lesson.title}</span>
@@ -1964,6 +1971,7 @@ function UnitDetail({
               defaultOpen={index === 0}
               key={lesson.id}
               lesson={lesson}
+              activityIndex={index}
               moodleEmbedByPath={moodleEmbedByPath}
               structureLabels={structureLabels}
             />
