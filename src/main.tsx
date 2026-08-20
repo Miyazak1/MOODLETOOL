@@ -1157,10 +1157,15 @@ function LessonFlowPanel({
       addResourceKeys(bookSectionAttachmentKeys, attachment);
     });
   });
-  const flowKeyForDownload = (item: LinkableResource) =>
-    playableAttachmentFlowByKey.get(resourceIdentity(item)) ||
-    (resourceSourceIdentity(item) ? playableAttachmentFlowByKey.get(resourceSourceIdentity(item)) : undefined) ||
-    downloadFlowKey(item);
+  const flowKeyForDownload = (item: LinkableResource) => {
+    const explicitFlowKey = downloadFlowKey(item);
+    if (explicitFlowKey !== "resources" && explicitFlowKey !== "other") return explicitFlowKey;
+    return (
+      playableAttachmentFlowByKey.get(resourceIdentity(item)) ||
+      (resourceSourceIdentity(item) ? playableAttachmentFlowByKey.get(resourceSourceIdentity(item)) : undefined) ||
+      explicitFlowKey
+    );
+  };
   const regularDownloads = dedupeResources(
     [...visibleDownloads, ...visibleTextExports].filter((item) => {
       if (item.role === "lesson_book" || item.role === "lesson_book_section") return false;
