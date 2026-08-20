@@ -134,6 +134,9 @@ export interface CourseManifest {
     lessonCount?: number;
     ispringExpected?: number;
     ispringComplete?: number;
+    moodleBookCount?: number;
+    activityItemCount?: number;
+    notes?: string;
     resourceCoverage?: {
       uniqueCovered?: number;
       uniqueTotal?: number;
