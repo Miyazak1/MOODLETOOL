@@ -7572,6 +7572,74 @@ async function handleShareRequest(req, res, requestUrl) {
   return true;
 }
 
+function shouldUseLinkedVideoActivityPage(course, requestedPath, filePath) {
+  if (safeSegment(course).toUpperCase() !== "BBI2O") return false;
+  if (extname(filePath).toLowerCase() !== ".html") return false;
+  const normalizedPath = toPosixPath(requestedPath || "");
+  return /^localized-moodle-activities\/.+\/index\.html$/i.test(normalizedPath);
+}
+
+function labelFromVideoBlock(block, src) {
+  const anchorMatch = /<a\b[^>]*>([\s\S]*?)<\/a>/i.exec(block);
+  const anchorText = anchorMatch?.[1]
+    ?.replace(/<[^>]+>/g, " ")
+    ?.replace(/\s+/g, " ")
+    ?.trim();
+  if (anchorText) return anchorText;
+  try {
+    const pathPart = new URL(src, "https://local.invalid/").pathname;
+    return decodeURIComponent(pathPart.split("/").filter(Boolean).pop() || "Open video");
+  } catch {
+    return "Open video";
+  }
+}
+
+function injectLinkedVideoStyle(html) {
+  if (/ossd-linked-video-list/i.test(html)) return html;
+  const style = `<style>
+.ossd-linked-video-list{display:grid;gap:10px;margin:18px 0;}
+.ossd-linked-video-item{align-items:center;background:#f7fbff;border:1px solid #c8def5;border-radius:6px;display:flex;gap:12px;justify-content:space-between;padding:12px 14px;}
+.ossd-linked-video-name{color:#002b55;font-weight:700;overflow-wrap:anywhere;}
+.ossd-linked-video-action{border:1px solid #6fa3dc;border-radius:5px;color:#00396f;font-weight:700;padding:7px 11px;text-decoration:none;white-space:nowrap;}
+.ossd-linked-video-action:hover{background:#eaf4ff;}
+</style>`;
+  if (/<\/head>/i.test(html)) return html.replace(/<\/head>/i, `${style}\n$&`);
+  return `${style}\n${html}`;
+}
+
+function renderLinkedVideoItem(src, label) {
+  return `<div class="ossd-linked-video-item">
+  <span class="ossd-linked-video-name">${htmlEscape(label)}</span>
+  <a class="ossd-linked-video-action" href="${htmlEscape(src)}" target="_blank" rel="noopener">Open video</a>
+</div>`;
+}
+
+function replaceMultiVideoEmbedsWithLinks(html) {
+  const body = String(html || "");
+  const videoBlocks = Array.from(body.matchAll(/<video\b[\s\S]*?<\/video>/gi));
+  const linkableVideos = videoBlocks
+    .map((match) => {
+      const block = match[0];
+      const sourceMatch = /<source\b[^>]*\b(?:data-src|src)\s*=\s*(["'])(https?:\/\/[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?|[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?)\1/i.exec(block);
+      if (!sourceMatch) return null;
+      const src = sourceMatch[2];
+      return { block, src, label: labelFromVideoBlock(block, src) };
+    })
+    .filter(Boolean);
+
+  if (linkableVideos.length < 2) return { html, changed: false };
+
+  let nextHtml = body;
+  for (const item of linkableVideos) {
+    nextHtml = nextHtml.replace(item.block, renderLinkedVideoItem(item.src, item.label));
+  }
+  nextHtml = injectLinkedVideoStyle(nextHtml);
+  if (!/ossd-linked-video-list/i.test(nextHtml)) {
+    nextHtml = nextHtml.replace(/(<div class="ossd-linked-video-item">[\s\S]*?<\/div>)/, '<div class="ossd-linked-video-list">$1</div>');
+  }
+  return { html: nextHtml, changed: true };
+}
+
 async function sendFile(req, res, filePath) {
   const requestUrl = new URL(req.url || "/", "http://127.0.0.1");
   const shouldDownloadRaw = requestUrl.searchParams.get("download") === "1";
@@ -7676,6 +7744,18 @@ const server = createServer(async (req, res) => {
     }
     try {
       const requestedPath = requestedCourse ? pathFromCoursewarePath(pathname) : "";
+      if (
+        requestedCourse
+        && !requestUrl.searchParams.has("download")
+        && shouldUseLinkedVideoActivityPage(requestedCourse, requestedPath, filePath)
+      ) {
+        const html = await readFile(filePath, "utf8");
+        const linkedVideoPage = replaceMultiVideoEmbedsWithLinks(html);
+        if (linkedVideoPage.changed) {
+          sendHtml(res, 200, linkedVideoPage.html);
+          return;
+        }
+      }
       if (
         requestedCourse
         && !requestUrl.searchParams.has("download")
