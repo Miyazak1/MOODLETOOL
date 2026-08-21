@@ -41,10 +41,21 @@ function assertInside(parent, target) {
 }
 
 function addFile(files, relativePath) {
-  if (!relativePath) return;
+  if (!relativePath) return false;
   const clean = toPosix(relativePath);
   if (clean.includes('../') || path.isAbsolute(clean)) throw new Error(`Unsafe relative path: ${relativePath}`);
+  const before = files.size;
   files.add(clean);
+  return files.size !== before;
+}
+
+function addDir(dirs, relativeDir) {
+  if (!relativeDir) return false;
+  const clean = toPosix(relativeDir);
+  if (clean.includes('../') || path.isAbsolute(clean)) throw new Error(`Unsafe relative dir: ${relativeDir}`);
+  const before = dirs.size;
+  dirs.add(clean);
+  return dirs.size !== before;
 }
 
 function collectResource(files, dirs, resource) {
@@ -58,8 +69,53 @@ function collectResource(files, dirs, resource) {
     addFile(files, attachment.previewPath);
     addFile(files, attachment.downloadPath);
   }
-  if (resource.packagePath) dirs.add(toPosix(resource.packagePath));
-  if (String(resource.previewPath || '').endsWith('/index.html')) dirs.add(toPosix(path.posix.dirname(resource.previewPath)));
+  if (resource.packagePath) addDir(dirs, resource.packagePath);
+  if (String(resource.previewPath || '').endsWith('/index.html')) addDir(dirs, path.posix.dirname(resource.previewPath));
+}
+
+function htmlReferenceToCoursePath(htmlPath, rawValue) {
+  const value = String(rawValue || '').trim();
+  if (
+    !value
+    || value.startsWith('#')
+    || /^(?:https?:|mailto:|tel:|data:|blob:|javascript:)/i.test(value)
+  ) {
+    return '';
+  }
+  if (value.startsWith('/')) return '';
+  const rawPath = value.replace(/[?#].*$/, '');
+  if (!rawPath) return '';
+  let decodedPath = '';
+  try {
+    decodedPath = decodeURIComponent(rawPath);
+  } catch {
+    return '';
+  }
+  const normalized = path.posix.normalize(path.posix.join(path.posix.dirname(htmlPath), toPosix(decodedPath))).replace(/^\/+/, '');
+  if (!normalized || normalized === '.' || normalized.startsWith('../') || normalized.includes('/../')) return '';
+  return normalized;
+}
+
+function collectHtmlDependencies(courseRoot, files, dirs) {
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const htmlFiles = [...files].filter((item) => /\.html?$/i.test(item));
+    for (const htmlPath of htmlFiles) {
+      const absPath = assertInside(courseRoot, path.join(courseRoot, htmlPath));
+      if (!fs.existsSync(absPath) || !fs.statSync(absPath).isFile()) continue;
+      const html = fs.readFileSync(absPath, 'utf8');
+      html.replace(/\b(?:href|src|poster)\s*=\s*(["'])([^"']+)\1/gi, (_match, _quote, rawValue) => {
+        const coursePath = htmlReferenceToCoursePath(htmlPath, rawValue);
+        if (!coursePath) return _match;
+        changed = addFile(files, coursePath) || changed;
+        if (coursePath.endsWith('/index.html')) {
+          changed = addDir(dirs, path.posix.dirname(coursePath)) || changed;
+        }
+        return _match;
+      });
+    }
+  }
 }
 
 function copyFileFromCourse(courseRoot, stagingCourse, relativePath) {
@@ -128,6 +184,8 @@ for (const unit of manifest.units ?? []) {
     for (const resource of lesson.bookSections ?? []) collectResource(files, dirs, resource);
   }
 }
+
+collectHtmlDependencies(courseRoot, files, dirs);
 
 const stagingCourse = assertInside(stagingRoot, path.join(stagingRoot, course));
 fs.rmSync(stagingCourse, { recursive: true, force: true });
