@@ -283,21 +283,95 @@ function rewriteHtmlPlayableReferences(html, htmlPath, publishedByRelPath) {
   return { html: body, rewritten };
 }
 
+const lazyVideoLoaderScript = `<script>
+(function () {
+  function ready(callback) {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", callback);
+    else callback();
+  }
+  ready(function () {
+    document.querySelectorAll("video").forEach(function (video) {
+      var sources = Array.prototype.slice.call(video.querySelectorAll("source[data-src]"));
+      if (!sources.length) return;
+      video.preload = "none";
+      video.removeAttribute("src");
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "ossd-video-load-button";
+      button.textContent = "Load video";
+      button.addEventListener("click", function () {
+        sources.forEach(function (source) {
+          if (!source.getAttribute("src")) source.setAttribute("src", source.getAttribute("data-src"));
+        });
+        button.remove();
+        video.load();
+        var playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === "function") playPromise.catch(function () {});
+      });
+      video.parentNode.insertBefore(button, video);
+    });
+  });
+}());
+</script>`;
+
+const lazyVideoLoaderStyle = `<style>
+.ossd-video-load-button {
+  background: #00396f;
+  border: 1px solid #00396f;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-weight: 700;
+  margin: 0 0 8px;
+  padding: 8px 12px;
+}
+.ossd-video-load-button:focus,
+.ossd-video-load-button:hover {
+  background: #00549f;
+}
+</style>`;
+
+function injectBeforeClose(html, closeTagPattern, insertion) {
+  if (closeTagPattern.test(html)) return html.replace(closeTagPattern, `${insertion}\n$&`);
+  return `${html}\n${insertion}`;
+}
+
+function lazyLoadActivityVideos(html, htmlPath) {
+  if (!/^localized-moodle-activities\//i.test(toPosix(htmlPath))) return { html, changed: false };
+  let changed = false;
+  let body = String(html || "").replace(/<source\b([^>]*?)\bsrc=(["'])(https?:\/\/[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?)\2([^>]*)>/gi, (match, before, quote, src, after) => {
+    if (/\bdata-src\s*=/i.test(match)) return match;
+    changed = true;
+    return `<source${before}data-src=${quote}${src}${quote}${after}>`;
+  });
+  if (!changed) return { html, changed: false };
+  if (!/ossd-video-load-button/i.test(body)) {
+    body = injectBeforeClose(body, /<\/head>/i, lazyVideoLoaderStyle);
+    body = injectBeforeClose(body, /<\/body>/i, lazyVideoLoaderScript);
+  }
+  return { html: body, changed: true };
+}
+
 async function rewriteLocalHtmlPlayableReferences(publishedByRelPath) {
   const files = await listFiles(localStagingRoot);
   let pages = 0;
   let references = 0;
+  let lazyVideoPages = 0;
   for (const absPath of files) {
     if (!/\.(?:html?|htm)$/i.test(absPath)) continue;
     const htmlPath = toPosix(relative(localStagingRoot, absPath));
     const rewritten = rewriteHtmlPlayableReferences(readFileSync(absPath, "utf8"), htmlPath, publishedByRelPath);
-    if (rewritten.rewritten > 0) {
-      writeFileSync(absPath, rewritten.html, "utf8");
+    const lazyVideo = lazyLoadActivityVideos(rewritten.html, htmlPath);
+    if (rewritten.rewritten > 0 || lazyVideo.changed) {
+      writeFileSync(absPath, lazyVideo.html, "utf8");
       pages += 1;
       references += rewritten.rewritten;
+      if (lazyVideo.changed) lazyVideoPages += 1;
     }
   }
-  return { pages, references };
+  return { pages, references, lazyVideoPages };
 }
 
 function publishRecordFor(relPath, size, kind) {
@@ -713,6 +787,7 @@ manifest.sourceAudit = {
   rewrittenResources,
   htmlPlayableRefsRewritten: htmlPlayableRefs.references,
   htmlPlayablePagesRewritten: htmlPlayableRefs.pages,
+  htmlLazyVideoPagesRewritten: htmlPlayableRefs.lazyVideoPages,
   localCleanup: "streamed-no-media-local-copy",
   activeSwitch: "staging-copy-with-rollback",
 };
@@ -754,6 +829,7 @@ const report = {
     rewrittenResources,
     htmlPlayableRefsRewritten: htmlPlayableRefs.references,
     htmlPlayablePagesRewritten: htmlPlayableRefs.pages,
+    htmlLazyVideoPagesRewritten: htmlPlayableRefs.lazyVideoPages,
     activeSwitch,
     staleOssObjects: staleCleanup.planned.length,
     deletedStaleOssObjects: staleCleanup.deleted.length,
