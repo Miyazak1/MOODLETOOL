@@ -124,8 +124,8 @@ try {
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "ispring-localized", "unit-01", "U01L01", "presentation.html")), true);
   const labHtml = readFileSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "index.html"), "utf8");
-  assert.match(labHtml, /src="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4"/);
-  assert.match(labHtml, /href="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4"/);
+  assert.match(labHtml, /src="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4\?v=[a-f0-9]{12}"/);
+  assert.match(labHtml, /href="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4\?v=[a-f0-9]{12}"/);
   const overviewHtml = readFileSync(join(targetCourseRoot, "course-sections", "course-overview", "index.html"), "utf8");
   assert.match(overviewHtml, /src="\/courseware\/ZZZOVERFLOW\/ispring-localized\/unit-01\/U01L01\/presentation\.html"/);
   assert.doesNotMatch(overviewHtml, /cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/ispring-localized\/unit-01\/U01L01\/presentation\.html/);
@@ -133,7 +133,7 @@ try {
   const manifest = JSON.parse(readFileSync(join(targetCourseRoot, "course-manifest.json"), "utf8"));
   const lesson = manifest.units[0].lessons[0];
   assert.equal(lesson.downloads[0].path, "docs/ordinary.pdf");
-  assert.match(lesson.downloads[1].url, /^https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/media\/lesson-video\.mp4$/);
+  assert.match(lesson.downloads[1].url, /^https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/media\/lesson-video\.mp4\?v=[a-f0-9]{12}$/);
   assert.equal(lesson.downloads[1].path, undefined);
   assert.match(lesson.ispring[0].url, /presentation\.html$/);
   assert.match(lesson.ispring[0].url, /\/ispring-localized\/unit-01\/U01L01\/presentation\.html$/);

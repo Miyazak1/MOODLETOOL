@@ -224,6 +224,21 @@ function cdnUrlForCoursePath(relPath) {
   return cdnUrlForObjectKey(`${objectPrefix}/${course}/${toPosix(relPath).replace(/^\/+/, "")}`);
 }
 
+function appendVersionQuery(url, version) {
+  const value = String(url || "");
+  const token = String(version || "").replace(/[^a-f0-9]/gi, "").slice(0, 12);
+  if (!value || !token) return value;
+  const hashIndex = value.indexOf("#");
+  const beforeHash = hashIndex >= 0 ? value.slice(0, hashIndex) : value;
+  const hash = hashIndex >= 0 ? value.slice(hashIndex) : "";
+  return `${beforeHash}${beforeHash.includes("?") ? "&" : "?"}v=${token}${hash}`;
+}
+
+function publishedCdnUrl(record, fallbackUrl = "") {
+  const url = record?.cdnUrl || record?.url || fallbackUrl;
+  return appendVersionQuery(url, record?.sha256);
+}
+
 function localCoursewareUrlForCoursePath(relPath) {
   return `/courseware/${encodeURIComponent(course)}/${encodeKey(toPosix(relPath).replace(/^\/+/, ""))}`;
 }
@@ -254,7 +269,7 @@ function htmlReferenceValueToCoursePath(htmlPath, rawValue) {
   return normalized;
 }
 
-function rewriteHtmlPlayableReferences(html, htmlPath) {
+function rewriteHtmlPlayableReferences(html, htmlPath, publishedByRelPath) {
   let rewritten = 0;
   const body = String(html || "").replace(/\b(href|src|poster)\s*=\s*(["'])([^"']+)\2/gi, (match, attr, quote, rawValue) => {
     const coursePath = htmlReferenceValueToCoursePath(htmlPath, rawValue);
@@ -263,19 +278,19 @@ function rewriteHtmlPlayableReferences(html, htmlPath) {
     if (attr.toLowerCase() === "src" && isIspringEntryHtml(coursePath)) {
       return `${attr}=${quote}${localCoursewareUrlForCoursePath(coursePath)}${quote}`;
     }
-    return `${attr}=${quote}${cdnUrlForCoursePath(coursePath)}${quote}`;
+    return `${attr}=${quote}${publishedCdnUrl(publishedByRelPath.get(coursePath), cdnUrlForCoursePath(coursePath))}${quote}`;
   });
   return { html: body, rewritten };
 }
 
-async function rewriteLocalHtmlPlayableReferences() {
+async function rewriteLocalHtmlPlayableReferences(publishedByRelPath) {
   const files = await listFiles(localStagingRoot);
   let pages = 0;
   let references = 0;
   for (const absPath of files) {
     if (!/\.(?:html?|htm)$/i.test(absPath)) continue;
     const htmlPath = toPosix(relative(localStagingRoot, absPath));
-    const rewritten = rewriteHtmlPlayableReferences(readFileSync(absPath, "utf8"), htmlPath);
+    const rewritten = rewriteHtmlPlayableReferences(readFileSync(absPath, "utf8"), htmlPath, publishedByRelPath);
     if (rewritten.rewritten > 0) {
       writeFileSync(absPath, rewritten.html, "utf8");
       pages += 1;
@@ -398,7 +413,9 @@ function rewriteManifestValue(container, pathKey, urlKey, publishedByRelPath) {
   const normalized = toPosix(value).replace(/^\/+/, "");
   const published = publishedByRelPath.get(normalized);
   if (!published) return false;
-  container[urlKey] = published.cdnUrl || published.url || "";
+  container[urlKey] = published.kind === "ispring"
+    ? published.cdnUrl || published.url || ""
+    : publishedCdnUrl(published);
   container.source = "cdn";
   if (published.kind === "ispring") {
     if (container.packagePath) {
@@ -681,7 +698,7 @@ if (!manifest) throw new Error("Overflow package must contain course-manifest.js
 
 const publishedByRelPath = new Map(uploaded.map((item) => [item.relativePath, item]));
 const rewrittenResources = rewriteManifestNode(manifest, publishedByRelPath);
-const htmlPlayableRefs = await rewriteLocalHtmlPlayableReferences();
+const htmlPlayableRefs = await rewriteLocalHtmlPlayableReferences(publishedByRelPath);
 manifest.sourceAudit = {
   ...(manifest.sourceAudit || {}),
   importStatus: "imported",

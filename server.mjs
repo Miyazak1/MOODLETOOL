@@ -379,6 +379,20 @@ function generatedCoursewareAssetUrl(course, requestedPath) {
   return `${coursewareAssetBaseUrl}/${encodeURIComponent(safeSegment(course).toUpperCase())}/${encodePathSegments(requestedPath)}`;
 }
 
+function appendAssetVersionQuery(url, version) {
+  const value = String(url || "");
+  const token = String(version || "").replace(/[^a-f0-9]/gi, "").slice(0, 12);
+  if (!value || !token) return value;
+  const hashIndex = value.indexOf("#");
+  const beforeHash = hashIndex >= 0 ? value.slice(0, hashIndex) : value;
+  const hash = hashIndex >= 0 ? value.slice(hashIndex) : "";
+  return `${beforeHash}${beforeHash.includes("?") ? "&" : "?"}v=${token}${hash}`;
+}
+
+function coursewareRegistryAssetUrl(asset, fallbackUrl) {
+  return appendAssetVersionQuery(asset?.cdnUrl || fallbackUrl, asset?.sha256);
+}
+
 function readCoursewareAssetRegistry() {
   if (!existsSync(coursewareAssetRegistryPath)) {
     if (coursewareAssetRegistryCache?.missing) return coursewareAssetRegistryCache;
@@ -414,7 +428,7 @@ function coursewareAssetUrl(course, requestedPath) {
       .map((key) => registry.byKey.get(key))
       .find(Boolean);
     if (!asset) return "";
-    return asset.cdnUrl || generatedCoursewareAssetUrl(course, path);
+    return coursewareRegistryAssetUrl(asset, generatedCoursewareAssetUrl(course, path));
   }
   return generatedCoursewareAssetUrl(course, path);
 }
