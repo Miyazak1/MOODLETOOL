@@ -150,6 +150,9 @@ type LinkableResource = {
   unit?: number;
   lesson?: number;
   parentSection?: string;
+  sectionKey?: string;
+  sectionTitle?: string;
+  sectionOrder?: number;
   sourceGroup?: string;
   teacherOnly?: boolean;
   teacherUse?: string;
@@ -557,16 +560,58 @@ function hasMoodleActivityPage(item: LinkableResource): boolean {
 type MoodleSectionGroup = {
   key: string;
   title: string;
-  description: string;
+  description?: string;
   items: LinkableResource[];
 };
+
+function isOriginalMoodleSectionResource(item: LinkableResource): boolean {
+  return (item.sourceGroup || "").toLowerCase() === "original_moodle_section";
+}
+
+function courseMoodleSectionKey(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "section";
+}
+
+function sortLinkableResources(items: LinkableResource[]): LinkableResource[] {
+  return [...items].sort(
+    (left, right) =>
+      Number(left.sortOrder ?? Number.MAX_SAFE_INTEGER) - Number(right.sortOrder ?? Number.MAX_SAFE_INTEGER) ||
+      (left.label || "").localeCompare(right.label || ""),
+  );
+}
+
+function originalMoodleSectionGroups(items: LinkableResource[]): MoodleSectionGroup[] {
+  const groups = new Map<string, { key: string; title: string; order: number; items: LinkableResource[] }>();
+  for (const item of sortLinkableResources(items.filter(isOriginalMoodleSectionResource))) {
+    const title = item.sectionTitle || item.parentSection || "Course Resources";
+    const key = item.sectionKey || courseMoodleSectionKey(title);
+    const group = groups.get(key) || {
+      key,
+      title,
+      order: Number(item.sectionOrder ?? item.sortOrder ?? Number.MAX_SAFE_INTEGER),
+      items: [],
+    };
+    group.order = Math.min(group.order, Number(item.sectionOrder ?? item.sortOrder ?? Number.MAX_SAFE_INTEGER));
+    addUniqueResource(group.items, item);
+    groups.set(key, group);
+  }
+  return [...groups.values()]
+    .sort((left, right) => left.order - right.order || left.title.localeCompare(right.title))
+    .map(({ key, title, items }) => ({ key, title, items }));
+}
 
 function buildCourseMoodleSectionGroups(manifest: CourseManifest, t: TFunction): MoodleSectionGroup[] {
   const downloads = manifest.courseDownloads || [];
   const courseSections = manifest.courseSections || [];
   const teacherResources = manifest.teacherResources || [];
+  const standardDownloads = downloads.filter((item) => !isOriginalMoodleSectionResource(item));
+  const standardCourseSections = courseSections.filter((item) => !isOriginalMoodleSectionResource(item));
+  const standardTeacherResources = teacherResources.filter((item) => !isOriginalMoodleSectionResource(item));
   const groups: MoodleSectionGroup[] = [];
-  const courseOutlineDownloads = downloads.filter((item) => roleIn(item, ["course_outline", "course_outline_copy"]));
+  const courseOutlineDownloads = standardDownloads.filter((item) => roleIn(item, ["course_outline", "course_outline_copy"]));
   const moodleCourseOutlineDownloads = courseOutlineDownloads.filter((item) => (item.category || "").toLowerCase().startsWith("moodle_"));
   const fallbackCourseOutlineDownloads = moodleCourseOutlineDownloads.length ? [] : courseOutlineDownloads;
 
@@ -585,22 +630,24 @@ function buildCourseMoodleSectionGroups(manifest: CourseManifest, t: TFunction):
     if (unique.length) groups.push({ key, title, description, items: unique });
   };
 
+  groups.push(...originalMoodleSectionGroups([...courseSections, ...downloads, ...teacherResources]));
+
   makeGroup("introduction", "Introduction", t("moodle.group.introduction.description"), [
-    ...courseSections.filter((item) => roleIn(item, ["introduction"])),
-    ...downloads.filter((item) => roleIn(item, ["introduction"])),
+    ...standardCourseSections.filter((item) => roleIn(item, ["introduction"])),
+    ...standardDownloads.filter((item) => roleIn(item, ["introduction"])),
   ]);
 
   makeGroup("course-overview", "Course Overview", t("moodle.group.courseOverview.description"), [
-    ...courseSections.filter((item) => roleIn(item, ["course_overview"])),
+    ...standardCourseSections.filter((item) => roleIn(item, ["course_overview"])),
     ...moodleCourseOutlineDownloads,
     ...fallbackCourseOutlineDownloads,
-    ...downloads.filter((item) => roleIn(item, ["learning_log"])),
+    ...standardDownloads.filter((item) => roleIn(item, ["learning_log"])),
   ]);
 
   makeGroup("final", "Final Examination & Culminating", t("moodle.group.final.description"), [
-    ...courseSections.filter((item) => roleIn(item, ["final_examination", "final_examination_culminating"])),
-    ...downloads.filter((item) => roleIn(item, ["final_exam_submission", "culminating_submission", "culminating_assignment", "exam_review"])),
-    ...teacherResources.filter((item) => roleIn(item, ["final_exam_submission", "culminating_submission", "culminating_assignment", "exam_review"])),
+    ...standardCourseSections.filter((item) => roleIn(item, ["final_examination", "final_examination_culminating"])),
+    ...standardDownloads.filter((item) => roleIn(item, ["final_exam_submission", "culminating_submission", "culminating_assignment", "exam_review"])),
+    ...standardTeacherResources.filter((item) => roleIn(item, ["final_exam_submission", "culminating_submission", "culminating_assignment", "exam_review"])),
   ]);
 
   makeGroup("teacher-packet", "Teacher Packet", t("moodle.group.teacherPacket.description"), teacherPacketResourcesForManifest(manifest));
@@ -1456,7 +1503,7 @@ function CourseMoodleSections({
             <header>
               <div>
                 <h4>{group.title}</h4>
-                <p>{group.description}</p>
+                {group.description ? <p>{group.description}</p> : null}
               </div>
               <strong>{group.items.length}</strong>
             </header>
