@@ -118,6 +118,15 @@ function collectHtmlDependencies(courseRoot, files, dirs) {
   }
 }
 
+function collectCourseSectionPages(courseRoot, files) {
+  const sectionsRoot = path.join(courseRoot, 'course-sections');
+  if (!fs.existsSync(sectionsRoot) || !fs.statSync(sectionsRoot).isDirectory()) return;
+  for (const entry of fs.readdirSync(sectionsRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    addFile(files, toPosix(path.join('course-sections', entry.name, 'index.html')));
+  }
+}
+
 function copyFileFromCourse(courseRoot, stagingCourse, relativePath) {
   const source = assertInside(courseRoot, path.join(courseRoot, relativePath));
   if (!fs.existsSync(source) || !fs.statSync(source).isFile()) return false;
@@ -185,6 +194,7 @@ for (const unit of manifest.units ?? []) {
   }
 }
 
+collectCourseSectionPages(courseRoot, files);
 collectHtmlDependencies(courseRoot, files, dirs);
 
 const stagingCourse = assertInside(stagingRoot, path.join(stagingRoot, course));

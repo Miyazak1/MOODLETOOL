@@ -1186,9 +1186,19 @@ function dedupeResources<T extends LinkableResource>(items: T[]): T[] {
   const seen = new Set<string>();
   const unique: T[] = [];
   for (const item of items) {
-    const key = [item.role || "", item.type || "", item.bytes || "", normalizedResourceName(item)].join("|");
-    if (seen.has(key)) continue;
-    seen.add(key);
+    const keys = [
+      resourceIdentity(item),
+      resourceSourceIdentity(item),
+      item.path,
+      item.previewPath,
+      item.downloadPath,
+      item.url,
+      item.previewUrl,
+      item.downloadUrl,
+      [item.type || "", item.bytes || "", normalizedResourceName(item)].join("|"),
+    ].filter((key): key is string => Boolean(key));
+    if (keys.some((key) => seen.has(key))) continue;
+    keys.forEach((key) => seen.add(key));
     unique.push(item);
   }
   return unique;
