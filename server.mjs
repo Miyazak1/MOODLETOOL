@@ -2734,6 +2734,8 @@ async function handleEmbedRequest(req, res, requestUrl) {
   }
   if (kind === "video") {
     const videoType = mimeTypes[extname(payload.path || payloadUrl || "").toLowerCase()] || "video/mp4";
+    const videoSrc = htmlEscape(assetRawUrl);
+    const videoLabel = htmlEscape(payload.label || "Video");
     sendHtml(
       res,
       200,
@@ -2742,13 +2744,44 @@ async function handleEmbedRequest(req, res, requestUrl) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${htmlEscape(payload.label || "Video")}</title>
-    <style>html,body{margin:0;background:#000;}video{display:block;width:100%;height:100vh;max-height:100vh;background:#000;}</style>
+    <title>${videoLabel}</title>
+    <style>
+      html,body{margin:0;background:#000;color:#fff;font-family:Arial,sans-serif;}
+      .video-shell{position:relative;width:100vw;height:100vh;background:#000;}
+      video{display:block;width:100%;height:100%;background:#000;}
+      .video-load{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:1px solid rgba(255,255,255,.35);border-radius:6px;background:rgba(0,0,0,.72);color:#fff;font:600 16px Arial,sans-serif;padding:12px 18px;cursor:pointer;}
+      .video-load[hidden]{display:none;}
+      .video-fallback{position:absolute;left:16px;bottom:14px;color:#fff;}
+      .video-fallback a{color:#fff;}
+    </style>
   </head>
   <body>
-    <video controls preload="metadata">
-      <source src="${htmlEscape(assetRawUrl)}" type="${htmlEscape(videoType)}">
-    </video>
+    <div class="video-shell">
+      <video controls preload="none" playsinline aria-label="${videoLabel}"></video>
+      <button class="video-load" type="button">Load video</button>
+      <p class="video-fallback"><a href="${videoSrc}" target="_blank" rel="noopener">Open video file</a></p>
+    </div>
+    <script>
+      (function(){
+        var video = document.querySelector("video");
+        var button = document.querySelector(".video-load");
+        var loaded = false;
+        function loadVideo(){
+          if (loaded) return;
+          loaded = true;
+          var source = document.createElement("source");
+          source.src = "${videoSrc}";
+          source.type = "${htmlEscape(videoType)}";
+          video.appendChild(source);
+          video.load();
+          button.hidden = true;
+          var play = video.play();
+          if (play && typeof play.catch === "function") play.catch(function(){});
+        }
+        button.addEventListener("click", loadVideo);
+        video.addEventListener("play", loadVideo, { once: true });
+      })();
+    </script>
   </body>
 </html>`,
     );
