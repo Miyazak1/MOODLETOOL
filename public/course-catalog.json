@@ -54,7 +54,16 @@
       "status": "ready",
       "manifestUrl": "/courseware/GLC2O/course-manifest.json",
       "baseUrl": "/courseware/GLC2O/",
-      "notes": "Legacy Moodle activity package localized: 4 units, 30 activity groups, 84 local resource records; Moodle MP4 attachments included."
+      "notes": "St. Mary Moodle course id 78 localized from new-structure course: 4 units, 15 Moodle book lessons plus Unit 4 culminating project, 15 local iSpring packages, activity pages and attachments preserved."
+    },
+    {
+      "code": "FSF1D",
+      "title": "FSF1D · Core French",
+      "level": "Grade 9",
+      "status": "ready",
+      "manifestUrl": "/courseware/FSF1D/course-manifest.json",
+      "baseUrl": "/courseware/FSF1D/",
+      "notes": "St. Mary Moodle course localized from course id 80: course introduction, course overview, 4 Moodle Book units, 20 lessons, final exam/project section, teacher answer keys, local DOCX/PDF resources, H5P previews, and source audit; no matching local textbook was identified."
     },
     {
       "code": "HSB4U",
@@ -81,7 +90,7 @@
       "status": "ready",
       "manifestUrl": "/courseware/SNC2D/course-manifest.json",
       "baseUrl": "/courseware/SNC2D/",
-      "notes": "Localized legacy Moodle activity course with 35 lessons, Moodle activities, quizzes/tests, labs, H5P exit cards, course outline, previews, and source audit; no iSpring is exposed in the current shell."
+      "notes": "Localized Moodle course with 33 core lessons, 31 local iSpring packages, local videos, H5P previews, course resources, homework submission folder items, final/culminating evaluations, previews, and source audit; non-core exit cards are omitted from the main display."
     },
     {
       "code": "HFC3M",
