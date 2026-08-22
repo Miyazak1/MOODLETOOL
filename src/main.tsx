@@ -153,6 +153,7 @@ type LinkableResource = {
   sectionKey?: string;
   sectionTitle?: string;
   sectionOrder?: number;
+  sectionPath?: string;
   sourceGroup?: string;
   teacherOnly?: boolean;
   teacherUse?: string;
@@ -277,6 +278,11 @@ function isInteractiveLabResource(item: LinkableResource): boolean {
 
 function isPlayableOnlyResource(item: LinkableResource): boolean {
   return isVideoResource(item) || isISpringResource(item) || isH5PResource(item) || isInteractiveLabResource(item);
+}
+
+function isBookSectionEmbeddedPlayableResource(item: LinkableResource): boolean {
+  const sourceGroup = (item.sourceGroup || "").toLowerCase();
+  return isPlayableOnlyResource(item) && (sourceGroup === "book_section_embed" || Boolean(item.sectionPath && item.parentSection));
 }
 
 function isExternalInteractiveResource(item: LinkableResource): boolean {
@@ -1239,10 +1245,12 @@ function LessonFlowPanel({
   const bookSections = visibleBookSectionsForLesson(lesson);
   const bookSectionAttachmentKeys = new Set<string>();
   const playableAttachmentFlowByKey = new Map<string, string>();
+  const embeddedPlayableAttachments: LinkableResource[] = [];
   bookSections.forEach((section) => {
     const sectionFlowKey = bookSectionFlowKey(section);
     visibleAttachments(section).forEach((attachment) => {
       if (isPlayableOnlyResource(attachment)) {
+        addUniqueResource(embeddedPlayableAttachments, attachment);
         playableAttachmentFlowByKey.set(resourceIdentity(attachment), sectionFlowKey);
         const sourceKey = resourceSourceIdentity(attachment);
         if (sourceKey) playableAttachmentFlowByKey.set(sourceKey, sectionFlowKey);
@@ -1261,10 +1269,10 @@ function LessonFlowPanel({
     );
   };
   const regularDownloads = dedupeResources(
-    [...visibleDownloads, ...visibleHandsOn, ...visibleTextExports].filter((item) => {
+    [...embeddedPlayableAttachments, ...visibleDownloads, ...visibleHandsOn, ...visibleTextExports].filter((item) => {
       if (item.role === "lesson_book" || item.role === "lesson_book_section") return false;
       if (isStandaloneNumberedLessonActivity(item)) return false;
-      if (isGroupedResource(item, bookSectionAttachmentKeys)) return false;
+      if (!isBookSectionEmbeddedPlayableResource(item) && isGroupedResource(item, bookSectionAttachmentKeys)) return false;
       return true;
     }),
   );
@@ -1337,7 +1345,7 @@ function LessonFlowPanel({
                   canShare={canShare}
                   item={item}
                   key={resourceKey(item)}
-                  labelPrefix={isPlayableOnlyResource(item) || flowKeyForDownload(item) === "resources" ? undefined : roleLabel(item.role, t)}
+                  labelPrefix={isPlayableOnlyResource(item) || flowKeyForDownload(item) === "resources" ? undefined : roleLabel(item.role || "download", t)}
                   moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
                   moodleEmbedByPath={moodleEmbedByPath}
                 />

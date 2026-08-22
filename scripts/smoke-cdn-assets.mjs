@@ -133,6 +133,9 @@ async function assertLocalMode(baseUrl) {
   const videoHtml = await fetchText(`${baseUrl}/embed/video/SMOKE/U01L01/video?token=${encodeURIComponent(videoToken)}`);
   if (!videoHtml.includes("/embed/t/")) throw new Error("Expected local mode video source to use /embed/t/.");
   if (videoHtml.includes(cdnBaseUrl)) throw new Error("Local mode video should not emit CDN URLs.");
+  if (videoHtml.includes("Load video") || videoHtml.includes("video-load") || videoHtml.includes('preload="none"')) {
+    throw new Error("Video embed page should load directly without a manual Load video button.");
+  }
 }
 
 async function assertCdnMode(baseUrl) {
@@ -161,6 +164,9 @@ async function assertCdnMode(baseUrl) {
   });
   const videoHtml = await fetchText(`${baseUrl}/embed/video/SMOKE/U01L01/video?token=${encodeURIComponent(videoToken)}`);
   if (!videoHtml.includes(`${cdnBaseUrl}/SMOKE/video.mp4`)) throw new Error("Expected CDN video source.");
+  if (videoHtml.includes("Load video") || videoHtml.includes("video-load") || videoHtml.includes('preload="none"')) {
+    throw new Error("CDN video embed page should load directly without a manual Load video button.");
+  }
 }
 
 async function assertHybridMode(baseUrl) {
@@ -179,6 +185,9 @@ async function assertHybridMode(baseUrl) {
   });
   const registeredHtml = await fetchText(`${baseUrl}/embed/video/SMOKE/U01L01/video?token=${encodeURIComponent(registeredToken)}`);
   if (!registeredHtml.includes(`${cdnBaseUrl}/SMOKE/video.mp4`)) throw new Error("Expected registered hybrid asset to use CDN.");
+  if (registeredHtml.includes("Load video") || registeredHtml.includes("video-load") || registeredHtml.includes('preload="none"')) {
+    throw new Error("Hybrid video embed page should load directly without a manual Load video button.");
+  }
 
   const missingToken = signEmbedPayload({
     v: 1,

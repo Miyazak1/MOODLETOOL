@@ -124,11 +124,10 @@ try {
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "ispring-localized", "unit-01", "U01L01", "presentation.html")), true);
   const labHtml = readFileSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "index.html"), "utf8");
-  assert.doesNotMatch(labHtml, /<source(?=[^>]*\ssrc="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4)/);
-  assert.match(labHtml, /data-src="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4\?v=[a-f0-9]{12}"/);
+  assert.match(labHtml, /<source(?=[^>]*\ssrc="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4\?v=[a-f0-9]{12}")/);
+  assert.doesNotMatch(labHtml, /\bdata-src=/);
   assert.match(labHtml, /href="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4\?v=[a-f0-9]{12}"/);
-  assert.match(labHtml, /ossd-video-load-button/);
-  assert.match(labHtml, /querySelectorAll\("source\[data-src\]"\)/);
+  assert.doesNotMatch(labHtml, /ossd-video-load-button|Load video|querySelectorAll\("source\[data-src\]"\)/);
   const overviewHtml = readFileSync(join(targetCourseRoot, "course-sections", "course-overview", "index.html"), "utf8");
   assert.match(overviewHtml, /src="\/courseware\/ZZZOVERFLOW\/ispring-localized\/unit-01\/U01L01\/presentation\.html"/);
   assert.doesNotMatch(overviewHtml, /cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/ispring-localized\/unit-01\/U01L01\/presentation\.html/);
@@ -146,7 +145,7 @@ try {
   assert.equal(manifest.sourceAudit.importMode, "hybrid-raw");
   assert.equal(manifest.sourceAudit.htmlPlayableRefsRewritten, 3);
   assert.equal(manifest.sourceAudit.htmlPlayablePagesRewritten, 2);
-  assert.equal(manifest.sourceAudit.htmlLazyVideoPagesRewritten, 1);
+  assert.equal(manifest.sourceAudit.htmlLazyVideoPagesRewritten, undefined);
 
   const registry = JSON.parse(readFileSync(registryPath, "utf8"));
   assert.equal(registry.assetRecords.length, 5);
@@ -157,7 +156,7 @@ try {
   assert.equal(report.summary.activeSwitch.rollback, "restored-on-switch-failure");
   assert.equal(report.summary.htmlPlayableRefsRewritten, 3);
   assert.equal(report.summary.htmlPlayablePagesRewritten, 2);
-  assert.equal(report.summary.htmlLazyVideoPagesRewritten, 1);
+  assert.equal(report.summary.htmlLazyVideoPagesRewritten, undefined);
   assert.equal(report.summary.staleOssObjects, 1);
   assert.equal(report.summary.deletedStaleOssObjects, 1);
 
