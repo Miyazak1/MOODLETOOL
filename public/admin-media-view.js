@@ -584,6 +584,9 @@
       authorizing: "授权",
       uploading: "上传中",
       verifying: "校验",
+      uploaded: "已上传",
+      importing: "导入中",
+      imported: "已导入",
       done: "完成",
       warning: "提示",
       failed: "失败",
@@ -641,7 +644,7 @@
     const summaryItems = batchItems.length ? batchItems : items;
     const totalBytes = summaryItems.reduce((sum, item) => sum + Number(item?.size || 0), 0);
     const loadedBytes = summaryItems.reduce((sum, item) => {
-      if (["done", "warning"].includes(item?.status)) return sum + Number(item?.size || 0);
+      if (["done", "warning", "uploaded", "importing", "imported"].includes(item?.status)) return sum + Number(item?.size || 0);
       if (!["authorizing", "uploading", "verifying"].includes(item?.status)) return sum;
       return sum + Math.min(Number(item?.loaded || 0), Number(item?.total || item?.size || 0));
     }, 0);
@@ -651,7 +654,8 @@
     const skipped = items.filter((item) => item?.status === "skipped").length;
     const cancelled = items.filter((item) => item?.status === "cancelled").length;
     const uploading = summaryItems.filter((item) => ["authorizing", "uploading", "verifying"].includes(item?.status)).length;
-    const done = summaryItems.filter((item) => ["done", "warning"].includes(item?.status)).length;
+    const importing = summaryItems.filter((item) => item?.status === "importing").length;
+    const done = summaryItems.filter((item) => ["done", "warning", "uploaded", "imported"].includes(item?.status)).length;
     if (summaryItems.length <= 1) return items.map(renderOssDirectQueueItem).join("");
     const summary = `
       <div class="oss-direct-queue-summary">
@@ -660,6 +664,7 @@
         <span>${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}</span>
         <span>批量总进度 ${totalPercent}%</span>
         ${uploading ? `<span>${uploading} 个处理中</span>` : ""}
+        ${importing ? `<span>${importing} 个导入中</span>` : ""}
         ${done ? `<span>${done} 个完成</span>` : ""}
         ${skipped ? `<span>${skipped} 个跳过</span>` : ""}
         ${cancelled ? `<span>${cancelled} 个取消</span>` : ""}

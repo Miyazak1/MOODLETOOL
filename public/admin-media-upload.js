@@ -373,7 +373,9 @@
     let cancelRequested = false;
     let activeQueueItemId = "";
     let lastPreviewSignature = "";
-    const cancelledQueueItemIds = new Set();
+    const cancelledQueueItemIds = new Set(
+      Array.from(options.initialCancelledIds || []).map((id) => String(id || "")).filter(Boolean),
+    );
 
     function setActiveUpload(xhr) {
       activeXhr = xhr;
@@ -388,11 +390,16 @@
       if (typeof onQueueChange !== "function") return;
       onQueueChange(queue.map((item) => ({
         course: item.course,
+        completedAt: item.completedAt,
         detail: item.detail,
         id: item.id,
         cancelable: ["ready", "queued", "authorizing", "uploading", "verifying"].includes(item.status),
+        importId: item.importId,
+        importedAt: item.importedAt,
+        importStatus: item.importStatus,
         loaded: item.loaded,
         name: item.name,
+        objectKey: item.objectKey,
         percent: item.percent,
         size: item.size,
         source: item.source,
@@ -567,7 +574,16 @@
         ? initData.multipart.uploadedParts.length
         : 0;
       const resumeDetail = resumedParts ? ` · 已恢复 ${resumedParts} 个分片` : "";
-      updateQueueItem(queueItem, { detail: initData.upload.objectKey, loaded: 0, percent: 1, status: "uploading", total: file.size || initData.multipart?.totalBytes || 0 });
+      updateQueueItem(queueItem, {
+        detail: initData.upload.objectKey,
+        importId: initData.upload.importId || "",
+        loaded: 0,
+        objectKey: initData.upload.objectKey,
+        percent: 1,
+        status: "uploading",
+        total: file.size || initData.multipart?.totalBytes || 0,
+        uploadId: initData.upload.id,
+      });
       setUploadStatus(isMultipart ? (resumedParts ? "正在续传分片到 OSS" : "正在分片直传 OSS") : "正在直传 OSS", `${batchText}${initData.upload.course || course} · ${initData.upload.objectKey}${resumeDetail}`, 1);
       throwIfQueueItemCancelled(queueItem);
       const progressText = typeof formatProgress === "function" ? formatProgress(file) : null;
@@ -633,12 +649,31 @@
         autoPublish,
         ...(multipartParts ? { parts: multipartParts } : {}),
       });
+      const uploadRecord = completeData.upload || {};
       const finishedDetail = completeData.job
         ? `已创建媒体任务 ${completeData.job.id}`
         : completeData.coursePackageTask
           ? `已创建导入任务 ${completeData.coursePackageTask.importId || completeData.upload?.importId || ""}`.trim()
           : completeData.warning || "已保存到 OSS";
-      updateQueueItem(queueItem, { detail: finishedDetail, percent: 100, status: completeData.warning ? "warning" : "done" });
+      const finalStatus = completeData.warning
+        ? "warning"
+        : completeData.coursePackageTask
+          ? "importing"
+          : uploadRecord.status === "uploaded"
+            ? "uploaded"
+            : "done";
+      updateQueueItem(queueItem, {
+        completedAt: uploadRecord.completedAt || new Date().toISOString(),
+        detail: finishedDetail,
+        importId: uploadRecord.importId || completeData.coursePackageTask?.importId || queueItem?.importId || "",
+        importStatus: uploadRecord.importStatus || (completeData.coursePackageTask ? "oss-raw-queued" : ""),
+        loaded: file.size || queueItem?.total || 0,
+        objectKey: uploadRecord.objectKey || initData.upload.objectKey,
+        percent: 100,
+        status: finalStatus,
+        total: file.size || queueItem?.total || 0,
+        uploadId: uploadRecord.id || initData.upload.id,
+      });
       if (typeof onRefresh === "function") await onRefresh();
       if (typeof onStartRefresh === "function") onStartRefresh();
       if (typeof onWrite === "function") onWrite(completeData);
@@ -723,23 +758,34 @@
             setStatus("已取消队列文件", `${queueItem.name} 已取消，后续文件会继续上传。`, null, "warn");
             continue;
           }
-          throw error;
+          if (uploadQueue.length <= 1) throw error;
+          results.push({
+            error: error.message || String(error),
+            failed: true,
+            fileName: queueItem.name,
+            course: queueItem.course,
+          });
+          setStatus("队列文件上传失败，继续后续文件", `${queueItem.course || ""} · ${queueItem.name}：${error.message || String(error)}`, null, "warn");
+          continue;
         }
       }
-      const createdJobs = results.filter((item) => item?.job || item?.coursePackageTask).length;
+      const failedResultCount = results.filter((item) => item?.failed).length;
+      const successfulResults = results.filter((item) => !item?.failed && !item?.canceled);
+      const createdJobs = successfulResults.filter((item) => item?.job || item?.coursePackageTask).length;
       const skippedCount = queue.filter((item) => item.status === "skipped").length;
       const cancelledCount = queue.filter((item) => item.status === "cancelled").length;
+      const failedCount = queue.filter((item) => item.status === "failed").length || failedResultCount;
       const detail = uploadQueue.length > 1 || skippedCount
-        ? `已上传 ${results.length} 个文件，跳过 ${skippedCount} 个重复文件，取消 ${cancelledCount} 个文件，创建 ${createdJobs} 个后续任务。`
+        ? `已完成 ${successfulResults.length} 个文件，失败 ${failedCount} 个，跳过 ${skippedCount} 个重复文件，取消 ${cancelledCount} 个文件，创建 ${createdJobs} 个后续任务。`
         : (results[0]?.job
           ? `已创建媒体任务 ${results[0].job.id}。`
           : results[0]?.coursePackageTask
             ? `已创建课程导入任务 ${results[0].coursePackageTask.importId || results[0].upload?.importId}，导入完成后会自动发布媒体。`
             : results[0]?.warning || "文件已保存到 OSS inbox。");
-      setStatus("OSS 直传完成", detail, 100, results.some((item) => item?.warning) ? "warn" : "info");
+      setStatus(failedCount ? "OSS 批量直传完成但有失败项" : "OSS 直传完成", detail, 100, failedCount || results.some((item) => item?.warning) ? "warn" : "info");
       if (typeof onRefresh === "function") await onRefresh();
       if (typeof onStartRefresh === "function") onStartRefresh();
-      return { ok: true, uploads: results };
+      return { ok: !failedCount, uploads: results, failed: failedCount };
     }
 
     function cancelActiveUpload() {

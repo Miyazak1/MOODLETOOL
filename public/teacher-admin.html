@@ -2058,6 +2058,9 @@ pm2 restart ossd-course-portal --update-env</pre>
       const coursePackageUploadButton = document.querySelector("#coursePackageUploadButton");
       const coursePackageCommitButton = document.querySelector("#coursePackageCommitButton");
       const coursePackageBatchQueue = document.querySelector("#coursePackageBatchQueue");
+      let activeCoursePackageBatchController = null;
+      let coursePackageBatchItems = [];
+      const cancelledCoursePackageBatchItemIds = new Set();
       const courseUploadTasks = document.querySelector("#courseUploadTasks");
       const adminFeedback = document.querySelector("#adminFeedback");
       const adminFeedbackTitle = document.querySelector("#adminFeedbackTitle");
@@ -2677,6 +2680,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       function renderMedia(data) {
         mediaData = mediaPanel.setData(data);
         mediaPanel.render(mediaData);
+        if (coursePackageBatchItems.length) renderCoursePackageBatchQueue(coursePackageBatchItems);
       }
 
       function renderMediaQuiet(data) {
@@ -2929,8 +2933,11 @@ pm2 restart ossd-course-portal --update-env</pre>
           cancelled: "OSS raw 上传已取消",
           done: "OSS raw 上传完成，等待服务器导入",
           failed: "OSS raw 上传失败",
+          imported: "课程包已导入完成",
+          importing: "课程包已上传，服务器正在导入",
           queued: "OSS raw 上传排队中",
           skipped: "OSS raw 上传已跳过",
+          uploaded: "OSS raw 上传完成",
           uploading: `正在上传 ${item.name || "课程 ZIP"}`,
           verifying: "正在确认 OSS raw 上传",
           warning: "OSS raw 上传完成但有提示",
@@ -2958,47 +2965,78 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       function coursePackageBatchPreview(files) {
-        return window.AdminMediaUpload.createDirectUploadPreview({
+        const preview = window.AdminMediaUpload.createDirectUploadPreview({
           kind: "course-package-raw",
           files,
           selectedCourse: fields.course.value,
           courseCodes: knownAdminCourseCodes(),
         });
+        applyCoursePackageBatchCancellations(preview);
+        return preview;
+      }
+
+      function applyCoursePackageBatchCancellations(preview) {
+        if (!preview?.items?.length || !cancelledCoursePackageBatchItemIds.size) return preview;
+        preview.items.forEach((item) => {
+          if (!cancelledCoursePackageBatchItemIds.has(item.id)) return;
+          item.detail = "已取消这个课包，本次不会上传。";
+          item.status = "cancelled";
+          item.uploadable = false;
+        });
+        preview.totalBytes = preview.items
+          .filter((item) => item.uploadable !== false)
+          .reduce((sum, item) => sum + Number(item.size || item.file?.size || 0), 0);
+        preview.courses = [...new Set(preview.items
+          .filter((item) => item.uploadable !== false)
+          .map((item) => item.course)
+          .filter(Boolean))];
+        return preview;
       }
 
       function renderCoursePackageBatchQueue(items = []) {
         if (!coursePackageBatchQueue) return;
         if (!items.length) {
+          coursePackageBatchItems = [];
           coursePackageBatchQueue.hidden = true;
           coursePackageBatchQueue.innerHTML = "";
           return;
         }
-        const uploadable = items.filter((item) => item.uploadable !== false);
-        const done = items.filter((item) => item.status === "done" || item.status === "warning").length;
-        const skipped = items.filter((item) => item.status === "skipped").length;
-        const failed = items.filter((item) => item.status === "failed").length;
+        const mergedItems = items.map(mergeCoursePackageBatchItemWithServerRecord);
+        coursePackageBatchItems = mergedItems;
+        const uploadable = mergedItems.filter((item) => item.uploadable !== false);
+        const uploadFinishedStatuses = new Set(["done", "warning", "uploaded", "importing", "imported"]);
+        const done = mergedItems.filter((item) => ["done", "warning", "uploaded", "imported"].includes(item.status)).length;
+        const importing = mergedItems.filter((item) => item.status === "importing").length;
+        const skipped = mergedItems.filter((item) => item.status === "skipped").length;
+        const failed = mergedItems.filter((item) => item.status === "failed").length;
+        const cancelled = mergedItems.filter((item) => item.status === "cancelled").length;
+        const active = mergedItems.filter((item) => ["authorizing", "uploading", "verifying"].includes(item.status)).length;
+        const waiting = mergedItems.filter((item) => ["queued", "ready"].includes(item.status)).length;
         const totalBytes = uploadable.reduce((sum, item) => sum + Number(item.size || item.file?.size || 0), 0);
         const loadedBytes = uploadable.reduce((sum, item) => {
-          if (item.status === "done" || item.status === "warning") return sum + Number(item.size || item.file?.size || 0);
+          if (uploadFinishedStatuses.has(item.status)) return sum + Number(item.size || item.file?.size || 0);
           return sum + Number(item.loaded || 0);
         }, 0);
         const overallPercent = totalBytes ? Math.max(0, Math.min(100, Math.round((loadedBytes / totalBytes) * 100))) : 0;
-        const rows = items.map((item) => {
+        const rows = mergedItems.map((item) => {
           const percent = Math.max(0, Math.min(100, Number(item.percent || 0)));
           const statusText = {
             authorizing: "授权中",
             cancelled: "已取消",
             done: "完成",
             failed: "失败",
+            imported: "已导入",
+            importing: "导入中",
             queued: "排队中",
             ready: "待上传",
             skipped: "已跳过",
+            uploaded: "已上传",
             uploading: "上传中",
             verifying: "校验中",
             warning: "已完成",
           }[item.status] || item.status || "待上传";
           const itemTotal = Number(item.total || item.size || item.file?.size || 0);
-          const itemLoaded = item.status === "done" || item.status === "warning"
+          const itemLoaded = uploadFinishedStatuses.has(item.status)
             ? itemTotal
             : Math.min(itemTotal || Number.MAX_SAFE_INTEGER, Number(item.loaded || 0));
           const loadedText = itemTotal > 0
@@ -3009,6 +3047,10 @@ pm2 restart ossd-course-portal --update-env</pre>
             item.speedText ? `速度 ${item.speedText}` : "",
             item.etaText ? `剩余 ${item.etaText}` : "",
           ].filter(Boolean).join(" · ");
+          const canCancel = ["queued", "ready", "authorizing", "uploading", "verifying"].includes(item.status);
+          const cancelButton = canCancel
+            ? `<button class="small" type="button" data-course-package-batch-action="cancel-item" data-course-package-batch-id="${escapeHtml(item.id || "")}">取消</button>`
+            : "";
           return `
             <div class="oss-direct-queue-item ${escapeHtml(item.status || "ready")}">
               <div>
@@ -3020,7 +3062,11 @@ pm2 restart ossd-course-portal --update-env</pre>
                 ${metrics ? `<small class="oss-direct-queue-metrics">${escapeHtml(metrics)}</small>` : ""}
                 <div class="oss-direct-queue-progress"><div class="oss-direct-queue-progress-bar" style="width:${percent}%"></div></div>
               </div>
-              <strong class="oss-direct-queue-status">${escapeHtml(statusText)}</strong>
+              <div class="oss-direct-queue-status">
+                <strong>${escapeHtml(statusText)}</strong>
+                <small>${Math.round(percent)}%</small>
+                ${cancelButton}
+              </div>
             </div>
           `;
         }).join("");
@@ -3028,7 +3074,11 @@ pm2 restart ossd-course-portal --update-env</pre>
           <div class="oss-direct-queue-summary">
             <span>队列 ${uploadable.length}/${items.length}</span>
             <span>完成 ${done}</span>
+            <span>导入中 ${importing}</span>
+            <span>上传中 ${active}</span>
+            <span>待上传 ${waiting}</span>
             <span>跳过 ${skipped}</span>
+            <span>取消 ${cancelled}</span>
             <span>失败 ${failed}</span>
             <span>总进度 ${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}</span>
           </div>
@@ -3036,6 +3086,49 @@ pm2 restart ossd-course-portal --update-env</pre>
           ${rows}
         `;
         coursePackageBatchQueue.hidden = false;
+      }
+
+      function mergeCoursePackageBatchItemWithServerRecord(item) {
+        if (!item) return item;
+        const uploads = Array.isArray(mediaData?.uploads) ? mediaData.uploads : [];
+        const uploadId = String(item.uploadId || item.id || "");
+        const record = uploadId
+          ? uploads.find((upload) => upload.id === uploadId || upload.importId === item.importId)
+          : null;
+        if (!record) return item;
+        const next = { ...item };
+        next.completedAt = record.completedAt || next.completedAt || null;
+        next.importedAt = record.importedAt || next.importedAt || null;
+        next.importStatus = record.importStatus || next.importStatus || "";
+        next.objectKey = record.objectKey || next.objectKey || "";
+        next.uploadId = record.id || next.uploadId || "";
+        if (record.error) {
+          next.status = "failed";
+          next.detail = record.error;
+          return next;
+        }
+        if (record.importedAt || record.status === "imported" || record.importStatus === "committed") {
+          next.status = "imported";
+          next.percent = 100;
+          next.loaded = Number(next.total || next.size || next.file?.size || record.fileSize || 0);
+          next.detail = `服务器已导入：${record.importedAt || record.importStatus || "committed"}`;
+          return next;
+        }
+        if (record.status === "importing" || record.importStatus) {
+          next.status = "importing";
+          next.percent = 100;
+          next.loaded = Number(next.total || next.size || next.file?.size || record.fileSize || 0);
+          next.detail = `服务器导入中：${record.importStatus || record.status}`;
+          return next;
+        }
+        if (record.completedAt || record.status === "uploaded" || record.status === "queued") {
+          next.status = "uploaded";
+          next.percent = 100;
+          next.loaded = Number(next.total || next.size || next.file?.size || record.fileSize || 0);
+          next.detail = `OSS 已收到：${record.completedAt || record.status}`;
+          return next;
+        }
+        return next;
       }
 
       function updateCoursePackageFileSelection() {
@@ -3137,6 +3230,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           getKind: () => "course-package-raw",
           getSelectedCourse: () => fields.course.value,
           hasActiveWriteJob: () => null,
+          initialCancelledIds: cancelledCoursePackageBatchItemIds,
           jobTypeLabel: window.AdminMediaView.jobTypeLabel,
           onActiveUploadChange: () => {},
           onQueueChange: (items) => {
@@ -3163,6 +3257,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           },
           onWrite: write,
         });
+        activeCoursePackageBatchController = rawController;
 
         try {
           const data = await rawController.uploadSelected();
@@ -3175,8 +3270,9 @@ pm2 restart ossd-course-portal --update-env</pre>
           }
           return data;
         } finally {
+          activeCoursePackageBatchController = null;
           coursePackageUploadButton.disabled = false;
-          updateCoursePackageFileSelection();
+          coursePackageUploadButton.textContent = files.length > 1 ? `批量上传 ${files.length} 个课包` : "上传并导入";
         }
       }
 
@@ -3612,7 +3708,35 @@ pm2 restart ossd-course-portal --update-env</pre>
       coursePackageUploadButton.addEventListener("click", () => {
         uploadCoursePackage().catch((error) => write(`Error: ${error.message}`));
       });
-      fields.coursePackageFile.addEventListener("change", updateCoursePackageFileSelection);
+      fields.coursePackageFile.addEventListener("change", () => {
+        cancelledCoursePackageBatchItemIds.clear();
+        updateCoursePackageFileSelection();
+      });
+      coursePackageBatchQueue?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-course-package-batch-action='cancel-item']");
+        if (!button) return;
+        const id = button.dataset.coursePackageBatchId || "";
+        const cancelled = activeCoursePackageBatchController?.cancelQueueItem(id);
+        let preCancelled = false;
+        if (!activeCoursePackageBatchController && id) {
+          cancelledCoursePackageBatchItemIds.add(id);
+          coursePackageBatchItems = coursePackageBatchItems.map((item) =>
+            item.id === id
+              ? { ...item, detail: "已取消这个课包，本次不会上传。", status: "cancelled", uploadable: false }
+              : item
+          );
+          renderCoursePackageBatchQueue(coursePackageBatchItems);
+          preCancelled = true;
+        }
+        if (cancelled || preCancelled) {
+          setCoursePackageStatus({
+            title: "已取消队列中的课包",
+            detail: "未开始的课包不会上传；如果取消的是当前上传项，浏览器会中止当前连接并继续后续可上传课包。",
+            percent: null,
+            showProgress: false,
+          });
+        }
+      });
       document.querySelector("#coursePackageCommitButton").addEventListener("click", () => {
         const button = document.querySelector("#coursePackageCommitButton");
         setButtonBusy(button, true, "正在替换...");
