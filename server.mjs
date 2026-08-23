@@ -7594,11 +7594,40 @@ function injectLinkedVideoStyle(html) {
 function renderLinkedVideoItem(src, label) {
   return `<div class="ossd-linked-video-item">
   <span class="ossd-linked-video-name">${htmlEscape(label)}</span>
-  <a class="ossd-linked-video-action" href="${htmlEscape(src)}" target="_blank" rel="noopener">Open video</a>
+  <a class="ossd-linked-video-action" href="${htmlEscape(src)}" target="_blank" rel="noopener">播放</a>
 </div>`;
 }
 
-function replaceMultiVideoEmbedsWithLinks(html) {
+function linkedActivityVideoEmbedUrl(req, course, htmlPath, rawHref, label) {
+  if (!embedTokenSecret) return rawHref;
+  const coursePath = htmlReferenceValueToCoursePath(course, htmlPath, rawHref);
+  if (!coursePath || !isPlayableCoursewareAsset(coursePath)) return rawHref;
+  const lessonId = resourceIdFor(htmlPath).toUpperCase();
+  const token = embedTokenForResource({
+    course,
+    kind: "video",
+    path: coursePath,
+    label: label || basename(coursePath),
+    section: "activity",
+    lessonId,
+  });
+  const resourceId = resourceIdFor(coursePath);
+  return `${publicOrigin(req)}/embed/video/${encodeURIComponent(safeSegment(course).toUpperCase())}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
+}
+
+function replaceLinkedVideoAnchorsWithEmbedLinks(html, req, course, htmlPath) {
+  let changed = false;
+  const body = String(html || "").replace(/<a\b([^>]*\bhref=(["'])([^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?)\2[^>]*)>([\s\S]*?)<\/a>/gi, (match, attrs, _quote, href, innerHtml) => {
+    const label = innerHtml.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || basename(href.split(/[?#]/)[0] || "Video");
+    const embedUrl = linkedActivityVideoEmbedUrl(req, course, htmlPath, href, label);
+    if (embedUrl === href) return match;
+    changed = true;
+    return `<a${attrs.replace(/\bhref=(["'])([^"']+)\1/i, `href="${htmlEscape(embedUrl)}"`)}>${innerHtml}</a>`;
+  });
+  return { html: body, changed };
+}
+
+function replaceMultiVideoEmbedsWithLinks(html, req, course, htmlPath) {
   const body = String(html || "");
   const videoBlocks = Array.from(body.matchAll(/<video\b[\s\S]*?<\/video>/gi));
   const linkableVideos = videoBlocks
@@ -7607,13 +7636,17 @@ function replaceMultiVideoEmbedsWithLinks(html) {
       const sourceMatch = /<source\b[^>]*\b(?:data-src|src)\s*=\s*(["'])(https?:\/\/[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?|[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?)\1/i.exec(block);
       if (!sourceMatch) return null;
       const src = sourceMatch[2];
-      return { block, src, label: labelFromVideoBlock(block, src) };
+      const label = labelFromVideoBlock(block, src);
+      return { block, src: linkedActivityVideoEmbedUrl(req, course, htmlPath, src, label), label };
     })
     .filter(Boolean);
 
-  if (linkableVideos.length < 2) return { html, changed: false };
+  const linkedAnchors = replaceLinkedVideoAnchorsWithEmbedLinks(body, req, course, htmlPath);
+  if (linkableVideos.length < 2) {
+    return linkedAnchors.changed ? { html: linkedAnchors.html, changed: true } : { html, changed: false };
+  }
 
-  let nextHtml = body;
+  let nextHtml = linkedAnchors.html;
   for (const item of linkableVideos) {
     nextHtml = nextHtml.replace(item.block, renderLinkedVideoItem(item.src, item.label));
   }
@@ -7734,7 +7767,7 @@ const server = createServer(async (req, res) => {
         && shouldUseLinkedVideoActivityPage(requestedCourse, requestedPath, filePath)
       ) {
         const html = await readFile(filePath, "utf8");
-        const linkedVideoPage = replaceMultiVideoEmbedsWithLinks(html);
+        const linkedVideoPage = replaceMultiVideoEmbedsWithLinks(html, req, requestedCourse, requestedPath);
         if (linkedVideoPage.changed) {
           sendHtml(res, 200, linkedVideoPage.html);
           return;
