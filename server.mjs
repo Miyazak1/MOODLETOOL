@@ -406,9 +406,17 @@ function readCoursewareAssetRegistry() {
     }
     const data = JSON.parse(readFileSync(coursewareAssetRegistryPath, "utf8").replace(/^\uFEFF/, ""));
     const byKey = new Map();
+    for (const asset of data.assetRecords || []) {
+      if (asset?.objectKey) byKey.set(toPosixPath(asset.objectKey), asset);
+    }
     for (const asset of data.assets || []) {
-      if (typeof asset === "string") byKey.set(toPosixPath(asset), {});
-      else if (asset?.objectKey) byKey.set(toPosixPath(asset.objectKey), asset);
+      if (typeof asset === "string") {
+        const key = toPosixPath(asset);
+        if (!byKey.has(key)) byKey.set(key, {});
+      } else if (asset?.objectKey) {
+        const key = toPosixPath(asset.objectKey);
+        byKey.set(key, { ...(byKey.get(key) || {}), ...asset });
+      }
     }
     coursewareAssetRegistryCache = { byKey, missing: false, mtimeMs };
   } catch (error) {

@@ -27,6 +27,8 @@
     "audit:videos": "node scripts/audit-video-bitrate.mjs",
     "optimize:videos": "node scripts/optimize-video-bitrate.mjs",
     "sync:oss": "node scripts/sync-courseware-oss.mjs",
+    "verify:bbi2o-video-fix": "node scripts/verify-bbi2o-video-fix.mjs",
+    "publish:bbi2o-video-delta": "node scripts/publish-bbi2o-video-delta.mjs",
     "finalize:ecs-first-storage": "node scripts/finalize-ecs-first-course-storage.mjs",
     "import:hybrid-raw": "node scripts/import-hybrid-raw-package.mjs",
     "cleanup:oss-stale": "node scripts/cleanup-course-oss-stale-assets.mjs",

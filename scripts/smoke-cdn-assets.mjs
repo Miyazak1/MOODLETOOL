@@ -59,9 +59,13 @@ function prepareCourseware() {
             objectKey: "courseware-active/SMOKE/Unit 1/Lesson 1/html5-package/presentation.html",
             cdnUrl: `${cdnBaseUrl}/SMOKE/Unit%201/Lesson%201/html5-package/presentation.html`,
           },
+          "courseware-active/SMOKE/video.mp4",
+        ],
+        assetRecords: [
           {
             objectKey: "courseware-active/SMOKE/video.mp4",
             cdnUrl: `${cdnBaseUrl}/SMOKE/video.mp4`,
+            sha256: "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
           },
         ],
       },
@@ -185,6 +189,9 @@ async function assertHybridMode(baseUrl) {
   });
   const registeredHtml = await fetchText(`${baseUrl}/embed/video/SMOKE/U01L01/video?token=${encodeURIComponent(registeredToken)}`);
   if (!registeredHtml.includes(`${cdnBaseUrl}/SMOKE/video.mp4`)) throw new Error("Expected registered hybrid asset to use CDN.");
+  if (!registeredHtml.includes(`${cdnBaseUrl}/SMOKE/video.mp4?v=abcdef123456`)) {
+    throw new Error("Expected registered hybrid asset to include sha256 cache-busting version from assetRecords.");
+  }
   if (registeredHtml.includes("Load video") || registeredHtml.includes("video-load") || registeredHtml.includes('preload="none"')) {
     throw new Error("Hybrid video embed page should load directly without a manual Load video button.");
   }
