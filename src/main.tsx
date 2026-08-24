@@ -152,6 +152,7 @@ type LinkableResource = {
   unit?: number;
   lesson?: number;
   parentSection?: string;
+  sourceSection?: number;
   sectionKey?: string;
   sectionTitle?: string;
   sectionOrder?: number;
@@ -404,10 +405,27 @@ function resourceSourceIdentity(item: LinkableResource): string {
   if (!source) return "";
   try {
     const parsed = new URL(source);
-    parsed.search = "";
     parsed.hash = "";
+    const isH5PSource = isH5PResource(item) || /h5p|h5p_embed/i.test(`${parsed.pathname} ${parsed.search}`);
+    if (isH5PSource) {
+      const action = parsed.searchParams.get("action");
+      const id = parsed.searchParams.get("id");
+      const url = parsed.searchParams.get("url");
+      const contentId = parsed.searchParams.get("contentId") || parsed.searchParams.get("content_id");
+      if (action || id || url || contentId) {
+        const identityParams = new URLSearchParams();
+        if (action) identityParams.set("action", action);
+        if (id) identityParams.set("id", id);
+        if (url) identityParams.set("url", url);
+        if (contentId) identityParams.set("contentId", contentId);
+        parsed.search = identityParams.toString();
+        return parsed.toString().toLowerCase();
+      }
+    }
+    parsed.search = "";
     return parsed.toString().toLowerCase();
   } catch {
+    if (isH5PResource(item) || /h5p|h5p_embed/i.test(source)) return source.replace(/#.*$/, "").toLowerCase();
     return source.replace(/[?#].*$/, "").toLowerCase();
   }
 }
@@ -592,6 +610,13 @@ function isOriginalMoodleSectionResource(item: LinkableResource): boolean {
   return (item.sourceGroup || "").toLowerCase() === "original_moodle_section";
 }
 
+function isCourseInfoResource(item: LinkableResource): boolean {
+  const parent = (item.parentSection || item.sectionTitle || "").trim().toLowerCase();
+  const role = (item.role || "").toLowerCase();
+  if (role === "source_notes") return false;
+  return parent === "course info" || (Number(item.sourceSection) === 1 && isCourseLevelResource(item));
+}
+
 function courseMoodleSectionKey(title: string): string {
   return title
     .toLowerCase()
@@ -638,6 +663,10 @@ function buildCourseMoodleSectionGroups(manifest: CourseManifest, t: TFunction):
   const courseOutlineDownloads = standardDownloads.filter((item) => roleIn(item, ["course_outline", "course_outline_copy"]));
   const moodleCourseOutlineDownloads = courseOutlineDownloads.filter((item) => (item.category || "").toLowerCase().startsWith("moodle_"));
   const fallbackCourseOutlineDownloads = moodleCourseOutlineDownloads.length ? [] : courseOutlineDownloads;
+  const courseInfoDownloads = standardDownloads.filter(isCourseInfoResource);
+  const courseInfoTitle = courseInfoDownloads.some((item) => (item.parentSection || item.sectionTitle || "").trim().toLowerCase() === "course info")
+    ? "Course info"
+    : "Course Overview";
 
   const makeGroup = (key: string, title: string, description: string, items: LinkableResource[]) => {
     const unique: LinkableResource[] = [];
@@ -658,11 +687,12 @@ function buildCourseMoodleSectionGroups(manifest: CourseManifest, t: TFunction):
 
   makeGroup("introduction", "Introduction", t("moodle.group.introduction.description"), [
     ...standardCourseSections.filter((item) => roleIn(item, ["introduction"])),
-    ...standardDownloads.filter((item) => roleIn(item, ["introduction"])),
+    ...standardDownloads.filter((item) => roleIn(item, ["introduction", "announcements"])),
   ]);
 
-  makeGroup("course-overview", "Course Overview", t("moodle.group.courseOverview.description"), [
+  makeGroup("course-overview", courseInfoTitle, t("moodle.group.courseOverview.description"), [
     ...standardCourseSections.filter((item) => roleIn(item, ["course_overview"])),
+    ...courseInfoDownloads,
     ...moodleCourseOutlineDownloads,
     ...fallbackCourseOutlineDownloads,
     ...standardDownloads.filter((item) => roleIn(item, ["learning_log"])),

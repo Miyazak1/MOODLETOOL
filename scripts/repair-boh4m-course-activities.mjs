@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
@@ -39,10 +39,23 @@ function activity(label, mod, id, role, category = `moodle_${mod}`, extra = {}) 
 
 function h5p(label, id, unit, lesson) {
   return activity(label, "h5pactivity", id, "lesson_h5p", "moodle_h5pactivity", {
+    type: "h5p",
     unit,
     lesson,
+    mod: "h5pactivity",
+    moodleActivityId: String(id),
   });
 }
+
+const unit4H5pActivities = [
+  h5p("Unit 4 - Lesson 1 H5P", 7473, 4, 1),
+  h5p("Unit 4 - Lesson 2 H5P", 7474, 4, 2),
+  h5p("Unit 4 - Lesson 3 H5P", 7475, 4, 3),
+  h5p("Unit 4 - Lesson 4 H5P", 7476, 4, 4),
+  h5p("Unit 4 - Lesson 5 H5P", 7477, 4, 5),
+  h5p("Unit 4 - Lesson 6 H5P", 7478, 4, 6),
+  h5p("Unit 4 - Lesson 7 H5P", 7479, 4, 7),
+];
 
 function resourceKey(item) {
   const source = item?.source || item?.url || "";
@@ -75,6 +88,43 @@ function unitByNumber(manifest, unitNumber) {
     unit.unitResources[key] ||= [];
   }
   return unit;
+}
+
+function lessonByNumber(unit, lessonNumber) {
+  return (unit.lessons || []).find(
+    (lesson) =>
+      Number(lesson.lesson) === lessonNumber ||
+      lesson.id === `U${String(unit.unit).padStart(2, "0")}L${String(lessonNumber).padStart(2, "0")}`,
+  );
+}
+
+function isMoodleH5pActivity(item) {
+  return item?.category === "moodle_h5pactivity" || /\/mod\/h5pactivity\/view\.php/i.test(item?.url || item?.source || "");
+}
+
+function isEmptyTeacherPacketSection(item) {
+  return (
+    item?.role === "teacher_packet" &&
+    item?.category === "moodle_course_section" &&
+    (item.attachments || []).length === 0 &&
+    !(item.textPreview || "").trim()
+  );
+}
+
+function countH5pPackagesUnder(relativePath) {
+  const dir = join(courseRoot, relativePath);
+  if (!existsSync(dir)) return 0;
+  const stack = [dir];
+  let count = 0;
+  while (stack.length) {
+    const current = stack.pop();
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      const abs = join(current, entry.name);
+      if (entry.isDirectory()) stack.push(abs);
+      else if (entry.name.toLowerCase().endsWith(".h5p")) count += 1;
+    }
+  }
+  return count;
 }
 
 function assignList(unitNumber, ids, role, labelFactory, category = "moodle_assign") {
@@ -137,15 +187,6 @@ const unitActivities = {
       activity("Unit 4 - KWL Dropbox", "assign", 7471, "kwl_dropbox", "moodle_assign", { unit: 4 }),
       activity("Unit 4 - Reflection Summary Dropbox", "assign", 7472, "reflection_summary", "moodle_assign", { unit: 4 }),
     ],
-    additional: [
-      h5p("Unit 4 - Lesson 1 H5P", 7473, 4, 1),
-      h5p("Unit 4 - Lesson 2 H5P", 7474, 4, 2),
-      h5p("Unit 4 - Lesson 3 H5P", 7475, 4, 3),
-      h5p("Unit 4 - Lesson 4 H5P", 7476, 4, 4),
-      h5p("Unit 4 - Lesson 5 H5P", 7477, 4, 5),
-      h5p("Unit 4 - Lesson 6 H5P", 7478, 4, 6),
-      h5p("Unit 4 - Lesson 7 H5P", 7479, 4, 7),
-    ],
   },
   5: {
     evaluations: [
@@ -196,6 +237,33 @@ if (existsSync(join(courseRoot, curriculumPath))) {
 
 manifest.courseDownloads = mergeBySource(originalCourseDownloads, courseDownloads);
 
+const existingMoodleH5pActivities = [];
+for (const unit of manifest.units || []) {
+  for (const lesson of unit.lessons || []) {
+    for (const item of lesson.downloads || []) {
+      if (isMoodleH5pActivity(item)) existingMoodleH5pActivities.push(item);
+    }
+  }
+  for (const items of Object.values(unit.unitResources || {})) {
+    for (const item of items || []) {
+      if (isMoodleH5pActivity(item)) existingMoodleH5pActivities.push(item);
+    }
+  }
+}
+const existingMoodleH5pBySource = new Map(existingMoodleH5pActivities.map((item) => [resourceKey(item), item]));
+const localizedMoodleH5pActivities = unit4H5pActivities.map((item) => ({
+  ...item,
+  ...(existingMoodleH5pBySource.get(resourceKey(item)) || {}),
+  type: "h5p",
+  category: "moodle_h5pactivity",
+  role: "lesson_h5p",
+  mod: "h5pactivity",
+  moodleActivityId: String(item.moodleActivityId || new URL(item.source).searchParams.get("id") || ""),
+}));
+
+const originalTeacherResources = (manifest.teacherResources || []).filter((item) => !isEmptyTeacherPacketSection(item));
+const removedEmptyTeacherPacketSections = (manifest.teacherResources || []).length - originalTeacherResources.length;
+
 const teacherResources = [
   activity("Answer Keys", "assign", 7531, "answer_keys", "moodle_assign"),
 ];
@@ -206,12 +274,24 @@ for (const [unitText, groups] of Object.entries(unitActivities)) {
   for (const [key, items] of Object.entries(groups)) {
     unit.unitResources[key] = mergeBySource(unit.unitResources[key] || [], items);
   }
+  for (const key of Object.keys(unit.unitResources)) {
+    unit.unitResources[key] = (unit.unitResources[key] || []).filter((item) => !isMoodleH5pActivity(item));
+  }
   teacherResources.push(...unit.unitResources.evaluations, ...unit.unitResources.answerPages);
   unit.summary ||= {};
   unit.summary.unitResources = Object.values(unit.unitResources).flat().length;
 }
 
-manifest.teacherResources = mergeBySource(manifest.teacherResources || [], teacherResources);
+let lessonH5pAdded = 0;
+for (const item of localizedMoodleH5pActivities) {
+  const unit = unitByNumber(manifest, Number(item.unit));
+  const lesson = lessonByNumber(unit, Number(item.lesson));
+  if (!lesson) throw new Error(`Missing BOH4M Unit ${item.unit} Lesson ${item.lesson} for Moodle H5P activity`);
+  lesson.downloads = mergeBySource(lesson.downloads || [], [item]);
+  lessonH5pAdded += 1;
+}
+
+manifest.teacherResources = mergeBySource(originalTeacherResources, teacherResources);
 
 let removedIspringDownloadFields = 0;
 let ispringPlayable = 0;
@@ -229,7 +309,17 @@ for (const unit of manifest.units || []) {
       }
       delete item.downloadBytes;
     }
+    lesson.resourceCounts ||= {};
+    lesson.resourceCounts.downloads = (lesson.downloads || []).length;
+    lesson.resourceCounts.h5p = (lesson.downloads || []).filter((item) => item.type === "h5p" || item.category === "moodle_h5pactivity").length;
   }
+  unit.summary ||= {};
+  unit.summary.downloads = (unit.lessons || []).reduce((sum, lesson) => sum + (lesson.downloads || []).length, 0);
+  unit.summary.h5p = (unit.lessons || []).reduce(
+    (sum, lesson) => sum + (lesson.downloads || []).filter((item) => item.type === "h5p" || item.category === "moodle_h5pactivity").length,
+    0,
+  );
+  unit.summary.unitResources = Object.values(unit.unitResources || {}).flat().length;
 }
 
 manifest.sourceAudit ||= {};
@@ -240,12 +330,17 @@ manifest.sourceAudit.courseActivitiesPatched = {
   courseDownloads: courseDownloads.length,
   unitResources: Object.values(unitActivities).reduce((sum, groups) => sum + Object.values(groups).flat().length, 0),
   teacherResources: teacherResources.length,
+  lessonH5pActivities: lessonH5pAdded,
   exitCardsExcluded: 32,
-  note: "Course, final, teacher packet, unit AOL/test, KWL/reflection, lesson dropbox, lesson answer, and Unit 4 H5P activity records were created from the Moodle course shell. Exit Cards remain excluded from teacher core structure.",
+  note: "Course, final, teacher packet, unit AOL/test, KWL/reflection, lesson dropbox, lesson answer, and Unit 4 H5P activity records were created from the Moodle course shell. Unit 4 Moodle H5P activities are attached to their owning lessons for standard H5P display; Exit Cards remain excluded from teacher core structure.",
 };
 manifest.sourceAudit.ispringDownloadPackages = 0;
 manifest.sourceAudit.ispringPlayable = ispringPlayable;
 manifest.sourceAudit.removedIspringDownloadFields = removedIspringDownloadFields;
+manifest.sourceAudit.localizedH5pCount = countH5pPackagesUnder("localized-moodle/h5p-external") + countH5pPackagesUnder("localized-moodle/h5p-activity");
+manifest.sourceAudit.h5pActivityExpected = localizedMoodleH5pActivities.length;
+manifest.sourceAudit.h5pActivityLocalized = localizedMoodleH5pActivities.filter((item) => item.path && existsSync(join(courseRoot, item.path))).length;
+manifest.sourceAudit.h5pActivityFailed = localizedMoodleH5pActivities.length - manifest.sourceAudit.h5pActivityLocalized;
 manifest.generatedAt = new Date().toISOString();
 
 writeJson(manifestPath, manifest);
@@ -265,5 +360,7 @@ console.log(JSON.stringify({
   courseDownloads: manifest.courseDownloads.length,
   teacherResources: manifest.teacherResources.length,
   unitResources: manifest.units.reduce((sum, unit) => sum + Object.values(unit.unitResources || {}).flat().length, 0),
+  lessonH5pActivities: lessonH5pAdded,
+  removedEmptyTeacherPacketSections,
   removedIspringDownloadFields,
 }, null, 2));

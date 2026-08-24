@@ -14,6 +14,11 @@ export interface FileResource {
   lesson?: number;
   moodleActivityId?: string;
   parentSection?: string;
+  sourceSection?: number;
+  sectionKey?: string;
+  sectionTitle?: string;
+  sectionOrder?: number;
+  sectionPath?: string;
   sourceGroup?: string;
   teacherOnly?: boolean;
   teacherUse?: string;
