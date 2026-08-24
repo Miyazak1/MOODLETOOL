@@ -2239,6 +2239,26 @@ function TeacherPrepList({ title, items }: { title: string; items: string[] }) {
   );
 }
 
+function teacherPrepISpringEntry(item: LinkableResource): Lesson["ispring"][number] {
+  const extended = item as LinkableResource & {
+    packagePath?: string;
+    slideCount?: number;
+    videoSegmentCount?: number;
+  };
+  return {
+    label: item.label,
+    mode: item.mode === "external" ? "external" : "page",
+    path: item.path,
+    url: item.url,
+    downloadPath: item.downloadPath,
+    downloadUrl: item.downloadUrl,
+    packagePath: extended.packagePath,
+    source: item.source,
+    slideCount: extended.slideCount,
+    videoSegmentCount: extended.videoSegmentCount,
+  };
+}
+
 function TeacherPrepResources({
   resources,
   courseBaseUrl,
@@ -2265,17 +2285,33 @@ function TeacherPrepResources({
         <section key={group.key}>
           <h4>{group.title}</h4>
           <div className="teacher-prep-resource-row">
-            {group.items.map((item) => (
-              <ResourceActions
-                canShare={canShare}
-                courseBaseUrl={courseBaseUrl}
-                courseCode={courseCode}
-                item={item}
-                key={resourceKey(item)}
-                moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
-                moodleEmbedByPath={moodleEmbedByPath}
-              />
-            ))}
+            {group.items.map((item) => {
+              const moodleEmbed = moodleEmbedForResource(moodleEmbedByPath, item);
+              if (group.key === "playables" && isISpringResource(item)) {
+                return (
+                  <ISpringActions
+                    canShare={canShare}
+                    courseBaseUrl={courseBaseUrl}
+                    courseCode={courseCode}
+                    item={teacherPrepISpringEntry(item)}
+                    key={resourceKey(item)}
+                    label={item.label}
+                    moodleEmbed={moodleEmbed}
+                  />
+                );
+              }
+              return (
+                <ResourceActions
+                  canShare={canShare}
+                  courseBaseUrl={courseBaseUrl}
+                  courseCode={courseCode}
+                  item={item}
+                  key={resourceKey(item)}
+                  moodleEmbed={moodleEmbed}
+                  moodleEmbedByPath={moodleEmbedByPath}
+                />
+              );
+            })}
           </div>
         </section>
       ))}
