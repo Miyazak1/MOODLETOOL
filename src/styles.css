@@ -621,6 +621,175 @@ input {
   line-height: 1.2;
 }
 
+.teacher-prep-guide {
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.teacher-prep-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--soft-line);
+  background: #fbfdff;
+}
+
+.teacher-prep-header h2 {
+  margin: 4px 0 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.teacher-prep-header p {
+  max-width: 900px;
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.teacher-prep-stats,
+.teacher-prep-external-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.teacher-prep-stats span,
+.teacher-prep-external-links a {
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--teal);
+  background: var(--green-soft);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.teacher-prep-body {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.teacher-prep-intro,
+.teacher-prep-unit-grid,
+.teacher-prep-columns,
+.teacher-prep-notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.teacher-prep-intro section,
+.teacher-prep-references,
+.teacher-prep-unit-grid section,
+.teacher-prep-columns section,
+.teacher-prep-focus,
+.teacher-prep-notes section,
+.teacher-prep-resource-groups section {
+  border: 1px solid var(--soft-line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+}
+
+.teacher-prep-guide h3,
+.teacher-prep-guide h4 {
+  margin: 0 0 8px;
+  color: var(--navy);
+  line-height: 1.25;
+}
+
+.teacher-prep-guide h3 {
+  font-size: 15px;
+}
+
+.teacher-prep-guide h4 {
+  font-size: 13px;
+}
+
+.teacher-prep-guide p,
+.teacher-prep-guide li {
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.teacher-prep-guide p {
+  margin: 0;
+}
+
+.teacher-prep-guide ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.teacher-prep-unit,
+.teacher-prep-lesson {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.teacher-prep-units,
+.teacher-prep-lessons,
+.teacher-prep-resource-groups {
+  display: grid;
+  gap: 10px;
+}
+
+.teacher-prep-unit summary,
+.teacher-prep-lesson summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  cursor: pointer;
+  background: #f8fafc;
+}
+
+.teacher-prep-unit summary span,
+.teacher-prep-lesson summary span {
+  border-radius: 6px;
+  padding: 5px 8px;
+  color: #fff;
+  background: var(--navy);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.teacher-prep-unit summary strong,
+.teacher-prep-lesson summary strong {
+  min-width: 0;
+  color: var(--ink);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.teacher-prep-unit summary em,
+.teacher-prep-lesson summary em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.teacher-prep-unit-body,
+.teacher-prep-lesson-body {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.teacher-prep-resource-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .unit-roadmap {
   margin-bottom: 18px;
   overflow: hidden;
@@ -1362,6 +1531,10 @@ input {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .teacher-prep-header {
+    flex-direction: column;
+  }
+
   .lesson-summary {
     grid-template-columns: 58px minmax(0, 1fr) 24px;
   }
@@ -1390,6 +1563,16 @@ input {
 
   .unit-roadmap-header {
     flex-direction: column;
+  }
+
+  .teacher-prep-unit summary,
+  .teacher-prep-lesson summary {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .teacher-prep-unit summary em,
+  .teacher-prep-lesson summary em {
+    grid-column: 1 / -1;
   }
 
   .lesson-summary {

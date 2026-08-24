@@ -11,6 +11,8 @@ import type {
   FileResource,
   Lesson,
   MoodleEmbedRow,
+  TeacherPrepGuide,
+  TeacherPrepResourceGroup,
   TextRegistryEntry,
   Unit,
 } from "./types";
@@ -280,9 +282,17 @@ function isPlayableOnlyResource(item: LinkableResource): boolean {
   return isVideoResource(item) || isISpringResource(item) || isH5PResource(item) || isInteractiveLabResource(item);
 }
 
+function isLocalizedStandaloneLessonResource(item: LinkableResource): boolean {
+  return (isVideoResource(item) || isISpringResource(item) || isH5PResource(item)) && hasLocalResource(item);
+}
+
+function isStandaloneActivityPanelResource(item: LinkableResource): boolean {
+  return hasMoodleActivityPage(item) || isLocalizedStandaloneLessonResource(item);
+}
+
 function isBookSectionEmbeddedPlayableResource(item: LinkableResource): boolean {
   const sourceGroup = (item.sourceGroup || "").toLowerCase();
-  return isPlayableOnlyResource(item) && (sourceGroup === "book_section_embed" || Boolean(item.sectionPath && item.parentSection));
+  return isLocalizedStandaloneLessonResource(item) && (sourceGroup === "book_section_embed" || Boolean(item.sectionPath && item.parentSection));
 }
 
 function isExternalInteractiveResource(item: LinkableResource): boolean {
@@ -418,6 +428,15 @@ function addUniqueResources(items: LinkableResource[], resources: LinkableResour
   resources.forEach((item) => addUniqueResource(items, item));
 }
 
+function withMergedAttachments(item: LinkableResource, attachments: LinkableResource[]): LinkableResource {
+  if (!attachments.length) return item;
+  const merged = dedupeResources([...(item.attachments || []), ...attachments]);
+  return {
+    ...item,
+    attachments: merged,
+  };
+}
+
 function roleIn(item: LinkableResource, roles: string[]): boolean {
   return roles.includes((item.role || "").toLowerCase());
 }
@@ -473,6 +492,8 @@ function homeworkSubmissionResourcesForManifest(manifest: CourseManifest): Linka
   (manifest.courseSections || []).forEach(addCandidate);
   (manifest.teacherResources || []).forEach(addCandidate);
   for (const unit of manifest.units || []) {
+    unitResourcesFor(unit, "lessonDropboxes").forEach((item) => addUniqueResource(items, item));
+    unitResourcesFor(unit, "answerPages").forEach((item) => addUniqueResource(items, item));
     for (const lesson of unit.lessons || []) {
       (lesson.downloads || []).forEach(addCandidate);
     }
@@ -504,14 +525,11 @@ function teacherPacketResourcesForManifest(manifest: CourseManifest): LinkableRe
   for (const unit of manifest.units || []) {
     for (const lesson of unit.lessons || []) {
       lessonActivityPagesForLesson(lesson).forEach((item) => addUniqueResource(items, item));
-      answerResourcesForLesson(answerResources, unit, lesson).forEach((item) => {
-        addUniqueResource(items, item);
-        addResourceKeys(usedAnswerKeys, item);
-      });
     }
   }
 
   answerResources.forEach((item) => {
+    if (isNumberedLessonAnswerActivity(item)) return;
     const itemKey = resourceIdentity(item);
     const sourceKey = resourceSourceIdentity(item);
     if (usedAnswerKeys.has(itemKey) || (sourceKey && usedAnswerKeys.has(sourceKey))) return;
@@ -1249,7 +1267,7 @@ function LessonFlowPanel({
   bookSections.forEach((section) => {
     const sectionFlowKey = bookSectionFlowKey(section);
     visibleAttachments(section).forEach((attachment) => {
-      if (isPlayableOnlyResource(attachment)) {
+      if (isLocalizedStandaloneLessonResource(attachment)) {
         addUniqueResource(embeddedPlayableAttachments, attachment);
         playableAttachmentFlowByKey.set(resourceIdentity(attachment), sectionFlowKey);
         const sourceKey = resourceSourceIdentity(attachment);
@@ -1272,7 +1290,17 @@ function LessonFlowPanel({
     [...embeddedPlayableAttachments, ...visibleDownloads, ...visibleHandsOn, ...visibleTextExports].filter((item) => {
       if (item.role === "lesson_book" || item.role === "lesson_book_section") return false;
       if (isStandaloneNumberedLessonActivity(item)) return false;
+      if (!isLocalizedStandaloneLessonResource(item)) return false;
       if (!isBookSectionEmbeddedPlayableResource(item) && isGroupedResource(item, bookSectionAttachmentKeys)) return false;
+      return true;
+    }),
+  );
+  const supportingAttachments = dedupeResources(
+    [...visibleDownloads, ...visibleHandsOn, ...visibleTextExports].filter((item) => {
+      if (item.role === "lesson_book" || item.role === "lesson_book_section") return false;
+      if (isStandaloneNumberedLessonActivity(item)) return false;
+      if (isLocalizedStandaloneLessonResource(item)) return false;
+      if (isGroupedResource(item, bookSectionAttachmentKeys)) return false;
       return true;
     }),
   );
@@ -1296,6 +1324,7 @@ function LessonFlowPanel({
       {keys.map((key) => {
         const sectionBookPages = bookSections.filter((item) => bookSectionFlowKey(item) === key);
         const sectionDownloads = regularDownloads.filter((item) => flowKeyForDownload(item) === key);
+        const sectionAttachments = supportingAttachments.filter((item) => flowKeyForDownload(item) === key);
         const sectionISpring = visibleISpring.filter((item) => ispringFlowKey(item) === key);
         const sectionItemCount = sectionBookPages.length + sectionDownloads.length + sectionISpring.length;
         return (
@@ -1310,13 +1339,13 @@ function LessonFlowPanel({
               </strong>
             </header>
             <div className="lesson-flow-items">
-              {sectionBookPages.map((item) => (
+              {sectionBookPages.map((item, index) => (
                 <ResourceActions
                   courseBaseUrl={courseBaseUrl}
                   courseCode={courseCode}
                   canShare={canShare}
                   displayLabel={item.label || item.sectionLabel || flowLabelForKey(bookSectionFlowKey(item), t)}
-                  item={item}
+                  item={index === 0 ? withMergedAttachments(item, sectionAttachments) : item}
                   key={resourceKey(item)}
                   moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
                   moodleEmbedByPath={moodleEmbedByPath}
@@ -1379,7 +1408,9 @@ function ActivityResourcePanel({
 }) {
   const { t } = usePortalI18n();
   const bookSections = visibleBookSectionsForLesson(lesson);
-  const files = dedupeResources([...bookSections, ...visibleDownloads, ...visibleTextExports]);
+  const standaloneResources = [...visibleDownloads, ...visibleTextExports].filter(isStandaloneActivityPanelResource);
+  const supportingAttachments = dedupeResources([...visibleDownloads, ...visibleTextExports].filter((item) => !isStandaloneActivityPanelResource(item)));
+  const files = dedupeResources([...bookSections.map((item, index) => (index === 0 ? withMergedAttachments(item, supportingAttachments) : item)), ...standaloneResources]);
   const totalItems = files.length + visibleISpring.length;
 
   if (!totalItems) {
@@ -2034,6 +2065,224 @@ function UnitMoodleResources({
   );
 }
 
+function TeacherPrepPanel({
+  prep,
+  courseBaseUrl,
+  courseCode,
+  canShare,
+  moodleEmbedByPath,
+}: {
+  prep?: TeacherPrepGuide;
+  courseBaseUrl: string;
+  courseCode: string;
+  canShare: boolean;
+  moodleEmbedByPath?: MoodleEmbedMap;
+}) {
+  if (!prep) return null;
+  const lessonCount = prep.units.reduce((sum, unit) => sum + unit.lessons.length, 0);
+  return (
+    <section className="teacher-prep-guide panel" id="teacher-prep-guide">
+      <header className="teacher-prep-header">
+        <div>
+          <p className="eyebrow dark">Teacher Prep</p>
+          <h2>{prep.title}</h2>
+          <p>{prep.purpose}</p>
+        </div>
+        <div className="teacher-prep-stats" aria-label="Teacher prep coverage">
+          <span>{prep.units.length} Units</span>
+          <span>{lessonCount} Lessons</span>
+        </div>
+      </header>
+      <div className="teacher-prep-body">
+        <div className="teacher-prep-intro">
+          <section>
+            <h3>Pacing Model</h3>
+            <p>{prep.pacingModel}</p>
+          </section>
+          <section>
+            <h3>Evidence Policy</h3>
+            <p>{prep.evidencePolicy}</p>
+          </section>
+          <section>
+            <h3>Course Priorities</h3>
+            <ul>
+              {prep.coursePriorities.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </section>
+        </div>
+        {prep.planningReferences.length || prep.externalReferences?.length ? (
+          <section className="teacher-prep-references">
+            <h3>Planning References</h3>
+            {prep.planningReferences.length ? (
+              <div className="teacher-prep-resource-row">
+                {prep.planningReferences.map((item) => (
+                  <ResourceActions
+                    canShare={canShare}
+                    courseBaseUrl={courseBaseUrl}
+                    courseCode={courseCode}
+                    item={item}
+                    key={resourceKey(item)}
+                    moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+                    moodleEmbedByPath={moodleEmbedByPath}
+                  />
+                ))}
+              </div>
+            ) : null}
+            {prep.externalReferences?.length ? (
+              <div className="teacher-prep-external-links">
+                {prep.externalReferences.map((item) => (
+                  <a href={item.url} key={item.url} rel="noopener noreferrer" target="_blank">
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+        <div className="teacher-prep-units">
+          {prep.units.map((unit, index) => (
+            <details className="teacher-prep-unit" key={unit.unit} open={index === 0}>
+              <summary>
+                <span>U{unit.unit}</span>
+                <strong>{unit.title}</strong>
+                <em>{unit.pacing}</em>
+              </summary>
+              <div className="teacher-prep-unit-body">
+                <div className="teacher-prep-unit-grid">
+                  <section>
+                    <h3>Unit Focus</h3>
+                    <p>{unit.focus}</p>
+                  </section>
+                  <section>
+                    <h3>Key Concepts</h3>
+                    <ul>
+                      {unit.keyConcepts.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </section>
+                  <section>
+                    <h3>Assessment Plan</h3>
+                    <ul>
+                      {unit.assessmentPlan.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </section>
+                  <section>
+                    <h3>Teacher Moves</h3>
+                    <ul>
+                      {unit.teacherMoves.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </section>
+                </div>
+                <div className="teacher-prep-lessons">
+                  {unit.lessons.map((lesson) => (
+                    <details className="teacher-prep-lesson" key={lesson.id}>
+                      <summary>
+                        <span>{lesson.id}</span>
+                        <strong>{lesson.title}</strong>
+                        <em>{lesson.pacing}</em>
+                      </summary>
+                      <div className="teacher-prep-lesson-body">
+                        <section className="teacher-prep-focus">
+                          <h4>Teaching Focus</h4>
+                          <p>{lesson.focus}</p>
+                        </section>
+                        <div className="teacher-prep-columns">
+                          <TeacherPrepList title="Learning Goals" items={lesson.learningGoals} />
+                          <TeacherPrepList title="Success Criteria" items={lesson.successCriteria} />
+                          <TeacherPrepList title="Before Class" items={lesson.beforeClass} />
+                          <TeacherPrepList title="In Class" items={lesson.inClass} />
+                          <TeacherPrepList title="After Class" items={lesson.afterClass} />
+                          <TeacherPrepList title="Assessment" items={lesson.assessment} />
+                        </div>
+                        <TeacherPrepResources
+                          canShare={canShare}
+                          courseBaseUrl={courseBaseUrl}
+                          courseCode={courseCode}
+                          moodleEmbedByPath={moodleEmbedByPath}
+                          resources={lesson.resourceGroups}
+                        />
+                        <div className="teacher-prep-notes">
+                          <TeacherPrepList title="Evidence From Course Materials" items={lesson.evidence} />
+                          <TeacherPrepList title="Suggested Teacher Notes" items={lesson.suggestedNotes} />
+                        </div>
+                      </div>
+                    </details>
+                  ))}
+                </div>
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TeacherPrepList({ title, items }: { title: string; items: string[] }) {
+  if (!items.length) return null;
+  return (
+    <section>
+      <h4>{title}</h4>
+      <ul>
+        {items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function TeacherPrepResources({
+  resources,
+  courseBaseUrl,
+  courseCode,
+  canShare,
+  moodleEmbedByPath,
+}: {
+  resources: TeacherPrepResourceGroup;
+  courseBaseUrl: string;
+  courseCode: string;
+  canShare: boolean;
+  moodleEmbedByPath?: MoodleEmbedMap;
+}) {
+  const groups = [
+    { key: "playables", title: "Playable Resources", items: resources.playables },
+    { key: "studentFiles", title: "Student Files", items: resources.studentFiles },
+    { key: "teacherFiles", title: "Teacher Files", items: resources.teacherFiles },
+    { key: "references", title: "References", items: resources.references },
+  ].filter((group) => group.items.length);
+  if (!groups.length) return null;
+  return (
+    <div className="teacher-prep-resource-groups">
+      {groups.map((group) => (
+        <section key={group.key}>
+          <h4>{group.title}</h4>
+          <div className="teacher-prep-resource-row">
+            {group.items.map((item) => (
+              <ResourceActions
+                canShare={canShare}
+                courseBaseUrl={courseBaseUrl}
+                courseCode={courseCode}
+                item={item}
+                key={resourceKey(item)}
+                moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+                moodleEmbedByPath={moodleEmbedByPath}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
 function UnitDetail({
   unit,
   texts,
@@ -2411,6 +2660,13 @@ function App() {
                 manifest={manifest}
                 moodleEmbedByPath={moodleEmbedByPath}
                 structureLabels={structureLabels}
+              />
+              <TeacherPrepPanel
+                canShare={adminCanShare}
+                courseBaseUrl={selectedCourse.baseUrl}
+                courseCode={manifest.course.code}
+                moodleEmbedByPath={moodleEmbedByPath}
+                prep={manifest.teacherPrep}
               />
               <UnitRoadmap
                 onSelect={setSelectedUnit}

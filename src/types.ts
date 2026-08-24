@@ -110,6 +110,54 @@ export interface Unit {
   lessons: Lesson[];
 }
 
+export interface TeacherPrepResourceGroup {
+  playables: FileResource[];
+  studentFiles: FileResource[];
+  teacherFiles: FileResource[];
+  references: FileResource[];
+}
+
+export interface TeacherPrepLesson {
+  id: string;
+  unit: number;
+  lesson: number;
+  title: string;
+  pacing: string;
+  focus: string;
+  learningGoals: string[];
+  successCriteria: string[];
+  beforeClass: string[];
+  inClass: string[];
+  afterClass: string[];
+  assessment: string[];
+  resourceGroups: TeacherPrepResourceGroup;
+  evidence: string[];
+  suggestedNotes: string[];
+}
+
+export interface TeacherPrepUnit {
+  unit: number;
+  title: string;
+  pacing: string;
+  focus: string;
+  keyConcepts: string[];
+  assessmentPlan: string[];
+  teacherMoves: string[];
+  lessons: TeacherPrepLesson[];
+}
+
+export interface TeacherPrepGuide {
+  generatedAt: string;
+  title: string;
+  purpose: string;
+  evidencePolicy: string;
+  pacingModel: string;
+  coursePriorities: string[];
+  planningReferences: FileResource[];
+  externalReferences?: ExternalLinkResource[];
+  units: TeacherPrepUnit[];
+}
+
 export interface TextRegistryEntry {
   id: string;
   title: string;
@@ -159,6 +207,7 @@ export interface CourseManifest {
   evaluations?: FileResource[];
   teacherResources?: FileResource[];
   texts: TextRegistryEntry[];
+  teacherPrep?: TeacherPrepGuide;
   units: Unit[];
 }
 
