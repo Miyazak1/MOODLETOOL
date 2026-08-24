@@ -401,7 +401,7 @@ function resourceIdentity(item: LinkableResource): string {
 }
 
 function resourceSourceIdentity(item: LinkableResource): string {
-  const source = item.source || item.url || "";
+  const source = /^https?:\/\//i.test(item.source || "") ? item.source || "" : item.url || item.previewUrl || item.downloadUrl || "";
   if (!source) return "";
   try {
     const parsed = new URL(source);
