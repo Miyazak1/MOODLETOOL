@@ -86,6 +86,13 @@ function extractLocalizedArticleBody(html) {
   return match?.[1] || "";
 }
 
+function extractMoodleRoleMainBody(html) {
+  const match = html.match(
+    /<div\b[^>]*\brole=["']main["'][^>]*>([\s\S]*?)(?:<div\b[^>]*\bclass=["'][^"']*\bmodified\b[^"']*["'][^>]*>|<nav\b[^>]*\bclass=["'][^"']*\bactivity-navigation\b|<\/section>\s*<\/div>\s*<\/div>)/i,
+  );
+  return match?.[1] || "";
+}
+
 function removeDuplicateLeadingHeading(body, title) {
   const titleText = stripTags(title).toLowerCase();
   return String(body || "").replace(/^\s*<h[1-3]\b[^>]*>([\s\S]*?)<\/h[1-3]>\s*/i, (full, heading) => {
@@ -95,8 +102,21 @@ function removeDuplicateLeadingHeading(body, title) {
 
 function cleanIntro(body) {
   let cleaned = String(body || "");
+  const hasMoodleBoxWrapper =
+    /^\s*<div\b[^>]*\bclass=["'][^"']*\bbox\b[^"']*\bgeneralbox\b[^"']*\bboxaligncenter\b[^"']*["'][^>]*>\s*<div\b[^>]*\bclass=["'][^"']*\bno-overflow\b[^"']*["'][^>]*>/i.test(
+      cleaned,
+    );
   cleaned = cleaned.replace(/<script\b[\s\S]*?<\/script>/gi, "");
   cleaned = cleaned.replace(/<style\b[\s\S]*?<\/style>/gi, "");
+  if (hasMoodleBoxWrapper) {
+    cleaned = cleaned
+      .replace(
+        /^\s*<div\b[^>]*\bclass=["'][^"']*\bbox\b[^"']*\bgeneralbox\b[^"']*\bboxaligncenter\b[^"']*["'][^>]*>\s*<div\b[^>]*\bclass=["'][^"']*\bno-overflow\b[^"']*["'][^>]*>/i,
+        "",
+      )
+      .replace(/<\/div>\s*<\/div>\s*$/i, "");
+  }
+  cleaned = cleaned.replace(/<section\b[^>]*\bclass=["'][^"']*\b(?:attachments|files)\b[^"']*["'][^>]*>[\s\S]*?<\/section>/gi, "");
   cleaned = cleaned.replace(/<div\b[^>]*\bclass=["'][^"']*\bfileuploadsubmissiontime\b[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, "");
   cleaned = cleaned.replace(/<a\b([^>]*?)\sdata-localized-link=["'][^"']+["']([^>]*)>([\s\S]*?)<\/a>/gi, "$3");
   cleaned = cleaned.replace(/\sdata-localized-link=["'][^"']+["']/gi, "");
@@ -116,6 +136,13 @@ function cleanIntro(body) {
   return cleaned.trim();
 }
 
+function removeEmbeddedAttachmentSections(body) {
+  return String(body || "")
+    .replace(/<section\b[^>]*\bclass=["'][^"']*\b(?:attachments|files)\b[^"']*["'][^>]*>[\s\S]*?<\/section>/gi, "")
+    .replace(/<section\b[^>]*\bclass=["'][^"']*\b(?:attachments|files)\b[^"']*["'][^>]*>[\s\S]*$/gi, "")
+    .trim();
+}
+
 function normalizeRelPath(value) {
   return String(value || "").replaceAll("\\", "/");
 }
@@ -131,6 +158,9 @@ function isDownloadableAttachment(attachment) {
 }
 
 function renderAttachments(pageRel, item) {
+  if (String(item?.category || "").toLowerCase() === "moodle_h5pactivity" || String(item?.type || "").toLowerCase() === "h5p") {
+    return "";
+  }
   const attachments = Array.isArray(item.attachments) ? item.attachments : [];
   if (attachments.length === 0) return "";
   const rows = attachments
@@ -139,12 +169,12 @@ function renderAttachments(pageRel, item) {
       const originalHref = attachment.href || relativeFromPage(pageRel, attachment.path);
       const viewHref = attachment.previewPath ? relativeFromPage(pageRel, attachment.previewPath) : originalHref;
       const downloadLink = isDownloadableAttachment(attachment)
-        ? `\n              <a class="button" href="${htmlEscape(originalHref, true)}" download>Download</a>`
+        ? `\n              <a class="button" href="${htmlEscape(originalHref, true)}" download>下载</a>`
         : "";
       return `          <li>
             <span>${htmlEscape(attachment.label || attachment.path || "Attachment")}</span>
             <span class="actions">
-              <a class="button" href="${htmlEscape(viewHref, true)}">View</a>${downloadLink}
+              <a class="button" href="${htmlEscape(viewHref, true)}">查看</a>${downloadLink}
             </span>
           </li>`;
     })
@@ -152,7 +182,7 @@ function renderAttachments(pageRel, item) {
   if (!rows) return "";
   return `
         <section class="attachments">
-          <h2>Files</h2>
+          <h2>附件</h2>
           <ul>
 ${rows}
           </ul>
@@ -160,6 +190,7 @@ ${rows}
 }
 
 function pageHtml(title, body, attachmentsHtml) {
+  const cleanBody = removeEmbeddedAttachmentSections(body);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -195,7 +226,7 @@ function pageHtml(title, body, attachmentsHtml) {
   <main>
     <article>
       <h1>${htmlEscape(title)}</h1>
-      <div class="activity-body">${body}</div>${attachmentsHtml}
+      <div class="activity-body">${cleanBody}</div>${attachmentsHtml}
     </article>
   </main>
 </body>
@@ -224,6 +255,7 @@ function collectManifestItems(manifest) {
     if (value.path) add(value);
     for (const nested of Object.values(value)) {
       if (Array.isArray(nested)) nested.forEach(visit);
+      else if (nested && typeof nested === "object") visit(nested);
     }
   };
   visit(manifest.courseDownloads);
@@ -250,13 +282,13 @@ for (const item of items) {
   if (!existsSync(abs)) continue;
   const html = readFileSync(abs, "utf8");
   const title = extractTitle(html, item.label || rel);
-  const intro = extractIntro(html) || extractSanitizedBody(html) || extractLocalizedArticleBody(html);
+  const intro = extractIntro(html) || extractSanitizedBody(html) || extractLocalizedArticleBody(html) || extractMoodleRoleMainBody(html);
   const body = removeDuplicateLeadingHeading(cleanIntro(intro), title);
   const attachmentsHtml = renderAttachments(rel, item);
   const hasShell = /Completion requirements|Grading summary|Previous Activity|Next Activity|data-localized-link|fileuploadsubmissiontime|assign_files_tree|submissionlinks|Hidden from students|Participants|Submitted|Needs grading/i.test(html);
   const alreadySanitized = /<div\b[^>]*\bclass=["']activity-body["'][^>]*>/i.test(html);
   const existingPreviewHasBody = stripTags(item.textPreview || "").length > 120 && !/^Unit \d+ - .+? Files\b/i.test(stripTags(item.textPreview || ""));
-  if (!body && existingPreviewHasBody) {
+  if (!body && !attachmentsHtml && existingPreviewHasBody) {
     skipped.push({ path: rel, reason: "empty-body-would-overwrite-existing-preview" });
     continue;
   }

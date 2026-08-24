@@ -266,6 +266,7 @@ function cleanBody(rawHtml) {
     .replace(/\s(?:href|src|poster|action)=["'](?:https?:)?\/\/(?:www\.)?esunnybrook\.com\/[^"']*["']/gi, ' data-localized-link="removed"')
     .replace(/\s(?:href|src|poster|action)=["']\/pluginfile\.php[^"']*["']/gi, ' data-localized-link="removed"')
     .replace(/<a\b(?=[^>]*\bdata-localized-link=["'][^"']+["'])[^>]*>([\s\S]*?)<\/a>/gi, "$1")
+    .replace(/(<video\b[\s\S]*?<a\b[^>]*>)[\s\S]*?(<\/a>[\s\S]*?<\/video>)/gi, "$1Local video file$2")
     .replace(/<img\b(?=[^>]*\bdata-localized-link=["'](?:removed|[^"']*-unavailable)["'])[^>]*>\s*/gi, "")
     .replace(/<h[1-6]\b[^>]*>\s*(?:&nbsp;|\u00a0|\s)*<\/h[1-6]>/gi, "");
 }
@@ -291,11 +292,12 @@ function localizePluginfileRefs({ body, source, indexRel, localByUrl }) {
 }
 
 function pageHtml(title, body, attachments) {
-  const files = attachments.length
-    ? `<section class="attachments"><h2>Files</h2><ul>${attachments
+  const downloadableAttachments = attachments.filter((item) => !isMediaAttachment(item));
+  const files = downloadableAttachments.length
+    ? `<section class="attachments"><h2>Files</h2><ul>${downloadableAttachments
         .map((item) => {
           const view = item.previewHref || item.href;
-          return `<li><span>${htmlEscape(item.label)}</span><span><a href="${htmlEscape(view, true)}">View</a> <a href="${htmlEscape(item.href, true)}" download>Download</a></span></li>`;
+          return `<li><span class="file-label">${htmlEscape(item.label)}</span><span class="file-actions"><a class="file-action" href="${htmlEscape(view, true)}">查看</a><a class="file-action" href="${htmlEscape(item.href, true)}" download>下载</a></span></li>`;
         })
         .join("")}</ul></section>`
     : "";
@@ -316,6 +318,10 @@ function pageHtml(title, body, attachments) {
     .attachments { border-top: 1px solid #edf1f6; margin-top: 18px; padding-top: 12px; }
     .attachments ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
     .attachments li { align-items: center; background: #f8fbff; border: 1px solid #d9e6f5; border-radius: 8px; display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; }
+    .file-label { overflow-wrap: anywhere; }
+    .file-actions { display: inline-flex; flex: 0 0 auto; gap: 8px; }
+    .file-action { border: 1px solid #9bbce3; border-radius: 6px; color: #00396f; display: inline-flex; font-size: 14px; font-weight: 700; line-height: 1; padding: 7px 12px; text-decoration: none; }
+    .file-action:hover { background: #eef6ff; }
   </style>
 </head>
 <body>
@@ -384,11 +390,33 @@ async function buildCourseSectionPage({ sectionNumber, title, role, targetDir })
 }
 
 function extractIntro(html) {
-  const match = html.match(
-    /<div\b[^>]*\bclass=["'][^"']*\bactivity-description\b[^"']*["'][^>]*\bid=["']intro["'][^>]*>([\s\S]*?)<\/div>\s*<\/div>\s*(?:<\/div>\s*)?<div\b[^>]*\brole=["']main["']/i,
-  );
-  if (match?.[1]) return match[1];
+  const start = /<div\b[^>]*\bclass=["'][^"']*\bactivity-description\b[^"']*["'][^>]*\bid=["']intro["'][^>]*>/i.exec(html);
+  if (start?.[0]) {
+    const block = extractBalancedDiv(html, start.index);
+    if (block) return block.replace(start[0], "").replace(/<\/div>\s*$/i, "");
+  }
   return /<div\b[^>]*\bclass=["'][^"']*\bactivity-description\b[^"']*["'][^>]*\bid=["']intro["'][^>]*>([\s\S]*?)<\/div>\s*<\/div>/i.exec(html)?.[1] || "";
+}
+
+function extractBalancedDiv(html, startIndex) {
+  let depth = 0;
+  const pattern = /<\/?div\b[^>]*>/gi;
+  pattern.lastIndex = startIndex;
+  for (const match of html.matchAll(pattern)) {
+    if (match.index < startIndex) continue;
+    if (match[0].startsWith("</")) {
+      depth -= 1;
+      if (depth === 0) return html.slice(startIndex, match.index + match[0].length);
+    } else {
+      depth += 1;
+    }
+  }
+  return "";
+}
+
+function isMediaAttachment(item) {
+  const type = String(item?.type || "").toLowerCase();
+  return ["mp4", "m4v", "mov", "webm", "mp3", "m4a", "wav", "ogg"].includes(type);
 }
 
 async function buildActivityPage({ id, mod = "assign", title, role, targetDir, teacherUse, teacherOnly = false, unit }) {
@@ -470,6 +498,45 @@ function dedupeList(list) {
   return result;
 }
 
+function parseUnitLesson(label) {
+  const match = /Unit\s*(\d+)\s*-\s*Lesson\s*(\d+)/i.exec(label || "");
+  return match ? { unit: Number(match[1]), lesson: Number(match[2]) } : null;
+}
+
+function homeworkItem(item, role) {
+  const parsed = parseUnitLesson(item?.label || item?.title || "");
+  const copy = {
+    ...item,
+    role,
+    parentSection: "Homework Submission Folder",
+    sourceGroup: "homework_submission_folder",
+    unit: item.unit || parsed?.unit,
+  };
+  if (role === "homework_answer_page") copy.teacherOnly = true;
+  delete copy.teacherUse;
+  return copy;
+}
+
+function sortHomeworkItems(items) {
+  return [...items].sort((a, b) => {
+    const pa = parseUnitLesson(a.label || a.title || "") || {};
+    const pb = parseUnitLesson(b.label || b.title || "") || {};
+    const unitDelta = (pa.unit || 99) - (pb.unit || 99);
+    if (unitDelta) return unitDelta;
+    const lessonDelta = (pa.lesson || 99) - (pb.lesson || 99);
+    if (lessonDelta) return lessonDelta;
+    return (a.role === "homework_answer_page" ? 1 : 0) - (b.role === "homework_answer_page" ? 1 : 0);
+  });
+}
+
+function isEmptySubmissionShell(item) {
+  if (!["culminating_submission", "final_exam_submission"].includes(item?.role)) return false;
+  if ((item.attachments || []).length > 0) return false;
+  const text = stripTags(existsSync(join(courseRoot, item.path || "")) ? readFileSync(join(courseRoot, item.path), "utf8") : item.textPreview || "");
+  const label = item.label || item.title || "";
+  return !text || text === label || text === `${label} ${label}`;
+}
+
 function activityTargetDir(mod, id, title) {
   return `localized-moodle-activities/${mod}/${mod}-${id}-${sanitizeSegment(title)}`;
 }
@@ -486,6 +553,10 @@ manifest.courseDownloads = manifest.courseDownloads.filter(
   (item) => !/^localized-moodle-activities\/assign\/(?:course-)?(8928|8929)-/i.test(String(item.path || "")),
 );
 manifest.courseDownloads = manifest.courseDownloads.filter((item) => item.path !== "plans/course/SPH3U_Course_Outline.docx");
+manifest.courseDownloads = manifest.courseDownloads.filter((item) => !isEmptySubmissionShell(item));
+manifest.courseDownloads = manifest.courseDownloads.filter(
+  (item) => !["lesson_dropbox", "lesson_answer_page", "homework_submission_page", "homework_answer_page"].includes(item.role),
+);
 
 for (const unit of manifest.units || []) {
   for (const lesson of unit.lessons || []) {
@@ -676,7 +747,6 @@ for (const unit of manifest.units || []) {
     });
     upsertByIdentity(unit.unitResources.evaluations, record);
     upsertByIdentity(manifest.evaluations, record);
-    upsertByIdentity(manifest.teacherResources, { ...record, teacherUse: "assessment_preparation" });
   }
   for (const [title, mod, id, role] of config.reflectionAndLogs) {
     const record = await buildActivityPage({
@@ -714,9 +784,40 @@ for (const unit of manifest.units || []) {
       targetDir: activityTargetDir(mod, id, title),
     });
     upsertByIdentity(unit.unitResources.answerPages, record);
-    upsertByIdentity(manifest.teacherResources, record);
   }
 }
+
+const homeworkItems = [];
+const missingHomeworkAnswerPartners = [];
+for (const unit of manifest.units || []) {
+  const resources = unit.unitResources || {};
+  const answersByLesson = new Map();
+  for (const answer of resources.answerPages || []) {
+    const parsed = parseUnitLesson(answer.label || answer.title || "");
+    if (parsed?.lesson) answersByLesson.set(parsed.lesson, answer);
+  }
+  for (const lesson of resources.lessonDropboxes || []) {
+    const parsed = parseUnitLesson(lesson.label || lesson.title || "");
+    homeworkItems.push(homeworkItem(lesson, "homework_submission_page"));
+    const answer = parsed?.lesson ? answersByLesson.get(parsed.lesson) : null;
+    if (answer) homeworkItems.push(homeworkItem(answer, "homework_answer_page"));
+    else missingHomeworkAnswerPartners.push({ unit: unit.unit, lesson: parsed?.lesson, label: lesson.label || lesson.title });
+  }
+  delete resources.lessonDropboxes;
+  delete resources.answerPages;
+}
+
+manifest.courseDownloads.push(...sortHomeworkItems(homeworkItems));
+manifest.teacherResources = manifest.teacherResources
+  .filter((item) => !["aol_assessment", "lesson_answer_page", "lesson_dropbox", "homework_submission_page", "homework_answer_page"].includes(item.role))
+  .map((item) => /^Answer Keys$/i.test(item.label || item.title || "") ? {
+    ...item,
+    role: "teacher_packet",
+    parentSection: "Teacher Packet",
+    sourceGroup: "teacher_packet",
+    teacherOnly: true,
+  } : item);
+manifest.courseSections = manifest.courseSections.filter((item) => !(item.role === "teacher_packet" && (item.attachments || []).length === 0));
 
 manifest.courseSections = dedupeList(manifest.courseSections);
 manifest.courseDownloads = dedupeList(manifest.courseDownloads);
@@ -748,6 +849,8 @@ manifest.sourceAudit.moodleActivityLocalization = {
   unitReflectionAndLogs: Object.values(unitActivities).reduce((sum, item) => sum + item.reflectionAndLogs.length, 0),
   lessonDropboxes: Object.values(unitActivities).reduce((sum, item) => sum + item.lessonDropboxes.length, 0),
   answerPages: Object.values(unitActivities).reduce((sum, item) => sum + item.answerPages.length, 0),
+  homeworkSubmissionItemsAddedToCourseDownloads: homeworkItems.length,
+  missingHomeworkAnswerPartners,
   excluded: "Exit Cards are formative student activities and are not included as teacher preparation resources.",
 };
 manifest.sourceAudit.moodleUnitTitleAlignment = {

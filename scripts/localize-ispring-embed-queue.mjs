@@ -7,6 +7,7 @@ const workspaceRoot = resolve(projectRoot, "..");
 const coursewareRoot = join(workspaceRoot, "courseware");
 const queuePath = readArg("--queue") ? resolve(projectRoot, readArg("--queue")) : join(projectRoot, "deployment", "moodle-ispring-embed-queue.json");
 const reportPath = readArg("--report") ? resolve(projectRoot, readArg("--report")) : join(projectRoot, "deployment", "ispring-localization-report.json");
+const REQUEST_TIMEOUT_MS = Math.max(15000, Number(process.env.ISPRING_REQUEST_TIMEOUT_MS || 45000));
 const ua =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
 
@@ -79,13 +80,19 @@ class CookieJar {
 async function request(url, options = {}, redirects = 0) {
   const headers = new Headers(options.headers || {});
   headers.set("user-agent", ua);
-  const response = await fetch(url, { ...options, headers, redirect: "manual" });
-  if ([301, 302, 303, 307, 308].includes(response.status) && response.headers.get("location") && redirects < 8) {
-    const next = new URL(response.headers.get("location"), url).toString();
-    const method = [301, 302, 303].includes(response.status) ? "GET" : options.method || "GET";
-    return request(next, { ...options, method, body: method === "GET" ? undefined : options.body }, redirects + 1);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, { ...options, headers, redirect: "manual", signal: controller.signal });
+    if ([301, 302, 303, 307, 308].includes(response.status) && response.headers.get("location") && redirects < 8) {
+      const next = new URL(response.headers.get("location"), url).toString();
+      const method = [301, 302, 303].includes(response.status) ? "GET" : options.method || "GET";
+      return request(next, { ...options, method, body: method === "GET" ? undefined : options.body }, redirects + 1);
+    }
+    return response;
+  } finally {
+    clearTimeout(timer);
   }
-  return response;
 }
 
 function extractContentId(url) {

@@ -23,7 +23,7 @@ for (const file of readdirSync(join(projectRoot, "inbox")).filter((name) => /^mo
       expected += ids.length;
       const manifestSection = (manifestLesson?.bookSections || []).find((section) => section.sectionLabel === label);
       const html = manifestSection ? readFileSync(join(courseRoot, manifestSection.path), "utf8") : "";
-      const count = (html.match(/class="embedded-h5p"/g) || []).length;
+      const count = (html.match(/class="embedded-h5p(?:-frame)?"/g) || []).length;
       actual += count;
       if (count !== ids.length) {
         problems.push({ lessonId, section: label, expected: ids.length, actual: count, ids, path: manifestSection?.path || "" });

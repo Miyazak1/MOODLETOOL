@@ -656,6 +656,7 @@ async function main() {
   ensureDir(COURSE_ROOT);
   await login();
 
+  const courseIntroduction = await buildCourseSection(0, "Course Introduction", "course-sections/course-starter-resources", "introduction");
   const courseOverview = await buildCourseSection(1, "Course Overview", "course-sections/course-overview", "course_overview");
   const culminatingSection = await buildCourseSection(6, "Unit 5: Culminating", "course-sections/unit-5-culminating", "culminating");
   const teacherPacket = await buildCourseSection(7, "Teacher Packet", "course-sections/teacher-packet", "teacher_packet");
@@ -725,7 +726,7 @@ async function main() {
     ...localizedActivities.filter((item) => /\bAnswer\b/i.test(item.label || "")),
     ...localizedActivities.filter((item) => /\b(AOL|Quiz|Test|Lab|Assignment|Exam|Culminating)\b/i.test(item.label || "")),
   ].filter(hasMeaningfulResource).map((item) => ({ ...item, teacherOnly: item.teacherOnly || /\bAnswer\b/i.test(item.label || "") })));
-  const courseSections = [courseOverview, culminatingSection, teacherPacket].filter(hasMeaningfulResource);
+  const courseSections = [courseIntroduction, courseOverview, culminatingSection, teacherPacket].filter(hasMeaningfulResource);
 
   const manifest = {
     schemaVersion: 1,
@@ -741,6 +742,13 @@ async function main() {
       moodleCourseId: COURSE_ID,
       moodleCoursePage: `${BASE_URL}/course/view.php?id=${COURSE_ID}`,
       courseStructure: "new-moodle-v2",
+      section0: {
+        role: "Course Introduction",
+        source: `${BASE_URL}/course/view.php?id=${COURSE_ID}`,
+        localized: Boolean(courseIntroduction),
+        attachments: courseIntroduction?.attachments?.length || 0,
+        textPreview: courseIntroduction?.textPreview || "",
+      },
       unitCount: units.length,
       lessonCount: units.reduce((sum, unit) => sum + unit.lessons.length, 0),
       bookReports,

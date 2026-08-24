@@ -276,7 +276,21 @@ function extractSection0(html) {
   const rest = html.slice(marker + 1);
   const next = rest.search(/\bid=["']section-1["']/i);
   const end = next >= 0 ? marker + 1 + next : html.indexOf("</main>", marker);
-  return html.slice(start, end > start ? end : undefined);
+  return trimSection0Introduction(html.slice(start, end > start ? end : undefined));
+}
+
+function trimSection0Introduction(sectionHtml) {
+  const summaryMatch = String(sectionHtml || "").match(/<div class=["']summary["'][^>]*>([\s\S]*?)<\/div>\s*<ul\b/i);
+  let body = summaryMatch ? summaryMatch[1] : sectionHtml;
+  body = body
+    .replace(/<span class=["']hidden sectionname["'][\s\S]*?<\/span>/gi, "")
+    .replace(/<div class=["'](?:left|right) side["'][\s\S]*?<\/div>/gi, "")
+    .replace(/<ul class=["']section[\s\S]*$/i, "")
+    .replace(/<li\b[^>]*\bdata-section=["'][^"']+["'][\s\S]*$/i, "")
+    .replace(/<p[^>]*>\s*(?:<strong><\/strong>)?\s*(?:<span[^>]*><\/span>)?\s*<\/p>/gi, "")
+    .replace(/<br\s*\/?>\s*<br\s*\/?>/gi, "<br>")
+    .trim();
+  return body;
 }
 
 function upsertBySource(items, resource) {

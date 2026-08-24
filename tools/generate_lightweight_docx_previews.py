@@ -74,6 +74,9 @@ def iter_resource_items(manifest: dict[str, Any]):
 
     for item in manifest.get("courseSections", []):
         yield from yield_with_attachments(item)
+        unit_plan = item.get("unitPlan")
+        if isinstance(unit_plan, dict):
+            yield from yield_with_attachments(unit_plan)
 
     for item in manifest.get("evaluations", []):
         yield from yield_with_attachments(item)
@@ -107,6 +110,9 @@ def iter_resource_items(manifest: dict[str, Any]):
                 yield from yield_with_attachments(item)
 
             for item in lesson.get("textExports", []):
+                yield from yield_with_attachments(item)
+
+            for item in lesson.get("bookSections", []):
                 yield from yield_with_attachments(item)
 
 
@@ -1182,7 +1188,7 @@ def main() -> int:
                 preview_path = course_root / preview_rel
                 try:
                     blocks = extract_docx_blocks(source_path)
-                except zipfile.BadZipFile:
+                except (zipfile.BadZipFile, KeyError):
                     skipped.append({"path": source_rel, "reason": "encrypted-or-unsupported-docx"})
                     title = item.get("label") or Path(source_rel).stem
                     notice = "This Word file could not be opened as a standard DOCX package in the local preview generator. Use the download button to open the original file in Word or a compatible viewer."

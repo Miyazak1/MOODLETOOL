@@ -203,6 +203,8 @@ function isExternalInteractiveIframeSrc(src) {
     /(^|\/\/)(?:www\.)?quizlet\.com\/[^"'\s<>]*\/(?:flashcards|test|learn|match|spell)\/embed\b/.test(value) ||
     /(^|\/\/)(?:www\.)?wordwall\.net\/embed\//.test(value) ||
     /(^|\/\/)(?:view\.)?genially\.com\//.test(value) ||
+    /(^|\/\/)(?:stage\.|www\.)?geogebra\.org\/material\/iframe\//.test(value) ||
+    /(^|\/\/)webspace\.ship\.edu\/msrenault\/geogebracalculus\//.test(value) ||
     /(^|\/\/)(?:www\.)?youtube(?:-nocookie)?\.com\/embed\//.test(value) ||
     /(^|\/\/)player\.vimeo\.com\/video\//.test(value)
   );
@@ -212,6 +214,9 @@ function externalInteractiveFrameBlockedReason(src) {
   const value = String(src || "").toLowerCase();
   if (/(^|\/\/)(?:www\.)?quizlet\.com\//.test(value)) {
     return "quizlet-rejects-portal-frame";
+  }
+  if (/(^|\/\/)webspace\.ship\.edu\/msrenault\/geogebracalculus\//.test(value)) {
+    return "external-math-activity-opens-in-new-tab";
   }
   return "";
 }

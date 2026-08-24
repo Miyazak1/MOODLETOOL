@@ -167,7 +167,10 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 const files = new Set(['course-manifest.json']);
 const dirs = new Set();
 
-for (const section of manifest.courseSections ?? []) collectResource(files, dirs, section);
+for (const section of manifest.courseSections ?? []) {
+  collectResource(files, dirs, section);
+  collectResource(files, dirs, section.unitPlan);
+}
 for (const resource of manifest.courseDownloads ?? []) collectResource(files, dirs, resource);
 for (const resource of manifest.teacherResources ?? []) collectResource(files, dirs, resource);
 for (const text of manifest.texts ?? []) {

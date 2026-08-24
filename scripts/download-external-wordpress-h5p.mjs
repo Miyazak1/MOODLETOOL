@@ -13,6 +13,7 @@ const courseRoot = join(workspaceRoot, "courseware", course);
 const manifestPath = join(courseRoot, "course-manifest.json");
 const outDir = join(courseRoot, "localized-moodle", "h5p-external");
 const reportPath = join(projectRoot, "deployment", `${course}-external-h5p-download-report.json`);
+const fetchTimeoutMs = Number(readArg("--timeout-ms") || process.env.H5P_FETCH_TIMEOUT_MS || 20000);
 
 function readArg(name) {
   const index = process.argv.indexOf(name);
@@ -69,10 +70,19 @@ function titleFromEmbed(html, id) {
 }
 
 async function fetchBytes(url) {
-  const response = await fetch(url, { headers: { "user-agent": "Mozilla/5.0" } });
-  const buffer = Buffer.from(await response.arrayBuffer());
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return { buffer, contentType: response.headers.get("content-type") || "", finalUrl: response.url || url };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), fetchTimeoutMs);
+  try {
+    const response = await fetch(url, { headers: { "user-agent": "Mozilla/5.0" }, signal: controller.signal });
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return { buffer, contentType: response.headers.get("content-type") || "", finalUrl: response.url || url };
+  } catch (error) {
+    if (error?.name === "AbortError") throw new Error(`fetch timed out after ${fetchTimeoutMs}ms`);
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function validateH5p(buffer) {

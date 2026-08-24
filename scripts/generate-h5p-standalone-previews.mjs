@@ -53,7 +53,10 @@ function collectH5pItems(value, out = [], seen = new Set()) {
     seen.add(path);
     out.push(value);
   }
-  for (const nested of Object.values(value)) collectH5pItems(nested, out, seen);
+  for (const [key, nested] of Object.entries(value)) {
+    if (key === "sourceAudit") continue;
+    collectH5pItems(nested, out, seen);
+  }
   return out;
 }
 

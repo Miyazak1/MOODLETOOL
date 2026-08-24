@@ -1,10 +1,10 @@
 # Moodle Course Import and Display Rules
 
-Updated: 2026-08-19
+Updated: 2026-08-21
 
 This document is the canonical rule set for importing Moodle courses into the
 OSSD Course Portal. It captures the lessons learned from BAF3M, BAT4M, ENG2D,
-ENG3U, ENG4U, MCR3U, MDM4U, OLC4O, SES4U, SBI3U, SBI4U, and similar
+ENG3U, ENG4U, ICS3U, MCR3U, MDM4U, OLC4O, SES4U, SBI3U, SBI4U, and similar
 St.Mary/New Moodle courses.
 
 The goal is to avoid course-specific frontend exceptions. Fixes should be made
@@ -743,15 +743,45 @@ For St.Mary/New Moodle WordPress H5P embeds:
    resources (`courseSections` and `courseDownloads`). Course-level pages such
    as `Writing Formal Lab Reports` can contain H5P even when no lesson book page
    points at that id.
-3. When an H5P id appears more than once, reuse an already downloaded local H5P
-   package for later occurrences. Do not let a transient fetch failure on a
+3. When an H5P id appears more than once inside the same course and points to
+   the same Moodle source iframe, reuse that course's already downloaded local
+   H5P package for later occurrences. Do not let a transient fetch failure on a
    repeated id leave later pages unpatched.
-4. After localization, the HTML page must contain a local iframe such as
+4. Never satisfy a missing H5P, video, iSpring package, document, or activity by
+   copying a similar asset from another course. Cross-course reuse is not a
+   repair strategy. If an export filename, H5P internal title, or legacy slug
+   mentions another course, compare the exact source Moodle page for the course
+   being repaired, record the source URL/id and reason in `sourceAudit`, and
+   report any mismatch instead of silently normalizing it.
+5. After localization, the HTML page must contain a local iframe such as
    `localized-moodle/h5p-external/<id>-<slug>/index.html?embed=1`, not
    `welcome.hexstruct.com`, `h5p_embed`, or a pending placeholder.
-5. Attach course-level H5P records to the owning course resource's
+6. Attach course-level H5P records to the owning course resource's
    `attachments`; attach lesson-level H5P records to the owning lesson resource
    collection.
+
+Not every H5P-looking iframe has the same remediation path. Classify it before
+repairing:
+
+1. `localizable_h5p`: the embed exposes a real `.h5p` package or enough H5P
+   runtime data to create a local standalone preview. These must be downloaded,
+   stored under `localized-moodle/h5p` or `localized-moodle/h5p-external`,
+   embedded back into the owning HTML page with a local iframe, and represented
+   in the manifest under the owning role (`handsOn`, `consolidation`,
+   `lesson`, or course-resource attachment).
+2. `external_interactive` / `fallback_h5p`: the source page shows an H5P-style
+   quiz or interactive frame, but authenticated fetches cannot obtain the
+   package or a complete offline runtime. Do not fake a local package and do
+   not drop the activity. Keep it in the owning HTML context as an external
+   interactive fallback, omit download controls, and record the failed
+   localization reason plus source URL in `sourceAudit`.
+3. A current MDM4U-style unlocalizable quiz is an exception example, not proof
+   that other H5P embeds may remain external. If another course's H5P package
+   can be fetched, it must be localized even when MDM4U contains a verified
+   external fallback.
+4. Validation should distinguish these classes: stale external URLs are errors
+   for `localizable_h5p`, but expected for audited `external_interactive` /
+   `fallback_h5p` records.
 
 ### 4.5 External Interactive Embed Markup
 
@@ -1118,6 +1148,70 @@ Rules:
    downloads, and KWL/Reflection Summary entries under their owning Units. Use
    this as the first comparison point for legacy esunnybrook courses, then
    document source-proven exceptions.
+
+### 7.1 Teacher Prep Guide Generation and Display
+
+ICS3U establishes the current standard for generated teacher-preparation
+guides. The guide is derived from existing localized course text, Moodle
+activity pages, iSpring/H5P/video records, plans, teacher resources, and
+attachments. It is a teaching aid for portal users, not a replacement for the
+official Course Outline, Course Introduction, Unit Plan, or Lesson Plan files.
+
+Manifest rules:
+
+1. Store generated preparation content in `manifest.teacherPrep`; do not mix it
+   into `courseSections`, `courseDownloads`, `teacherResources`, or lesson flow
+   arrays.
+2. `teacherPrep.units[]` should preserve unit order and include unit focus,
+   pacing, assessment plan, differentiation, and teacher moves when these can be
+   inferred from available materials.
+3. `teacherPrep.units[].lessons[]` should preserve lesson order and include
+   learning goals, success criteria, before/in/after class notes, assessment
+   notes, evidence from course materials, suggested teacher notes, and grouped
+   resources.
+4. `resourceGroups.playables` contains only locally playable iSpring, H5P,
+   video, or verified interactive resources. Ordinary DOCX/PDF/PPTX/XLSX/TXT
+   files belong in `studentFiles`, `teacherFiles`, or attached under their
+   owning HTML/activity card.
+5. `resourceGroups.studentFiles` and `resourceGroups.teacherFiles` are pointers
+   to existing manifest resources. Do not create new resource identities that
+   bypass the owning Moodle page or lose attachments.
+6. Generated text must be evidence-based. If a lesson has little source text,
+   write conservative preparation notes and cite the available iSpring, H5P,
+   video, plan, or attachment evidence rather than inventing a full lesson.
+
+Display rules:
+
+1. Teacher Prep uses shared portal resource components. Do not create a separate
+   card system for it.
+2. iSpring resources inside Teacher Prep must use the same `ISpringActions`
+   behavior as lesson iSpring cards, including the direct `Play courseware`
+   action, package download when available, Moodle shortcode, and share controls
+   when allowed.
+3. H5P and video resources inside Teacher Prep must remain playable/shareable
+   according to the same rules as lesson resources. A resource that plays in a
+   lesson must not lose its play action merely because it is also listed in
+   Teacher Prep.
+4. Teacher Prep must not promote ordinary documents to standalone media cards.
+   Documents remain view/download resources or attachments; only iSpring, H5P,
+   video, and verified interactives receive standalone playable treatment.
+5. Frontend fixes for Teacher Prep must be reusable display logic, not
+   `course === "ICS3U"` exceptions. The same manifest shape should work for the
+   next course that gains `teacherPrep`.
+
+Validation:
+
+1. Open the first Teacher Prep lesson and one later-unit lesson. Confirm
+   `Playable Resources` shows direct play actions for iSpring/H5P/video.
+2. Compare at least one Teacher Prep playable resource against the same resource
+   in the normal lesson panel. The available actions should match.
+3. Confirm student and teacher files are still attached or grouped as ordinary
+   files, not promoted to standalone playable cards.
+4. Before packaging, verify `manifest.teacherPrep` exists and its lesson count
+   matches the intended course coverage.
+5. After packaging, inspect the ZIP root and embedded manifest. The package must
+   contain root-level `course-manifest.json`, retain `teacherPrep`, and include
+   every referenced local iSpring/H5P/video path.
 
 ## 8. OSS, CDN, and Hybrid Storage Rules
 
@@ -1705,6 +1799,65 @@ Fix:
    keyword matching.
 3. Keep the resource under Course Resources/Introduction with its body and
    attachments.
+
+### 12.10 Local Course Looks Correct but Production Display Is Missing Cards
+
+Symptoms:
+
+1. Local preview shows the expected course-resource cards.
+2. Production shows only part of the group, such as Homework Submission Folder
+   answer pages without the matching lesson submission pages.
+3. The uploaded course package or local manifest appears correct.
+
+Root cause:
+
+Production may be serving a stale frontend bundle, a different active
+courseware root, or a manifest transformed by the upload/import pipeline. Do not
+assume the ZIP is wrong until production data and production `dist` are checked.
+
+Diagnosis:
+
+1. Find the production course root rather than assuming it is inside the portal
+   project directory:
+
+   ```bash
+   find /www/wwwroot -path '*/<COURSE>/course-manifest.json' 2>/dev/null
+   ```
+
+2. Inspect production manifest arrays directly. For Homework Submission Folder,
+   verify both `unitResources.lessonDropboxes` and `unitResources.answerPages`:
+
+   ```bash
+   export MANIFEST="/www/wwwroot/ossd-portal/courseware-active/<COURSE>/course-manifest.json"
+   node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.env.MANIFEST,'utf8'));for(const u of m.units||[]){console.log('U'+u.unit,'dropboxes='+(u.unitResources?.lessonDropboxes||[]).length,'answers='+(u.unitResources?.answerPages||[]).length);}"
+   ```
+
+3. Verify the localized activity files exist:
+
+   ```bash
+   export ROOT="/www/wwwroot/ossd-portal/courseware-active/<COURSE>"
+   find "$ROOT/localized-moodle-activities/assign" -name index.html 2>/dev/null | wc -l
+   find "$ROOT/localized-moodle-activities/page" -name index.html 2>/dev/null | wc -l
+   ```
+
+4. Verify production frontend code contains the expected shared display logic:
+
+   ```bash
+   cd /www/wwwroot/ossd-course-portal
+   git rev-parse --short HEAD
+   grep -n "lessonDropboxes" src/main.tsx
+   grep -R "lessonDropboxes" -n dist/assets/*.js | head
+   ```
+
+Fix:
+
+1. If production manifest and files are correct but `dist/assets/*.js` lacks the
+   relevant display logic, update code, run `npm run build`, and restart PM2.
+2. If production manifest is missing data, re-upload or re-import the course
+   package and inspect the import report before changing frontend code.
+3. If production files are missing but manifest references them, repair the
+   upload/import/extraction path and repackage only after confirming the local
+   package root shape is correct.
 
 ## 13. Change Policy
 

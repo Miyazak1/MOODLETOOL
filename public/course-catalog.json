@@ -12,6 +12,15 @@
       "notes": "iSpring courseware included."
     },
     {
+      "code": "ENG1D",
+      "title": "ENG1D · English, Grade 9, Academic",
+      "level": "Grade 9",
+      "status": "ready",
+      "manifestUrl": "/courseware/ENG1D/course-manifest.json",
+      "baseUrl": "/courseware/ENG1D/",
+      "notes": "St. Mary Moodle new-site course id 74 localized: section 0 preserved, 4 units, 29 Moodle book lessons, 29 local iSpring packages embedded in lesson pages and exposed as playable resources, 59 H5P references across 52 distinct local H5P packages, 34 local videos, and ordinary documents/PDFs attached under owning pages."
+    },
+    {
       "code": "ESLDO",
       "title": "ESLDO · ESL Level 4",
       "level": "ESL",
@@ -36,7 +45,7 @@
       "status": "ready",
       "manifestUrl": "/courseware/CHC2D/course-manifest.json",
       "baseUrl": "/courseware/CHC2D/",
-      "notes": "Legacy Moodle activity package localized: 6 units, 104 activity groups; no textbook exposed in Moodle."
+      "notes": "Legacy Moodle activity package localized; user-provided legal core textbook Think History: Canadian History Since 1914 is now included in the course text area."
     },
     {
       "code": "CHV2O",
@@ -45,7 +54,7 @@
       "status": "ready",
       "manifestUrl": "/courseware/CHV2O/course-manifest.json",
       "baseUrl": "/courseware/CHV2O/",
-      "notes": "Legacy Moodle activity package localized: 4 units, 29 activity groups, 75 local resource records; Moodle MP4 attachments included."
+      "notes": "St. Mary Moodle new-site course id 81 localized: 4 units, 17 lessons, 71 Moodle activities, 16 local iSpring lessons, 33 local H5P previews; no missing local file references."
     },
     {
       "code": "GLC2O",
@@ -90,7 +99,7 @@
       "status": "ready",
       "manifestUrl": "/courseware/SNC2D/course-manifest.json",
       "baseUrl": "/courseware/SNC2D/",
-      "notes": "Localized Moodle course with 33 core lessons, 31 local iSpring packages, local videos, H5P previews, course resources, homework submission folder items, final/culminating evaluations, previews, and source audit; non-core exit cards are omitted from the main display."
+      "notes": "Moodle book lessons, localized iSpring, H5P, videos, documents/PDFs, previews, course outline, official curriculum, source audit, and user-provided legal ON Science 10 core textbook are packaged."
     },
     {
       "code": "HFC3M",
@@ -342,7 +351,7 @@
       "status": "ready",
       "manifestUrl": "/courseware/BAF3M/course-manifest.json",
       "baseUrl": "/courseware/BAF3M/",
-      "notes": "Legacy Moodle activity package localized: 7 units, 59 activity groups, 107 local resource records; recorded MP4 endpoints returned 403."
+      "notes": "Legacy Moodle activity package localized; user-provided legal core textbook Principles of Accounting, 4th Edition is now included in the course text area."
     },
     {
       "code": "BAT4M",
@@ -450,7 +459,7 @@
       "status": "ready",
       "manifestUrl": "/courseware/ICS2O/course-manifest.json",
       "baseUrl": "/courseware/ICS2O/",
-      "notes": "Legacy Moodle activity package localized: 3 units, 31 numbered lessons; 5 current Moodle lesson plans."
+      "notes": "Legacy esunnybrook activity course normalized from Moodle sections: 3 units, 31 lesson/activity groups, 20 unit assessment item(s). Official Ontario Computer Studies curriculum guidance is included; the course outline identifies no official textbook."
     },
     {
       "code": "ICS4U",
@@ -495,7 +504,7 @@
       "status": "ready",
       "manifestUrl": "/courseware/OLC4O/course-manifest.json",
       "baseUrl": "/courseware/OLC4O/",
-      "notes": "St. Mary Moodle V2.0 course localized from course id 69: course overview, 3 units, 19 Moodle book lessons, local H5P, Moodle course/culminating/teacher/unit activities, DOCX/PDF resources, previews, and answer keys; Moodle iSpring references are withheld unless local packages become available."
+      "notes": "St. Mary Moodle V2.0 course localized from course id 69: course overview, 3 units, 19 Moodle book lessons, local H5P, Moodle course/culminating/teacher/unit activities, DOCX/PDF resources, generated teacher plans with previews, official Ontario OSSLC curriculum guidance, source audit, and answer keys; no separate commercial textbook package was identified."
     },
     {
       "code": "PPL1O",

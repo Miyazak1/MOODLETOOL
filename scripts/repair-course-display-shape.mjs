@@ -154,7 +154,10 @@ function refreshCounts(manifest) {
 }
 
 function injectSharedMediaCss(html) {
-  if (/embedded-h5p-frame|embedded-video/.test(html)) return html;
+  const needsVideoCss = /embedded-video|mediaplugin_videojs|<video\b/i.test(html) && !/\.embedded-video\s+video\b/i.test(html);
+  const needsH5pCss = /embedded-h5p|embedded-h5p-frame/i.test(html) && !/\.embedded-h5p-frame\b/i.test(html);
+  const needsISpringCss = /localized-ispring/i.test(html) && !/\.localized-ispring\b/i.test(html);
+  if (!needsVideoCss && !needsH5pCss && !needsISpringCss) return html;
   const css = `
     .localized-ispring,
     .embedded-h5p-frame,
@@ -195,6 +198,17 @@ function normalizeVideos(html, stats) {
       .replace(/\sclass=(["'])[^"']*\bvideo-js\b[^"']*\1/gi, "")
       .replace(/\s{2,}/g, " ");
     return `<div class="embedded-video">${cleanedVideo}</div>`;
+  });
+
+  out = out.replace(/\s*\.content \.mediaplugin_videojs,\s*\.content \.mediaplugin_videojs > div \{[^}]*\}\s*/gi, "\n");
+  out = out.replace(/<video\b[\s\S]*?<\/video>/gi, (video) => {
+    const cleanedVideo = video
+      .replace(/<a\b[^>]*class=["'][^"']*\b_blanktarget\b[^"']*["'][^>]*>\s*<\/a>/gi, "")
+      .replace(/\sdata-setup-lazy=(["'])[\s\S]*?\1/gi, "")
+      .replace(/\sclass=(["'])[^"']*\bvideo-js\b[^"']*\1/gi, "")
+      .replace(/\s{2,}/g, " ");
+    if (cleanedVideo !== video) changed += 1;
+    return cleanedVideo;
   });
 
   out = out.replace(/\s*<section class="files"><h2>Files<\/h2>([\s\S]*?)<\/section>/gi, (match, body) => {

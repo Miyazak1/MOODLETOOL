@@ -2,17 +2,22 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
-loadEnvFile(resolve(projectRoot, ".env"));
+loadEnv(resolve(projectRoot, ".env"));
 
-const queries = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
-if (!queries.length) {
-  console.error("Usage: node scripts/search-stmary-courses.mjs QUERY [QUERY...]");
+const search = process.argv.slice(2).join(" ").trim();
+if (!search) {
+  console.error("Usage: node scripts/search-stmary-courses.mjs SEARCH_TEXT");
   process.exit(1);
 }
 
-function loadEnvFile(envPath) {
-  if (!existsSync(envPath)) return;
-  for (const rawLine of readFileSync(envPath, "utf8").split(/\r?\n/)) {
+const baseUrl = String(process.env.STMARY_MOODLE_BASE_URL || "http://34.30.231.58")
+  .trim()
+  .replace(/\/+$/, "")
+  .replace(/\/login\/index\.php$/i, "");
+
+function loadEnv(path) {
+  if (!existsSync(path)) return;
+  for (const rawLine of readFileSync(path, "utf8").split(/\r?\n/)) {
     const line = rawLine.trim();
     if (!line || line.startsWith("#")) continue;
     const index = line.indexOf("=");
@@ -25,48 +30,46 @@ function loadEnvFile(envPath) {
   }
 }
 
-function baseUrl() {
-  return String(process.env.STMARY_MOODLE_BASE_URL || "http://34.30.231.58")
-    .trim()
-    .replace(/\/+$/, "")
-    .replace(/\/login\/index\.php$/i, "");
-}
-
-function stripTags(value) {
+function decodeEntities(value) {
   return String(value || "")
-    .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/gi, " ")
     .replace(/&amp;/gi, "&")
     .replace(/&quot;/gi, '"')
     .replace(/&#0?39;|&apos;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function stripTags(value) {
+  return decodeEntities(
+    String(value || "")
+      .replace(/<script\b[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style\b[\s\S]*?<\/style>/gi, " ")
+      .replace(/<[^>]+>/g, " "),
+  );
 }
 
 class CookieJar {
   constructor() {
     this.cookies = new Map();
   }
-
   store(headers) {
     const values = typeof headers.getSetCookie === "function" ? headers.getSetCookie() : [headers.get("set-cookie")].filter(Boolean);
     for (const value of values) {
-      for (const cookieText of String(value).split(/,(?=\s*[^;,]+=)/g)) {
-        const [pair] = cookieText.split(";");
+      for (const text of String(value).split(/,(?=\s*[^;,]+=)/g)) {
+        const pair = text.split(";")[0];
         const index = pair.indexOf("=");
         if (index > 0) this.cookies.set(pair.slice(0, index).trim(), pair.slice(index + 1).trim());
       }
     }
   }
-
   header() {
-    return [...this.cookies.entries()].map(([key, value]) => `${key}=${value}`).join("; ");
+    return [...this.cookies].map(([key, value]) => `${key}=${value}`).join("; ");
   }
 }
 
-const BASE_URL = baseUrl();
 const jar = new CookieJar();
 
 async function request(url, options = {}, redirects = 0) {
@@ -83,7 +86,7 @@ async function request(url, options = {}, redirects = 0) {
 }
 
 async function login() {
-  const loginUrl = `${BASE_URL}/login/index.php`;
+  const loginUrl = `${baseUrl}/login/index.php`;
   const loginPage = await request(loginUrl);
   const loginHtml = await loginPage.text();
   const token = /name=["']logintoken["'][^>]*value=["']([^"']+)/i.exec(loginHtml)?.[1] || "";
@@ -96,23 +99,20 @@ async function login() {
     body: new URLSearchParams({ username, password, anchor: "", logintoken: token }),
   });
   const html = await response.text();
-  if (/name=["']password["']|logintoken/i.test(html) && !/Dashboard|My courses/i.test(html)) throw new Error("St. Mary Moodle login failed.");
+  if (/name=["']password["']|logintoken/i.test(html) && !/Dashboard|My courses/i.test(html)) throw new Error("St.Mary Moodle login failed.");
 }
 
 await login();
+const response = await request(`${baseUrl}/course/search.php?search=${encodeURIComponent(search)}`);
+const html = await response.text();
+if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-const output = [];
-for (const query of queries) {
-  const searchUrl = `${BASE_URL}/course/search.php?search=${encodeURIComponent(query)}`;
-  const response = await request(searchUrl);
-  const html = await response.text();
-  const hits = [];
-  for (const match of html.matchAll(/<a\b[^>]*href=["']([^"']*course\/view\.php\?id=\d+[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
-    const href = new URL(match[1].replaceAll("&amp;", "&"), searchUrl).toString();
-    const text = stripTags(match[2]);
-    if (text) hits.push({ text, href });
-  }
-  output.push({ query, status: response.status, hits: [...new Map(hits.map((hit) => [hit.href, hit])).values()] });
+const rows = [];
+for (const match of html.matchAll(/<a\b[^>]*href=["']([^"']*course\/view\.php\?id=\d+[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
+  const href = new URL(match[1].replaceAll("&amp;", "&"), baseUrl).toString();
+  const text = stripTags(match[2]);
+  if (!text && !href) continue;
+  rows.push({ text, href });
 }
 
-console.log(JSON.stringify(output, null, 2));
+console.log(JSON.stringify([...new Map(rows.map((row) => [row.href, row])).values()], null, 2));

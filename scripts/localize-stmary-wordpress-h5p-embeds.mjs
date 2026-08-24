@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, posix, relative, resolve } from "node:path";
+import unzipper from "unzipper";
 
 const projectRoot = resolve(import.meta.dirname, "..");
 const workspaceRoot = resolve(projectRoot, "..");
@@ -71,7 +72,10 @@ function sectionLabel(page, indexInLesson) {
 
 function h5pIds(html) {
   const normalized = String(html || "").replaceAll("&amp;", "&");
-  return [...normalized.matchAll(/welcome\.hexstruct\.com\/wp-admin\/admin-ajax\.php\?action=h5p_embed&id=(\d+)/gi)].map((match) => match[1]);
+  return [
+    ...normalized.matchAll(/welcome\.hexstruct\.com\/wp-admin\/admin-ajax\.php\?action=h5p_embed&id=(\d+)/gi),
+    ...normalized.matchAll(/data-h5p-id=["'](\d+)["']/gi),
+  ].map((match) => match[1]);
 }
 
 function titleFromEmbed(html, id) {
@@ -80,6 +84,27 @@ function titleFromEmbed(html, id) {
     html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() ||
     `H5P ${id}`
   );
+}
+
+function stableH5pSource(id) {
+  return `https://welcome.hexstruct.com/h5p-embed/${id}`;
+}
+
+function cleanTitle(value) {
+  const title = String(value || "").replace(/\s+/g, " ").trim();
+  return title && !/^title$/i.test(title) ? title : "";
+}
+
+async function titleFromH5pPackage(buffer, fallback) {
+  try {
+    const directory = await unzipper.Open.buffer(buffer);
+    const entry = directory.files.find((file) => file.path === "h5p.json");
+    if (!entry) return fallback;
+    const metadata = JSON.parse((await entry.buffer()).toString("utf8"));
+    return cleanTitle(metadata.title) || fallback;
+  } catch {
+    return fallback;
+  }
 }
 
 async function fetchBytes(url) {
@@ -93,7 +118,7 @@ function validateH5p(buffer) {
   if (buffer[0] !== 0x50 || buffer[1] !== 0x4b) throw new Error("downloaded H5P is not a ZIP package");
 }
 
-function collectRows() {
+function collectRows(manifest) {
   const rows = [];
   for (let unit = 1; unit <= 20; unit += 1) {
     const rawPath = join(rawDir, `unit-${String(unit).padStart(2, "0")}-book.json`);
@@ -155,7 +180,83 @@ function collectRows() {
       }
     }
   }
-  return rows;
+  const courseLevelResources = [
+    ...(manifest.courseSections || []),
+    ...(manifest.courseDownloads || []),
+  ];
+  const seenCoursePaths = new Set();
+  for (const resource of courseLevelResources) {
+    if (!resource?.path || resource.type !== "html" || seenCoursePaths.has(resource.path)) continue;
+    seenCoursePaths.add(resource.path);
+    const htmlPath = join(courseRoot, resource.path);
+    if (!existsSync(htmlPath)) continue;
+    const html = readFileSync(htmlPath, "utf8");
+    for (const id of h5pIds(html)) {
+      rows.push({
+        course,
+        courseLevel: true,
+        label: resource.label || resource.title || `Course H5P ${id}`,
+        resourcePath: resource.path,
+        id,
+        embedUrl: `https://welcome.hexstruct.com/wp-admin/admin-ajax.php?action=h5p_embed&id=${id}`,
+      });
+    }
+  }
+  for (const unitRow of manifest.units || []) {
+    const unit = Number(unitRow.unit || 0);
+    if (!unit) continue;
+    for (const lessonRow of unitRow.lessons || []) {
+      const lesson = Number(lessonRow.lesson || extractLessonNo(lessonRow.title || lessonRow.label || lessonRow.id));
+      const lessonDir = join(courseRoot, lessonRow.sourceDir || lessonRow.path || "");
+      const resourceIndexPath = join(lessonDir, "resource_index.json");
+      if (existsSync(resourceIndexPath)) {
+        try {
+          const resourceRows = readJson(resourceIndexPath);
+          for (const resourceRow of resourceRows || []) {
+            const section = String(resourceRow.section || "").toLowerCase();
+            if (section !== "handson" && section !== "hands_on" && section !== "hands on") continue;
+            for (const id of h5pIds(resourceRow.src || resourceRow.href || "")) {
+              rows.push({
+                course,
+                unit,
+                lesson,
+                lessonId: lessonRow.id || `U${String(unit).padStart(2, "0")}L${String(lesson).padStart(2, "0")}`,
+                section: "Hands On",
+                id,
+                embedUrl: `https://welcome.hexstruct.com/wp-admin/admin-ajax.php?action=h5p_embed&id=${id}`,
+              });
+            }
+          }
+        } catch {
+          // Keep processing other lesson sources; malformed indexes are reported by separate audits.
+        }
+      }
+      for (const sectionRow of lessonRow.bookSections || []) {
+        if (!sectionRow?.path || sectionRow.type !== "html") continue;
+        const htmlPath = join(courseRoot, sectionRow.path);
+        if (!existsSync(htmlPath)) continue;
+        const html = readFileSync(htmlPath, "utf8");
+        for (const id of h5pIds(html)) {
+          rows.push({
+            course,
+            unit,
+            lesson,
+            lessonId: lessonRow.id || `U${String(unit).padStart(2, "0")}L${String(lesson).padStart(2, "0")}`,
+            section: sectionRow.sectionLabel || sectionRow.label || "",
+            id,
+            embedUrl: `https://welcome.hexstruct.com/wp-admin/admin-ajax.php?action=h5p_embed&id=${id}`,
+          });
+        }
+      }
+    }
+  }
+  const seen = new Set();
+  return rows.filter((row) => {
+    const key = `${row.id}|${row.courseLevel ? row.resourcePath : `${row.lessonId}|${row.section}`}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function findBookSection(lesson, sectionLabelValue) {
@@ -204,12 +305,42 @@ function patchPage(section, record) {
     section.bytes = Buffer.byteLength(styled, "utf8");
     return true;
   }
-  const iframe = `<div class="embedded-h5p"><iframe src="${htmlHref(section.path, record.previewPath)}?embed=1" title="${escapeHtml(record.label)}" loading="lazy" allowfullscreen="allowfullscreen"></iframe></div>`;
+  const iframe = `<div class="embedded-h5p embedded-h5p-frame"><iframe src="${htmlHref(section.path, record.previewPath)}?embed=1" title="${escapeHtml(record.label)}" loading="lazy" allowfullscreen="allowfullscreen"></iframe></div>`;
   const before = html;
   html = injectH5pResizeScript(injectH5pStyles(html));
-  if (/<div class="portal-note">Interactive media pending local package; external playback was not embedded\.<\/div>/.test(html)) {
-    html = html.replace(/<div class="portal-note">Interactive media pending local package; external playback was not embedded\.<\/div>/, iframe);
-  } else {
+  const externalId = String(record.originalSource || record.source || "").match(/(?:id=|h5p-embed\/)(\d+)/i)?.[1] || "";
+  let replacedExternal = false;
+  if (externalId) {
+    const embeddedFramePattern = new RegExp(
+      String.raw`\s*(?:<p>\s*)?<div\b[^>]*class=["'][^"']*\bembedded-h5p-frame\b[^"']*["'][^>]*>\s*<iframe\b[^>]*welcome\.hexstruct\.com\/wp-admin\/admin-ajax\.php\?action=h5p_embed(?:&amp;|&)id=${externalId}[^>]*>\s*<\/iframe>\s*<\/div>(?:\s*<\/p>)?`,
+      "gi",
+    );
+    html = html.replace(embeddedFramePattern, () => {
+      replacedExternal = true;
+      return `\n${iframe}\n`;
+    });
+    const bareFramePattern = new RegExp(
+      String.raw`\s*(?:<p>\s*)?<iframe\b[^>]*welcome\.hexstruct\.com\/wp-admin\/admin-ajax\.php\?action=h5p_embed(?:&amp;|&)id=${externalId}[^>]*>\s*<\/iframe>(?:\s*<\/p>)?`,
+      "gi",
+    );
+    html = html.replace(bareFramePattern, () => {
+      replacedExternal = true;
+      return `\n${iframe}\n`;
+    });
+  }
+  if (!replacedExternal && /<div class="portal-note"[^>]*>Interactive media pending local package; external playback was not embedded\.<\/div>/.test(html)) {
+    html = html.replace(/<div class="portal-note"[^>]*>Interactive media pending local package; external playback was not embedded\.<\/div>/, iframe);
+  } else if (!replacedExternal && /Student submission activity omitted from the teacher resource view\./.test(html)) {
+    html = html.replace(
+      /(?:<p>\s*)?<div\b[^>]*class=["'][^"']*\blocalized-resource-note\b[^"']*["'][^>]*>\s*Student submission activity omitted from the teacher resource view\.\s*<\/div>(?:\s*<\/p>)?/i,
+      iframe,
+    );
+  } else if (!replacedExternal && record.role === "hands_on" && /downloaded_resources\/hands_on\/h5p\//i.test(html)) {
+    html = html.replace(
+      /<div\b[^>]*class=["'][^"']*\bembedded-h5p\b[^"']*["'][^>]*>\s*<iframe\b[^>]*downloaded_resources\/hands_on\/h5p\/[^>]*>\s*<\/iframe>\s*<\/div>(?:\s*<div\b[^>]*class=["'][^"']*\bembedded-resource-card\b[^"']*["'][\s\S]*?<\/div>)?/i,
+      iframe,
+    );
+  } else if (!replacedExternal) {
     html = html.replace(/\s*<\/article>/i, `\n${iframe}\n</article>`);
   }
   if (html === before) return false;
@@ -219,34 +350,144 @@ function patchPage(section, record) {
   return true;
 }
 
+function attachRecord(lesson, section, row, record) {
+  if (row.courseLevel) {
+    section.attachments ||= [];
+    const index = section.attachments.findIndex((item) => item.source === row.embedUrl && item.role === record.role);
+    if (index >= 0) section.attachments[index] = { ...section.attachments[index], ...record };
+    else section.attachments.push(record);
+    return;
+  }
+
+  if (row.section === "Hands On") {
+    const auditRecord = {
+      label: record.label.replace(/^External H5P\s*-\s*/i, "Hands On - "),
+      type: "h5p",
+      category: "localized_external_h5p",
+      role: "handsOn",
+      mode: "local_embed",
+      source: record.source,
+      originalSource: row.embedUrl,
+      parentSection: "Hands On",
+      sourceGroup: "book_section_embed",
+      unit: row.unit,
+      lesson: row.lesson,
+      textPreview: section.label || section.sectionLabel || `Hands On - Unit ${row.unit} Lesson ${row.lesson}`,
+      path: record.path,
+      bytes: record.bytes,
+      previewPath: record.previewPath,
+      localizedPackagePath: record.path,
+      localizedPreviewPath: record.previewPath,
+    };
+    lesson.handsOn ||= [];
+    lesson.downloads = (lesson.downloads || []).filter((item) => {
+      const text = `${item.role || ""} ${item.category || ""} ${item.path || ""} ${item.previewPath || ""} ${item.source || ""}`;
+      const isHandsOnH5p = (item.type === "h5p" || /\.h5p$/i.test(item.path || "")) && /hands[\s_-]*on/i.test(text);
+      return !isHandsOnH5p;
+    });
+    const index = lesson.handsOn.findIndex((item) => item.originalSource === row.embedUrl || item.url === stableH5pSource(row.id));
+    if (index >= 0) {
+      lesson.handsOn[index] = { ...lesson.handsOn[index], ...auditRecord };
+      delete lesson.handsOn[index].url;
+      delete lesson.handsOn[index].previewUrl;
+      delete lesson.handsOn[index].downloadUrl;
+    } else {
+      lesson.handsOn.push(auditRecord);
+    }
+    lesson.resourceCounts ||= {};
+    lesson.resourceCounts.downloads = lesson.downloads.length;
+    lesson.resourceCounts.handsOn = lesson.handsOn.length;
+    lesson.resourceCounts.h5p = [
+      ...(lesson.downloads || []),
+      ...(lesson.handsOn || []),
+    ].filter((item) => item.type === "h5p" || item.localizedPackagePath).length;
+    return;
+  }
+
+  lesson.downloads ||= [];
+  const index = lesson.downloads.findIndex((item) => item.source === row.embedUrl && item.role === record.role);
+  if (index >= 0) lesson.downloads[index] = { ...lesson.downloads[index], ...record };
+  else lesson.downloads.push(record);
+  lesson.resourceCounts ||= {};
+  lesson.resourceCounts.downloads = lesson.downloads.length;
+  lesson.resourceCounts.h5p = lesson.downloads.filter((item) => item.type === "h5p").length;
+}
+
+function existingLocalizedRecord(row, lesson, section) {
+  const idPrefix = `${String(row.id).padStart(4, "0")}-`;
+  const candidates = [
+    ...((lesson && lesson.handsOn) || []),
+    ...((lesson && lesson.downloads) || []),
+    ...((section && section.attachments) || []),
+  ];
+  for (const item of candidates) {
+    const path = toPosix(item.path || item.localizedPackagePath || "");
+    const previewPath = toPosix(item.previewPath || item.localizedPreviewPath || path.replace(/\.h5p$/i, "/index.html"));
+    if (!path || !previewPath) continue;
+    const matchesSource = item.originalSource === row.embedUrl || item.source === stableH5pSource(row.id);
+    const matchesId = path.includes(`/h5p-external/${idPrefix}`);
+    if (!matchesSource && !matchesId) continue;
+    const packagePath = join(courseRoot, path);
+    const previewFullPath = join(courseRoot, previewPath);
+    if (!existsSync(packagePath) || !existsSync(previewFullPath)) continue;
+    return {
+      label: item.label || `External H5P - H5P ${row.id}`,
+      type: "h5p",
+      category: "localized_external_h5p",
+      role: row.courseLevel ? "course_resource" : row.section === "Consolidation" ? "consolidation" : "hands_on",
+      path,
+      bytes: statSync(packagePath).size,
+      source: stableH5pSource(row.id),
+      originalSource: row.embedUrl,
+      previewPath,
+    };
+  }
+  return null;
+}
+
 const manifest = readJson(manifestPath);
-const rows = collectRows();
+const rows = collectRows(manifest);
 const downloaded = [];
 const failures = [];
+const localizedById = new Map();
 let pagesPatched = 0;
 mkdirSync(outDir, { recursive: true });
 
 for (const row of rows) {
-  const unit = (manifest.units || []).find((item) => item.unit === row.unit);
-  const lesson = unit?.lessons?.find((item) => item.id === row.lessonId);
-  if (!lesson) {
-    failures.push({ ...row, error: "manifest lesson not found" });
-    continue;
-  }
-  const section = findBookSection(lesson, row.section);
-  if (!section) {
-    failures.push({ ...row, error: "manifest book section not found" });
-    continue;
+  let lesson = null;
+  let section = null;
+  if (row.courseLevel) {
+    section = [
+      ...(manifest.courseSections || []),
+      ...(manifest.courseDownloads || []),
+    ].find((item) => item?.path === row.resourcePath);
+    if (!section) {
+      failures.push({ ...row, error: "manifest course resource not found" });
+      continue;
+    }
+  } else {
+    const unit = (manifest.units || []).find((item) => item.unit === row.unit);
+    lesson = unit?.lessons?.find((item) => item.id === row.lessonId);
+    if (!lesson) {
+      failures.push({ ...row, error: "manifest lesson not found" });
+      continue;
+    }
+    section = findBookSection(lesson, row.section);
+    if (!section) {
+      failures.push({ ...row, error: "manifest book section not found" });
+      continue;
+    }
   }
   try {
     const embed = await fetchBytes(row.embedUrl);
     const embedHtml = embed.buffer.toString("utf8");
     const exportUrl = extractJsonString(embedHtml, "exportUrl");
     if (!exportUrl) throw new Error("missing exportUrl");
-    const title = titleFromEmbed(embedHtml, row.id);
+    const embedTitle = cleanTitle(titleFromEmbed(embedHtml, row.id)) || `H5P ${row.id}`;
     const absoluteExportUrl = new URL(exportUrl, "https://welcome.hexstruct.com").toString();
     const h5p = await fetchBytes(absoluteExportUrl);
     validateH5p(h5p.buffer);
+    const title = await titleFromH5pPackage(h5p.buffer, embedTitle);
     const name = `${String(row.id).padStart(4, "0")}-${slugify(title)}.h5p`;
     const targetPath = join(outDir, name);
     if (!existsSync(targetPath)) writeFileSync(targetPath, h5p.buffer);
@@ -255,24 +496,39 @@ for (const row of rows) {
       label: `External H5P - ${title}`,
       type: "h5p",
       category: "localized_external_h5p",
-      role: row.section === "Consolidation" ? "consolidation" : "hands_on",
+      role: row.courseLevel ? "course_resource" : row.section === "Consolidation" ? "consolidation" : "hands_on",
       path: relPath,
       bytes: statSync(targetPath).size,
-      source: row.embedUrl,
-      exportUrl: absoluteExportUrl,
+      source: stableH5pSource(row.id),
+      originalSource: row.embedUrl,
       previewPath: relPath.replace(/\.h5p$/i, "/index.html"),
     };
-    lesson.downloads ||= [];
-    const index = lesson.downloads.findIndex((item) => item.source === row.embedUrl && item.role === record.role);
-    if (index >= 0) lesson.downloads[index] = { ...lesson.downloads[index], ...record };
-    else lesson.downloads.push(record);
-    lesson.resourceCounts ||= {};
-    lesson.resourceCounts.downloads = lesson.downloads.length;
-    lesson.resourceCounts.h5p = lesson.downloads.filter((item) => item.type === "h5p").length;
+    localizedById.set(row.id, { title, exportUrl: absoluteExportUrl, record });
+    attachRecord(lesson, section, row, record);
     if (patchPage(section, record)) pagesPatched += 1;
     downloaded.push({ ...row, title, path: relPath, bytes: record.bytes, exportUrl: absoluteExportUrl, pagePath: section.path, previewPath: record.previewPath });
   } catch (error) {
-    failures.push({ ...row, error: String(error?.message || error) });
+    const cached = localizedById.get(row.id);
+    if (cached) {
+      const record = {
+        ...cached.record,
+        source: stableH5pSource(row.id),
+        originalSource: row.embedUrl,
+        role: row.courseLevel ? "course_resource" : row.section === "Consolidation" ? "consolidation" : "hands_on",
+      };
+      attachRecord(lesson, section, row, record);
+      if (patchPage(section, record)) pagesPatched += 1;
+      downloaded.push({ ...row, title: cached.title, path: record.path, bytes: record.bytes, exportUrl: cached.exportUrl, pagePath: section.path, previewPath: record.previewPath, reused: true });
+    } else {
+      const existing = existingLocalizedRecord(row, lesson, section);
+      if (existing) {
+        attachRecord(lesson, section, row, existing);
+        if (patchPage(section, existing)) pagesPatched += 1;
+        downloaded.push({ ...row, title: existing.label, path: existing.path, bytes: existing.bytes, pagePath: section.path, previewPath: existing.previewPath, reusedLocalPackage: true });
+      } else {
+        failures.push({ ...row, error: String(error?.message || error) });
+      }
+    }
   }
 }
 

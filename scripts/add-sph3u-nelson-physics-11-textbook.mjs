@@ -8,6 +8,7 @@ const courseRoot = join(workspaceRoot, "courseware", course);
 const manifestPath = join(courseRoot, "course-manifest.json");
 const sourcePath = join(workspaceRoot, "docs", "Nelson-Physics-11.pdf");
 const textbookPath = "texts/nelson-physics-11/Nelson-Physics-11.pdf";
+const textbookTitle = "SPH3U · Physics · Nelson Physics 11 Textbook";
 const sourcesPath = join(courseRoot, "texts", "SOURCES.md");
 
 function readJson(path) {
@@ -40,7 +41,8 @@ const textsById = new Map(existingTexts.map((item) => [item.id, item]));
 textsById.set("nelson-physics-11", {
   ...(textsById.get("nelson-physics-11") || {}),
   id: "nelson-physics-11",
-  title: "Nelson Physics 11",
+  title: textbookTitle,
+  label: textbookTitle,
   publisher: "Nelson Education",
   type: "textbook",
   units: [1, 2, 3, 4, 5],
@@ -50,20 +52,21 @@ textsById.set("nelson-physics-11", {
     "Legally obtained local textbook copy provided by the user; matched to SPH3U planning references to Nelson Textbook pages and Grade 11 Physics content.",
   materials: [
     {
-      label: "Nelson Physics 11",
+      label: textbookTitle,
+      title: textbookTitle,
       type: "pdf",
       category: "textbook",
-      role: "core_text",
+      role: "core_textbook",
       path: textbookPath,
+      downloadPath: textbookPath,
       bytes,
       source: "local legally obtained file: docs/Nelson-Physics-11.pdf",
-      previewPath: "",
     },
   ],
   path: textbookPath,
   bytes,
   category: "textbook",
-  role: "core_text",
+  role: "core_textbook",
 });
 
 const sourceAudit = textsById.get("sph3u-source-audit");

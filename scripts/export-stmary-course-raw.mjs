@@ -7,6 +7,7 @@ loadEnvFile(resolve(projectRoot, ".env"));
 const course = readArg("--course")?.toUpperCase();
 const courseId = readArg("--course-id");
 const sections = Number(readArg("--sections") || 0);
+const includeZero = process.argv.includes("--include-zero");
 if (!course || !courseId || !sections) {
   console.error("Usage: node scripts/export-stmary-course-raw.mjs --course COURSE --course-id ID --sections N");
   process.exit(1);
@@ -160,8 +161,8 @@ const sectionDir = join(projectRoot, "inbox", `${course.toLowerCase()}-stmary-se
 mkdirSync(sectionDir, { recursive: true });
 
 const exported = [];
-for (let section = 1; section <= sections; section += 1) {
-  const url = `${BASE_URL}/course/view.php?id=${courseId}&section=${section}`;
+for (let section = includeZero ? 0 : 1; section <= sections; section += 1) {
+  const url = `${BASE_URL}/course/view.php?id=${courseId}${section ? `&section=${section}` : ""}`;
   const response = await request(url);
   const html = await response.text();
   if (!response.ok) throw new Error(`HTTP ${response.status}: ${url}`);

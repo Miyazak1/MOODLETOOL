@@ -327,13 +327,34 @@ function activityRecord({ label, mod = "assign", id, role, unit, teacherUse = "t
     type: "html",
     category: `moodle_${mod}`,
     role,
-    url: `https://www.esunnybrook.com/mod/${mod}/view.php?id=${id}`,
     source: `https://www.esunnybrook.com/mod/${mod}/view.php?id=${id}`,
     moodleActivityId: String(id),
     teacherUse,
     ...(unit ? { unit } : {}),
     ...(teacherOnly ? { teacherOnly: true } : {}),
   };
+}
+
+function localHtmlTextPreview(item) {
+  if (!item?.path || !["html", "htm"].includes(String(item.type || "").toLowerCase())) return "";
+  const abs = join(courseRoot, item.path);
+  if (!existsSync(abs)) return "";
+  const html = readFileSync(abs, "utf8");
+  const content = /<div\b[^>]*class=["'][^"']*\bmoodle-content\b[^"']*["'][^>]*>([\s\S]*?)<\/article>/i.exec(html)?.[1] || html;
+  return stripTags(content).slice(0, 500);
+}
+
+function enrichEvaluationTextPreviews(manifest) {
+  for (const item of manifest.evaluations || []) {
+    const preview = localHtmlTextPreview(item);
+    if (preview) item.textPreview = preview;
+  }
+  for (const unit of manifest.units || []) {
+    for (const item of unit.unitResources?.evaluations || []) {
+      const preview = localHtmlTextPreview(item);
+      if (preview) item.textPreview = preview;
+    }
+  }
 }
 
 function upsertByKey(list, record) {
@@ -344,6 +365,48 @@ function upsertByKey(list, record) {
   });
   if (index >= 0) list[index] = { ...list[index], ...record };
   else list.push(record);
+}
+
+function lessonActivityParts(label) {
+  const match = /^Unit\s+(\d+)\s+-\s+Lesson\s+(\d+)(?:\s+\(Answer\))?$/i.exec(String(label || "").trim());
+  if (!match) return null;
+  return {
+    unit: Number(match[1]),
+    lesson: Number(match[2]),
+    answerRank: /\(Answer\)$/i.test(String(label || "").trim()) ? 1 : 0,
+  };
+}
+
+function homeworkSubmissionSort(a, b) {
+  const left = lessonActivityParts(a.label) || { unit: 999, lesson: 999, answerRank: 0 };
+  const right = lessonActivityParts(b.label) || { unit: 999, lesson: 999, answerRank: 0 };
+  return left.unit - right.unit || left.lesson - right.lesson || left.answerRank - right.answerRank || String(a.label || "").localeCompare(String(b.label || ""));
+}
+
+function isHomeworkSubmissionFolderItem(item) {
+  const role = String(item?.role || "").toLowerCase();
+  const scope = `${item?.parentSection || ""} ${item?.sourceGroup || ""}`.toLowerCase();
+  return (
+    /homework_submission_folder/.test(scope) ||
+    ["homework_submission_page", "homework_answer_page", "lesson_dropbox", "lesson_answer_page"].includes(role) ||
+    Boolean(lessonActivityParts(item?.label))
+  );
+}
+
+function normalizeHomeworkSubmission(item, { answer = false } = {}) {
+  const parts = lessonActivityParts(item.label) || {};
+  const record = {
+    ...item,
+    role: answer ? "homework_answer_page" : "homework_submission_page",
+    sourceGroup: "homework_submission_folder",
+    parentSection: "Homework Submission Folder",
+    category: item.category || (answer ? "moodle_page" : "moodle_assign"),
+    teacherUse: answer ? "homework_answer_reference" : "student_submission",
+    ...(parts.unit ? { unit: parts.unit } : {}),
+    ...(parts.lesson ? { lesson: parts.lesson } : {}),
+  };
+  delete record.teacherOnly;
+  return record;
 }
 
 const manifest = readJson(manifestPath);
@@ -424,7 +487,8 @@ const unitActivities = {
 
 manifest.evaluations = [];
 manifest.teacherResources = manifest.teacherResources || [];
-upsertByKey(manifest.teacherResources, { ...sectionRecords[2], teacherOnly: true });
+manifest.courseDownloads = (manifest.courseDownloads || []).filter((item) => !isHomeworkSubmissionFolderItem(item));
+const homeworkSubmissionItems = [];
 
 for (const unit of manifest.units || []) {
   const config = unitActivities[unit.unit];
@@ -435,28 +499,63 @@ for (const unit of manifest.units || []) {
   unit.unitResources.lessonDropboxes = [];
   unit.unitResources.answerPages = [];
   for (const [label, mod, id] of config.evaluations) {
-    const record = activityRecord({ label, mod, id, role: "aol_assessment", unit: unit.unit, teacherUse: "assessment_preparation" });
+    const record = {
+      ...activityRecord({ label, mod, id, role: "evaluation", unit: unit.unit, teacherUse: "assessment_preparation" }),
+      sourceGroup: "unit_evaluation",
+      parentSection: "Evaluation",
+      unitTitle: unit.title || unit.name,
+    };
     upsertByKey(unit.unitResources.evaluations, record);
     upsertByKey(manifest.evaluations, record);
-    upsertByKey(manifest.teacherResources, { ...record, teacherUse: "assessment_preparation" });
   }
   for (const [label, id, role] of config.reflectionAndLogs) {
-    upsertByKey(unit.unitResources.reflectionAndLogs, activityRecord({ label, id, role, unit: unit.unit }));
+    const reflectionRole = /kwl/i.test(role) ? "reflection_kwl" : "reflection_summary";
+    upsertByKey(unit.unitResources.reflectionAndLogs, {
+      ...activityRecord({ label, id, role: reflectionRole, unit: unit.unit, teacherUse: "student_reflection_tracking" }),
+      sourceGroup: "unit_reflection_log",
+      parentSection: "Reflection / Learning Log",
+      unitTitle: unit.title || unit.name,
+    });
   }
   for (const [label, id] of config.lessonDropboxes) {
-    upsertByKey(unit.unitResources.lessonDropboxes, activityRecord({ label, id, role: "lesson_dropbox", unit: unit.unit }));
+    const record = normalizeHomeworkSubmission(activityRecord({ label, id, role: "homework_submission_page", unit: unit.unit, teacherUse: "student_submission" }));
+    upsertByKey(homeworkSubmissionItems, record);
   }
   for (const [label, id] of config.answerPages) {
-    const record = activityRecord({ label, mod: "page", id, role: "lesson_answer_page", unit: unit.unit, teacherUse: "answer_key_reference", teacherOnly: true });
-    upsertByKey(unit.unitResources.answerPages, record);
-    upsertByKey(manifest.teacherResources, record);
+    const record = normalizeHomeworkSubmission(activityRecord({ label, mod: "page", id, role: "homework_answer_page", unit: unit.unit, teacherUse: "homework_answer_reference" }), {
+      answer: true,
+    });
+    upsertByKey(homeworkSubmissionItems, record);
   }
+  delete unit.unitResources.lessonDropboxes;
+  delete unit.unitResources.answerPages;
 }
+
+for (const record of homeworkSubmissionItems.sort(homeworkSubmissionSort)) upsertByKey(manifest.courseDownloads, record);
 
 upsertByKey(
   manifest.teacherResources,
-  activityRecord({ label: "Answer Keys", id: 8107, role: "answer_keys", teacherUse: "answer_key_reference", teacherOnly: true }),
+  {
+    ...activityRecord({ label: "Answer Keys", id: 8107, role: "teacher_packet", teacherUse: "answer_key_reference", teacherOnly: true }),
+    sourceGroup: "teacher_packet",
+    parentSection: "Teacher Packet",
+  },
 );
+
+manifest.teacherResources = (manifest.teacherResources || [])
+  .filter((item) => {
+    const role = String(item.role || "").toLowerCase();
+    if (["aol_assessment", "lesson_answer_page", "homework_submission_page", "homework_answer_page"].includes(role)) return false;
+    if (item.label === "Teacher Packet" && !(item.attachments || []).length) return false;
+    return true;
+  })
+  .map((item) =>
+    /^Answer Keys$/i.test(item.label || "")
+      ? { ...item, role: "teacher_packet", sourceGroup: "teacher_packet", parentSection: "Teacher Packet", teacherUse: "answer_key_reference", teacherOnly: true }
+      : item,
+  );
+manifest.courseSections = (manifest.courseSections || []).filter((item) => String(item.role || "").toLowerCase() !== "teacher_packet");
+enrichEvaluationTextPreviews(manifest);
 
 manifest.sourceAudit = {
   ...(manifest.sourceAudit || {}),
@@ -469,6 +568,7 @@ manifest.sourceAudit = {
     lessonDropboxes: Object.values(unitActivities).reduce((sum, item) => sum + item.lessonDropboxes.length, 0),
     answerPages: Object.values(unitActivities).reduce((sum, item) => sum + item.answerPages.length, 0),
     teacherResources: manifest.teacherResources.length,
+    shape: "MDM4U-compatible: Homework Submission Folder in courseDownloads, Unit Evaluation in unitResources.evaluations, Teacher Packet only for Answer Keys.",
   },
 };
 manifest.generatedAt = new Date().toISOString();

@@ -46,7 +46,7 @@ function renderH5pEmbeds(pageRel, ids) {
       const previewPath = h5pPreviewPath(id);
       if (!previewPath) return "";
       const src = `${relativeHref(pageRel, previewPath)}?embed=1`;
-      return `<div class="embedded-h5p"><iframe src="${src}" title="H5P activity ${escapeHtml(id)}" loading="lazy" allowfullscreen="allowfullscreen"></iframe></div>`;
+      return `<div class="embedded-h5p-frame"><iframe src="${src}" title="H5P activity ${escapeHtml(id)}" loading="lazy" allowfullscreen="allowfullscreen"></iframe></div>`;
     })
     .filter(Boolean)
     .join("\n");
@@ -80,8 +80,8 @@ function renderPage(title, bodyHtml, pageRel, ids, attachments = []) {
     .content { border-top: 1px solid #e0e8f2; padding-top: 18px; }
     .content img, .content video { display: block; height: auto; max-width: 100%; }
     .localized-ispring { border: 0; display: block; height: min(72vh, 760px); margin: 16px 0; width: 100%; }
-    .embedded-h5p { display: block; margin: 16px 0 24px; max-width: 100%; width: 100%; }
-    .embedded-h5p iframe { border: 0; display: block; min-height: 640px; width: 100%; }
+    .embedded-h5p-frame { display: block; margin: 16px auto 24px; max-width: 100%; width: 100%; }
+    .embedded-h5p-frame iframe { border: 0; display: block; min-height: 640px; width: 100%; }
     .content table { border-collapse: collapse; display: block; max-width: 100%; overflow-x: auto; }
     .content td, .content th { border: 1px solid #d6e2f0; padding: 8px 10px; }
     .files { border-top: 1px solid #e0e8f2; margin-top: 26px; padding-top: 8px; }
@@ -101,7 +101,7 @@ function renderPage(title, bodyHtml, pageRel, ids, attachments = []) {
   <script>
     window.addEventListener("message", function (event) {
       if (!event.data || event.data.type !== "ossd:h5p-height") return;
-      document.querySelectorAll(".embedded-h5p iframe").forEach(function (iframe) {
+      document.querySelectorAll(".embedded-h5p-frame iframe").forEach(function (iframe) {
         if (event.source === iframe.contentWindow) {
           iframe.style.height = Math.max(Number(event.data.height) || 0, 640) + "px";
         }

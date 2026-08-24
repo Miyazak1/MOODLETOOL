@@ -638,11 +638,6 @@ const finalSection = await localizeHtmlPage({
 
 for (const item of [courseOverview, finalSection]) {
   upsertByKey(manifest.courseSections, item);
-  upsertByKey(manifest.courseDownloads, {
-    ...item,
-    category: "course_document",
-    role: item.role === "course_overview" ? "introduction" : item.role,
-  });
 }
 
 const courseActivities = [
@@ -717,14 +712,12 @@ const managedTeacherActivityIds = new Set([
 ]);
 
 manifest.teacherResources = [
-  ...manifest.teacherResources.filter((item) => !item.moodleActivityId || !managedTeacherActivityIds.has(String(item.moodleActivityId))),
-  ...courseActivityRecords
-    .filter((item) => ["final_exam_submission", "culminating_submission"].includes(item.role))
-    .map((item) => ({ ...item })),
-  ...evaluationRecords.map((item) => ({
-    ...item,
-    teacherUse: item.role === "aol_quiz" ? "quiz_review" : "assessment_preparation",
-  })),
+  ...manifest.teacherResources.filter((item) => {
+    if (item.moodleActivityId && managedTeacherActivityIds.has(String(item.moodleActivityId))) return false;
+    const text = `${item.role || ""} ${item.category || ""} ${item.parentSection || ""} ${item.sourceGroup || ""} ${item.label || item.title || ""}`;
+    if (/aol|evaluation|quiz|test|assignment|final_exam_submission|final exam/i.test(text)) return false;
+    return /teacher_packet|answer key|teacher-only|lesson plan/i.test(text);
+  }),
   ...answerKeyRecords,
 ];
 

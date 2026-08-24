@@ -13,6 +13,8 @@ const manifestPath = join(courseRoot, "course-manifest.json");
 const referenceIndexPath = join(courseRoot, "texts", "functions-11-reference-index", "textbook-reference-index.json");
 const referenceIndexReadmePath = join(courseRoot, "texts", "functions-11-reference-index", "INDEX.md");
 const sourcesPath = join(courseRoot, "texts", "SOURCES.md");
+const originalTextbookTitle = "Nelson Functions 11 Textbook";
+const textbookDisplayTitle = "MCR3U · Functions · Nelson Functions 11 Textbook";
 
 if (!existsSync(sourcePdf)) throw new Error(`Missing source PDF: ${sourcePdf}`);
 if (!existsSync(manifestPath)) throw new Error(`Missing manifest: ${manifestPath}`);
@@ -37,10 +39,11 @@ const sourceStat = statSync(sourcePdf);
 const verifiedAt = new Date().toISOString();
 
 const textbookMaterial = {
-  label: "Nelson Functions 11 Textbook",
+  label: textbookDisplayTitle,
+  originalTitle: originalTextbookTitle,
   type: "pdf",
   category: "textbook",
-  role: "primary_textbook",
+  role: "core_textbook",
   path: textbookRel,
   bytes: textbookBytes,
   source: "user-provided legal local file: docs/Nelson Functions 11 Textbook(1)(1).pdf",
@@ -64,13 +67,15 @@ if (referenceEntry) {
   referenceEntry.sourceStatus = "textbook_file_provided";
   referenceEntry.notes = "Lesson plans cite Nelson Functions 11 textbook pages and questions. The matching legal textbook file is now included as a course resource.";
   referenceEntry.textbookPath = textbookRel;
-  referenceEntry.textbookTitle = "Nelson Functions 11 Textbook";
+  referenceEntry.textbookTitle = textbookDisplayTitle;
+  referenceEntry.originalTextbookTitle = originalTextbookTitle;
   referenceEntry.textbookIsbn13 = "978-0-17-633203-7";
 }
 
 const textbookEntry = {
   id: "nelson-functions-11-textbook",
-  title: "Nelson Functions 11 Textbook",
+  title: textbookDisplayTitle,
+  originalTitle: originalTextbookTitle,
   publisher: "Nelson, a division of Thomson Canada Limited",
   authors: [
     "Marian Small",
@@ -94,7 +99,7 @@ const textbookEntry = {
   path: textbookRel,
   bytes: textbookBytes,
   category: "textbook",
-  role: "primary_textbook",
+  role: "core_textbook",
 };
 
 manifest.texts = [textbookEntry, ...existingTexts];
@@ -106,7 +111,8 @@ manifest.sourceAudit = {
   textbookAudit: {
     status: "full_textbook_added",
     referencedTextbook: "Functions 11 Textbook",
-    verifiedTextbook: "Nelson Functions 11 Textbook",
+    verifiedTextbook: originalTextbookTitle,
+    displayTitle: textbookDisplayTitle,
     isbn13: "978-0-17-633203-7",
     isbn10: "0-17-633203-0",
     evidence: "The user-provided legal PDF title page, copyright page, ISBN, authors, and lesson-plan page references match the MCR3U Functions 11 textbook.",
@@ -115,7 +121,7 @@ manifest.sourceAudit = {
     sourceBytes: sourceStat.size,
     localBytes: textbookBytes,
     verifiedAt,
-    decision: "Include the verified Nelson Functions 11 textbook as the MCR3U primary textbook.",
+    decision: "Include the verified Nelson Functions 11 textbook as the MCR3U course-qualified core textbook display entry.",
   },
 };
 
@@ -126,8 +132,9 @@ referenceIndex.generatedAt = verifiedAt;
 referenceIndex.textbook = {
   ...(referenceIndex.textbook || {}),
   referencedName: "Functions 11 Textbook",
-  inferredTitle: "Nelson Functions 11 Textbook",
-  verifiedTitle: "Nelson Functions 11 Textbook",
+  inferredTitle: originalTextbookTitle,
+  verifiedTitle: originalTextbookTitle,
+  displayTitle: textbookDisplayTitle,
   isbn13: "978-0-17-633203-7",
   isbn10: "0-17-633203-0",
   contentIncluded: true,
@@ -138,7 +145,7 @@ writeJson(referenceIndexPath, referenceIndex);
 
 writeFileSync(referenceIndexReadmePath, `# Functions 11 Reference Index
 
-MCR3U lesson plans cite Nelson Functions 11 Textbook pages and questions. The verified textbook file is included at:
+MCR3U lesson plans cite ${originalTextbookTitle} pages and questions. The course display title is ${textbookDisplayTitle}. The verified textbook file is included at:
 
 \`${textbookRel}\`
 
@@ -147,12 +154,12 @@ References indexed: ${referenceIndex.references?.length || 0}
 
 writeFileSync(sourcesPath, `# MCR3U Text And Source Audit
 
-This MCR3U package uses Moodle-localized lesson resources, locally stored planning files, the Moodle Course Outline, the verified Nelson Functions 11 textbook provided by the user, and the public Ontario curriculum reference listed below.
+This MCR3U package uses Moodle-localized lesson resources, locally stored planning files, the Moodle Course Outline, the verified ${textbookDisplayTitle} file provided by the user, and the public Ontario curriculum reference listed below.
 
 ## Included
 
 - MCR3U Course Outline, downloaded from the authenticated SunnyBrook Moodle course shell.
-- Nelson Functions 11 Textbook, copied from the user-provided legal local file \`D:\\工作文件\\SUNNYBROOK\\docs\\Nelson Functions 11 Textbook(1)(1).pdf\`.
+- ${textbookDisplayTitle} (original PDF title: ${originalTextbookTitle}), copied from the user-provided legal local file \`D:\\工作文件\\SUNNYBROOK\\docs\\Nelson Functions 11 Textbook(1)(1).pdf\`.
 - The Ontario Curriculum, Grades 11 and 12: Mathematics, 2007 (Revised), copied from the verified local MCV4U curriculum reference that originated from the Ontario Ministry of Education website.
 - A Functions 11 textbook reference index generated from local MCR3U lesson plan previews.
 

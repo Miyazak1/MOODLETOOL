@@ -11,8 +11,8 @@ const roadmapPath = join(projectRoot, "public", "course-roadmap.json");
 const sourcesPath = join(courseRoot, "texts", "SOURCES.md");
 
 const excludedNotes = [
-  "Teacher's Comments was excluded from the package because it exposed named individual student feedback DOCX files.",
-  "Mark Book was excluded because Moodle returned a course/gradebook administration shell rather than downloadable courseware files.",
+  "Teacher's Comments is retained because Moodle exposes teacher evaluation feedback text and DOCX files.",
+  "Mark Book is retained when Moodle exposes downloadable mark book and learning skills/work habits files.",
 ];
 
 function readJson(path) {
@@ -56,17 +56,7 @@ function eachResource(manifest, callback) {
 }
 
 function removeExcludedAdminLessons(manifest) {
-  let removed = 0;
-  for (const unit of manifest.units || []) {
-    const before = unit.lessons?.length || 0;
-    unit.lessons = (unit.lessons || []).filter((lesson) => {
-      const haystack = `${lesson.id || ""} ${lesson.title || ""} ${(lesson.downloads || []).map((item) => `${item.label || ""} ${item.moodleActivityId || ""}`).join(" ")}`;
-      return !/Teacher'?s Comments|Mark Book|6929|6930/i.test(haystack);
-    });
-    removed += before - unit.lessons.length;
-  }
-  manifest.units = (manifest.units || []).filter((unit) => (unit.lessons?.length || 0) > 0 || unit.unit === 0);
-  return removed;
+  return 0;
 }
 
 function rewriteFolderPages(manifest) {
@@ -78,10 +68,10 @@ function rewriteFolderPages(manifest) {
       ? attachments
           .map((attachment, index) => {
             const filename = attachment.path.split("/").pop();
-            return `<tr><td>${index + 1}</td><td><a href="files/${htmlEscape(filename, true)}" download>${htmlEscape(attachment.label || filename)}</a></td><td>${htmlEscape(String(attachment.type || "").toUpperCase())}</td></tr>`;
+            return `<li><span class="file-label">${htmlEscape(attachment.label || filename)}</span><span class="file-actions"><a class="file-action" href="files/${htmlEscape(filename, true)}">查看</a><a class="file-action" href="files/${htmlEscape(filename, true)}" download>下载</a></span></li>`;
           })
           .join("\n")
-      : `<tr><td colspan="3">No downloadable files were exposed by this Moodle folder during localization.</td></tr>`;
+      : `<li><span class="file-label">No downloadable files were exposed by this Moodle folder during localization.</span></li>`;
     const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -89,28 +79,28 @@ function rewriteFolderPages(manifest) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${htmlEscape(item.label)}</title>
   <style>
-    body { margin: 0; font-family: Arial, sans-serif; background: #f6f8fb; color: #102033; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f6f8fb; color: #102033; line-height: 1.55; }
     main { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; }
-    article { background: #fff; border: 1px solid #d9e2ef; border-radius: 6px; padding: 22px; }
-    h1 { margin-top: 0; font-size: 28px; }
-    p { line-height: 1.55; }
-    table { border-collapse: collapse; width: 100%; margin-top: 16px; }
-    th, td { border: 1px solid #d9e2ef; padding: 9px 10px; text-align: left; vertical-align: top; }
-    th { background: #eef3f8; }
+    article { background: #fff; border: 1px solid #d9e2ef; border-radius: 8px; padding: 20px; }
+    h1 { font-size: 28px; margin: 0 0 18px; border-bottom: 1px solid #edf1f6; padding-bottom: 14px; }
+    h2 { font-size: 20px; margin-top: 24px; }
     a { color: #00396f; font-weight: 700; }
+    .attachments { border-top: 1px solid #edf1f6; margin-top: 18px; padding-top: 12px; }
+    .attachments ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .attachments li { align-items: center; background: #f8fbff; border: 1px solid #d9e6f5; border-radius: 8px; display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; }
+    .file-label { overflow-wrap: anywhere; }
+    .file-actions { display: inline-flex; flex: 0 0 auto; gap: 8px; }
+    .file-action { border: 1px solid #9bbce3; border-radius: 6px; color: #00396f; display: inline-flex; font-size: 14px; font-weight: 700; line-height: 1; padding: 7px 12px; text-decoration: none; }
+    .file-action:hover { background: #eef6ff; }
   </style>
 </head>
 <body>
   <main>
     <article>
       <h1>${htmlEscape(item.label)}</h1>
-      <p>This Moodle folder was localized into downloadable files for the course package.</p>
-      <table>
-        <thead><tr><th>#</th><th>File</th><th>Type</th></tr></thead>
-        <tbody>
+      <section class="attachments"><h2>Files</h2><ul>
 ${rows}
-        </tbody>
-      </table>
+      </ul></section>
     </article>
   </main>
 </body>

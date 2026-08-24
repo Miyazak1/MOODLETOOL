@@ -930,21 +930,22 @@
         "outlineStatus": "ready",
         "outlineUrl": "https://www.esunnybrook.com/mod/resource/view.php?id=3753",
         "bookCount": 0,
-        "numberedLessonCount": 31
+        "numberedLessonCount": 31,
+        "courseStructure": "legacy-esunnybrook-section-activity"
       },
       "readiness": {
         "units": 3,
         "lessons": 31,
         "unitPlans": 0,
-        "lessonPlans": 5,
-        "lessonPlanExpected": 5,
+        "lessonPlans": 18,
+        "lessonPlanExpected": 18,
         "missingCourseOutline": false,
         "missingIntroduction": false,
         "missingUnitPlans": 0,
         "missingLessonPlans": 0,
         "textsNeedingReview": 0,
         "linkOnlyTexts": 0,
-        "localizedResources": 106,
+        "localizedResources": 108,
         "unavailableResources": 0,
         "externalReferences": 5
       },
@@ -963,9 +964,10 @@
         ]
       },
       "nextActions": [
-        "Review external URL wrappers during site QA; valid public targets are retained as external references.",
-        "Add a textbook only if a confirmed current ICS2O Moodle/local source is provided."
-      ]
+        "Use Moodle section ownership for QA: Unit assessments, final evaluation, and teacher evaluation must remain separate.",
+        "Add a textbook only if a confirmed legal ICS2O source file is provided."
+      ],
+      "notes": "Official Ontario Computer Studies curriculum guidance is included; the course outline identifies no official textbook."
     },
     {
       "course": "ICS3U",
@@ -2183,41 +2185,44 @@
       "phase": "package-ready",
       "priority": 55,
       "moodle": {
-        "coursePage": "Moodle course id 41",
+        "coursePage": "St. Mary Moodle course id 81",
         "outlineStatus": "ready",
-        "outlineUrl": "",
-        "bookCount": 0,
-        "numberedLessonCount": 29
+        "outlineUrl": "http://34.30.231.58/course/view.php?id=81",
+        "bookCount": 3,
+        "numberedLessonCount": 17
       },
       "readiness": {
         "units": 4,
-        "lessons": 29,
+        "lessons": 17,
         "unitPlans": 0,
-        "lessonPlans": 3,
-        "lessonPlanExpected": 3,
+        "lessonPlans": 0,
+        "lessonPlanExpected": 0,
         "missingCourseOutline": false,
         "missingIntroduction": false,
         "missingUnitPlans": 0,
         "missingLessonPlans": 0,
         "textsNeedingReview": 0,
         "linkOnlyTexts": 0,
-        "localizedResources": 75,
+        "localizedResources": 71,
         "unavailableResources": 0,
-        "externalReferences": 0
+        "externalReferences": 0,
+        "localIspring": 16,
+        "localH5pPreviews": 33
       },
       "queue": {
         "status": "ready",
-        "targetFilename": "CHV2O_Course_Outline.docx",
+        "targetFilename": "CHV2O-course-package-fixed-root.zip",
         "hasUrl": true
       },
       "localEvidence": {
         "courseOutlines": 1,
         "unitPlans": 0,
-        "lessonPlans": 3,
-        "ispringFiles": 0,
+        "lessonPlans": 0,
+        "ispringFiles": 16,
         "outlineExamples": [
-          "CHV2O Course Outline DOCX",
-          "CHV2O Unit Lesson Plan DOCX files"
+          "CHV20 Course Outline",
+          "Learning Log",
+          "Answer Keys"
         ]
       },
       "nextActions": []

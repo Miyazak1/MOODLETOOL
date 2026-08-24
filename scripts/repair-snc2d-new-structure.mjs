@@ -568,7 +568,7 @@ function allManifestItems(manifest) {
     }
     for (const lesson of unit.lessons || []) {
       if (lesson.lessonPlan) items.push(lesson.lessonPlan);
-      for (const key of ["downloads", "lessonText", "textExports", "ispring", "videos"]) {
+      for (const key of ["downloads", "lessonText", "textExports", "ispring", "videos", "h5p"]) {
         for (const item of lesson[key] || []) items.push(item);
       }
     }
@@ -593,6 +593,330 @@ function upsertByRoleAndPath(list, item) {
   const index = list.findIndex((candidate) => candidate.role === item.role || (item.path && candidate.path === item.path) || candidate.label === item.label);
   if (index >= 0) list[index] = { ...list[index], ...item };
   else list.push(item);
+}
+
+function resourceKey(item) {
+  return toPosix(item?.path || item?.previewPath || item?.downloadPath || item?.label || "");
+}
+
+function upsertByResourceKey(list, item) {
+  const key = resourceKey(item);
+  if (!key) return;
+  const index = list.findIndex((candidate) => resourceKey(candidate) === key);
+  if (index >= 0) list[index] = { ...list[index], ...item };
+  else list.push(item);
+}
+
+function dedupeByResourceKey(items) {
+  const seen = new Set();
+  const output = [];
+  for (const item of items || []) {
+    const key = resourceKey(item);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    output.push(item);
+  }
+  return output;
+}
+
+function cloneResource(item, overrides = {}) {
+  return JSON.parse(JSON.stringify({ ...item, ...overrides }));
+}
+
+function isHomeworkSubmissionActivity(item) {
+  return (
+    item?.type === "html" &&
+    /^(Unit\s+\d+\s+-\s+Lesson\s+\d+)(?:\s+\(Answer\))?$/i.test(item.label || "") &&
+    /^(homework|answer_key)$/i.test(item.role || "")
+  );
+}
+
+function isReflectionOrLogResource(item) {
+  return (
+    /^(kwl_dropbox|reflection)$/i.test(item?.role || "") ||
+    /KWL[-\s]?Chart|End-of-Unit-Reflection|Reflection Summary/i.test(item?.label || "")
+  );
+}
+
+function isCulminatingEvaluation(item) {
+  return /^(culminating)$/i.test(item?.role || "") || /Final Exam|Culminating/i.test(item?.label || "");
+}
+
+function isExitCard(item) {
+  return /exit_card/i.test(item?.role || "") || /Exit Card/i.test(item?.label || "");
+}
+
+function isStandaloneVideo(item) {
+  return item?.type === "mp4" || /video/i.test(item?.role || "");
+}
+
+function isStandaloneH5p(item) {
+  return item?.type === "h5p" && !isExitCard(item);
+}
+
+function normalizeHomeworkSubmission(item) {
+  const isAnswer = /\(Answer\)$/i.test(item.label || "");
+  const parts = homeworkSubmissionSortParts(item);
+  return cloneResource(item, {
+    role: isAnswer ? "homework_submission_answer" : "homework_submission",
+    sourceGroup: "homework_submission_folder",
+    parentSection: "Homework Submission Folder",
+    category: item.category || "moodle_activity",
+    ...(parts ? { unit: parts.unit, lesson: parts.lesson } : {}),
+  });
+}
+
+function normalizeExistingHomeworkSubmission(item) {
+  const parts = homeworkSubmissionSortParts(item);
+  if (!parts) return item;
+  const role = (item.role || "").toLowerCase();
+  const isAnswer = parts.answerRank === 1 || role === "homework_submission_answer" || role === "homework_answer_page";
+  const isHomeworkRole =
+    item.parentSection === "Homework Submission Folder" ||
+    item.sourceGroup === "homework_submission_folder" ||
+    role === "homework_submission" ||
+    role === "homework_submission_answer";
+  if (!isHomeworkRole) return item;
+  return cloneResource(item, {
+    role: isAnswer ? "homework_submission_answer" : "homework_submission",
+    sourceGroup: "homework_submission_folder",
+    parentSection: "Homework Submission Folder",
+    category: item.category || "moodle_activity",
+    unit: parts.unit,
+    lesson: parts.lesson,
+  });
+}
+
+function homeworkSubmissionSortParts(item) {
+  const match = /Unit\s+(\d+)\s+-\s+Lesson\s+(\d+)(?:\s+\(Answer\))?/i.exec(item?.label || "");
+  if (!match) return null;
+  const isAnswer = /\(Answer\)$/i.test(item.label || "") || item.role === "homework_submission_answer";
+  return {
+    unit: Number(match[1]),
+    lesson: Number(match[2]),
+    answerRank: isAnswer ? 1 : 0,
+  };
+}
+
+function compareCourseDownloadItems(a, b) {
+  const order = {
+    course_overview: 10,
+    course_outline: 20,
+    learning_log: 30,
+    final_examination_culminating: 40,
+    homework_submission: 60,
+    homework_submission_answer: 60,
+    course_template: 70,
+  };
+  const aOrder = order[a.role] || 100;
+  const bOrder = order[b.role] || 100;
+  if (aOrder !== bOrder) return aOrder - bOrder;
+  if (aOrder === 60) {
+    const aParts = homeworkSubmissionSortParts(a);
+    const bParts = homeworkSubmissionSortParts(b);
+    if (aParts && bParts) {
+      return (
+        aParts.unit - bParts.unit ||
+        aParts.lesson - bParts.lesson ||
+        aParts.answerRank - bParts.answerRank ||
+        String(a.label).localeCompare(String(b.label))
+      );
+    }
+  }
+  return String(a.label).localeCompare(String(b.label));
+}
+
+function normalizeUnitEvaluation(item, unit) {
+  return cloneResource(item, {
+    role: item.role === "culminating" ? "evaluation" : item.role || "evaluation",
+    sourceGroup: "unit_evaluation",
+    parentSection: unit.title || unit.name || "Evaluation",
+    unit: unit.id,
+    unitTitle: unit.title || unit.name,
+  });
+}
+
+const evaluationActivitySpecs = [
+  { unit: 1, mod: "quiz", id: 6999, label: "Biology - Quiz 1", evaluationType: "quiz" },
+  { unit: 1, mod: "quiz", id: 6998, label: "Biology - Unit - Test", evaluationType: "test" },
+  { unit: 1, mod: "assign", id: 6997, label: "Unit 1 - Lab", evaluationType: "lab" },
+  { unit: 2, mod: "quiz", id: 7023, label: "Chemistry - Quiz 1", evaluationType: "quiz" },
+  { unit: 2, mod: "quiz", id: 7024, label: "Chemistry - Unit - Test", evaluationType: "test" },
+  { unit: 2, mod: "assign", id: 7022, label: "Unit 2 Lab", evaluationType: "lab" },
+  { unit: 3, mod: "quiz", id: 7048, label: "Earth & Space Science - Quiz 1", evaluationType: "quiz" },
+  { unit: 3, mod: "quiz", id: 7049, label: "Earth & Space Science - Unit - Test", evaluationType: "test" },
+  { unit: 3, mod: "assign", id: 7047, label: "Unit 3 - Lab", evaluationType: "lab" },
+  { unit: 4, mod: "quiz", id: 7068, label: "Physics - Quiz 1", evaluationType: "quiz" },
+  { unit: 4, mod: "quiz", id: 7069, label: "Physics - Unit - Test", evaluationType: "test" },
+  { unit: 4, mod: "assign", id: 7067, label: "Unit 4 - Lab", evaluationType: "lab" },
+];
+
+function localizedActivityRelDir(spec) {
+  const source = `https://www.esunnybrook.com/mod/${spec.mod}/view.php?id=${spec.id}`;
+  return `localized-moodle-activities/${spec.mod}/course-${spec.id}-${hashText(source)}`;
+}
+
+function fileEntryFromDisk(rel, source = "") {
+  const abs = join(courseRoot, rel);
+  if (!existsSync(abs)) return null;
+  const type = extname(rel).replace(".", "").toLowerCase() || "bin";
+  const label = basename(rel).replace(/^[a-f0-9]{10}-/i, "");
+  const entry = {
+    label,
+    type,
+    category: "localized_moodle_attachment",
+    role: "attachment",
+    path: rel,
+    bytes: statSync(abs).size,
+    source,
+  };
+  const preview = previewPathFor(entry);
+  if (preview) entry.previewPath = preview;
+  return entry;
+}
+
+function collectLocalFiles(relDir) {
+  const filesRoot = join(courseRoot, relDir, "files");
+  if (!existsSync(filesRoot)) return [];
+  const files = [];
+  const stack = [filesRoot];
+  while (stack.length) {
+    const current = stack.pop();
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      const abs = join(current, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(abs);
+        continue;
+      }
+      const rel = toPosix(relative(courseRoot, abs));
+      const file = fileEntryFromDisk(rel);
+      if (file) files.push(file);
+    }
+  }
+  return files.sort((a, b) => String(a.label).localeCompare(String(b.label)));
+}
+
+function localEvaluationEntryFromDisk(spec) {
+  const source = `https://www.esunnybrook.com/mod/${spec.mod}/view.php?id=${spec.id}`;
+  const relDir = localizedActivityRelDir(spec);
+  const rel = `${relDir}/index.html`;
+  const abs = join(courseRoot, rel);
+  if (!existsSync(abs)) return null;
+  const attachments = collectLocalFiles(relDir);
+  const html = readFileSync(abs, "utf8");
+  return {
+    label: spec.label,
+    type: "html",
+    category: `moodle_${spec.mod}`,
+    role: "evaluation",
+    evaluationType: spec.evaluationType,
+    sourceGroup: "unit_evaluation",
+    path: rel,
+    bytes: statSync(abs).size,
+    source,
+    moodleActivityId: spec.id,
+    attachments,
+    textPreview: textPreviewFromHtml(html),
+  };
+}
+
+async function ensureEvaluationActivity(spec) {
+  const existing = localEvaluationEntryFromDisk(spec);
+  if (existing) return existing;
+  const relDir = localizedActivityRelDir(spec);
+  const entry = await localizeActivityPage({
+    label: spec.label,
+    mod: spec.mod,
+    id: spec.id,
+    role: "evaluation",
+    targetRelDir: relDir,
+    teacherUse: "unit evaluation",
+  });
+  entry.evaluationType = spec.evaluationType;
+  entry.sourceGroup = "unit_evaluation";
+  return entry;
+}
+
+function normalizeReflectionLog(item, unit) {
+  return cloneResource(item, {
+    role: /KWL/i.test(item.label || item.role || "") ? "kwl" : item.role === "lesson" ? "reflection_document" : item.role,
+    sourceGroup: "reflection_and_logs",
+    parentSection: "Reflection / Learning Log",
+    unit: unit.id,
+    unitTitle: unit.title || unit.name,
+  });
+}
+
+function writeLessonIndexIfMissing(unit, lesson) {
+  if (!lesson?.path) return null;
+  const rel = `${toPosix(lesson.path).replace(/\/index\.html$/i, "")}/index.html`;
+  const abs = join(courseRoot, rel);
+  if (existsSync(abs)) return null;
+  const items = lesson.downloads || [];
+  const rows = items.length
+    ? `<ul>${items
+        .map((item) => {
+          const href = item.previewPath || item.path;
+          const prefix = relativePrefixToCourseRoot(dirname(rel));
+          return `<li><a href="${htmlEscape(`${prefix}${href}`, true)}">${htmlEscape(item.label)}</a></li>`;
+        })
+        .join("")}</ul>`
+    : `<p>${htmlEscape(lesson.title || lesson.name || lesson.id)} resources are organized in the unit sections.</p>`;
+  mkdirSync(dirname(abs), { recursive: true });
+  writeFileSync(abs, shellHtml(lesson.title || lesson.name || lesson.id, rows, []), "utf8");
+  return rel;
+}
+
+function htmlHref(fromRel, toRel) {
+  return toPosix(relative(dirname(join(courseRoot, fromRel)), join(courseRoot, toRel)));
+}
+
+function wordpressH5pId(value) {
+  return /h5p_embed(?:&amp;|&)id=(\d+)/i.exec(String(value || ""))?.[1] || "";
+}
+
+function repairBookSectionExternalEmbeds(manifest) {
+  let h5pIframesLocalized = 0;
+  let videoFallbackLinksRewritten = 0;
+  let externalScriptsRemoved = 0;
+  for (const unit of manifest.units || []) {
+    for (const lesson of unit.lessons || []) {
+      const h5pById = new Map();
+      for (const item of lesson.h5p || []) {
+        const id = wordpressH5pId(item.source || item.exportUrl || "");
+        if (id && item.previewPath && existsSync(join(courseRoot, item.previewPath))) h5pById.set(id, item);
+      }
+      for (const section of lesson.bookSections || []) {
+        if (!section?.path || !existsSync(join(courseRoot, section.path))) continue;
+        const abs = join(courseRoot, section.path);
+        let html = readFileSync(abs, "utf8");
+        const before = html;
+        html = html.replace(/<iframe\b[^>]*welcome\.hexstruct\.com\/wp-admin\/admin-ajax\.php\?action=h5p_embed(?:&amp;|&)id=(\d+)[\s\S]*?<\/iframe>/gi, (match, id) => {
+          const item = h5pById.get(String(id));
+          if (!item) return match;
+          h5pIframesLocalized += 1;
+          return `<iframe src="${htmlEscape(`${htmlHref(section.path, item.previewPath)}?embed=1`, true)}" class="h5p-iframe" title="${htmlEscape(item.label || `H5P ${id}`, true)}" loading="lazy" allowfullscreen="allowfullscreen" style="width:100%; min-height:640px; border:0;"></iframe>`;
+        });
+        html = html.replace(/<script\b[^>]*(?:welcome\.hexstruct\.com|www\.hexstruct\.com)[^>]*>\s*<\/script>/gi, () => {
+          externalScriptsRemoved += 1;
+          return "";
+        });
+        html = html.replace(
+          /(<a\b[^>]*href=["'][^"']*localized-moodle\/video\/[^"']+["'][^>]*>)(?:https?:\/\/www\.esunnybrook\.com\/[^<]+)(<\/a>)/gi,
+          (_match, open, close) => {
+            videoFallbackLinksRewritten += 1;
+            return `${open}Local video file${close}`;
+          },
+        );
+        if (html !== before) {
+          writeFileSync(abs, html, "utf8");
+          section.bytes = statSync(abs).size;
+          section.textPreview ||= textPreviewFromHtml(html);
+        }
+      }
+    }
+  }
+  return { h5pIframesLocalized, videoFallbackLinksRewritten, externalScriptsRemoved };
 }
 
 function cleanExistingActivityHtml(manifest) {
@@ -813,12 +1137,150 @@ manifest.courseDownloads.sort((a, b) => {
   return (order[a.role] || 100) - (order[b.role] || 100) || String(a.label).localeCompare(String(b.label));
 });
 
+const localizedEvaluationActivities = [];
+const missingEvaluationActivities = [];
+for (const spec of evaluationActivitySpecs) {
+  try {
+    localizedEvaluationActivities.push({ unit: spec.unit, item: await ensureEvaluationActivity(spec) });
+  } catch (error) {
+    missingEvaluationActivities.push({
+      unit: spec.unit,
+      label: spec.label,
+      moodleActivityId: spec.id,
+      source: `https://www.esunnybrook.com/mod/${spec.mod}/view.php?id=${spec.id}`,
+      reason: String(error.message || error),
+    });
+  }
+}
+
+const homeworkSubmissionItems = [];
+const evaluationItems = [];
+const omittedExitCards = [];
+const omittedExitCardLessons = [];
+const generatedLessonIndexes = [];
+let extractedVideoItems = 0;
+let extractedH5pItems = 0;
+let reflectionLogItems = 0;
+
+for (const unit of manifest.units || []) {
+  const unitEvaluations = [];
+  const unitReflectionAndLogs = [];
+  unitEvaluations.push(
+    ...localizedEvaluationActivities
+      .filter((entry) => Number(entry.unit) === Number(unit.unit))
+      .map((entry) => normalizeUnitEvaluation(entry.item, unit)),
+  );
+  const retainedLessons = [];
+  for (const lesson of unit.lessons || []) {
+    if (isExitCard({ label: lesson.title, title: lesson.title })) {
+      omittedExitCardLessons.push({
+        unit: unit.unit,
+        lesson: lesson.lesson,
+        title: lesson.title,
+        omittedReason: "exit_card_not_core_courseware",
+      });
+      continue;
+    }
+
+    const remainingDownloads = [];
+    lesson.videos ||= [];
+    lesson.h5p ||= [];
+
+    for (const item of lesson.downloads || []) {
+      if (isHomeworkSubmissionActivity(item)) {
+        homeworkSubmissionItems.push(normalizeHomeworkSubmission(item));
+        continue;
+      }
+      if (isExitCard(item)) {
+        omittedExitCards.push(cloneResource(item, { omittedReason: "exit_card_not_core_courseware" }));
+        continue;
+      }
+      if (isReflectionOrLogResource(item)) {
+        unitReflectionAndLogs.push(normalizeReflectionLog(item, unit));
+        reflectionLogItems += 1;
+        continue;
+      }
+      if (isCulminatingEvaluation(item)) {
+        unitEvaluations.push(normalizeUnitEvaluation(item, unit));
+        continue;
+      }
+      if (isStandaloneVideo(item)) {
+        upsertByResourceKey(
+          lesson.videos,
+          cloneResource(item, {
+            role: item.role || "video",
+            category: item.category || "video",
+          }),
+        );
+        extractedVideoItems += 1;
+        continue;
+      }
+      if (isStandaloneH5p(item)) {
+        upsertByResourceKey(
+          lesson.h5p,
+          cloneResource(item, {
+            role: item.role || "h5p",
+            category: item.category || "h5p",
+          }),
+        );
+        extractedH5pItems += 1;
+        continue;
+      }
+      remainingDownloads.push(item);
+    }
+
+    lesson.downloads = dedupeByResourceKey(remainingDownloads);
+    lesson.videos = dedupeByResourceKey(lesson.videos || []);
+    lesson.h5p = dedupeByResourceKey(lesson.h5p || []);
+    const generatedIndex = writeLessonIndexIfMissing(unit, lesson);
+    if (generatedIndex) generatedLessonIndexes.push(generatedIndex);
+    retainedLessons.push(lesson);
+  }
+  unit.lessons = retainedLessons;
+
+  unit.unitResources ||= {};
+  unit.unitResources.evaluations = dedupeByResourceKey([...(unit.unitResources.evaluations || []), ...unitEvaluations]);
+  unit.unitResources.reflectionAndLogs = dedupeByResourceKey([
+    ...(unit.unitResources.reflectionAndLogs || []),
+    ...unitReflectionAndLogs,
+  ]);
+  evaluationItems.push(...unit.unitResources.evaluations.map((item) => normalizeUnitEvaluation(item, unit)));
+}
+
+for (const item of homeworkSubmissionItems) {
+  upsertByResourceKey(manifest.courseDownloads, item);
+}
+manifest.courseDownloads = (manifest.courseDownloads || []).map(normalizeExistingHomeworkSubmission);
+manifest.evaluations = dedupeByResourceKey(evaluationItems);
+manifest.teacherResources = dedupeByResourceKey(manifest.teacherResources || []);
+const bookSectionEmbedRepair = repairBookSectionExternalEmbeds(manifest);
+
+manifest.courseDownloads.sort(compareCourseDownloadItems);
+
 const rewrittenActivityPages = cleanExistingActivityHtml(manifest);
 for (const item of allManifestItems(manifest)) updateBytes(item);
+
+const actualStructureCounts = {
+  homeworkSubmissionItems: (manifest.courseDownloads || []).filter((item) => item.parentSection === "Homework Submission Folder").length,
+  unitEvaluations: (manifest.evaluations || []).length,
+  reflectionAndLogItems: (manifest.units || []).reduce(
+    (sum, unit) => sum + (unit.unitResources?.reflectionAndLogs?.length || 0),
+    0,
+  ),
+  lessonVideos: (manifest.units || []).reduce(
+    (sum, unit) => sum + (unit.lessons || []).reduce((lessonSum, lesson) => lessonSum + (lesson.videos?.length || 0), 0),
+    0,
+  ),
+  lessonH5p: (manifest.units || []).reduce(
+    (sum, unit) => sum + (unit.lessons || []).reduce((lessonSum, lesson) => lessonSum + (lesson.h5p?.length || 0), 0),
+    0,
+  ),
+};
 
 manifest.sourceAudit ||= {};
 manifest.sourceAudit.moodleCourseId = moodleCourseId;
 manifest.sourceAudit.moodleCoursePage = coursePageUrl;
+manifest.sourceAudit.lessonCount = (manifest.units || []).reduce((sum, unit) => sum + (unit.lessons || []).length, 0);
 manifest.sourceAudit.courseOverviewSection = {
   source: overviewUrl,
   localPath: overviewEntry.path,
@@ -839,6 +1301,29 @@ manifest.sourceAudit.finalExamCulminatingSection = {
 manifest.sourceAudit.teacherPacket = {
   status: "not-exposed-in-current-moodle-shell",
   checkedCourseId: moodleCourseId,
+};
+manifest.sourceAudit.displayStructureRepair = {
+  repairedAt: new Date().toISOString(),
+  actual: actualStructureCounts,
+  delta: {
+    homeworkSubmissionItems: homeworkSubmissionItems.length,
+    reflectionAndLogItems: reflectionLogItems,
+    videosMovedToLessonMedia: extractedVideoItems,
+    h5pMovedToLessonMedia: extractedH5pItems,
+    omittedExitCards: omittedExitCards.length,
+    omittedExitCardLessons: omittedExitCardLessons.length,
+  },
+  omittedExitCardLessons,
+  generatedLessonIndexes,
+  localizedEvaluationActivities: localizedEvaluationActivities.map((entry) => ({
+    unit: entry.unit,
+    label: entry.item.label,
+    path: entry.item.path,
+    source: entry.item.source,
+  })),
+  missingEvaluationActivities,
+  bookSectionEmbedRepair,
+  standard: "docs/MOODLE_COURSE_IMPORT_DISPLAY_RULES.md",
 };
 manifest.sourceAudit.mismatchedSourceFilenames = allManifestItems(manifest)
   .flatMap((item) => (item.attachments || []).map((attachment) => ({ parent: item.label, attachment })))
@@ -862,8 +1347,19 @@ console.log(JSON.stringify({
   introductionAttachments: introductionFiles.length,
   overviewActivities: overviewActivities.length,
   courseSections: manifest.courseSections.length,
+  actualStructureCounts,
+  delta: {
+    homeworkSubmissionItems: homeworkSubmissionItems.length,
+    videosMovedToLessonMedia: extractedVideoItems,
+    h5pMovedToLessonMedia: extractedH5pItems,
+    omittedExitCards: omittedExitCards.length,
+    omittedExitCardLessons: omittedExitCardLessons.length,
+  },
+  bookSectionEmbedRepair,
   finalAttachments: finalFiles.length,
   directCulminatingPdfLocalized: manifest.sourceAudit.finalExamCulminatingSection.directCulminatingPdfLocalized,
   rewrittenActivityPages,
   mismatchedSourceFilenames: manifest.sourceAudit.mismatchedSourceFilenames.length,
+  localizedEvaluationActivities: localizedEvaluationActivities.length,
+  missingEvaluationActivities: missingEvaluationActivities.length,
 }, null, 2));

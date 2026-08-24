@@ -26,6 +26,7 @@ const localStringPattern = /["']((?:css|data|fonts|html5|js|lng|res|resources)\/
 const missing = [];
 const missingKeys = new Set();
 let presentations = 0;
+const auditedPaths = new Set();
 
 function isExternalOrSpecial(url) {
   return !url || /^(?:https?:|data:|mailto:|javascript:|#)/i.test(url);
@@ -34,7 +35,7 @@ function isExternalOrSpecial(url) {
 function auditLocalRef(item, file, url) {
   if (isExternalOrSpecial(url)) return;
   const clean = decodeURIComponent(url.split("#")[0].split("?")[0]);
-  if (!clean || clean.startsWith("/")) return;
+  if (!clean || clean.startsWith("/") || /[\\<>"'{}()[\]+^$]/.test(clean)) return;
   if (clean.startsWith("lng/") && !/^lng\/en-US\.[^/]+\.json$/i.test(clean)) return;
   const full = resolve(dirname(file), clean);
   if (!existsSync(full)) {
@@ -47,6 +48,9 @@ function auditLocalRef(item, file, url) {
 }
 
 function auditIspringItem(item) {
+  if (!item?.path) return;
+  if (auditedPaths.has(item.path)) return;
+  auditedPaths.add(item.path);
   presentations += 1;
   const file = join(courseRoot, item.path || "");
   if (!item.path || !existsSync(file)) {
@@ -63,19 +67,19 @@ function auditIspringItem(item) {
   }
 }
 
-for (const section of manifest.courseSections || []) {
-  for (const item of section.ispring || []) {
-    auditIspringItem(item);
+function walkManifest(value) {
+  if (Array.isArray(value)) {
+    for (const item of value) walkManifest(item);
+    return;
   }
+  if (!value || typeof value !== "object") return;
+  if (value.type === "ispring" || value.category === "ispring" || value.path?.endsWith("/presentation.html")) {
+    auditIspringItem(value);
+  }
+  for (const child of Object.values(value)) walkManifest(child);
 }
 
-for (const unit of manifest.units || []) {
-  for (const lesson of unit.lessons || []) {
-    for (const item of lesson.ispring || []) {
-      auditIspringItem(item);
-    }
-  }
-}
+walkManifest(manifest);
 
 console.log(JSON.stringify({ course, presentations, missingRefs: missing.length, missing: missing.slice(0, 50) }, null, 2));
 if (missing.length) process.exitCode = 1;
