@@ -455,8 +455,17 @@ function withMergedAttachments(item: LinkableResource, attachments: LinkableReso
   };
 }
 
+function normalizedRoleKey(value?: string): string {
+  return String(value || "")
+    .trim()
+    .replace(/([a-z])([A-Z])/g, "$1_$2")
+    .replace(/[\s-]+/g, "_")
+    .toLowerCase();
+}
+
 function roleIn(item: LinkableResource, roles: string[]): boolean {
-  return roles.includes((item.role || "").toLowerCase());
+  const role = normalizedRoleKey(item.role);
+  return roles.map(normalizedRoleKey).includes(role);
 }
 
 function answerResourcesForLesson(teacherResources: LinkableResource[], unit: Unit, lesson: Lesson): LinkableResource[] {
@@ -1154,13 +1163,13 @@ const LESSON_FLOW = [
 ] as const;
 
 function flowKeyForRole(role?: string): string {
-  const normalized = role || "other";
-  const match = LESSON_FLOW.find((section) => (section.roles as readonly string[]).includes(normalized));
+  const normalized = normalizedRoleKey(role || "other");
+  const match = LESSON_FLOW.find((section) => (section.roles as readonly string[]).map(normalizedRoleKey).includes(normalized));
   return match?.key || "other";
 }
 
 function downloadFlowKey(item: LinkableResource): string {
-  const role = item.role || "download";
+  const role = normalizedRoleKey(item.role || "download");
   const type = (item.type || "").toLowerCase();
   const category = (item.category || "").toLowerCase();
   const roleFlowKey = flowKeyForRole(role);
@@ -1227,8 +1236,21 @@ function visibleLessonDownloadsForLesson(lesson: Lesson): FileResource[] {
   return (lesson.downloads || []).filter((item) => isTeacherVisibleResource(item) && !isStandaloneNumberedLessonActivity(item));
 }
 
+function visibleRoleDownloadsForLesson(lesson: Lesson, roles: string[]): FileResource[] {
+  return (lesson.downloads || []).filter(
+    (item) =>
+      roleIn(item, roles) &&
+      isTeacherVisibleResource(item) &&
+      isLocalizedStandaloneLessonResource(item) &&
+      !isStandaloneNumberedLessonActivity(item),
+  );
+}
+
 function visibleHandsOnForLesson(lesson: Lesson): FileResource[] {
-  return (lesson.handsOn || []).filter(isTeacherVisibleResource);
+  return dedupeResources([
+    ...(lesson.handsOn || []).filter(isTeacherVisibleResource),
+    ...visibleRoleDownloadsForLesson(lesson, ["hands_on"]),
+  ]);
 }
 
 function normalizedResourceName(item: LinkableResource): string {
