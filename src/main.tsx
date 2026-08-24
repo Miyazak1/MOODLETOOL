@@ -1174,6 +1174,7 @@ function downloadFlowKey(item: LinkableResource): string {
   const category = (item.category || "").toLowerCase();
   const roleFlowKey = flowKeyForRole(role);
   if (role === "lesson") return "lesson";
+  if (isPlayableOnlyResource(item) && roleFlowKey !== "other") return roleFlowKey;
   if (type === "mp4" || type === "webm" || type === "video" || category.includes("video")) {
     return roleFlowKey === "other" ? "resources" : roleFlowKey;
   }
