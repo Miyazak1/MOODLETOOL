@@ -1254,6 +1254,16 @@ function visibleHandsOnForLesson(lesson: Lesson): FileResource[] {
   ]);
 }
 
+function visiblePlayableFlowDownloadsForLesson(lesson: Lesson): FileResource[] {
+  return (lesson.downloads || []).filter((item) => {
+    if (!isTeacherVisibleResource(item)) return false;
+    if (!isLocalizedStandaloneLessonResource(item)) return false;
+    if (isStandaloneNumberedLessonActivity(item)) return false;
+    const key = downloadFlowKey(item);
+    return key !== "resources" && key !== "other";
+  });
+}
+
 function normalizedResourceName(item: LinkableResource): string {
   const name = item.label || item.path?.split(/[\\/]/).pop() || item.url || "";
   return name.toLowerCase().replace(/\.[a-z0-9]+$/i, "").replace(/[^a-z0-9]+/g, "");
@@ -1340,7 +1350,7 @@ function LessonFlowPanel({
     );
   };
   const regularDownloads = dedupeResources(
-    [...embeddedPlayableAttachments, ...visibleDownloads, ...visibleHandsOn, ...visibleTextExports].filter((item) => {
+    [...embeddedPlayableAttachments, ...visiblePlayableFlowDownloadsForLesson(lesson), ...visibleDownloads, ...visibleHandsOn, ...visibleTextExports].filter((item) => {
       if (item.role === "lesson_book" || item.role === "lesson_book_section") return false;
       if (isStandaloneNumberedLessonActivity(item)) return false;
       if (!isLocalizedStandaloneLessonResource(item)) return false;
