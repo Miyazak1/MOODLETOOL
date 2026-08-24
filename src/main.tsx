@@ -1344,7 +1344,7 @@ function LessonFlowPanel({
       if (item.role === "lesson_book" || item.role === "lesson_book_section") return false;
       if (isStandaloneNumberedLessonActivity(item)) return false;
       if (!isLocalizedStandaloneLessonResource(item)) return false;
-      if (!isBookSectionEmbeddedPlayableResource(item) && isGroupedResource(item, bookSectionAttachmentKeys)) return false;
+      if (!isPlayableOnlyResource(item) && !isBookSectionEmbeddedPlayableResource(item) && isGroupedResource(item, bookSectionAttachmentKeys)) return false;
       return true;
     }),
   );
