@@ -74,7 +74,11 @@ function collectResource(files, dirs, resource) {
 }
 
 function htmlReferenceToCoursePath(htmlPath, rawValue) {
-  const value = String(rawValue || '').trim();
+  const value = String(rawValue || '')
+    .replaceAll('&amp;', '&')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+    .trim();
   if (
     !value
     || value.startsWith('#')
@@ -90,6 +94,12 @@ function htmlReferenceToCoursePath(htmlPath, rawValue) {
     decodedPath = decodeURIComponent(rawPath);
   } catch {
     return '';
+  }
+  if (htmlPath.startsWith('previews-html/') && decodedPath.startsWith('../')) {
+    const courseRootCandidate = toPosix(decodedPath).replace(/^(?:\.\.\/)+/, '');
+    if (courseRootCandidate && !courseRootCandidate.startsWith('../') && !courseRootCandidate.includes('/../')) {
+      return path.posix.normalize(courseRootCandidate).replace(/^\/+/, '');
+    }
   }
   const normalized = path.posix.normalize(path.posix.join(path.posix.dirname(htmlPath), toPosix(decodedPath))).replace(/^\/+/, '');
   if (!normalized || normalized === '.' || normalized.startsWith('../') || normalized.includes('/../')) return '';
@@ -170,6 +180,9 @@ const dirs = new Set();
 for (const section of manifest.courseSections ?? []) {
   collectResource(files, dirs, section);
   collectResource(files, dirs, section.unitPlan);
+  for (const resource of section.ispring ?? []) collectResource(files, dirs, resource);
+  for (const resource of section.media ?? []) collectResource(files, dirs, resource);
+  for (const resource of section.downloads ?? []) collectResource(files, dirs, resource);
 }
 for (const resource of manifest.courseDownloads ?? []) collectResource(files, dirs, resource);
 for (const resource of manifest.teacherResources ?? []) collectResource(files, dirs, resource);

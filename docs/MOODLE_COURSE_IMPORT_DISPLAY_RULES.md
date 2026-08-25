@@ -2,6 +2,11 @@
 
 Updated: 2026-08-21
 
+For the current package-level standard, reference-course policy, and QA gate
+rules, read `docs/OSSD_COURSE_PACKAGE_STANDARD.md` first. This document remains
+the detailed Moodle import rulebook, but the current frontend display standard
+is ENG3U, not MDM4U.
+
 This document is the canonical rule set for importing Moodle courses into the
 OSSD Course Portal. It captures the lessons learned from BAF3M, BAT4M, ENG2D,
 ENG3U, ENG4U, ICS3U, MCR3U, MDM4U, OLC4O, SES4U, SBI3U, SBI4U, and similar

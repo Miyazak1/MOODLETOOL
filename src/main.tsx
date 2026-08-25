@@ -806,6 +806,48 @@ async function copyText(value: string) {
   textarea.remove();
 }
 
+function anchorSafePart(value: string | number): string {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function unitAnchorId(unitNumber: number): string {
+  return `unit-${unitNumber}`;
+}
+
+function lessonAnchorId(unitNumber: number, lesson: Pick<Lesson, "id" | "title">): string {
+  return `unit-${unitNumber}-lesson-${anchorSafePart(lesson.id || lesson.title) || "item"}`;
+}
+
+function scrollToAnchor(anchorId: string) {
+  document.getElementById(anchorId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function scrollToAnchorWhenReady(anchorId: string, attempts = 24) {
+  const target = document.getElementById(anchorId);
+  if (target) {
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  if (attempts <= 0) return;
+  window.setTimeout(() => scrollToAnchorWhenReady(anchorId, attempts - 1), 50);
+}
+
+function quickNavEnabledFromUrl(): boolean {
+  const params = new URLSearchParams(window.location.search);
+  const value = params.get("quickNav") || params.get("quicknav") || "";
+  if (["0", "false", "no", "off"].includes(value.toLowerCase())) return false;
+  if (["1", "true", "yes", "on"].includes(value.toLowerCase())) return true;
+  try {
+    return window.localStorage.getItem("ossd.quickNav") !== "0";
+  } catch {
+    return true;
+  }
+}
+
 function MoodleEmbedButton({ row }: { row?: MoodleEmbedRow }) {
   const [copied, setCopied] = useState(false);
   const { t } = usePortalI18n();
@@ -1877,6 +1919,154 @@ function CurrentCourseCard({ course, manifest }: { course: CourseCatalogEntry; m
   );
 }
 
+type CourseQuickNavItem = {
+  id: string;
+  label: string;
+  meta: string;
+  description: string;
+  kind: "landmark" | "section" | "unit";
+  unit?: number;
+};
+
+function CourseQuickNav({
+  manifest,
+  selectedUnit,
+  onSelectUnit,
+}: {
+  manifest: CourseManifest;
+  selectedUnit: number;
+  onSelectUnit: (unit: number) => void;
+}) {
+  const { t } = usePortalI18n();
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [tooltipTop, setTooltipTop] = useState<number | null>(null);
+  const currentUnit = manifest.units.find((unit) => unit.unit === selectedUnit) || manifest.units[0];
+  const items = useMemo<CourseQuickNavItem[]>(() => {
+    const moodleSectionGroups = buildCourseMoodleSectionGroups(manifest, t);
+    const landmarks: CourseQuickNavItem[] = [
+      ...(manifest.teacherPrep
+        ? [
+            {
+              id: "teacher-prep-guide",
+              label: "Teacher Prep",
+              meta: `${manifest.teacherPrep.units.length} ${t("label.units")}`,
+              description: "Teacher-facing plans, pacing, evidence notes, and preparation resources.",
+              kind: "landmark" as const,
+            },
+          ]
+        : []),
+    ];
+    const courseSectionItems = moodleSectionGroups.map((group) => ({
+      id: `moodle-${group.key}`,
+      label: group.title,
+      meta: `${group.items.length} ${group.items.length === 1 ? t("label.item") : t("label.items")}`,
+      description: group.description || `${group.title} course resource section.`,
+      kind: "section" as const,
+    }));
+    const unitItems = currentUnit
+      ? [
+          {
+            id: unitAnchorId(currentUnit.unit),
+            label: `Unit ${currentUnit.unit}: ${currentUnit.title}`,
+            meta: `${currentUnit.lessons.length} ${t("label.lessons")}`,
+            description: `${currentUnit.lessons.length} ${t("label.lessons")} · ${currentUnit.summary.ispring} iSpring · ${unitLocalDownloadCount(currentUnit)} ${t("label.files")}`,
+            kind: "unit" as const,
+            unit: currentUnit.unit,
+          },
+        ]
+      : [];
+    return [
+      ...courseSectionItems,
+      ...landmarks,
+      ...unitItems,
+      ...(manifest.texts.length
+        ? [
+            {
+              id: "text-index",
+              label: t("text.index"),
+              meta: `${manifest.texts.length} ${t("label.items")}`,
+              description: t("course.quick.texts.detail"),
+              kind: "landmark" as const,
+            },
+          ]
+        : []),
+    ];
+  }, [currentUnit, manifest, t]);
+
+  useEffect(() => {
+    const targets = items.map((item) => document.getElementById(item.id)).filter((item): item is HTMLElement => Boolean(item));
+    if (!targets.length) {
+      setActiveId(null);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => Math.abs(a.boundingClientRect.top) - Math.abs(b.boundingClientRect.top))[0];
+        if (visible?.target.id) setActiveId(visible.target.id);
+      },
+      { rootMargin: "-18% 0px -68% 0px", threshold: [0, 0.2, 0.6] },
+    );
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, [items]);
+
+  const handleSelect = (item: CourseQuickNavItem) => {
+    if (typeof item.unit === "number" && item.unit !== selectedUnit) {
+      onSelectUnit(item.unit);
+      scrollToAnchorWhenReady(item.id);
+      return;
+    }
+    scrollToAnchorWhenReady(item.id);
+  };
+  const hoveredItem = hoveredIndex === null ? null : items[hoveredIndex] || null;
+
+  const handleTickEnter = (index: number, element: HTMLElement) => {
+    setHoveredIndex(index);
+    const rect = element.getBoundingClientRect();
+    const rawTop = rect.top + rect.height / 2;
+    setTooltipTop(Math.max(96, Math.min(window.innerHeight - 96, rawTop)));
+  };
+
+  const clearHover = () => {
+    setHoveredIndex(null);
+    setTooltipTop(null);
+  };
+
+  if (!items.length) return null;
+
+  return (
+    <nav className="course-quick-nav" aria-label="Quick page navigation">
+      <div className="course-quick-nav-rail">
+        {items.map((item, index) => (
+          <button
+            aria-label={`${item.label}, ${item.meta}`}
+            className={`course-quick-nav-tick ${item.kind} ${item.id === activeId ? "active" : ""} ${
+              hoveredIndex === null ? "" : `near-${Math.min(Math.abs(index - hoveredIndex), 4)}`
+            }`}
+            key={item.id}
+            onBlur={clearHover}
+            onClick={() => handleSelect(item)}
+            onFocus={(event) => handleTickEnter(index, event.currentTarget)}
+            onMouseEnter={(event) => handleTickEnter(index, event.currentTarget)}
+            onMouseLeave={clearHover}
+            type="button"
+          />
+        ))}
+      </div>
+      {hoveredItem && tooltipTop !== null ? (
+        <div className="course-quick-nav-tooltip" style={{ top: tooltipTop }}>
+          <strong>{hoveredItem.label}</strong>
+          <em>{hoveredItem.meta}</em>
+          <span>{hoveredItem.description}</span>
+        </div>
+      ) : null}
+    </nav>
+  );
+}
+
 function UnitRoadmap({
   units,
   selectedUnit,
@@ -1997,7 +2187,7 @@ function LessonRow({
   const unitOverview = isUnitOverviewLesson(lesson);
 
   return (
-    <article className={`lesson-row ${open ? "open" : ""}`}>
+    <article className={`lesson-row ${open ? "open" : ""}`} id={lessonAnchorId(lesson.unit, lesson)}>
       <button className="lesson-summary" type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
         <span className="lesson-code">
           {structureLabels.secondaryKind === "activity" ? `A${activityIndex + 1}` : displayLessonId(lesson.id)}
@@ -2411,7 +2601,7 @@ function UnitDetail({
   const hasUnitActions = textTags.length > 0 || Boolean(unit.unitPlan) || structuredUnit;
 
   return (
-    <section className="unit-detail panel">
+    <section className="unit-detail panel" id={unitAnchorId(unit.unit)}>
       <div className="unit-heading">
         <p className="eyebrow">Unit {unit.unit}</p>
         <h2>{unit.title}</h2>
@@ -2657,6 +2847,7 @@ function App() {
   const unit = manifest?.units.find((item) => item.unit === selectedUnit) ?? manifest?.units[0];
   const structureLabels = manifest ? courseStructureLabels(manifest, t) : null;
   const adminCanShare = canGenerateMoodleEmbeds(portalSession);
+  const quickNavEnabled = useMemo(() => quickNavEnabledFromUrl(), []);
   const moodleEmbedByPath = useMemo(() => {
     const rowsByPath: MoodleEmbedMap = new Map();
     for (const row of moodleEmbedRows) {
@@ -2800,6 +2991,13 @@ function App() {
           ) : null}
         </section>
       </main>
+      {manifest && quickNavEnabled ? (
+        <CourseQuickNav
+          manifest={manifest}
+          onSelectUnit={setSelectedUnit}
+          selectedUnit={selectedUnit}
+        />
+      ) : null}
     </PortalI18nProvider>
   );
 }
