@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, extname, join, relative, resolve } from "node:path";
 import { inflateSync } from "node:zlib";
 
@@ -224,6 +224,26 @@ async function downloadRollPreviewAsset(url, targetRoot, rel) {
   return bytes.length;
 }
 
+function copyReusableRollPreviewLanguage(courseRoot, targetRoot, rel) {
+  const target = join(targetRoot, rel);
+  if (existsSync(target)) return { bytes: statSync(target).size, source: "existing" };
+  const candidates = [
+    join(coursewareRoot, "BAF3M", "ispring-localized/unit-00/course-overview/lng/en-US.1740f3.json"),
+    join(coursewareRoot, "BAT4M", "ispring-localized/unit-00/course-overview/lng/en-US.1740f3.json"),
+    join(coursewareRoot, "SNC1D", "ispring-localized/unit-00/course-overview/lng/en-US.1740f3.json"),
+    join(coursewareRoot, "SES4U", "ispring-localized/unit-00/course-overview/lng/en-US.1740f3.json"),
+    join(coursewareRoot, "BAF3M", "ispring-localized/unit-00/course-overview/lng/en-US.c9165f.json"),
+    join(coursewareRoot, "BAT4M", "ispring-localized/unit-00/course-overview/lng/en-US.c9165f.json"),
+    join(coursewareRoot, "SNC1D", "ispring-localized/unit-00/course-overview/lng/en-US.c9165f.json"),
+    join(coursewareRoot, "SES4U", "ispring-localized/unit-00/course-overview/lng/en-US.c9165f.json"),
+  ];
+  const source = candidates.find((candidate) => existsSync(candidate));
+  if (!source) throw new Error(`Missing reusable roll-preview language file for ${rel}`);
+  mkdirSync(dirname(target), { recursive: true });
+  copyFileSync(source, target);
+  return { bytes: statSync(target).size, source: toPosix(relative(courseRoot, source)) };
+}
+
 async function ensureRollPreviewPresentation(row, embed, mirror) {
   const playerPath = new URL(embed.playerUrl).pathname;
   if (!playerPath.includes("/roll-preview/")) return { files: [], failures: [] };
@@ -240,16 +260,31 @@ async function ensureRollPreviewPresentation(row, embed, mirror) {
   const files = [];
   const failures = [];
   const origin = "https://hexstruct.ispring.com";
+  const languageRels = ["lng/en-US.1740f3.json", "lng/en-US.c9165f.json"];
 
-  try {
-    files.push({
-      url: `${origin}/roll-preview/lng/en-US.c9165f.json`,
-      path: toPosix(relative(courseRoot, join(targetRoot, "lng", "en-US.c9165f.json"))),
-      bytes: await downloadRollPreviewAsset(`${origin}/roll-preview/lng/en-US.c9165f.json`, targetRoot, join("lng", "en-US.c9165f.json")),
-      status: "downloaded",
-    });
-  } catch (error) {
-    failures.push({ url: `${origin}/roll-preview/lng/en-US.c9165f.json`, error: String(error?.message || error) });
+  for (const rel of languageRels) {
+    const url = `${origin}/roll-preview/${rel}`;
+    try {
+      files.push({
+        url,
+        path: toPosix(relative(courseRoot, join(targetRoot, rel))),
+        bytes: await downloadRollPreviewAsset(url, targetRoot, rel),
+        status: "downloaded",
+      });
+    } catch (error) {
+      try {
+        const fallback = copyReusableRollPreviewLanguage(courseRoot, targetRoot, rel);
+        files.push({
+          url,
+          path: toPosix(relative(courseRoot, join(targetRoot, rel))),
+          bytes: fallback.bytes,
+          status: fallback.source === "existing" ? "reused-existing" : "copied-fallback",
+          fallbackSource: fallback.source,
+        });
+      } catch (fallbackError) {
+        failures.push({ url, error: String(error?.message || error), fallbackError: String(fallbackError?.message || fallbackError) });
+      }
+    }
   }
 
   const resourceBase = new URL(playerData.resourcesBaseUrl || "/", origin);
@@ -270,7 +305,7 @@ async function ensureRollPreviewPresentation(row, embed, mirror) {
   }
 
   playerData.resourcesBaseUrl = "resources/";
-  playerData.playerI18nUrl = "lng/en-US.c9165f.json";
+  playerData.playerI18nUrl = "lng/en-US.1740f3.json";
   playerData.editorDocumentUrl = "";
 
   const starter = `

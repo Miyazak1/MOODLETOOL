@@ -1459,7 +1459,7 @@ function LessonFlowPanel({
                 />
               ))}
               {sectionISpring.map((item, index) => {
-                const label = sectionISpring.length > 1 ? t("lesson.lessonNumber", { number: index + 1 }) : t("label.lesson");
+                const label = item.label || (sectionISpring.length > 1 ? t("lesson.lessonNumber", { number: index + 1 }) : t("label.lesson"));
                 return (
                   <ISpringActions
                     courseBaseUrl={courseBaseUrl}

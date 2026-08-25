@@ -118,10 +118,11 @@ const onlineUrl = readArg("--online-url") || readArg("--url") || readArg("--base
 const username = readArg("--username");
 const password = readArg("--password");
 const limit = readArg("--limit");
+const skipDisplayQa = hasFlag("--skip-display-qa");
 const outPath = readArg("--out") || (course ? resolve(projectRoot, "deployment", `package-course-${course}.json`) : "");
 
 if (!course) {
-  console.error("Usage: npm run package:course -- --course ICS3U [--dry-run] [--online-url https://www.moodletool.work --username USER --password PASS]");
+  console.error("Usage: npm run package:course -- --course ICS3U [--dry-run] [--skip-display-qa] [--online-url https://www.moodletool.work --username USER --password PASS]");
   process.exit(2);
 }
 
@@ -137,6 +138,14 @@ try {
   steps.push(preCourse);
   if (preCourse.exitCode !== 0 || preCourse.status === "fail") {
     throw new Error("Pre-package course QA failed. Fix course issues before packaging.");
+  }
+
+  if (!skipDisplayQa) {
+    const preDisplay = runNodeStep("pre-display-qa", "scripts/review-page-display-regression.mjs", ["--courses", course, "--json"]);
+    steps.push(preDisplay);
+    if (preDisplay.exitCode !== 0 || preDisplay.status === "fail") {
+      throw new Error("Pre-package display QA failed. Fix ENG3U shell, playable resource placement, and attachment display issues before packaging.");
+    }
   }
 
   if (!keepOldPackages) {

@@ -231,11 +231,15 @@ Detect:
 
 Detect:
 
-1. videos not centered in ENG3U display style;
-2. long text pages with overly narrow reading columns;
-3. external fallback cards using broken inline formatting;
-4. standalone playable cards missing the primary action;
-5. right-side quick navigation containing non-content containers or collapsed
+1. lesson-flow pages not using the ENG3U shell (`page-title`,
+   `moodle-section`, `moodle-content`, and `course-page-shell.css`);
+2. legacy page wrappers left in lesson-flow pages, including inline `<style>`,
+   `article.content`, `generalbox`, or `book_content`;
+3. videos not centered in ENG3U display style;
+4. long text pages with overly narrow reading columns;
+5. external fallback cards using broken inline formatting;
+6. standalone playable cards missing the primary action;
+7. right-side quick navigation containing non-content containers or collapsed
    lesson targets.
 
 ## 8. QA Commands
@@ -245,6 +249,8 @@ first implementation; the package and online checks are the next stages.
 
 ```bash
 npm run qa:course -- --course <COURSE>
+npm run qa:structure -- --course <COURSE>
+npm run qa:structure -- --course <COURSE> --markdown
 npm run qa:package -- --course <COURSE>
 npm run qa:package -- --course <COURSE> --zip deployment/course-packages/<COURSE>-course-package.zip
 npm run qa:online -- --course <COURSE> --url https://www.moodletool.work
@@ -262,6 +268,7 @@ Expected responsibilities:
 | Command | Purpose |
 | --- | --- |
 | `qa:course` | Local manifest and source-structure audit before packaging. First version implemented in `scripts/qa-course.mjs`. |
+| `qa:structure` | Course structure review mode: writes JSON and Markdown reports grouped by Course Resources, Unit, Lesson, and lesson-flow section. It is designed for crawl/recovery review and AI-assisted inspection. First version implemented in `scripts/review-course-structure.mjs`. |
 | `qa:package` | Package preflight: required files, HTML dependencies, fixed-root zip shape, and zip/local manifest drift. First version implemented in `scripts/qa-package.mjs`. |
 | `qa:online` | AI-facing local-vs-online comparison: manifest hash, bundle hash, resource path status, and sampled local/online resource mismatches. First version implemented in `scripts/qa-online.mjs`. |
 | `qa:gate` | Unified gate that runs `qa:course`, `qa:package`, and optionally `qa:online`, then writes one combined report. First version implemented in `scripts/qa-gate.mjs`. |
@@ -269,6 +276,26 @@ Expected responsibilities:
 
 The online comparison output should be machine-readable JSON first. It is mainly
 for AI-assisted diagnosis, not for human-facing UI.
+
+## 8.1 Structure Review Mode
+
+`qa:structure` is the standard inspection command after crawling or repairing a
+course. It does not replace `qa:course`; it presents the same kind of evidence in
+a course-shaped review:
+
+1. Course resource sections, including section pages and course-level downloads.
+2. Unit summary, unit plan presence, and unit resource counts.
+3. Lesson rows with section count, localized H5P/video/iSpring counts, and
+   ordinary document counts.
+4. Book-section flow review for Lesson, Hands On, Consolidation, and Homework.
+5. Embedded playable resources that do not have same-flow standalone cards.
+6. Placeholders, thin pages, and missing local section paths.
+
+The command auto-detects `lesson-flow` courses when lessons have Moodle book
+sections. Courses without book sections are treated as `legacy`, so reference
+courses such as BBI2O are not incorrectly forced through new-site lesson-flow
+rules. Use `--profile lesson-flow` or `--profile legacy` only when the automatic
+choice is wrong.
 
 ## 9. Packaging Gate
 

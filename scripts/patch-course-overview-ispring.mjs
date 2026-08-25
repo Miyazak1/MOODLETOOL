@@ -66,12 +66,18 @@ function ensureOverviewStyles(html) {
 function patchOverviewHtml(html, pageRel, entryPath, title) {
   let next = ensureOverviewStyles(html);
   next = next.replace(/\s*<section class="overview-block">\s*<h2>Course Overview Presentation<\/h2>[\s\S]*?<\/section>/gi, "");
+  next = next.replace(/\s*<section class="embedded-ispring overview-presentation">\s*<h2>Course Overview Presentation<\/h2>[\s\S]*?<\/section>/gi, "");
   const src = relativeHref(pageRel, entryPath);
+  const shellBlock = `
+      <section class="embedded-ispring overview-presentation">
+        <iframe src="${escapeHtml(src, true)}" loading="lazy" allowfullscreen="allowfullscreen" title="${escapeHtml(title, true)}"></iframe>
+      </section>`;
   const block = `
       <section class="overview-block">
         <h2>Course Overview Presentation</h2>
         <div class="localized-ispring"><iframe src="${escapeHtml(src, true)}" loading="lazy" allowfullscreen="allowfullscreen" title="${escapeHtml(title, true)}"></iframe></div>
       </section>`;
+  if (/<div class="moodle-content">/i.test(next)) return next.replace(/<\/div>\s*<\/section>\s*<\/main>/i, `${shellBlock}\n      </div>\n    </section>\n  </main>`);
   if (/<\/article>/i.test(next)) return next.replace(/<\/article>/i, `${block}\n    </article>`);
   return next.replace(/(<section class="files">)/i, `${block}\n    $1`);
 }

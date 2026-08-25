@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { join, normalize, resolve } from "node:path";
+import { join, normalize, posix, resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
 const workspaceRoot = resolve(projectRoot, "..");
@@ -23,6 +23,18 @@ function normalizeRole(value = "") {
 
 function text(value) {
   return String(value ?? "");
+}
+
+function toPosix(value) {
+  return text(value).replace(/\\/g, "/");
+}
+
+function decodeHtmlAttr(value) {
+  return text(value)
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, " ");
 }
 
 function lowerResourceScope(item) {
@@ -133,13 +145,31 @@ function isHomeworkSubmissionResource(item) {
   return (isNumberedLessonActivity(item) || isNumberedLessonAnswerActivity(item)) && /(?:student[\s_-]*submission|homework)/.test(scope);
 }
 
+function flowKeyFromText(value) {
+  const label = normalizeRole(value);
+  if (!label) return "";
+  if (label.includes("learning_goal") || label.includes("success_criteria")) return "expectations";
+  if (label.includes("expectation")) return "expectations";
+  if (label.includes("hands")) return "hands_on";
+  if (label.includes("consolidation") || label.includes("consoldation")) return "consolidation";
+  if (label.includes("homework")) return "homework";
+  if (label === "lesson" || label.includes("lesson")) return "lesson";
+  return "";
+}
+
 function flowKeyForResource(item) {
   const role = normalizeRole(item?.role);
   const scope = lowerResourceScope(item);
-  if (role.includes("hands") || scope.includes("hands on")) return "hands_on";
-  if (role.includes("consolidation") || scope.includes("consolidation")) return "consolidation";
-  if (role.includes("homework") || scope.includes("homework")) return "homework";
-  if (role === "lesson" || role.includes("lesson")) return "lesson";
+  const sectionFlow = flowKeyFromText(item?.sectionLabel);
+  if (sectionFlow) return sectionFlow;
+  if (text(item?.sectionLabel).trim()) return "resources";
+  const roleFlow = flowKeyFromText(role);
+  if (roleFlow) return roleFlow;
+  if (scope.includes("hands on")) return "hands_on";
+  if (scope.includes("consolidation") || scope.includes("consoldation")) return "consolidation";
+  if (scope.includes("homework")) return "homework";
+  if (scope.includes("expectation")) return "expectations";
+  if (flowKeyFromText(item?.label) === "lesson") return "lesson";
   return "resources";
 }
 
@@ -159,6 +189,50 @@ function localPath(courseRoot, relativePath) {
   return normalize(join(courseRoot, relativePath));
 }
 
+function rawKindToFlow(kind) {
+  const value = normalizeRole(kind);
+  if (value === "lesson") return "lesson";
+  if (value === "handson" || value === "hands_on") return "hands_on";
+  if (value === "consolidation" || value === "consoldation") return "consolidation";
+  if (value === "homework") return "homework";
+  if (value === "overview" || value === "expectations") return "expectations";
+  return "";
+}
+
+function rawBookFlowsForLesson(courseRoot, lesson) {
+  const firstPath = (lesson.bookSections || []).find((section) => section.path)?.path;
+  if (!firstPath) return null;
+  const lessonDir = toPosix(firstPath).replace(/\/book_sections\/.*$/i, "");
+  if (!lessonDir || lessonDir === toPosix(firstPath)) return null;
+  const rawPath = localPath(courseRoot, `${lessonDir}/book_pages_raw.json`);
+  if (!existsSync(rawPath)) return null;
+  try {
+    const pages = JSON.parse(readFileSync(rawPath, "utf8"));
+    const flows = new Set();
+    for (const page of Array.isArray(pages) ? pages : []) {
+      const flow = rawKindToFlow(page?.kind);
+      if (flow) flows.add(flow);
+    }
+    return flows;
+  } catch {
+    return null;
+  }
+}
+
+function resolveLocalHtmlRef(pageRel, href) {
+  const raw = decodeHtmlAttr(href).trim().replace(/[?#].*$/, "");
+  if (!raw || raw.startsWith("#") || raw.startsWith("/") || /^(?:https?:|mailto:|tel:|data:|blob:|javascript:)/i.test(raw)) return "";
+  let decoded = raw;
+  try {
+    decoded = decodeURIComponent(raw);
+  } catch {
+    decoded = raw;
+  }
+  const resolved = posix.normalize(posix.join(posix.dirname(toPosix(pageRel)), toPosix(decoded))).replace(/^\/+/, "");
+  if (!resolved || resolved === "." || resolved.startsWith("../") || resolved.includes("/../")) return "";
+  return resolved;
+}
+
 function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
 }
@@ -174,9 +248,105 @@ function stripHtml(value) {
 
 function htmlHasPlayableMarker(html, kind) {
   if (kind === "h5p") return /<(?:iframe|div|script)\b[^>]*(?:localized-h5p|h5p_embed|h5p-player|h5p-content|\/h5p\/|\/h5p-external\/|\.h5p)/i.test(html);
-  if (kind === "video") return /<(?:video|source)\b[^>]*(?:\.mp4|\.webm|embed\/video|video\/)/i.test(html);
+  if (kind === "video") return /<(?:video|source|a)\b[^>]*(?:src|href|data-src)=["'][^"']*(?:\.mp4|\.webm|embed\/video|video\/)[^"']*["']/i.test(html);
   if (kind === "ispring") return /<(?:iframe|object|embed)\b[^>]*(?:ispring|presentation\.html|html5-package)/i.test(html);
   return false;
+}
+
+function htmlHasEmptyVideoShell(html) {
+  for (const match of text(html).matchAll(/<video\b[\s\S]*?<\/video>/gi)) {
+    if (!/<(?:video|source|a)\b[^>]*(?:src|href|data-src)=["'][^"']+["']/i.test(match[0])) return true;
+  }
+  return false;
+}
+
+function htmlRefsLocalPath(html, pageRel, targetRel) {
+  const expected = toPosix(targetRel).toLowerCase();
+  if (!expected) return false;
+  const normalizedHtml = decodeHtmlAttr(html).replace(/\\/g, "/").toLowerCase();
+  if (normalizedHtml.includes(expected)) return true;
+  for (const match of text(html).matchAll(/\b(?:src|data|data-src|href)=["']([^"']+)["']/gi)) {
+    if (resolveLocalHtmlRef(pageRel, match[1]).toLowerCase() === expected) return true;
+  }
+  return false;
+}
+
+function sectionStemForPath(sectionPath) {
+  return toPosix(sectionPath)
+    .split("/")
+    .pop()
+    ?.replace(/\.html$/i, "")
+    .toLowerCase();
+}
+
+function downloadSectionStem(item) {
+  return toPosix(item?.path || "")
+    .toLowerCase()
+    .match(/\/book_sections\/files\/([^/]+)\//)?.[1];
+}
+
+function htmlHasFilesSection(html) {
+  return /<section\b[^>]*class=["'][^"']*\bfiles\b/i.test(text(html));
+}
+
+function htmlFilesSectionInsideMoodleSection(html) {
+  const content = text(html);
+  const filesMatch = /<section\b[^>]*class=["'][^"']*\bfiles\b/i.exec(content);
+  if (!filesMatch) return true;
+  const beforeFiles = content.slice(0, filesMatch.index).toLowerCase();
+  const lastMoodleOpen = beforeFiles.lastIndexOf('<section class="moodle-section"');
+  const lastSectionClose = beforeFiles.lastIndexOf("</section>");
+  return lastMoodleOpen >= 0 && lastMoodleOpen > lastSectionClose;
+}
+
+function localizedIspringBlocks(html) {
+  const blocks = [];
+  for (const match of text(html).matchAll(/<div\b[^>]*class=["'][^"']*\blocalized-ispring\b[^"']*["'][^>]*>([\s\S]*?)<\/div>/gi)) {
+    const inner = match[1] || "";
+    const srcMatch = /<(?:iframe|object|embed)\b[^>]*(?:src|data|data-src)=["']([^"']+)["'][^>]*>/i.exec(inner);
+    blocks.push({ wrapper: "div", src: srcMatch?.[1] || "", raw: match[0] });
+  }
+  for (const match of text(html).matchAll(/<(?:iframe|object|embed)\b[^>]*class=["'][^"']*\blocalized-ispring\b[^"']*["'][^>]*(?:src|data|data-src)=["']([^"']*)["'][\s\S]*?<\/(?:iframe|object|embed)>/gi)) {
+    blocks.push({ wrapper: "iframe", src: match[1] || "", raw: match[0] });
+  }
+  return blocks;
+}
+
+function validateCourseShellCss(courseRoot, issues) {
+  const cssPath = join(courseRoot, "_assets", "course-page-shell.css");
+  if (!existsSync(cssPath)) return;
+  const css = readFileSync(cssPath, "utf8");
+  if (/\.localized-ispring\b/i.test(css) && !/\.localized-ispring\s+iframe\b/i.test(css)) {
+    addIssue(issues, "error", "ispring-shell-css-missing-child-iframe", "course-page-shell.css styles .localized-ispring but does not style .localized-ispring iframe, so div-wrapped iSpring can be clipped.", {
+      path: "_assets/course-page-shell.css",
+    });
+  }
+}
+
+function validateInlineIspringMarkup(html, pageRel, issues, context) {
+  const blocks = localizedIspringBlocks(html);
+  if (!blocks.length) return;
+  const bySrc = new Map();
+  for (const block of blocks) {
+    if (!block.src.trim()) {
+      addIssue(issues, "error", "localized-ispring-empty-src", `${context.sectionLabel || pageRel} contains a localized iSpring wrapper with no iframe source.`, context);
+      continue;
+    }
+    const resolved = resolveLocalHtmlRef(pageRel, block.src) || decodeHtmlAttr(block.src).replace(/[?#].*$/, "");
+    bySrc.set(resolved, (bySrc.get(resolved) || 0) + 1);
+  }
+  for (const [src, count] of bySrc) {
+    if (count > 1) {
+      addIssue(issues, "error", "localized-ispring-duplicate-inline", `${context.sectionLabel || pageRel} embeds the same iSpring ${count} times.`, {
+        ...context,
+        src,
+        count,
+      });
+    }
+  }
+  if (/<p\b[^>]*>\s*<div\b[^>]*class=["'][^"']*\blocalized-ispring\b/i.test(html)) {
+    addIssue(issues, "warn", "localized-ispring-invalid-p-wrapper", `${context.sectionLabel || pageRel} wraps a block iSpring player inside a paragraph; this can render inconsistently across browsers.`, context);
+  }
 }
 
 function addIssue(issues, severity, rule, message, context = {}) {
@@ -296,6 +466,7 @@ function validateLessonDisplay(courseRoot, manifest, issues) {
         const readableText = stripHtml(html);
         const sectionFlow = flowKeyForResource({ ...section, role: section.role, sectionLabel: section.sectionLabel });
         const sectionContext = { ...lessonContext, scope: "lesson.bookSections", index, sectionLabel: section.sectionLabel, path: section.path };
+        validateInlineIspringMarkup(html, section.path, issues, sectionContext);
 
         if (/Moodle activity (?:not indexed|暂未索引)|暂无已索引的本地资源|External Quizlet activity omitted/i.test(html)) {
           addIssue(issues, "warn", "moodle-page-placeholder", `${section.label || section.path} contains a placeholder instead of recovered Moodle content.`, sectionContext);
@@ -305,6 +476,18 @@ function validateLessonDisplay(courseRoot, manifest, issues) {
             ...sectionContext,
             readableChars: readableText.length,
           });
+        }
+        if (htmlHasEmptyVideoShell(html)) {
+          addIssue(
+            issues,
+            "error",
+            "embedded-video-missing-source",
+            `${section.label || section.path} contains a video player shell with no src/href, so there is no local video to expose as a standalone card.`,
+            sectionContext,
+          );
+        }
+        if (/data-course-shell=["']eng3u-course-shell-v2["']|<section\b[^>]*class=["'][^"']*\bmoodle-section\b/i.test(html) && htmlHasFilesSection(html) && !htmlFilesSectionInsideMoodleSection(html)) {
+          addIssue(issues, "error", "book-section-files-outside-shell", `${section.label || section.path} renders a Files section outside the ENG3U moodle-section shell.`, sectionContext);
         }
 
         for (const kind of ["h5p", "video", "ispring"]) {
@@ -318,6 +501,57 @@ function validateLessonDisplay(courseRoot, manifest, issues) {
               `${section.label || section.path} appears to contain embedded ${kind}, but no localized standalone ${kind} resource is registered for the same lesson flow.`,
               { ...sectionContext, kind, flow: sectionFlow },
             );
+          }
+        }
+
+        if (sectionFlow === "lesson") {
+          for (const item of (lesson.ispring || []).filter((entry) => hasLocalResource(entry) && flowKeyForISpring(entry) === "lesson")) {
+            if (!item.path || !isLocalReference(item.path)) continue;
+            if (existsSync(localPath(courseRoot, item.path)) && !htmlRefsLocalPath(html, section.path, item.path)) {
+              addIssue(
+                issues,
+                "error",
+                "lesson-ispring-missing-inline",
+                `${section.label || section.path} has a localized lesson iSpring package in the manifest but the lesson page does not embed it inline.`,
+                {
+                  ...sectionContext,
+                  label: item.label,
+                  ispringPath: item.path,
+                },
+              );
+            }
+          }
+        }
+      }
+
+      const bookSectionByStem = new Map(
+        (lesson.bookSections || [])
+          .map((section) => [sectionStemForPath(section.path), section])
+          .filter(([stem]) => Boolean(stem)),
+      );
+      for (const item of (lesson.downloads || []).filter((entry) => isDocumentLikeResource(entry) && entry?.path && downloadSectionStem(entry))) {
+        const stem = downloadSectionStem(item);
+        const section = bookSectionByStem.get(stem);
+        if (!section?.path) continue;
+        const sectionContext = { ...lessonContext, scope: "lesson.bookSections", sectionLabel: section.sectionLabel, path: section.path };
+        const identity = resourceIdentity(item);
+        const sectionAttachmentKeys = new Set((section.attachments || []).map((attachment) => resourceIdentity(attachment)));
+        if (!sectionAttachmentKeys.has(identity)) {
+          addIssue(issues, "error", "book-section-attachment-missing", `${item.label || identity} is stored under ${stem} but is not mounted on the matching book section.`, {
+            ...sectionContext,
+            label: item.label,
+            attachmentPath: item.path,
+          });
+        }
+        const pagePath = localPath(courseRoot, section.path);
+        if (existsSync(pagePath)) {
+          const html = readFileSync(pagePath, "utf8");
+          if (!htmlHasFilesSection(html)) {
+            addIssue(issues, "error", "book-section-files-section-missing", `${section.label || section.path} has local attachments but the HTML page does not render a Files section.`, {
+              ...sectionContext,
+              label: item.label,
+              attachmentPath: item.path,
+            });
           }
         }
       }
@@ -401,7 +635,7 @@ function validateHomeworkPairing(manifest, issues) {
   }
 }
 
-function validateCourseStructure(manifest, issues) {
+function validateCourseStructure(courseRoot, manifest, issues) {
   if (manifest.navigation?.primary !== "unit" || manifest.navigation?.secondary !== "lesson") {
     addIssue(issues, "warn", "unexpected-navigation-model", "Manifest navigation is not unit-first / lesson-second.", {
       navigation: manifest.navigation,
@@ -419,7 +653,9 @@ function validateCourseStructure(manifest, issues) {
     }
     for (const lesson of unit.lessons || []) {
       const flows = new Set((lesson.bookSections || []).map((item) => flowKeyForResource({ ...item, role: item.sectionLabel || item.role })));
+      const rawFlows = rawBookFlowsForLesson(courseRoot, lesson);
       for (const required of ["lesson", "hands_on", "consolidation"]) {
+        if (rawFlows && !rawFlows.has(required)) continue;
         if (!flows.has(required)) {
           addIssue(issues, "warn", "missing-lesson-flow-section", `${lesson.id || `U${unit.unit}L${lesson.lesson}`} is missing ${required} book section.`, {
             unit: unit.unit,
@@ -436,7 +672,8 @@ function validateCourseStructure(manifest, issues) {
 function buildReport(course, courseRoot, manifestPath, manifest) {
   const issues = [];
   const resources = collectResources(manifest);
-  validateCourseStructure(manifest, issues);
+  validateCourseShellCss(courseRoot, issues);
+  validateCourseStructure(courseRoot, manifest, issues);
   validatePaths(courseRoot, resources, issues);
   validateLessonDisplay(courseRoot, manifest, issues);
   validateHomeworkPairing(manifest, issues);
