@@ -1162,6 +1162,18 @@ activity pages, iSpring/H5P/video records, plans, teacher resources, and
 attachments. It is a teaching aid for portal users, not a replacement for the
 official Course Outline, Course Introduction, Unit Plan, or Lesson Plan files.
 
+Generation is handled by `scripts/generate-teacher-prep-from-manifest.mjs`.
+The generator has a generic profile plus course-specific profiles. ICS3U keeps
+its own profile for Java/BlueJ and computer-studies planning language; other
+courses must use the generic profile or a course-specific profile built from
+their own evidence. Do not let unprofiled courses inherit ICS3U-specific unit
+concepts, external references, or suggested notes.
+
+```bash
+npm run generate:teacher-prep -- --course ICS3U --dry-run
+npm run smoke:teacher-prep-generator
+```
+
 Manifest rules:
 
 1. Store generated preparation content in `manifest.teacherPrep`; do not mix it

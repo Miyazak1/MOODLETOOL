@@ -186,6 +186,7 @@ for (const section of manifest.courseSections ?? []) {
 }
 for (const resource of manifest.courseDownloads ?? []) collectResource(files, dirs, resource);
 for (const resource of manifest.teacherResources ?? []) collectResource(files, dirs, resource);
+for (const resource of manifest.evaluations ?? []) collectResource(files, dirs, resource);
 for (const text of manifest.texts ?? []) {
   collectResource(files, dirs, text);
   for (const material of text.materials ?? []) collectResource(files, dirs, material);

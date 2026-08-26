@@ -258,6 +258,13 @@ npm run qa:online -- --course <COURSE> --url https://www.moodletool.work --usern
 npm run qa:gate -- --course <COURSE>
 npm run qa:gate -- --course <COURSE> --zip deployment/course-packages/<COURSE>-course-package.zip
 npm run qa:gate -- --course <COURSE> --zip deployment/course-packages/<COURSE>-course-package.zip --url https://www.moodletool.work --username <USER> --password <PASS>
+npm run smoke:table-course-scope
+npm run qa:table
+npm run qa:table -- --checked-only
+npm run audit:table-packages
+npm run audit:teacher-prep -- --course <COURSE>
+npm run package:table -- --limit 3
+npm run package:table -- --limit 3 --apply
 npm run package:course -- --course <COURSE>
 npm run package:course -- --course <COURSE> --dry-run
 npm run package:course -- --course <COURSE> --online-url https://www.moodletool.work --username <USER> --password <PASS>
@@ -272,10 +279,24 @@ Expected responsibilities:
 | `qa:package` | Package preflight: required files, HTML dependencies, fixed-root zip shape, and zip/local manifest drift. First version implemented in `scripts/qa-package.mjs`. |
 | `qa:online` | AI-facing local-vs-online comparison: manifest hash, bundle hash, resource path status, and sampled local/online resource mismatches. First version implemented in `scripts/qa-online.mjs`. |
 | `qa:gate` | Unified gate that runs `qa:course`, `qa:package`, and optionally `qa:online`, then writes one combined report. First version implemented in `scripts/qa-gate.mjs`. |
+| `smoke:table-course-scope` | Read-only guard that checks the hard-coded table scope still matches `洛阳一中教材列表.xlsx`, including the default `BBI2O` skip and checked-only set. |
+| `qa:table` | Table-scoped QA for `洛阳一中教材列表.xlsx`: runs only the courses listed in that table, excludes `NONE`, and skips `BBI2O` by default because it was explicitly removed from the current checking scope. |
+| `audit:table-packages` | Read-only package freshness audit for the same table-scoped courses: reports missing zip packages and packages older than local course files. |
+| `audit:teacher-prep` | Teacher-prep readiness audit based on the ICS3U preparation sample: curriculum guidance, course plan, unit plans, lesson plans, source audit, text references, teacher resources, and missing local paths. |
+| `package:table` | Table-scoped packaging coordinator. Without `--apply`, it prints the next package commands only; with `--apply`, it runs `package:course` sequentially. Use `--limit 3` or a smaller limit when disk space is tight. |
 | `package:course` | Safe package pipeline: run pre-package course QA, delete old course package zips, build a fixed-root zip, then run post-package gate against the new zip. First version implemented in `scripts/package-course-with-qa.mjs`. |
 
 The online comparison output should be machine-readable JSON first. It is mainly
 for AI-assisted diagnosis, not for human-facing UI.
+
+Use `qa:table` for the current Luoyang No. 1 course-production scope. Do not use
+`qa:all-courses` as the default production gate for this project because local
+courseware may contain incomplete, out-of-table, or experimental course folders.
+`qa:table` fails on either `FAIL` or `REVIEW` by default; pass
+`--allow-review` only when a warning has been inspected and accepted.
+`audit:table-packages` exits non-zero when any table-scoped course is missing a
+zip package or has a zip older than the local course files; that exit code means
+"rebuild needed", not that the audit crashed.
 
 ## 8.1 Structure Review Mode
 
@@ -297,6 +318,51 @@ courses such as BBI2O are not incorrectly forced through new-site lesson-flow
 rules. Use `--profile lesson-flow` or `--profile legacy` only when the automatic
 choice is wrong.
 
+## 8.2 Teacher Prep Pack Standard
+
+ICS3U is the current teacher-prep reference sample. Its value is not a visual
+style; it is the preparation depth expected for a teacher using a course after
+upload. Promote that model across courses by checking and filling the following
+resource groups:
+
+1. official curriculum guidance for the course code and grade;
+2. a course outline or course plan that explains pacing and assessment shape;
+3. one unit plan for each instructional unit;
+4. one lesson plan for each lesson that is not an intentional unit overview;
+5. a source audit or source note file recording textbook/source decisions;
+6. textbook, literature, curriculum, or supplemental text references where
+   legally available;
+7. teacher-facing resources such as answers, rubrics, quizzes, tests, labs,
+   evaluation pages, and teacher packets;
+8. local paths that package cleanly with the course.
+
+Do not copy ICS3U content into another course. Use ICS3U as a completeness
+model, then derive the actual teacher-prep materials from the target course's
+Moodle evidence, official curriculum, legal textbook/text sources, and existing
+course files.
+
+The teacher-prep audit is evidence-first. It reports gaps before making course
+content changes:
+
+```bash
+npm run audit:teacher-prep -- --course ICS3U
+npm run audit:teacher-prep -- --course SBI4U
+npm run audit:teacher-prep
+```
+
+The command writes:
+
+1. `deployment/<COURSE>-teacher-prep-audit.json`
+2. `deployment/<COURSE>-teacher-prep-audit.md`
+3. `deployment/teacher-prep-audit-summary.json` for all-course runs
+4. `deployment/teacher-prep-audit-summary.md` for all-course runs
+
+Treat `audit:teacher-prep` as a planning gate, not a display repair. It should
+not change course pages, localized H5P/video/iSpring behavior, or attachment
+placement. When it finds gaps, repair the relevant manifest/source files first,
+then run `qa:course`, `qa:structure`, `qa:display`, and `package:course` as
+appropriate.
+
 ## 9. Packaging Gate
 
 A course should not be uploaded until the package gate passes:
@@ -315,6 +381,8 @@ A course should not be uploaded until the package gate passes:
 The recommended packaging command is:
 
 ```bash
+npm run audit:table-packages
+npm run package:table -- --limit 3
 npm run package:course -- --course <COURSE>
 ```
 
@@ -323,6 +391,19 @@ from `deployment/course-packages/` before creating the new package. Use
 `--keep-old-packages` only when comparing historical packages. Use `--dry-run`
 to inspect the plan without deleting or creating zip files; dry-run reports
 planned deletions separately from actual deletions.
+
+For multiple table-scoped courses, run `package:table` in plan mode first:
+
+```bash
+npm run package:table -- --limit 3
+npm run package:table -- --limit 3 --apply
+```
+
+`package:table` never packages more than the selected limit. It packages only
+missing or stale table-scoped course zips unless `--all` is supplied. In apply
+mode it refuses to run without `--limit` unless `--force-all` is explicitly
+supplied; this protects low-disk servers from accidental full-table package
+builds.
 
 ## 10. Exception Policy
 

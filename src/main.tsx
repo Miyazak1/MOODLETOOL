@@ -1557,16 +1557,6 @@ function courseTitleLabel(course: CourseCatalogEntry): string {
     : `${course.code} · ${course.title}`;
 }
 
-function courseStatusLabel(status: string | undefined, t: TFunction): string {
-  const labels: Record<string, string> = {
-    ready: t("course.status.ready"),
-    "planning-only": t("course.status.planning-only"),
-    "moodle-shell": t("course.status.moodle-shell"),
-    "textbook-shell": t("course.status.textbook-shell"),
-  };
-  return labels[status || ""] || status || t("course.status.draft");
-}
-
 type CourseStructureLabels = {
   secondarySingular: string;
   secondaryPlural: string;
@@ -1711,11 +1701,9 @@ function CourseMoodleSections({
 function TeacherStartPanel({
   groups,
   manifest,
-  structureLabels,
 }: {
   groups: MoodleSectionGroup[];
   manifest: CourseManifest;
-  structureLabels: CourseStructureLabels;
 }) {
   const { t } = usePortalI18n();
   const groupedKeys = groupedResourceIdentitySet(groups);
@@ -1728,25 +1716,36 @@ function TeacherStartPanel({
   );
   const courseResourceCount = groups.reduce((sum, group) => sum + group.items.length, 0) + visibleUngroupedCourseDownloads.length;
   const textCount = manifest.texts.length;
-  const firstUnit = manifest.units[0];
+  const currentUnit = manifest.units[0];
   const actions = [
     {
       href: "#course-resources",
       short: t("course.quick.courseResources.short"),
-      label: t("course.quick.courseResources.label"),
+      label: t("course.resourceEntry"),
       meta: `${courseResourceCount} ${t("label.items")}`,
       detail: t("course.quick.courseResources.detail"),
     },
     {
       href: "#unit-roadmap",
       short: t("course.quick.units.short"),
-      label: t("course.quick.units.label"),
+      label: t("unit.roadmap"),
       meta: `${manifest.units.length} ${t("label.units")}`,
       detail: t("course.quick.units.detail", {
-        firstUnit: firstUnit ? `Unit ${firstUnit.unit}: ${firstUnit.title}` : "",
-        secondaryPlural: structureLabels.secondaryPlural,
+        firstUnit: currentUnit ? `Unit ${currentUnit.unit}: ${currentUnit.title}` : "",
+        secondaryPlural: t("label.lessons"),
       }),
     },
+    ...(manifest.teacherPrep
+      ? [
+          {
+            href: "#teacher-prep-guide",
+            short: t("course.quick.teacherPrep.short"),
+            label: t("course.quick.teacherPrep.label"),
+            meta: `${manifest.teacherPrep.units.length} ${t("label.units")}`,
+            detail: t("course.quick.teacherPrep.detail"),
+          },
+        ]
+      : []),
     ...(textCount
       ? [
           {
@@ -1774,22 +1773,17 @@ function TeacherStartPanel({
 }
 
 function Overview({
-  course,
   manifest,
   courseBaseUrl,
   canShare,
   moodleEmbedByPath,
-  structureLabels,
 }: {
-  course: CourseCatalogEntry;
   manifest: CourseManifest;
   courseBaseUrl: string;
   canShare: boolean;
   moodleEmbedByPath?: MoodleEmbedMap;
-  structureLabels: CourseStructureLabels;
 }) {
   const { t } = usePortalI18n();
-  const audit = manifest.sourceAudit || {};
   const moodleSectionGroups = buildCourseMoodleSectionGroups(manifest, t);
   const groupedKeys = groupedResourceIdentitySet(moodleSectionGroups);
   const visibleCourseDownloads = manifest.courseDownloads.filter(
@@ -1801,50 +1795,7 @@ function Overview({
   );
   return (
     <section className="course-overview panel">
-      <div className="overview-header">
-        <div>
-          <p className="eyebrow">{manifest.course.code}</p>
-          <h2>{manifest.course.title}</h2>
-          <p>{t("course.summary", { audience: manifest.course.audience, secondarySingular: structureLabels.secondarySingular })}</p>
-          <p className="course-note">
-            {course.level ? `${course.level} · ` : ""}
-            {course.notes || manifest.course.source}
-          </p>
-        </div>
-        <div className="overview-tags">
-          <div className="tag text">Unit-first</div>
-          <div className={`tag ${course.status === "ready" ? "text" : "warn"}`}>{courseStatusLabel(course.status, t)}</div>
-        </div>
-      </div>
-      <div className="stats-grid">
-        <div className="stat">
-          <span>{t("label.units")}</span>
-          <strong>{manifest.units.length}</strong>
-        </div>
-        <div className="stat">
-          <span>{structureLabels.secondaryPlural}</span>
-          <strong>{audit.lessonCount || 0}</strong>
-        </div>
-        <div className="stat">
-          <span>iSpring</span>
-          <strong>
-            {audit.ispringComplete || 0}/{audit.ispringExpected || 0}
-          </strong>
-        </div>
-        <div className="stat">
-          <span>{t("label.resources")}</span>
-          <strong>
-            {audit.resourceCoverage?.uniqueCovered || 0}/{audit.resourceCoverage?.uniqueTotal || 0}
-          </strong>
-        </div>
-        <div className="stat">
-          <span>Validation</span>
-          <strong>
-            {audit.resourceValidation?.okCount || 0}/{audit.resourceValidation?.checkedCount || 0}
-          </strong>
-        </div>
-      </div>
-      <TeacherStartPanel groups={moodleSectionGroups} manifest={manifest} structureLabels={structureLabels} />
+      <TeacherStartPanel groups={moodleSectionGroups} manifest={manifest} />
       <CourseMoodleSections
         canShare={canShare}
         courseBaseUrl={courseBaseUrl}
@@ -1915,6 +1866,68 @@ function CurrentCourseCard({ course, manifest }: { course: CourseCatalogEntry; m
           <span>{countLocalResources(manifest.units)} {t("label.files")}</span>
         </div>
       ) : null}
+    </section>
+  );
+}
+
+function PortalBanner({
+  course,
+  error,
+  manifest,
+}: {
+  course: CourseCatalogEntry;
+  error: string | null;
+  manifest?: CourseManifest | null;
+}) {
+  const { t } = usePortalI18n();
+  const audit = manifest?.sourceAudit || {};
+  const ispringComplete = audit.ispringComplete ?? countIspringEntries(manifest?.units || []);
+  const ispringExpected = audit.ispringExpected ?? countIspringEntries(manifest?.units || []);
+  const coveredResources = audit.resourceCoverage?.uniqueCovered ?? countLocalResources(manifest?.units || []);
+  const totalResources = audit.resourceCoverage?.uniqueTotal ?? countLocalResources(manifest?.units || []);
+  const stats = manifest
+    ? [
+        { label: t("label.units"), value: manifest.units.length },
+        { label: t("label.lessons"), value: countLessons(manifest.units) },
+        { label: "iSpring", value: `${ispringComplete}/${ispringExpected}` },
+        { label: t("label.resources"), value: `${coveredResources}/${totalResources}` },
+      ]
+    : [
+        { label: t("label.units"), value: "-" },
+        { label: t("label.lessons"), value: "-" },
+        { label: "iSpring", value: "-" },
+        { label: t("label.resources"), value: "-" },
+      ];
+  return (
+    <section className="portal-banner" aria-label="Current course overview">
+      <div className="portal-banner-main">
+        <p className="portal-banner-eyebrow">Current Course</p>
+        <h2>
+          <span>{course.code}</span>
+          {manifest?.course.title || course.title ? <em>{manifest?.course.title || course.title}</em> : null}
+        </h2>
+        <p className="portal-banner-copy">
+          {error
+            ? t("status.manifestError")
+            : manifest
+              ? `${course.level ? `${course.level} · ` : ""}${course.notes || manifest.course.source || t("status.loaded", { course: manifest.course.code })}`
+              : t("status.loadingCourse")}
+        </p>
+      </div>
+      <div className="portal-banner-stats" aria-label="Course coverage summary">
+        {stats.map((item) => (
+          <div className="portal-banner-stat" key={item.label}>
+            <span>{item.label}</span>
+            <strong>{item.value}</strong>
+          </div>
+        ))}
+      </div>
+      <nav className="portal-banner-actions" aria-label="Course shortcuts">
+        <a href="#course-resources">{t("course.resources")}</a>
+        <a href="#unit-roadmap">{t("unit.roadmap")}</a>
+        {manifest?.teacherPrep ? <a href="#teacher-prep-guide">Teacher Prep</a> : null}
+        <a href="#text-index">{t("text.index")}</a>
+      </nav>
     </section>
   );
 }
@@ -2874,34 +2887,39 @@ function App() {
   return (
     <PortalI18nProvider locale={locale} setLocale={setLocale}>
       <header className="topbar">
-        <div>
+        <div className="topbar-brand">
           <p className="eyebrow">SunnyBrook OSSD</p>
           <h1>{t("app.title")}</h1>
         </div>
         <div className="topbar-actions">
-          <LanguageSwitcher />
-          {portalSession?.authenticated ? (
-            <>
+          <div className="topbar-session">
+            <LanguageSwitcher />
+            {portalSession?.authenticated ? (
               <span className="user-chip">
                 {portalSession.displayName || portalSession.username}
                 {portalSession.displayName && portalSession.username ? ` · ${portalSession.username}` : ""}
                 {portalSession.role ? ` · ${portalSession.role}` : ""}
               </span>
+            ) : null}
+          </div>
+          <div className="topbar-command-row">
+            {canOpenAdminBackend(portalSession) ? (
+              <a className="admin-entry admin-entry-primary" href="/teacher-admin" rel="noopener" target="_blank">
+                {t("action.admin")}
+              </a>
+            ) : null}
+            {portalSession?.authenticated ? (
               <button className="admin-entry logout-button" onClick={handleLogout} type="button">
                 {t("action.logout")}
               </button>
-            </>
-          ) : null}
-          {canOpenAdminBackend(portalSession) ? (
-            <a className="admin-entry" href="/teacher-admin" rel="noopener" target="_blank">
-              {t("action.admin")}
-            </a>
-          ) : null}
-          <div className={`status-pill ${error ? "error" : ""}`}>
-            {error ? t("status.manifestError") : manifest ? t("status.loaded", { course: manifest.course.code }) : t("status.loadingCourse")}
+            ) : null}
+            <div className={`status-pill ${error ? "error" : ""}`}>
+              {error ? t("status.manifestError") : manifest ? t("status.loaded", { course: manifest.course.code }) : t("status.loadingCourse")}
+            </div>
           </div>
         </div>
       </header>
+      <PortalBanner course={selectedCourse} error={error} manifest={manifest} />
       <main className="shell">
         <aside className="sidebar" aria-label="Course navigation">
           {catalog ? (
@@ -2945,11 +2963,9 @@ function App() {
             <>
               <Overview
                 canShare={adminCanShare}
-                course={selectedCourse}
                 courseBaseUrl={selectedCourse.baseUrl}
                 manifest={manifest}
                 moodleEmbedByPath={moodleEmbedByPath}
-                structureLabels={structureLabels}
               />
               <TeacherPrepPanel
                 canShare={adminCanShare}

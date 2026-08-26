@@ -462,8 +462,22 @@ function reviewBookSection(courseRoot, course, unit, lesson, section) {
 }
 
 function collectStandaloneCourseShellItems(manifest) {
-  const items = [];
-  const seen = new Set();
+  const byPath = new Map();
+  const itemCompletenessScore = (item) => {
+    const attachments = attachmentList(item?.attachments).length;
+    const label = item?.label || item?.title ? 1 : 0;
+    const preview = item?.textPreview ? 1 : 0;
+    return attachments * 100 + label * 10 + preview;
+  };
+  const mergeAttachments = (target, source) => {
+    const merged = new Map();
+    for (const attachment of [...attachmentList(target.attachments), ...attachmentList(source.attachments)]) {
+      const key = text(attachment?.path || attachment?.href || attachment?.label).replaceAll("\\", "/");
+      if (!key) continue;
+      if (!merged.has(key)) merged.set(key, attachment);
+    }
+    if (merged.size) target.attachments = [...merged.values()];
+  };
   function visit(value) {
     if (!value) return;
     if (Array.isArray(value)) {
@@ -474,14 +488,21 @@ function collectStandaloneCourseShellItems(manifest) {
     const rel = text(value.path).replaceAll("\\", "/");
     const shouldReview = /^localized-moodle-activities\/[^/]+\/[^/]+\/index\.html$/i.test(rel)
       || /^course-sections\/[^/]+\/index\.html$/i.test(rel);
-    if (shouldReview && !seen.has(rel)) {
-      seen.add(rel);
-      items.push(value);
+    if (shouldReview) {
+      const existing = byPath.get(rel);
+      if (!existing) {
+        byPath.set(rel, value);
+      } else {
+        const best = itemCompletenessScore(value) > itemCompletenessScore(existing) ? value : existing;
+        const other = best === value ? existing : value;
+        mergeAttachments(best, other);
+        byPath.set(rel, best);
+      }
     }
     for (const nested of Object.values(value)) visit(nested);
   }
   visit(manifest);
-  return items;
+  return [...byPath.values()];
 }
 
 function standaloneScope(rel) {

@@ -24,6 +24,10 @@ function text(value) {
   return String(value ?? "");
 }
 
+function toPosix(value) {
+  return text(value).replace(/\\/g, "/");
+}
+
 function normalizeRole(value = "") {
   return text(value)
     .trim()
@@ -108,7 +112,7 @@ function flowKey(item) {
   const label = text(item?.label).toLowerCase();
   if (sectionLabel.includes("expectation")) return "expectations";
   if (sectionLabel.includes("hands on")) return "hands_on";
-  if (sectionLabel.includes("consolidation")) return "consolidation";
+  if (sectionLabel.includes("consolidation") || sectionLabel.includes("consoldation")) return "consolidation";
   if (sectionLabel.includes("homework")) return "homework";
   if (sectionLabel === "lesson") return "lesson";
   if (role.includes("expectation")) return "expectations";
@@ -118,7 +122,7 @@ function flowKey(item) {
   if (role.includes("lesson") && role !== "lesson_book_section") return "lesson";
   if (label.includes("expectation")) return "expectations";
   if (scope.includes("hands on") || label.includes("hands on")) return "hands_on";
-  if (scope.includes("consolidation") || label.includes("consolidation")) return "consolidation";
+  if (scope.includes("consolidation") || scope.includes("consoldation") || label.includes("consolidation") || label.includes("consoldation")) return "consolidation";
   if (scope.includes("homework") || label.includes("homework")) return "homework";
   if (label === "lesson" || label.includes(" lesson")) return "lesson";
   return "resources";
@@ -418,7 +422,7 @@ function reviewLesson(courseRoot, unit, lesson, profile, issues) {
     });
   }
 
-  if (profile === "lesson-flow") {
+  if (profile === "lesson-flow" && (lesson.bookSections || []).some((section) => /\/book_sections\//i.test(toPosix(section?.path || "")))) {
     const rawFlows = rawBookFlowsForLesson(courseRoot, lesson);
     for (const required of ["lesson", "hands_on", "consolidation"]) {
       if (rawFlows && !rawFlows.has(required)) continue;

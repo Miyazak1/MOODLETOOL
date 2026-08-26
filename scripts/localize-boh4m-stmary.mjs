@@ -238,6 +238,11 @@ function recordExternalMedia(url, context) {
   if (/hexstruct\.ispring\.com/i.test(absolute)) pendingMedia.push({ kind: "ispring", url: absolute, ...context });
   else if (/welcome\.hexstruct\.com|h5p_embed|\/h5p\//i.test(absolute)) pendingMedia.push({ kind: "h5p", url: absolute, ...context });
   else if (/youtube\.com|youtu\.be|vimeo\.com/i.test(absolute)) pendingMedia.push({ kind: "external_video", url: absolute, ...context });
+  else if (/quizalize\.com/i.test(absolute)) pendingMedia.push({ kind: "external_quizalize", url: absolute, ...context });
+}
+
+function externalActivityCard(url, reason = "external-activity") {
+  return `<div class="embedded-external-card" data-frame-blocked-reason="${escapeAttr(reason)}"><strong>External interactive activity</strong><a href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">Open activity in a new tab</a></div>`;
 }
 
 async function downloadResource(url, targetRelDir, label = "") {
@@ -312,6 +317,7 @@ function cleanHtmlFragment(htmlValue, attachmentMap = new Map(), context = {}) {
       const h5pId = /[?&]id=(\d+)/i.exec(src)?.[1] || "";
       return `<div class="portal-note"${h5pId ? ` data-h5p-id="${escapeAttr(h5pId)}"` : ""}>Interactive media pending local package; external playback was not embedded.</div>`;
     }
+    if (/quizalize\.com/i.test(src)) return externalActivityCard(src, "quizalize-external");
     return full;
   });
   body = body.replace(/<div\b[^>]*class=["'][^"']*\bmediaplugin_videojs\b[^"']*["'][^>]*>\s*<div\b[^>]*>\s*(<video\b[\s\S]*?<\/video>)\s*<\/div>\s*<\/div>/gi, (_match, video) => {

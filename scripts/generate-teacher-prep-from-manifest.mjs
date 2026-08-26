@@ -5,6 +5,7 @@ const projectRoot = path.resolve(import.meta.dirname, "..");
 const workspaceRoot = path.resolve(projectRoot, "..");
 const coursewareRoot = path.join(workspaceRoot, "courseware");
 const course = safeCourse(readArg("--course") || "ICS3U");
+const dryRun = hasFlag("--dry-run");
 const manifestPath = path.join(coursewareRoot, course, "course-manifest.json");
 const courseRoot = path.dirname(manifestPath);
 
@@ -15,6 +16,10 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 function readArg(name) {
   const index = process.argv.indexOf(name);
   return index >= 0 ? process.argv[index + 1] : "";
+}
+
+function hasFlag(name) {
+  return process.argv.includes(name);
 }
 
 function safeCourse(value) {
@@ -150,15 +155,66 @@ function unitTextReferences(unitNumber) {
     .flatMap((text) => text.materials || []);
 }
 
-const unitConcepts = {
-  1: ["Java data types and representation", "Variables, arrays, input, and methods", "Error handling and validation", "Practice-first programming fluency"],
-  2: ["Hardware specifications and user needs", "File management and operating systems", "Viruses, security, and development environments", "Compiled and interpreted code"],
-  3: ["Problem-solving strategies", "Program templates and structure charts", "User interface design", "Algorithms, exception handling, and SDLC"],
-  4: ["Environmental and social impacts", "Green computing", "Emerging computer science research", "Careers, internships, and work habits"],
+const baseCoursePriorities = [
+  "Use the Moodle book sections as the authoritative teaching sequence: expectations, lesson, hands on, consolidation, homework.",
+  "Keep playable resources visible for teaching flow: iSpring for instruction, H5P for practice, video for consolidation.",
+  "Treat DOCX/PDF/PPT files as attached student or teacher materials rather than separate activity cards unless they are planning references.",
+  "Separate evidence from suggestion: copied lesson goals come from localized course pages; pacing and teacher moves are generated planning notes.",
+];
+
+const baseSuggestedNote = "The Before/In/After Class sequence is generated from the localized Moodle flow and should be adjusted to the teacher's class length.";
+
+const genericProfile = {
+  id: "generic",
+  pacingModel:
+    "The course is treated as an OSSD course. Each lesson is planned as a 3-4 hour preparation block, with remaining time reserved for unit evaluations, culminating work, final review, and teacher-directed adjustments.",
+  coursePriorities: baseCoursePriorities,
+  unitConcepts: {},
+  externalReferences: [],
+  referencePrepNote: (_unit, _lesson, references) =>
+    references.length ? "Keep the indexed curriculum, textbook, or supplemental reference available when students need another explanation or example." : "",
+  unitTeacherMoves: () => [],
+  lessonSuggestedNotes: () => [baseSuggestedNote],
 };
 
+const courseProfiles = {
+  ICS3U: {
+    ...genericProfile,
+    id: "ICS3U",
+    pacingModel:
+      "The course is treated as a 110-hour Ontario Grade 11 computer studies course. Each lesson is planned as a 3-4 hour preparation block, with remaining time reserved for unit evaluations, labs, culminating work, and final review.",
+    unitConcepts: {
+      1: ["Java data types and representation", "Variables, arrays, input, and methods", "Error handling and validation", "Practice-first programming fluency"],
+      2: ["Hardware specifications and user needs", "File management and operating systems", "Viruses, security, and development environments", "Compiled and interpreted code"],
+      3: ["Problem-solving strategies", "Program templates and structure charts", "User interface design", "Algorithms, exception handling, and SDLC"],
+      4: ["Environmental and social impacts", "Green computing", "Emerging computer science research", "Careers, internships, and work habits"],
+    },
+    externalReferences: [
+      {
+        label: "Steve Sweeney ICS3U Java planning wiki (teacher reference only)",
+        type: "external_link",
+        category: "teacher_reference",
+        role: "external_reference",
+        url: "https://stevesweeney.pbworks.com/w/page/29482586/ICS3U%20Fall%202010-2011",
+        source: "public teacher wiki used for planning inspiration, not localized courseware",
+      },
+    ],
+    referencePrepNote: (_unit, _lesson, references) =>
+      references.length ? "Keep the Unit 1 Java/BlueJ supplementary text available when students need an alternate explanation." : "",
+    unitTeacherMoves: (unit) => [unit.unit === 1 ? "Use the Java/BlueJ supplementary text when students need more examples or vocabulary reinforcement." : ""],
+    lessonSuggestedNotes: (lesson) => [
+      baseSuggestedNote,
+      lesson.unit === 1 ? "For Java lessons, emphasize traceable code examples and frequent short compile/run cycles." : "",
+      lesson.unit === 3 ? "For design lessons, ask students to show their planning artifact before coding." : "",
+      lesson.unit === 4 ? "For society and careers lessons, connect the topic to a current technology example and a written reflection." : "",
+    ],
+  },
+};
+
+const profile = courseProfiles[course] || genericProfile;
+
 function unitFocus(unit) {
-  const concepts = unitConcepts[unit.unit] || [];
+  const concepts = profile.unitConcepts[unit.unit] || [];
   return concepts.length
     ? `${unit.title}: ${concepts.join("; ")}.`
     : `${unit.title}: use the localized lesson sequence, planning files, and assessment resources as the preparation spine.`;
@@ -215,7 +271,7 @@ function lessonPrep(unit, lesson) {
         lesson.lessonPlan ? "Open the lesson plan and confirm the learning goals, success criteria, and required materials." : "",
         lessonSection ? "Preview the Moodle Lesson section and prepare any linked student handouts before class." : "",
         lesson.ispring?.length ? "Launch the iSpring module once to confirm the teaching sequence and media load correctly." : "",
-        references.length ? "Keep the Unit 1 Java/BlueJ supplementary text available when students need an alternate explanation." : "",
+        profile.referencePrepNote(unit, lesson, references),
       ],
       5,
     ),
@@ -261,23 +317,11 @@ function lessonPrep(unit, lesson) {
       8,
     ),
     suggestedNotes: uniqueStrings(
-      [
-        "The Before/In/After Class sequence is generated from the localized Moodle flow and should be adjusted to the teacher's class length.",
-        lesson.unit === 1 ? "For Java lessons, emphasize traceable code examples and frequent short compile/run cycles." : "",
-        lesson.unit === 3 ? "For design lessons, ask students to show their planning artifact before coding." : "",
-        lesson.unit === 4 ? "For society and careers lessons, connect the topic to a current technology example and a written reflection." : "",
-      ],
+      profile.lessonSuggestedNotes(lesson),
       4,
     ),
   };
 }
-
-const coursePriorities = [
-  "Use the Moodle book sections as the authoritative teaching sequence: expectations, lesson, hands on, consolidation, homework.",
-  "Keep playable resources visible for teaching flow: iSpring for instruction, H5P for practice, video for consolidation.",
-  "Treat DOCX/PDF/PPT files as attached student or teacher materials rather than separate activity cards unless they are planning references.",
-  "Separate evidence from suggestion: copied lesson goals come from localized course pages; pacing and teacher moves are generated planning notes.",
-];
 
 const planningReferences = compactResources([
   ...(manifest.courseDownloads || []).filter((item) => ["course_outline", "curriculum_reference"].includes(item.role)),
@@ -291,33 +335,23 @@ manifest.teacherPrep = {
     "A teacher-facing preparation layer generated from the localized Moodle lesson pages, lesson plans, unit plans, playable media, homework files, and local text references.",
   evidencePolicy:
     "Learning goals, success criteria, resources, and file paths are drawn from local course materials. Pacing, teacher moves, and sequencing notes are suggested planning notes.",
-  pacingModel:
-    "The course is treated as a 110-hour Ontario Grade 11 computer studies course. Each lesson is planned as a 3-4 hour preparation block, with remaining time reserved for unit evaluations, labs, culminating work, and final review.",
-  coursePriorities,
+  pacingModel: profile.pacingModel,
+  coursePriorities: profile.coursePriorities,
   planningReferences,
-  externalReferences: [
-    {
-      label: "Steve Sweeney ICS3U Java planning wiki (teacher reference only)",
-      type: "external_link",
-      category: "teacher_reference",
-      role: "external_reference",
-      url: "https://stevesweeney.pbworks.com/w/page/29482586/ICS3U%20Fall%202010-2011",
-      source: "public teacher wiki used for planning inspiration, not localized courseware",
-    },
-  ],
+  externalReferences: profile.externalReferences,
   units: (manifest.units || []).map((unit) => ({
     unit: unit.unit,
     title: unit.title,
     pacing: `Suggested ${Math.max(lessonCount(unit) * 3, 1)}-${lessonCount(unit) * 4} hours plus unit assessment time`,
     focus: unitFocus(unit),
-    keyConcepts: unitConcepts[unit.unit] || [unit.title],
+    keyConcepts: profile.unitConcepts[unit.unit] || [unit.title],
     assessmentPlan: unitAssessmentPlan(unit),
     teacherMoves: uniqueStrings(
       [
         "Open the unit plan first, then use the lesson prep cards to stage materials in the same order students will see them.",
         "Check every playable resource before assigning the lesson: iSpring, H5P, and video should be ready before class.",
         "Use homework and submission-folder resources as the handoff point from instruction to independent work.",
-        unit.unit === 1 ? "Use the Java/BlueJ supplementary text when students need more examples or vocabulary reinforcement." : "",
+        ...profile.unitTeacherMoves(unit),
       ],
       5,
     ),
@@ -330,16 +364,19 @@ manifest.sourceAudit.teacherPrepGenerated = {
   status: "generated",
   generatedAt: manifest.teacherPrep.generatedAt,
   lessonPrepCards: manifest.teacherPrep.units.reduce((sum, unit) => sum + unit.lessons.length, 0),
+  profile: profile.id,
   source: "Generated from course-manifest.json and localized Moodle book section HTML.",
 };
 manifest.generatedAt = new Date().toISOString();
 
-fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+if (!dryRun) fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
 console.log(
   JSON.stringify(
     {
       course,
+      dryRun,
+      profile: profile.id,
       manifestPath,
       units: manifest.teacherPrep.units.length,
       lessons: manifest.teacherPrep.units.reduce((sum, unit) => sum + unit.lessons.length, 0),

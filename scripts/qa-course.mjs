@@ -566,14 +566,6 @@ function validateLessonDisplay(courseRoot, manifest, issues) {
             role: item.role,
           });
         }
-        if (isDocumentLikeResource(item) && normalizeRole(item.role) === "hands_on") {
-          addIssue(issues, "warn", "document-in-playable-flow", `${item.label || resourceIdentity(item)} is a document in Hands On. It should remain an attachment, not a standalone playable card.`, {
-            ...lessonContext,
-            label: item.label,
-            type: item.type,
-            role: item.role,
-          });
-        }
       }
     }
   }
@@ -582,8 +574,13 @@ function validateLessonDisplay(courseRoot, manifest, issues) {
 function validateHomeworkPairing(manifest, issues) {
   const candidates = [];
   const resources = collectResources(manifest);
+  const seenCandidates = new Set();
   for (const { item, context } of resources) {
-    if (isHomeworkSubmissionResource(item)) candidates.push({ item, context });
+    if (!isHomeworkSubmissionResource(item)) continue;
+    const identity = `${numberedLessonPosition(item).unit}.${numberedLessonPosition(item).lesson}:${normalizeRole(item.role)}:${resourceIdentity(item)}`;
+    if (seenCandidates.has(identity)) continue;
+    seenCandidates.add(identity);
+    candidates.push({ item, context });
   }
 
   const byPosition = new Map();
@@ -652,7 +649,9 @@ function validateCourseStructure(courseRoot, manifest, issues) {
       });
     }
     for (const lesson of unit.lessons || []) {
-      const flows = new Set((lesson.bookSections || []).map((item) => flowKeyForResource({ ...item, role: item.sectionLabel || item.role })));
+      const bookSectionPages = (lesson.bookSections || []).filter((item) => /\/book_sections\//i.test(toPosix(item?.path || "")));
+      if (!bookSectionPages.length) continue;
+      const flows = new Set(bookSectionPages.map((item) => flowKeyForResource({ ...item, role: item.sectionLabel || item.role })));
       const rawFlows = rawBookFlowsForLesson(courseRoot, lesson);
       for (const required of ["lesson", "hands_on", "consolidation"]) {
         if (rawFlows && !rawFlows.has(required)) continue;

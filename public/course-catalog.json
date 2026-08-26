@@ -405,7 +405,7 @@
       "status": "ready",
       "manifestUrl": "/courseware/ENG2D/course-manifest.json",
       "baseUrl": "/courseware/ENG2D/",
-      "notes": "Localized legacy Moodle course shell with course outline, activities, worksheets, and ENG2D core text index."
+      "notes": "St. Mary Moodle V2.0 course localized from course id 75: course introduction, course overview, 4 Moodle book units, 22 lessons, 22 localized iSpring lessons, 36 localized H5P activities, final examination/culminating section, Teacher Packet answer key, 72 localized Moodle activities, DOCX/PDF/video resources, and generated document previews."
     },
     {
       "code": "EPS3O",

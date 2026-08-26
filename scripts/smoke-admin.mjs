@@ -238,9 +238,16 @@ if (baseServer) {
 
 const teacherAdminResponse = await check(`${baseUrl}/teacher-admin`, "teacher admin page", 200);
 const teacherAdminHtml = await teacherAdminResponse.text();
+let teacherAdminCss = "";
+const adminCssMatch = teacherAdminHtml.match(/<link[^>]+href="([^"]*admin\.css)"[^>]*>/);
+if (adminCssMatch) {
+  const adminCssResponse = await check(`${baseUrl}${adminCssMatch[1]}`, "teacher admin css", 200);
+  teacherAdminCss = await adminCssResponse.text();
+}
+const teacherAdminStatic = `${teacherAdminHtml}\n${teacherAdminCss}`;
 if (
-  !teacherAdminHtml.includes("当前课程待处理") ||
-  !teacherAdminHtml.includes("data-gap-action=\"fill\"") ||
+  !["当前课程待处理", "当前课程上下文"].some((marker) => teacherAdminHtml.includes(marker)) ||
+  !["data-gap-action=\"fill\"", "data-gap-action='fill'"].some((marker) => teacherAdminHtml.includes(marker)) ||
   !teacherAdminHtml.includes("generatePreviewsButton") ||
   !teacherAdminHtml.includes("contentWorkbenchButton") ||
   !teacherAdminHtml.includes("archivePackageButton") ||
@@ -250,7 +257,7 @@ if (
   !teacherAdminHtml.includes("courseLifecycleSummary") ||
   !teacherAdminHtml.includes("selectedCourseBanner") ||
   !teacherAdminHtml.includes("selectLifecycleCourse") ||
-  !teacherAdminHtml.includes("selected-row")
+  !teacherAdminStatic.includes("selected-row")
 ) {
   console.error("Teacher admin page is missing required admin UI.");
   process.exitCode = 1;

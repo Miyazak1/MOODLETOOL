@@ -199,9 +199,29 @@ function renderPage({ course, title, pageRel, body, attachmentsHtml }) {
 `;
 }
 
+function itemCompletenessScore(item) {
+  const attachments = attachmentList(item?.attachments).length;
+  const label = item?.label || item?.title ? 1 : 0;
+  const preview = item?.textPreview ? 1 : 0;
+  return attachments * 100 + label * 10 + preview;
+}
+
+function attachmentList(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function mergeAttachments(target, source) {
+  const merged = new Map();
+  for (const attachment of [...attachmentList(target.attachments), ...attachmentList(source.attachments)]) {
+    const key = normalizeRelPath(attachment?.path || attachment?.href || attachment?.label || "");
+    if (!key) continue;
+    if (!merged.has(key)) merged.set(key, attachment);
+  }
+  if (merged.size) target.attachments = [...merged.values()];
+}
+
 function collectShellPageItems(manifest) {
-  const items = [];
-  const seen = new Set();
+  const byPath = new Map();
   function visit(value) {
     if (!value) return;
     if (Array.isArray(value)) {
@@ -212,14 +232,21 @@ function collectShellPageItems(manifest) {
     const rel = normalizeRelPath(value.path || "");
     const shouldRepair = /^localized-moodle-activities\/[^/]+\/[^/]+\/index\.html$/i.test(rel)
       || /^course-sections\/[^/]+\/index\.html$/i.test(rel);
-    if (shouldRepair && !seen.has(rel)) {
-      seen.add(rel);
-      items.push(value);
+    if (shouldRepair) {
+      const existing = byPath.get(rel);
+      if (!existing) {
+        byPath.set(rel, value);
+      } else {
+        const best = itemCompletenessScore(value) > itemCompletenessScore(existing) ? value : existing;
+        const other = best === value ? existing : value;
+        mergeAttachments(best, other);
+        byPath.set(rel, best);
+      }
     }
     for (const nested of Object.values(value)) visit(nested);
   }
   visit(manifest);
-  return items;
+  return [...byPath.values()];
 }
 
 const course = safeCourse(readArg("--course"));

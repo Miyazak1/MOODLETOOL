@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, extname, join, posix, relative, resolve } from "node:path";
 
 const COURSE = "ENG2D";
@@ -165,6 +165,19 @@ function maybePreviewPath(resource) {
   return resource;
 }
 
+function ensureCourseShellAsset() {
+  const target = join(COURSE_ROOT, "_assets", "course-page-shell.css");
+  if (existsSync(target)) return;
+  const candidates = [
+    join(WORKSPACE_ROOT, "courseware", "ENG3U", "_assets", "course-page-shell.css"),
+    join(WORKSPACE_ROOT, "courseware", "MDM4U", "_assets", "course-page-shell.css"),
+  ];
+  const source = candidates.find((candidate) => existsSync(candidate));
+  if (!source) throw new Error("Missing reusable course page shell CSS.");
+  ensureDir(dirname(target));
+  copyFileSync(source, target);
+}
+
 async function request(url, options = {}, redirects = 0) {
   const headers = new Headers(options.headers || {});
   headers.set("user-agent", "ossd-course-portal-eng2d-stmary-localizer/1.0");
@@ -290,11 +303,23 @@ function cleanHtmlFragment(htmlValue, attachmentMap = new Map(), context = {}) {
 }
 
 function localIspringHref(context = {}) {
+  const overview = courseOverviewIspringHref(context);
+  if (overview) return overview;
+
   const unit = Number(context.unit || 0);
   const lesson = Number(context.lesson || 0);
   if (!unit || !lesson || !context.pageRel) return "";
   const lessonId = `U${String(unit).padStart(2, "0")}L${String(lesson).padStart(2, "0")}`;
   const rel = `ispring-localized/unit-${String(unit).padStart(2, "0")}/${lessonId}/presentation.html`;
+  if (!existsSync(join(COURSE_ROOT, rel))) return "";
+  return relativeHref(context.pageRel, rel);
+}
+
+function courseOverviewIspringHref(context = {}) {
+  if (!context.pageRel) return "";
+  const title = String(context.title || context.section || "");
+  if (!/course\s+overview/i.test(title)) return "";
+  const rel = "ispring-localized/unit-00/course-overview/presentation.html";
   if (!existsSync(join(COURSE_ROOT, rel))) return "";
   return relativeHref(context.pageRel, rel);
 }
@@ -326,51 +351,69 @@ function extractSectionSummaryFragment(sectionHtml) {
 }
 
 function renderPage(title, bodyHtml, attachments = [], pageRel = "index.html") {
-  const attachmentHtml = attachments.length
-    ? `<section class="files"><h2>Files</h2>${attachments.map((item) => renderAttachmentRow(item, pageRel)).join("")}</section>`
+  const inlineImagePaths = inlineImageAttachmentPaths(bodyHtml, pageRel);
+  const pageFileAttachments = attachments.filter((item) => shouldShowAsPageFileAttachment(item, inlineImagePaths));
+  const attachmentHtml = pageFileAttachments.length
+    ? `<section class="attachments"><h2>Files</h2><ul>${pageFileAttachments.map((item) => renderAttachmentRow(item, pageRel)).join("")}</ul></section>`
     : "";
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(title)}</title>
-  <style>
-    :root { color: #001f3f; background: #f3f6fa; font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif; line-height: 1.6; }
-    body { margin: 0; padding: 32px 18px 56px; }
-    main { max-width: 1120px; margin: 0 auto; background: #fff; border: 1px solid #d6e2f0; border-radius: 8px; padding: 28px 34px 36px; }
-    h1 { font-size: 30px; line-height: 1.25; margin: 0 0 12px; }
-    h2 { font-size: 21px; margin: 28px 0 12px; }
-    h3 { font-size: 18px; margin: 22px 0 10px; }
-    .content { border-top: 1px solid #e0e8f2; padding-top: 18px; }
-    .content img, .content video { display: block; height: auto; max-width: 100%; }
-    .localized-ispring { border: 0; display: block; height: min(72vh, 760px); margin: 16px 0; width: 100%; }
-    .content table { border-collapse: collapse; display: block; max-width: 100%; overflow-x: auto; }
-    .content td, .content th { border: 1px solid #d6e2f0; padding: 8px 10px; }
-    .files { border-top: 1px solid #e0e8f2; margin-top: 26px; padding-top: 8px; }
-    .file-row { align-items: center; border: 1px solid #d6e2f0; border-radius: 6px; display: flex; gap: 12px; justify-content: space-between; margin: 10px 0; padding: 10px 12px; }
-    .file-label { font-weight: 700; min-width: 0; overflow-wrap: anywhere; }
-    .actions { display: flex; flex: 0 0 auto; gap: 8px; }
-    .button { border: 1px solid #9fbfe5; border-radius: 6px; color: #003b72; font-weight: 700; padding: 6px 10px; text-decoration: none; }
-    @media (max-width: 720px) { body { padding: 0; } main { border-left: 0; border-radius: 0; border-right: 0; padding: 22px 18px 34px; } h1 { font-size: 24px; } .file-row { align-items: stretch; flex-direction: column; } }
-  </style>
+  <title>${COURSE} - ${escapeHtml(title)} - Course Content</title>
+  <link rel="stylesheet" href="${escapeAttr(relativeHref(pageRel, "_assets/course-page-shell.css"))}" data-course-shell="eng3u-course-shell-v2">
 </head>
 <body>
   <main>
-    <h1>${escapeHtml(title)}</h1>
-    <article class="content">${bodyHtml || "<p>No page text was available from Moodle.</p>"}</article>
-    ${attachmentHtml}
+    <div class="page-title"><p>${COURSE}</p><h1>${escapeHtml(title)}</h1></div>
+    <section class="moodle-section">
+      <header><p>Course Content</p><h2>${escapeHtml(title)}</h2></header>
+      <div class="moodle-content">${bodyHtml || "<p>No page text was available from Moodle.</p>"}${attachmentHtml}</div>
+    </section>
   </main>
 </body>
 </html>
 `;
 }
 
+function inlineImageAttachmentPaths(bodyHtml, pageRel) {
+  const paths = new Set();
+  for (const match of String(bodyHtml || "").matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["']/gi)) {
+    const coursePath = htmlReferenceToCoursePath(pageRel, match[1]);
+    if (coursePath) paths.add(coursePath);
+  }
+  return paths;
+}
+
+function htmlReferenceToCoursePath(pageRel, rawValue) {
+  const value = String(rawValue || "").trim();
+  if (!value || value.startsWith("#") || /^(?:https?:|mailto:|tel:|data:|blob:|javascript:)/i.test(value) || value.startsWith("/")) return "";
+  let decoded = "";
+  try {
+    decoded = decodeURIComponent(value.replace(/[?#].*$/, ""));
+  } catch {
+    return "";
+  }
+  const normalized = posix.normalize(posix.join(posix.dirname(toPosix(pageRel)), toPosix(decoded))).replace(/^\/+/, "");
+  if (!normalized || normalized === "." || normalized.startsWith("../") || normalized.includes("/../")) return "";
+  return normalized;
+}
+
+function shouldShowAsPageFileAttachment(item, inlineImagePaths = new Set()) {
+  const type = String(item?.type || "").toLowerCase();
+  const path = String(item?.path || item?.previewPath || item?.downloadPath || "").toLowerCase();
+  if (["mp4", "m4v", "mov", "webm"].includes(type)) return false;
+  if (/\.(mp4|m4v|mov|webm)(?:$|[?#])/.test(path)) return false;
+  if (["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(type) && inlineImagePaths.has(toPosix(item?.path || ""))) return false;
+  return true;
+}
+
 function renderAttachmentRow(item, pageRel) {
   const viewPath = existingPreviewPath(item) || item.previewPath || item.path;
   const canDownload = !["mp4", "m4v", "mov"].includes(String(item.type || "").toLowerCase());
-  const downloadButton = canDownload ? `<a class="button" href="${escapeAttr(relativeHref(pageRel, item.downloadPath || item.path))}" download>Download</a>` : "";
-  return `<div class="file-row"><div class="file-label">${escapeHtml(item.label)}</div><div class="actions"><a class="button" href="${escapeAttr(relativeHref(pageRel, viewPath))}">View</a>${downloadButton}</div></div>`;
+  const downloadButton = canDownload ? `<a class="file-action" href="${escapeAttr(relativeHref(pageRel, item.downloadPath || item.path))}" download>Download</a>` : "";
+  return `<li><span class="file-label">${escapeHtml(item.label)}</span><span class="file-actions"><a class="file-action" href="${escapeAttr(relativeHref(pageRel, viewPath))}">View</a>${downloadButton}</span></li>`;
 }
 
 function existingPreviewPath(item) {
@@ -564,9 +607,10 @@ async function buildBookSections(unitNo) {
       const pageRel = toPosix(join(lessonPath, "book_sections", fileName));
       const assetRelDir = toPosix(join(lessonPath, "book_sections", "files", `${String(sectionIndex).padStart(2, "0")}-${slug(label).toLowerCase()}`));
       const localized = await localizeHtmlAssets(section.page?.html || "", assetRelDir, pageRel, { unit: unitNo, lesson: lessonNo, section: label });
-      downloads.push(...localized.attachments);
+      const sectionAttachments = localized.attachments.map((item) => enrichBookSectionAttachment(item, section, pageRel));
+      downloads.push(...sectionAttachments);
       const title = `${COURSE} Unit ${unitNo} Lesson ${lessonNo} - ${label}`;
-      const pageHtml = renderPage(title, localized.html, localized.attachments, pageRel);
+      const pageHtml = renderPage(title, localized.html, sectionAttachments, pageRel);
       const pageAbs = join(COURSE_ROOT, pageRel);
       ensureDir(dirname(pageAbs));
       writeFileSync(pageAbs, pageHtml, "utf8");
@@ -580,6 +624,7 @@ async function buildBookSections(unitNo) {
         path: pageRel,
         bytes: Buffer.byteLength(pageHtml, "utf8"),
         source: section.url || section.page?.url,
+        attachments: sectionAttachments.map(maybePreviewPath),
         textPreview: textPreview(localized.html),
       });
     }
@@ -607,6 +652,44 @@ function iSpringForLesson(unitNo, lessonNo) {
     packagePath: posix.dirname(rel),
     bytes: statSync(abs).size,
   }];
+}
+
+function courseOverviewIspring() {
+  const rel = "ispring-localized/unit-00/course-overview/presentation.html";
+  const abs = join(COURSE_ROOT, rel);
+  if (!existsSync(abs)) return [];
+  return [{
+    label: `${COURSE} Course Overview iSpring`,
+    type: "ispring",
+    category: "ispring",
+    role: "course_overview_ispring",
+    mode: "page",
+    path: rel,
+    packagePath: posix.dirname(rel),
+    bytes: statSync(abs).size,
+  }];
+}
+
+function roleForBookSection(label) {
+  const value = String(label || "").toLowerCase();
+  if (value.includes("expectation") || value.includes("overview") || value.includes("introduction")) return "expectations";
+  if (value.includes("hands")) return "hands_on";
+  if (value.includes("consolidation")) return "consolidation";
+  if (value.includes("homework")) return "homework";
+  return "lesson";
+}
+
+function enrichBookSectionAttachment(item, section, pageRel) {
+  if (!item) return item;
+  const sectionLabel = section.normalizedLabel || section.label || "";
+  return {
+    ...item,
+    role: roleForBookSection(sectionLabel),
+    sourceGroup: "book_section_embed",
+    parentSection: sectionLabel,
+    sectionLabel,
+    sectionPath: pageRel,
+  };
 }
 
 function categorizeUnitActivity(unitNo, items) {
@@ -660,10 +743,13 @@ function curriculumGuideResources() {
 
 async function main() {
   ensureDir(COURSE_ROOT);
+  ensureCourseShellAsset();
   await login();
 
   const courseStarter = await buildCourseSection(0, "Course Introduction", "course-sections/introduction", "introduction");
   const courseOverview = await buildCourseSection(1, "Course Overview", "course-sections/course-overview", "course_overview");
+  const courseOverviewIspringItems = courseOverviewIspring();
+  if (courseOverviewIspringItems.length) courseOverview.ispring = courseOverviewIspringItems;
   const finalSection = await buildCourseSection(6, "Unit 5: Final Examination & Culminating", "course-sections/final-examination-culminating", "final_examination_culminating");
   const teacherPacket = await buildCourseSection(7, "Teacher Packet", "course-sections/teacher-packet", "teacher_packet");
 
@@ -727,7 +813,7 @@ async function main() {
     activityById.get("11077"),
   ].filter(hasMeaningfulResource);
   const teacherResources = uniqueByPath([
-    ...localizedActivities.filter((item) => /\bAnswer\b/i.test(item.label || "")),
+    activityById.get("11469"),
   ].filter(hasMeaningfulResource).map((item) => ({ ...item, teacherOnly: item.teacherOnly || /\bAnswer\b/i.test(item.label || "") })));
   finalSection.attachments = [
     ...(finalSection.attachments || []),
@@ -754,7 +840,8 @@ async function main() {
       bookReports,
       moodleActivityCountLocalized: localizedActivities.length,
       ispringExpectedFromBookRefs: pendingMedia.filter((item) => item.kind === "ispring").length,
-      ispringComplete: units.reduce((sum, unit) => sum + unit.summary.ispring, 0),
+      courseOverviewIspringComplete: courseOverviewIspringItems.length,
+      ispringComplete: units.reduce((sum, unit) => sum + unit.summary.ispring, 0) + courseOverviewIspringItems.length,
       h5pExternalEmbedsPending: pendingMedia.filter((item) => item.kind === "h5p").length,
       h5pActivityExitCardsExcluded: [2, 3, 4, 5].reduce((sum, sectionNo) => sum + sectionJson(sectionNo).modLinks.filter((link) => /h5pactivity|Exit Card/i.test(`${link.href} ${link.text}`)).length, 0),
       downloadFailures,
