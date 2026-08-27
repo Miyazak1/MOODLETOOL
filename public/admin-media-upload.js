@@ -187,7 +187,7 @@
         }
       };
       xhr.onload = () => {
-        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null, xhr);
         if (xhr.status >= 200 && xhr.status < 300) {
           resolve({ status: xhr.status, text: xhr.responseText || "" });
         } else {
@@ -195,15 +195,15 @@
         }
       };
       xhr.onerror = () => {
-        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null, xhr);
         reject(new Error("OSS 上传网络错误，请检查 CORS、网络或 OSS 域名配置。"));
       };
       xhr.ontimeout = () => {
-        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null, xhr);
         reject(new Error("OSS 上传超时，请重试。"));
       };
       xhr.onabort = () => {
-        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null, xhr);
         reject(new Error("已取消 OSS 直传。"));
       };
       const data = new FormDataImpl();
@@ -233,7 +233,7 @@
         }
       };
       xhr.onload = () => {
-        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null, xhr);
         if (xhr.status >= 200 && xhr.status < 300) {
           const etag = xhr.getResponseHeader("ETag") || xhr.getResponseHeader("etag") || "";
           resolve({ partNumber: part.partNumber, etag: etag.replace(/^"|"$/g, "") });
@@ -242,15 +242,15 @@
         }
       };
       xhr.onerror = () => {
-        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null, xhr);
         reject(new Error("OSS 分片上传网络错误，请检查 CORS、网络或 OSS 域名配置。"));
       };
       xhr.ontimeout = () => {
-        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null, xhr);
         reject(new Error("OSS 分片上传超时，请重试。"));
       };
       xhr.onabort = () => {
-        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null);
+        if (typeof onActiveUploadChange === "function") onActiveUploadChange(null, xhr);
         reject(new Error("已取消 OSS 直传。"));
       };
       xhr.send(blob);
@@ -270,6 +270,7 @@
     onProgress,
     onRetry,
     maxAttempts = 5,
+    maxConcurrency = 3,
   } = {}) {
     const parts = Array.isArray(multipart?.parts) ? multipart.parts : [];
     if (!parts.length) throw new Error("OSS 分片上传授权缺少 parts。");
@@ -277,7 +278,29 @@
       .map((part) => [Number(part.partNumber), part])
       .filter(([partNumber, part]) => Number.isInteger(partNumber) && partNumber > 0 && part?.etag));
     const uploadedParts = [];
-    let completedBytes = 0;
+    const partProgress = new Map();
+    const partSizes = new Map(parts.map((part) => [
+      Number(part.partNumber),
+      file.slice(part.start, part.end).size,
+    ]));
+    const totalBytes = file.size || multipart.totalBytes || 0;
+    const emitProgress = ({ part, retryAttempt = 0, retryMaxAttempts = maxAttempts, resumedParts = 0 } = {}) => {
+      if (typeof onProgress !== "function") return;
+      const loadedBytes = Array.from(partProgress.values()).reduce((sum, value) => sum + Number(value || 0), 0);
+      onProgress({
+        percent: totalBytes ? Math.max(0, Math.min(100, Math.round((loadedBytes / totalBytes) * 100))) : 0,
+        loaded: loadedBytes,
+        total: totalBytes,
+        partNumber: part?.partNumber,
+        partCount: multipart.partCount || parts.length,
+        partLoaded: part ? partProgress.get(Number(part.partNumber)) || 0 : undefined,
+        partTotal: part ? partSizes.get(Number(part.partNumber)) || 0 : undefined,
+        retryAttempt,
+        retryMaxAttempts,
+        resumedParts,
+      });
+    };
+    const pendingParts = [];
     for (const part of parts) {
       const blob = file.slice(part.start, part.end);
       const resumedPart = resumedPartMap.get(Number(part.partNumber));
@@ -286,41 +309,33 @@
           partNumber: Number(part.partNumber),
           etag: String(resumedPart.etag || "").replace(/^"|"$/g, ""),
         });
-        completedBytes += blob.size;
-        if (typeof onProgress === "function") {
-          const totalBytes = file.size || multipart.totalBytes || 0;
-          onProgress({
-            percent: totalBytes ? Math.max(0, Math.min(100, Math.round((completedBytes / totalBytes) * 100))) : 0,
-            loaded: completedBytes,
-            total: totalBytes,
-            partNumber: part.partNumber,
-            partCount: multipart.partCount || parts.length,
-            resumedParts: resumedPartMap.size,
-          });
-        }
+        partProgress.set(Number(part.partNumber), blob.size);
+        emitProgress({ part, resumedParts: resumedPartMap.size });
         continue;
       }
+      pendingParts.push({ part, blob });
+    }
+    let nextIndex = 0;
+    const workerCount = Math.max(1, Math.min(
+      Number(maxConcurrency || 1),
+      pendingParts.length || 1,
+    ));
+    async function uploadNextPart() {
+      while (nextIndex < pendingParts.length) {
+        const { part, blob } = pendingParts[nextIndex];
+        nextIndex += 1;
       let uploaded = null;
       for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
         try {
           uploaded = await uploadOssPutPart(part, blob, {
             onActiveUploadChange,
             onProgress: ({ loaded, total }) => {
-              const loadedBytes = completedBytes + Number(loaded || 0);
-              const totalBytes = file.size || multipart.totalBytes || 0;
-              if (typeof onProgress === "function") {
-                onProgress({
-                  percent: totalBytes ? Math.max(0, Math.min(100, Math.round((loadedBytes / totalBytes) * 100))) : 0,
-                  loaded: loadedBytes,
-                  total: totalBytes,
-                  partNumber: part.partNumber,
-                  partCount: multipart.partCount || parts.length,
-                  partLoaded: loaded,
-                  partTotal: total,
-                  retryAttempt: attempt > 1 ? attempt : 0,
-                  retryMaxAttempts: maxAttempts,
-                });
-              }
+              partProgress.set(Number(part.partNumber), Math.min(Number(total || blob.size || 0), Number(loaded || 0)));
+              emitProgress({
+                part,
+                retryAttempt: attempt > 1 ? attempt : 0,
+                retryMaxAttempts: maxAttempts,
+              });
             },
           });
           break;
@@ -341,9 +356,12 @@
         }
       }
       uploadedParts.push(uploaded);
-      completedBytes += blob.size;
+        partProgress.set(Number(part.partNumber), blob.size);
+        emitProgress({ part });
+      }
     }
-    return { parts: uploadedParts };
+    await Promise.all(Array.from({ length: workerCount }, () => uploadNextPart()));
+    return { parts: uploadedParts.sort((left, right) => Number(left.partNumber) - Number(right.partNumber)) };
   }
 
   function createDirectUploadController(options = {}) {
@@ -368,7 +386,7 @@
       uploadMultipartObject = uploadOssMultipartObject,
     } = options;
 
-    let activeXhr = null;
+    const activeXhrs = new Set();
     let queue = [];
     let cancelRequested = false;
     let activeQueueItemId = "";
@@ -377,8 +395,14 @@
       Array.from(options.initialCancelledIds || []).map((id) => String(id || "")).filter(Boolean),
     );
 
-    function setActiveUpload(xhr) {
-      activeXhr = xhr;
+    function setActiveUpload(xhr, previousXhr = null) {
+      if (xhr) {
+        activeXhrs.add(xhr);
+      } else if (previousXhr) {
+        activeXhrs.delete(previousXhr);
+      } else {
+        activeXhrs.clear();
+      }
       if (typeof onActiveUploadChange === "function") onActiveUploadChange(xhr);
     }
 
@@ -407,6 +431,7 @@
         total: item.total,
         etaText: item.etaText,
         overallText: item.overallText,
+        ossConfirmedText: item.ossConfirmedText,
         speedText: item.speedText,
       })));
     }
@@ -588,8 +613,66 @@
       throwIfQueueItemCancelled(queueItem);
       const progressText = typeof formatProgress === "function" ? formatProgress(file) : null;
       let multipartParts = null;
+      let ossConfirmPoll = null;
+      let lastOssConfirmPollAt = 0;
+      let lastOssConfirmedAt = Date.now();
+      let lastOssConfirmedBytes = 0;
+      let smoothedOssConfirmBytesPerSecond = 0;
+      let latestOssConfirmedText = "";
       const uploadTitle = isMultipart ? (resumedParts ? "正在续传分片到 OSS" : "正在分片直传 OSS") : "正在直传 OSS";
+      const formatBytesValue = (bytes) =>
+        typeof window.AdminMediaView?.formatBytes === "function"
+          ? window.AdminMediaView.formatBytes(bytes)
+          : `${Math.round(Number(bytes || 0))} B`;
+      const updateOssConfirmedText = (data, { initial = false } = {}) => {
+        const multipart = data?.multipart || {};
+        const uploadedPartCount = Number(multipart.uploadedPartCount || 0);
+        const partCount = Number(multipart.partCount || initData.multipart?.partCount || 0);
+        const uploadedBytes = Number(multipart.uploadedBytes || 0);
+        const now = Date.now();
+        const elapsedMs = Math.max(1, now - lastOssConfirmedAt);
+        const deltaBytes = Math.max(0, uploadedBytes - lastOssConfirmedBytes);
+        if (initial) {
+          lastOssConfirmedAt = now;
+          lastOssConfirmedBytes = uploadedBytes;
+        } else if (deltaBytes > 0) {
+          const instantBytesPerSecond = (deltaBytes / elapsedMs) * 1000;
+          smoothedOssConfirmBytesPerSecond = smoothedOssConfirmBytesPerSecond
+            ? smoothedOssConfirmBytesPerSecond * 0.7 + instantBytesPerSecond * 0.3
+            : instantBytesPerSecond;
+          lastOssConfirmedAt = now;
+          lastOssConfirmedBytes = uploadedBytes;
+        }
+        const speedText = smoothedOssConfirmBytesPerSecond > 0
+          ? ` · 确认速度 ${formatBytesValue(smoothedOssConfirmBytesPerSecond)}/s`
+          : "";
+        latestOssConfirmedText = `OSS确认 ${uploadedPartCount}/${partCount || "?"} · ${formatBytesValue(uploadedBytes)}${speedText}`;
+        updateQueueItem(queueItem, { ossConfirmedText: latestOssConfirmedText });
+        return latestOssConfirmedText;
+      };
+      if (isMultipart && Array.isArray(initData.multipart?.uploadedParts) && initData.multipart.uploadedParts.length) {
+        updateOssConfirmedText({
+          multipart: {
+            partCount: initData.multipart.partCount || initData.multipart.parts?.length || 0,
+            uploadedBytes: initData.multipart.uploadedParts.reduce((sum, part) => sum + Math.max(0, Number(part.size || 0)), 0),
+            uploadedPartCount: initData.multipart.uploadedParts.length,
+          },
+        }, { initial: true });
+      }
+      const maybeRefreshOssConfirmed = (force = false) => {
+        if (!isMultipart || typeof api.ossUploadParts !== "function") return;
+        const now = Date.now();
+        if (!force && (ossConfirmPoll || now - lastOssConfirmPollAt < 15000)) return;
+        lastOssConfirmPollAt = now;
+        ossConfirmPoll = api.ossUploadParts(initData.upload.id)
+          .then((data) => updateOssConfirmedText(data))
+          .catch(() => null)
+          .finally(() => {
+            ossConfirmPoll = null;
+          });
+      };
       const handleUploadProgress = ({ percent, loaded, total, partNumber, partCount, retryAttempt, retryMaxAttempts, resumedParts: currentResumedParts }) => {
+          maybeRefreshOssConfirmed();
           const overall = typeof batchProgress === "function"
             ? batchProgress(index, loaded, total || file.size || 0)
             : { percent: Math.round(((index + percent / 100) / totalFiles) * 100), loaded, total };
@@ -607,13 +690,15 @@
           const partText = partNumber && partCount ? ` · 分片 ${partNumber}/${partCount}` : "";
           const retryText = retryAttempt ? ` · 重试 ${retryAttempt}/${retryMaxAttempts}` : "";
           const resumeText = currentResumedParts ? ` · 已续传 ${currentResumedParts} 个` : "";
+          const ossConfirmText = latestOssConfirmedText ? ` · ${latestOssConfirmedText}` : "";
           const batchDetail = totalFiles > 1 && overall?.total
-            ? `${batchText}${detail}${partText}${retryText}${resumeText} · 总进度 ${overallText}`
-            : `${batchText}${detail}${partText}${retryText}${resumeText}`;
+            ? `${batchText}${detail}${partText}${retryText}${resumeText}${ossConfirmText} · 总进度 ${overallText}`
+            : `${batchText}${detail}${partText}${retryText}${resumeText}${ossConfirmText}`;
           updateQueueItem(queueItem, {
             detail: `${detail}${partText}${retryText}${resumeText}`,
             etaText: progressInfo?.etaText || "",
             loaded,
+            ossConfirmedText: latestOssConfirmedText,
             percent,
             speedText: progressInfo?.speedText || "",
             status: "uploading",
@@ -635,6 +720,8 @@
           },
         });
         multipartParts = result.parts;
+        maybeRefreshOssConfirmed(true);
+        if (ossConfirmPoll) await ossConfirmPoll;
       } else {
         await uploadObject(initData.form, file, {
           onActiveUploadChange: setActiveUpload,
@@ -790,8 +877,9 @@
 
     function cancelActiveUpload() {
       cancelRequested = true;
-      if (!activeXhr) return false;
-      activeXhr.abort();
+      if (!activeXhrs.size) return false;
+      Array.from(activeXhrs).forEach((xhr) => xhr.abort());
+      activeXhrs.clear();
       return true;
     }
 
@@ -804,7 +892,10 @@
         status: "cancelled",
         uploadable: false,
       });
-      if (activeQueueItemId === id && activeXhr) activeXhr.abort();
+      if (activeQueueItemId === id && activeXhrs.size) {
+        Array.from(activeXhrs).forEach((xhr) => xhr.abort());
+        activeXhrs.clear();
+      }
       return true;
     }
 
@@ -813,7 +904,7 @@
       cancelQueueItem,
       previewSelected,
       inferCourseCodeFromFilename,
-      isUploading: () => Boolean(activeXhr) || hasActiveQueueItem(),
+      isUploading: () => Boolean(activeXhrs.size) || hasActiveQueueItem(),
       resolveDirectUploadCourse,
       uploadSelected,
       uploadSingle,

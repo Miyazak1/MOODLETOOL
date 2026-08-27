@@ -1547,6 +1547,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           item.detail || "",
           loadedText,
           item.speedText ? `速度 ${item.speedText}` : "",
+          item.ossConfirmedText || "",
           item.etaText ? `剩余约 ${item.etaText}` : "",
         ].filter(Boolean);
         setStatus({
@@ -1643,6 +1644,7 @@ pm2 restart ossd-course-portal --update-env</pre>
           const metrics = [
             loadedText,
             item.speedText ? `速度 ${item.speedText}` : "",
+            item.ossConfirmedText || "",
             item.etaText ? `剩余 ${item.etaText}` : "",
           ].filter(Boolean).join(" · ");
           const canCancel = ["queued", "ready", "authorizing", "uploading", "verifying"].includes(item.status);

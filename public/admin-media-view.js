@@ -611,6 +611,7 @@
     const status = item?.status || "";
     const metrics = [
       item?.speedText ? `速度 ${item.speedText}` : "",
+      item?.ossConfirmedText || "",
       item?.etaText ? `剩余约 ${item.etaText}` : "",
     ].filter(Boolean);
     const cancelButton = item?.cancelable
@@ -726,23 +727,27 @@
 
   function uploadProgressFormatter(file) {
     const startedAt = Date.now();
-    let lastAt = startedAt;
-    let lastLoaded = 0;
+    let sampleStartedAt = startedAt;
+    let sampleLoaded = 0;
     let smoothedBytesPerSecond = 0;
     return ({ percent, loaded, total, objectKey }) => {
       const now = Date.now();
-      const elapsedMs = Math.max(1, now - lastAt);
-      const deltaBytes = Math.max(0, loaded - lastLoaded);
-      const instantBytesPerSecond = (deltaBytes / elapsedMs) * 1000;
-      if (instantBytesPerSecond > 0) {
-        smoothedBytesPerSecond = smoothedBytesPerSecond
-          ? smoothedBytesPerSecond * 0.7 + instantBytesPerSecond * 0.3
-          : instantBytesPerSecond;
+      const sampleElapsedMs = Math.max(0, now - sampleStartedAt);
+      const sampleDeltaBytes = Math.max(0, loaded - sampleLoaded);
+      if (sampleElapsedMs >= 1000 || percent >= 100 || loaded >= total) {
+        const instantBytesPerSecond = sampleElapsedMs > 0
+          ? (sampleDeltaBytes / sampleElapsedMs) * 1000
+          : 0;
+        if (instantBytesPerSecond > 0) {
+          smoothedBytesPerSecond = smoothedBytesPerSecond
+            ? smoothedBytesPerSecond * 0.7 + instantBytesPerSecond * 0.3
+            : instantBytesPerSecond;
+        }
+        sampleStartedAt = now;
+        sampleLoaded = loaded;
       }
-      lastAt = now;
-      lastLoaded = loaded;
       const averageBytesPerSecond = loaded > 0 ? loaded / Math.max(1, (now - startedAt) / 1000) : 0;
-      const bytesPerSecond = smoothedBytesPerSecond || averageBytesPerSecond;
+      const bytesPerSecond = smoothedBytesPerSecond || ((now - startedAt) >= 3000 ? averageBytesPerSecond : 0);
       const remainingBytes = Math.max(0, total - loaded);
       const eta = bytesPerSecond > 0 ? remainingBytes / bytesPerSecond : 0;
       const speedText = bytesPerSecond > 0 ? `${formatBytes(bytesPerSecond)}/s` : "计算中";

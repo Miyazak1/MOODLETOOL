@@ -132,6 +132,14 @@
           "OSS 上传完成校验失败。",
         );
       },
+
+      async ossUploadParts(uploadId) {
+        return requestJson(
+          `/api/admin/oss/uploads/${encodeURIComponent(uploadId)}/parts`,
+          {},
+          "查询 OSS 已确认分片失败。",
+        );
+      },
     };
   }
 

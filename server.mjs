@@ -31,6 +31,7 @@ import {
   createDirectUploadPolicy as buildDirectUploadPolicy,
   directUploadConfigFromEnv,
   directUploadPublicConfig as buildDirectUploadPublicConfig,
+  listDirectMultipartUploadedParts,
   resolveDirectUploadCourse,
   resumeDirectMultipartUpload,
 } from "./scripts/lib/oss-direct-upload.mjs";
@@ -232,11 +233,19 @@ function resolveRequestPath(urlPath) {
 }
 
 function sendJson(res, statusCode, data) {
+  if (res.headersSent || res.writableEnded) {
+    console.warn(`Skipped JSON response ${statusCode}; headers already sent.${data?.error ? ` ${data.error}` : ""}`);
+    return;
+  }
   res.writeHead(statusCode, { "Content-Type": "application/json; charset=utf-8" });
   res.end(`${JSON.stringify(data, null, 2)}\n`);
 }
 
 function sendNoStoreJson(res, statusCode, data) {
+  if (res.headersSent || res.writableEnded) {
+    console.warn(`Skipped no-store JSON response ${statusCode}; headers already sent.${data?.error ? ` ${data.error}` : ""}`);
+    return;
+  }
   res.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store, max-age=0",
@@ -6497,6 +6506,37 @@ async function handleAdminApi(req, res) {
       }
       if (!action && req.method === "GET") {
         sendJson(res, 200, { ok: true, upload: ossUploadStore.publicRecord(record) });
+        return true;
+      }
+      if (action === "parts" && req.method === "GET") {
+        if (record.uploadMode !== "multipart") {
+          sendJson(res, 200, {
+            ok: true,
+            upload: ossUploadStore.publicRecord(record),
+            multipart: {
+              uploadedBytes: 0,
+              uploadedParts: [],
+              uploadedPartCount: 0,
+              partCount: Number(record.multipartPartCount || 0),
+            },
+          });
+          return true;
+        }
+        const uploadedParts = await listDirectMultipartUploadedParts({
+          config: ossDirectUploadConfig,
+          record,
+        });
+        const uploadedBytes = uploadedParts.reduce((sum, part) => sum + Math.max(0, Number(part.size || 0)), 0);
+        sendJson(res, 200, {
+          ok: true,
+          upload: ossUploadStore.publicRecord(record),
+          multipart: {
+            uploadedBytes,
+            uploadedParts,
+            uploadedPartCount: uploadedParts.length,
+            partCount: Number(record.multipartPartCount || 0),
+          },
+        });
         return true;
       }
       if (action === "complete" && req.method === "POST") {
