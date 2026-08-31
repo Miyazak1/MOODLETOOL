@@ -309,9 +309,33 @@ function directoryHrefForRequest(req) {
 
 function injectIspringEmbedCompatibility(html, baseHref) {
   const compatibilityScript = `<script>
+    (function disableIspringWebglTransitions() {
+      if (!window.HTMLCanvasElement || !HTMLCanvasElement.prototype) return;
+      var originalGetContext = HTMLCanvasElement.prototype.getContext;
+      if (!originalGetContext || originalGetContext.__ispringNoWebgl) return;
+
+      function patchedGetContext(type) {
+        var name = String(type || "").toLowerCase();
+        if (name === "webgl" || name === "experimental-webgl" || name === "webgl2") {
+          return null;
+        }
+        return originalGetContext.apply(this, arguments);
+      }
+
+      patchedGetContext.__ispringNoWebgl = true;
+      HTMLCanvasElement.prototype.getContext = patchedGetContext;
+    })();
+
     window.ispringPresentationConnector = window.ispringPresentationConnector || {
       getState: function() { return undefined; },
-      register: function() {}
+      getStateText: function() { return null; },
+      getStateValue: null,
+      setState: function() {},
+      setStateText: function() {},
+      setStateValue: function() {},
+      register: function(player) {
+        window.__ispringPlayer = player;
+      }
     };
   </script>`;
   const baseTag = baseHref && !/<base\s/i.test(html) ? `<base href="${htmlEscape(baseHref)}">` : "";
@@ -2483,11 +2507,21 @@ async function sendEmbedCoursewareFile(req, res, course, requestedPath, payload)
   const root = courseRoot(course);
   const filePath = ensureInside(root, join(root, toPosixPath(requestedPath)));
   if (payload.kind === "ispring" && basename(filePath).toLowerCase() === "presentation.html") {
-    const html = await readFile(filePath, "utf8");
-    sendHtml(res, 200, injectIspringEmbedCompatibility(html, coursewareAssetDirectoryHref(course, requestedPath) || directoryHrefForRequest(req)));
+    try {
+      const html = await readFile(filePath, "utf8");
+      sendHtml(res, 200, injectIspringEmbedCompatibility(html, directoryHrefForRequest(req)));
+    } catch (error) {
+      if (await sendCoursewareCdnFallback(req, res, course, requestedPath)) return true;
+      throw error;
+    }
     return true;
   }
-  await sendFile(req, res, filePath);
+  try {
+    await sendFile(req, res, filePath);
+  } catch (error) {
+    if (await sendCoursewareCdnFallback(req, res, course, requestedPath)) return true;
+    throw error;
+  }
   return true;
 }
 
@@ -2730,7 +2764,10 @@ async function handleEmbedRequest(req, res, requestUrl) {
       if (isTrustedCoursewareAssetUrl(payloadUrl)) {
         try {
           const html = await fetchTrustedCoursewareHtml(payloadUrl);
-          sendHtml(res, 200, injectIspringEmbedCompatibility(html, directoryHrefForUrl(payloadUrl)));
+          const rawBaseHref = tokenizedRawUrl
+            ? tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1)
+            : directoryHrefForUrl(payloadUrl);
+          sendHtml(res, 200, injectIspringEmbedCompatibility(html, rawBaseHref));
         } catch (error) {
           console.warn(`Trusted CDN iSpring proxy failed; redirecting to source: ${error.message}`);
           res.writeHead(302, { Location: payloadUrl });
@@ -2745,7 +2782,8 @@ async function handleEmbedRequest(req, res, requestUrl) {
     const root = courseRoot(course);
     const filePath = ensureInside(root, join(root, toPosixPath(payload.path)));
     const html = await readFile(filePath, "utf8");
-    const rawBaseHref = coursewareAssetDirectoryHref(course, payload.path) || tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1);
+    const rawBaseHref = tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1)
+      || coursewareAssetDirectoryHref(course, payload.path);
     sendHtml(res, 200, injectIspringEmbedCompatibility(html, rawBaseHref));
     return true;
   }
@@ -3393,6 +3431,28 @@ function rewriteHtmlPlayableReferencesForHybridStorage(html, course, htmlPath) {
   return { html: body, rewritten };
 }
 
+function rewriteJsonPlayableReferencesForHybridStorage(value, course, jsonPath) {
+  let rewritten = 0;
+  const pathLikeKeys = new Set(["path", "src", "href", "poster", "url", "file"]);
+  const rewriteNode = (node, key = "") => {
+    if (Array.isArray(node)) return node.map((item) => rewriteNode(item, key));
+    if (node && typeof node === "object") {
+      const next = {};
+      for (const [childKey, child] of Object.entries(node)) next[childKey] = rewriteNode(child, childKey);
+      return next;
+    }
+    if (typeof node !== "string") return node;
+    if (!pathLikeKeys.has(String(key || "").toLowerCase())) return node;
+    const coursePath = htmlReferenceValueToCoursePath(course, jsonPath, node);
+    if (!coursePath || !isPlayableCoursewareAsset(coursePath)) return node;
+    const cdnUrl = generatedCoursewareAssetUrl(course, coursePath);
+    if (!cdnUrl) return node;
+    rewritten += 1;
+    return cdnUrl;
+  };
+  return { value: rewriteNode(value), rewritten };
+}
+
 async function importLightweightContentFromOssManifest({ course, manifestObjectKey, uploadId, actor }) {
   const code = safeSegment(course).toUpperCase();
   if (!courseLocalContentEnabled) return { status: "skipped", reason: "COURSE_LOCAL_CONTENT_ENABLED=0" };
@@ -3421,15 +3481,28 @@ async function importLightweightContentFromOssManifest({ course, manifestObjectK
   }
 
   let lightweightHtmlPlayableRefsRewritten = 0;
+  let lightweightJsonPlayableRefsRewritten = 0;
   for (const item of selectedFiles) {
-    if (!/\.(?:html?|htm)$/i.test(item.path)) continue;
     const target = ensureInside(stagingRoot, join(stagingRoot, item.path));
     if (!existsSync(target)) continue;
-    const currentHtml = await readFile(target, "utf8");
-    const rewritten = rewriteHtmlPlayableReferencesForHybridStorage(currentHtml, code, item.path);
-    if (rewritten.rewritten > 0) {
-      await writeFile(target, rewritten.html, "utf8");
-      lightweightHtmlPlayableRefsRewritten += rewritten.rewritten;
+    if (/\.(?:html?|htm)$/i.test(item.path)) {
+      const currentHtml = await readFile(target, "utf8");
+      const rewritten = rewriteHtmlPlayableReferencesForHybridStorage(currentHtml, code, item.path);
+      if (rewritten.rewritten > 0) {
+        await writeFile(target, rewritten.html, "utf8");
+        lightweightHtmlPlayableRefsRewritten += rewritten.rewritten;
+      }
+    } else if (/\.json$/i.test(item.path) && !/(?:^|\/)course-manifest\.json$/i.test(item.path)) {
+      try {
+        const currentJson = JSON.parse(await readFile(target, "utf8"));
+        const rewritten = rewriteJsonPlayableReferencesForHybridStorage(currentJson, code, item.path);
+        if (rewritten.rewritten > 0) {
+          await writeFile(target, `${JSON.stringify(rewritten.value, null, 2)}\n`, "utf8");
+          lightweightJsonPlayableRefsRewritten += rewritten.rewritten;
+        }
+      } catch {
+        // Non-JSON files with a .json suffix are left as-is.
+      }
     }
   }
 
@@ -3454,6 +3527,8 @@ async function importLightweightContentFromOssManifest({ course, manifestObjectK
     lightweightFilesImported: selectedFiles.length,
     lightweightBytes: totalBytes,
     lightweightHtmlPlayableRefsRewritten,
+    lightweightJsonPlayableRefsRewritten,
+    lightweightPlayableRefsRewritten: lightweightHtmlPlayableRefsRewritten + lightweightJsonPlayableRefsRewritten,
     importManifestObjectKey: manifestObjectKey,
   };
   recomputeManifestSummaries(manifest);
@@ -3466,6 +3541,8 @@ async function importLightweightContentFromOssManifest({ course, manifestObjectK
     files: selectedFiles.length,
     bytes: totalBytes,
     htmlPlayableRefsRewritten: lightweightHtmlPlayableRefsRewritten,
+    jsonPlayableRefsRewritten: lightweightJsonPlayableRefsRewritten,
+    playableRefsRewritten: lightweightHtmlPlayableRefsRewritten + lightweightJsonPlayableRefsRewritten,
     copiedTopLevelEntries,
     catalogEntry,
     lifecycle,
@@ -7604,6 +7681,14 @@ function shouldUseLinkedVideoActivityPage(course, requestedPath, filePath) {
 }
 
 function labelFromVideoBlock(block, src) {
+  const captionMatch = /<figcaption\b[^>]*>([\s\S]*?)<\/figcaption>/i.exec(block);
+  const captionText = captionMatch?.[1]
+    ?.replace(/<[^>]+>/g, " ")
+    ?.replace(/\s+/g, " ")
+    ?.trim();
+  if (captionText) return captionText;
+  const titleMatch = /\btitle=(["'])([\s\S]*?)\1/i.exec(block);
+  if (titleMatch?.[2]) return titleMatch[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
   const anchorMatch = /<a\b[^>]*>([\s\S]*?)<\/a>/i.exec(block);
   const anchorText = anchorMatch?.[1]
     ?.replace(/<[^>]+>/g, " ")
@@ -7616,6 +7701,17 @@ function labelFromVideoBlock(block, src) {
   } catch {
     return "Open video";
   }
+}
+
+function videoSrcFromBlock(block) {
+  for (const pattern of [
+    /<source\b[^>]*\b(?:data-src|src)\s*=\s*(["'])(https?:\/\/[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?|[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?)\1/i,
+    /<video\b[^>]*\b(?:data-src|src)\s*=\s*(["'])(https?:\/\/[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?|[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?)\1/i,
+  ]) {
+    const match = pattern.exec(block);
+    if (match?.[2]) return match[2];
+  }
+  return "";
 }
 
 function injectLinkedVideoStyle(html) {
@@ -7669,13 +7765,12 @@ function replaceLinkedVideoAnchorsWithEmbedLinks(html, req, course, htmlPath) {
 
 function replaceMultiVideoEmbedsWithLinks(html, req, course, htmlPath) {
   const body = String(html || "");
-  const videoBlocks = Array.from(body.matchAll(/<video\b[\s\S]*?<\/video>/gi));
+  const videoBlocks = Array.from(body.matchAll(/<figure\b[\s\S]*?<video\b[\s\S]*?<\/video>[\s\S]*?<\/figure>|<video\b[\s\S]*?<\/video>/gi));
   const linkableVideos = videoBlocks
     .map((match) => {
       const block = match[0];
-      const sourceMatch = /<source\b[^>]*\b(?:data-src|src)\s*=\s*(["'])(https?:\/\/[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?|[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?)\1/i.exec(block);
-      if (!sourceMatch) return null;
-      const src = sourceMatch[2];
+      const src = videoSrcFromBlock(block);
+      if (!src) return null;
       const label = labelFromVideoBlock(block, src);
       return { block, src: linkedActivityVideoEmbedUrl(req, course, htmlPath, src, label), label };
     })
@@ -7690,10 +7785,10 @@ function replaceMultiVideoEmbedsWithLinks(html, req, course, htmlPath) {
   for (const item of linkableVideos) {
     nextHtml = nextHtml.replace(item.block, renderLinkedVideoItem(item.src, item.label));
   }
-  nextHtml = injectLinkedVideoStyle(nextHtml);
-  if (!/ossd-linked-video-list/i.test(nextHtml)) {
+  if (!/class=(["'])[^"']*\bossd-linked-video-list\b[^"']*\1/i.test(nextHtml)) {
     nextHtml = nextHtml.replace(/(<div class="ossd-linked-video-item">[\s\S]*?<\/div>)/, '<div class="ossd-linked-video-list">$1</div>');
   }
+  nextHtml = injectLinkedVideoStyle(nextHtml);
   return { html: nextHtml, changed: true };
 }
 

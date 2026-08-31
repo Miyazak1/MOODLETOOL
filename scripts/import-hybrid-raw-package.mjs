@@ -283,21 +283,62 @@ function rewriteHtmlPlayableReferences(html, htmlPath, publishedByRelPath) {
   return { html: body, rewritten };
 }
 
-async function rewriteLocalHtmlPlayableReferences(publishedByRelPath) {
+function rewriteJsonPlayableReferences(value, jsonPath, publishedByRelPath) {
+  let rewritten = 0;
+  const pathLikeKeys = new Set(["path", "src", "href", "poster", "url", "file"]);
+  const rewriteNode = (node, key = "") => {
+    if (Array.isArray(node)) return node.map((item) => rewriteNode(item, key));
+    if (node && typeof node === "object") {
+      const next = {};
+      for (const [childKey, child] of Object.entries(node)) next[childKey] = rewriteNode(child, childKey);
+      return next;
+    }
+    if (typeof node !== "string") return node;
+    if (!pathLikeKeys.has(String(key || "").toLowerCase())) return node;
+    const coursePath = htmlReferenceValueToCoursePath(jsonPath, node);
+    if (!coursePath || !isPlayablePublishedPath(coursePath)) return node;
+    rewritten += 1;
+    return publishedCdnUrl(publishedByRelPath.get(coursePath), cdnUrlForCoursePath(coursePath));
+  };
+  return { value: rewriteNode(value), rewritten };
+}
+
+async function rewriteLocalPlayableReferences(publishedByRelPath) {
   const files = await listFiles(localStagingRoot);
-  let pages = 0;
-  let references = 0;
+  let htmlPages = 0;
+  let htmlReferences = 0;
+  let jsonFiles = 0;
+  let jsonReferences = 0;
   for (const absPath of files) {
-    if (!/\.(?:html?|htm)$/i.test(absPath)) continue;
-    const htmlPath = toPosix(relative(localStagingRoot, absPath));
-    const rewritten = rewriteHtmlPlayableReferences(readFileSync(absPath, "utf8"), htmlPath, publishedByRelPath);
-    if (rewritten.rewritten > 0) {
-      writeFileSync(absPath, rewritten.html, "utf8");
-      pages += 1;
-      references += rewritten.rewritten;
+    const localPath = toPosix(relative(localStagingRoot, absPath));
+    if (/\.(?:html?|htm)$/i.test(absPath)) {
+      const rewritten = rewriteHtmlPlayableReferences(readFileSync(absPath, "utf8"), localPath, publishedByRelPath);
+      if (rewritten.rewritten > 0) {
+        writeFileSync(absPath, rewritten.html, "utf8");
+        htmlPages += 1;
+        htmlReferences += rewritten.rewritten;
+      }
+    } else if (/\.json$/i.test(absPath) && !/(?:^|\/)course-manifest\.json$/i.test(localPath)) {
+      try {
+        const rewritten = rewriteJsonPlayableReferences(JSON.parse(readFileSync(absPath, "utf8")), localPath, publishedByRelPath);
+        if (rewritten.rewritten > 0) {
+          writeFileSync(absPath, `${JSON.stringify(rewritten.value, null, 2)}\n`, "utf8");
+          jsonFiles += 1;
+          jsonReferences += rewritten.rewritten;
+        }
+      } catch {
+        // Leave non-JSON content unchanged.
+      }
     }
   }
-  return { pages, references };
+  return {
+    htmlPages,
+    htmlReferences,
+    jsonFiles,
+    jsonReferences,
+    pages: htmlPages,
+    references: htmlReferences + jsonReferences,
+  };
 }
 
 function publishRecordFor(relPath, size, kind) {
@@ -698,7 +739,7 @@ if (!manifest) throw new Error("Overflow package must contain course-manifest.js
 
 const publishedByRelPath = new Map(uploaded.map((item) => [item.relativePath, item]));
 const rewrittenResources = rewriteManifestNode(manifest, publishedByRelPath);
-const htmlPlayableRefs = await rewriteLocalHtmlPlayableReferences(publishedByRelPath);
+const playableRefs = await rewriteLocalPlayableReferences(publishedByRelPath);
 manifest.sourceAudit = {
   ...(manifest.sourceAudit || {}),
   importStatus: "imported",
@@ -711,8 +752,11 @@ manifest.sourceAudit = {
   latestUploadId: importId,
   publishedAssetCount: uploaded.length,
   rewrittenResources,
-  htmlPlayableRefsRewritten: htmlPlayableRefs.references,
-  htmlPlayablePagesRewritten: htmlPlayableRefs.pages,
+  htmlPlayableRefsRewritten: playableRefs.htmlReferences,
+  htmlPlayablePagesRewritten: playableRefs.htmlPages,
+  jsonPlayableRefsRewritten: playableRefs.jsonReferences,
+  jsonPlayableFilesRewritten: playableRefs.jsonFiles,
+  playableRefsRewritten: playableRefs.references,
   localCleanup: "streamed-no-media-local-copy",
   activeSwitch: "staging-copy-with-rollback",
 };
@@ -752,8 +796,11 @@ const report = {
     uploaded: uploaded.length,
     uploadedBytes: uploaded.reduce((sum, item) => sum + Number(item.bytes || 0), 0),
     rewrittenResources,
-    htmlPlayableRefsRewritten: htmlPlayableRefs.references,
-    htmlPlayablePagesRewritten: htmlPlayableRefs.pages,
+    htmlPlayableRefsRewritten: playableRefs.htmlReferences,
+    htmlPlayablePagesRewritten: playableRefs.htmlPages,
+    jsonPlayableRefsRewritten: playableRefs.jsonReferences,
+    jsonPlayableFilesRewritten: playableRefs.jsonFiles,
+    playableRefsRewritten: playableRefs.references,
     activeSwitch,
     staleOssObjects: staleCleanup.planned.length,
     deletedStaleOssObjects: staleCleanup.deleted.length,

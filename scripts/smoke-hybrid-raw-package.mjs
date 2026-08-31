@@ -60,6 +60,11 @@ try {
     '<!doctype html><iframe class="localized-ispring" src="../../ispring-localized/unit-01/U01L01/presentation.html"></iframe>',
   );
   writeFixture(join(sourceCourseRoot, "localized-moodle-activities", "assign", "lab", "files", "lab-video.mp4"), Buffer.alloc(256, 3));
+  writeFixture(
+    join(sourceCourseRoot, "localized-moodle", "h5p-external", "hamlet-recording", "content", "content.json"),
+    JSON.stringify({ interactiveVideo: { video: { files: [{ path: "videos/hamlet.mp4", mime: "video/mp4" }] } } }),
+  );
+  writeFixture(join(sourceCourseRoot, "localized-moodle", "h5p-external", "hamlet-recording", "content", "videos", "hamlet.mp4"), Buffer.alloc(384, 4));
   writeFixture(join(sourceCourseRoot, "ispring-localized", "unit-01", "U01L01", "presentation.html"), "<!doctype html><title>slides</title>");
   writeFixture(join(sourceCourseRoot, "ispring-localized", "unit-01", "U01L01", "data", "slides.js"), "console.log('slides');");
   writeFixture(join(coursewareRoot, course, "old-active", "stale.txt"), "stale");
@@ -107,13 +112,15 @@ try {
   const stdout = JSON.parse(result.stdout);
   assert.equal(stdout.ok, true);
   assert.equal(stdout.mode, "hybrid-raw");
-  assert.equal(stdout.uploaded, 4);
+  assert.equal(stdout.uploaded, 5);
 
   const targetCourseRoot = join(coursewareRoot, course);
   assert.equal(existsSync(join(targetCourseRoot, "docs", "ordinary.pdf")), true);
   assert.equal(existsSync(join(targetCourseRoot, "media", "lesson-video.mp4")), false);
   assert.equal(existsSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "index.html")), true);
   assert.equal(existsSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "files", "lab-video.mp4")), false);
+  assert.equal(existsSync(join(targetCourseRoot, "localized-moodle", "h5p-external", "hamlet-recording", "content", "content.json")), true);
+  assert.equal(existsSync(join(targetCourseRoot, "localized-moodle", "h5p-external", "hamlet-recording", "content", "videos", "hamlet.mp4")), false);
   assert.equal(existsSync(join(targetCourseRoot, "course-sections", "course-overview", "index.html")), true);
   assert.equal(existsSync(join(targetCourseRoot, "ispring-localized", "unit-01", "U01L01", "presentation.html")), true);
   assert.equal(existsSync(join(targetCourseRoot, "old-active", "stale.txt")), false);
@@ -121,6 +128,7 @@ try {
   assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "raw-staging", "upl-raw-smoke", "previous-active")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "lesson-video.mp4")), true);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "localized-moodle-activities", "assign", "lab", "files", "lab-video.mp4")), true);
+  assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "localized-moodle", "h5p-external", "hamlet-recording", "content", "videos", "hamlet.mp4")), true);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4")), false);
   assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "ispring-localized", "unit-01", "U01L01", "presentation.html")), true);
   const labHtml = readFileSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "index.html"), "utf8");
@@ -128,6 +136,8 @@ try {
   assert.doesNotMatch(labHtml, /\bdata-src=/);
   assert.match(labHtml, /href="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4\?v=[a-f0-9]{12}"/);
   assert.doesNotMatch(labHtml, /ossd-video-load-button|Load video|querySelectorAll\("source\[data-src\]"\)/);
+  const h5pContentJson = JSON.parse(readFileSync(join(targetCourseRoot, "localized-moodle", "h5p-external", "hamlet-recording", "content", "content.json"), "utf8"));
+  assert.match(h5pContentJson.interactiveVideo.video.files[0].path, /^https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle\/h5p-external\/hamlet-recording\/content\/videos\/hamlet\.mp4\?v=[a-f0-9]{12}$/);
   const overviewHtml = readFileSync(join(targetCourseRoot, "course-sections", "course-overview", "index.html"), "utf8");
   assert.match(overviewHtml, /src="\/courseware\/ZZZOVERFLOW\/ispring-localized\/unit-01\/U01L01\/presentation\.html"/);
   assert.doesNotMatch(overviewHtml, /cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/ispring-localized\/unit-01\/U01L01\/presentation\.html/);
@@ -144,17 +154,21 @@ try {
   assert.match(lesson.ispring[0].packageUrl, /\/ispring-localized\/unit-01\/U01L01\/$/);
   assert.equal(manifest.sourceAudit.importMode, "hybrid-raw");
   assert.equal(manifest.sourceAudit.htmlPlayableRefsRewritten, 3);
+  assert.equal(manifest.sourceAudit.jsonPlayableRefsRewritten, 1);
+  assert.equal(manifest.sourceAudit.playableRefsRewritten, 4);
   assert.equal(manifest.sourceAudit.htmlPlayablePagesRewritten, 2);
   assert.equal(manifest.sourceAudit.htmlLazyVideoPagesRewritten, undefined);
 
   const registry = JSON.parse(readFileSync(registryPath, "utf8"));
-  assert.equal(registry.assetRecords.length, 5);
+  assert.equal(registry.assetRecords.length, 6);
   assert.equal(registry.assetRecords.some((item) => item.objectKey === `courseware-active/${course}/media/old-video.mp4`), false);
   assert.equal(registry.assetRecords.some((item) => item.objectKey === "courseware-active/OTHER/media/keep.mp4"), true);
   const report = JSON.parse(readFileSync(reportPath, "utf8"));
   assert.ok(report.uploaded.some((item) => item.relativePath === "media/lesson-video.mp4" && item.attempts === 2));
   assert.equal(report.summary.activeSwitch.rollback, "restored-on-switch-failure");
   assert.equal(report.summary.htmlPlayableRefsRewritten, 3);
+  assert.equal(report.summary.jsonPlayableRefsRewritten, 1);
+  assert.equal(report.summary.playableRefsRewritten, 4);
   assert.equal(report.summary.htmlPlayablePagesRewritten, 2);
   assert.equal(report.summary.htmlLazyVideoPagesRewritten, undefined);
   assert.equal(report.summary.staleOssObjects, 1);
