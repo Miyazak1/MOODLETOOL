@@ -154,6 +154,7 @@ type LinkableResource = {
   parentSection?: string;
   sourceSection?: number;
   sectionKey?: string;
+  sectionLabel?: string;
   sectionTitle?: string;
   sectionOrder?: number;
   sectionPath?: string;
@@ -407,6 +408,11 @@ function resourceSourceIdentity(item: LinkableResource): string {
     const parsed = new URL(source);
     parsed.hash = "";
     const isH5PSource = isH5PResource(item) || /h5p|h5p_embed/i.test(`${parsed.pathname} ${parsed.search}`);
+    const isYouTubeWatchVideo =
+      isVideoResource(item) &&
+      /(^|\.)youtube(?:-nocookie)?\.com$/i.test(parsed.hostname) &&
+      parsed.pathname.toLowerCase() === "/watch" &&
+      Boolean(parsed.searchParams.get("v"));
     if (isH5PSource) {
       const action = parsed.searchParams.get("action");
       const id = parsed.searchParams.get("id");
@@ -421,6 +427,12 @@ function resourceSourceIdentity(item: LinkableResource): string {
         parsed.search = identityParams.toString();
         return parsed.toString().toLowerCase();
       }
+    }
+    if (isYouTubeWatchVideo) {
+      const identityParams = new URLSearchParams();
+      identityParams.set("v", parsed.searchParams.get("v") || "");
+      parsed.search = identityParams.toString();
+      return parsed.toString().toLowerCase();
     }
     parsed.search = "";
     return parsed.toString().toLowerCase();
@@ -460,7 +472,42 @@ function normalizedRoleKey(value?: string): string {
     .trim()
     .replace(/([a-z])([A-Z])/g, "$1_$2")
     .replace(/[\s-]+/g, "_")
-    .toLowerCase();
+    .toLowerCase()
+    .replace(/home_work/g, "homework");
+}
+
+function flowScopeText(value?: string): string {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/home[\s_-]*work/g, "homework");
+}
+
+function resourceFlowScopeText(item: LinkableResource): string {
+  return flowScopeText(
+    [
+      item.role,
+      item.parentSection,
+      item.sectionLabel,
+      item.sectionTitle,
+      item.sourceGroup,
+      item.label,
+      item.path,
+      item.previewPath,
+      item.downloadPath,
+      item.url,
+      item.previewUrl,
+      item.downloadUrl,
+    ].join(" "),
+  );
+}
+
+function flowKeyForResourceScope(item: LinkableResource): string {
+  const value = resourceFlowScopeText(item);
+  if (value.includes("overview") || value.includes("expectation") || value.includes("introduction")) return "expectations";
+  if (value.includes("hands")) return "handsOn";
+  if (value.includes("consolidation")) return "consolidation";
+  if (value.includes("homework")) return "homework";
+  return "other";
 }
 
 function roleIn(item: LinkableResource, roles: string[]): boolean {
@@ -1215,9 +1262,12 @@ function downloadFlowKey(item: LinkableResource): string {
   const type = (item.type || "").toLowerCase();
   const category = (item.category || "").toLowerCase();
   const roleFlowKey = flowKeyForRole(role);
+  const scopeFlowKey = flowKeyForResourceScope(item);
   if (role === "lesson") return "lesson";
+  if (isPlayableOnlyResource(item) && scopeFlowKey !== "other") return scopeFlowKey;
   if (isPlayableOnlyResource(item) && roleFlowKey !== "other") return roleFlowKey;
   if (type === "mp4" || type === "webm" || type === "video" || category.includes("video")) {
+    if (scopeFlowKey !== "other") return scopeFlowKey;
     return roleFlowKey === "other" ? "resources" : roleFlowKey;
   }
   if (role === "other" || role === "download") return "resources";
@@ -1255,7 +1305,7 @@ function flowGuideForKey(key: string, t: TFunction): string {
 }
 
 function ispringFlowKey(item: Lesson["ispring"][number]): string {
-  const value = `${item.label || ""} ${item.path || ""}`.toLowerCase();
+  const value = flowScopeText(`${item.label || ""} ${item.path || ""}`);
   if (value.includes("consolidation")) return "consolidation";
   if (value.includes("homework")) return "homework";
   if (value.includes("hands")) return "handsOn";
@@ -1263,7 +1313,7 @@ function ispringFlowKey(item: Lesson["ispring"][number]): string {
 }
 
 function bookSectionFlowKey(item: NonNullable<Lesson["bookSections"]>[number]): string {
-  const value = `${item.sectionLabel || item.label || ""}`.toLowerCase();
+  const value = flowScopeText(`${item.sectionLabel || item.label || ""}`);
   if (value.includes("overview") || value.includes("expectation") || value.includes("introduction")) return "expectations";
   if (value.includes("hands")) return "handsOn";
   if (value.includes("consolidation")) return "consolidation";
