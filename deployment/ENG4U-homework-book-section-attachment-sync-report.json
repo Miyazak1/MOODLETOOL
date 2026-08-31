@@ -1,0 +1,533 @@
+{
+  "course": "ENG4U",
+  "dryRun": false,
+  "matchedHomeworkSubmissions": 26,
+  "scannedHomeworkSections": 26,
+  "manifestSectionsPatched": 26,
+  "htmlPagesPatched": 25,
+  "missingHtmlPages": [],
+  "unmatchedHomeworkSections": [],
+  "patched": [
+    {
+      "unit": 1,
+      "lesson": 1,
+      "label": "Homework - Lesson 1: Type of Essay",
+      "path": "Unit 1/Lesson 1 - Type of Essay/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit1-Lesson1-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U01L01-70d46652c8-70d46652c8/70d46652c8-Unit1-Lesson1-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U01L01-70d46652c8-70d46652c8/70d46652c8-Unit1-Lesson1-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U01L01-a646694be3-a646694be3/a646694be3-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 1,
+      "lesson": 2,
+      "label": "Homework - Lesson 2: Purpose & Audience",
+      "path": "Unit 1/Lesson 2 - Purpose and Audience/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit1-Lesson2-Audience-Purpose-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U01L02-50567d49aa-50567d49aa/50567d49aa-Unit1-Lesson2-Audience-Purpose-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U01L02-50567d49aa-50567d49aa/50567d49aa-Unit1-Lesson2-Audience-Purpose-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U01L02-48a5ac3914-48a5ac3914/48a5ac3914-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 1,
+      "lesson": 3,
+      "label": "Homework - Lesson 3: Essay Topic & Thesis",
+      "path": "Unit 1/Lesson 3 - Essay Topic and Thesis/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit1-Lesson3-Essay-Topic-Thesis-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U01L03-6228fd638e-6228fd638e/6228fd638e-Unit1-Lesson3-Essay-Topic-Thesis-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U01L03-6228fd638e-6228fd638e/6228fd638e-Unit1-Lesson3-Essay-Topic-Thesis-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U01L03-42144a1cba-42144a1cba/42144a1cba-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 1,
+      "lesson": 4,
+      "label": "Homework - Lesson 4: Formal vs. Informal",
+      "path": "Unit 1/Lesson 4 - Formal vs. Informal/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit1-Lesson4-Formal-vs-Informal-Essays-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U01L04-387524b6c2-387524b6c2/387524b6c2-Unit1-Lesson4-Formal-vs-Informal-Essays-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U01L04-387524b6c2-387524b6c2/387524b6c2-Unit1-Lesson4-Formal-vs-Informal-Essays-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U01L04-79bcb9400c-79bcb9400c/79bcb9400c-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 1,
+      "lesson": 5,
+      "label": "Homework - Lesson 5: Methods of Development",
+      "path": "Unit 1/Lesson 5 - Methods of Development/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit1-Lesson5-Methods-of-Development-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U01L05-a500190b49-a500190b49/a500190b49-Unit1-Lesson5-Methods-of-Development-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U01L05-a500190b49-a500190b49/a500190b49-Unit1-Lesson5-Methods-of-Development-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U01L05-1ffe180653-1ffe180653/1ffe180653-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 1,
+      "lesson": 6,
+      "label": "Homework - Lesson 6: Organizational Patterns of an Essay Worksheet",
+      "path": "Unit 1/Lesson 6 - Organizational Patterns of an Essay Worksheet/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit1-Lesson6-Organizational-Patterns-of-an-Essay-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U01L06-4ac5c7a453-4ac5c7a453/4ac5c7a453-Unit1-Lesson6-Organizational-Patterns-of-an-Essay-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U01L06-4ac5c7a453-4ac5c7a453/4ac5c7a453-Unit1-Lesson6-Organizational-Patterns-of-an-Essay-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U01L06-a8931194d0-a8931194d0/a8931194d0-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 1,
+      "lesson": 7,
+      "label": "Homework - Lesson 7: Introductions & Conclusions Worksheet",
+      "path": "Unit 1/Lesson 7 - Introductions and Conclusions Worksheet/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit1-Lesson7-Introductions-Conclusions-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U01L07-8e07b31f69-8e07b31f69/8e07b31f69-Unit1-Lesson7-Introductions-Conclusions-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U01L07-8e07b31f69-8e07b31f69/8e07b31f69-Unit1-Lesson7-Introductions-Conclusions-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U01L07-4fc653e198-4fc653e198/4fc653e198-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 1,
+      "lesson": 8,
+      "label": "Homework - Lesson 8: Concise Writing & Research Formats Workshe",
+      "path": "Unit 1/Lesson 8 - Concise Writing and Research Formats Workshe/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit1-Lesson8-Concise-Writing-Research-Formats-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U01L08-f8abc00544-f8abc00544/f8abc00544-Unit1-Lesson8-Concise-Writing-Research-Formats-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U01L08-f8abc00544-f8abc00544/f8abc00544-Unit1-Lesson8-Concise-Writing-Research-Formats-Worksheet.docx.html"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 2,
+      "lesson": 1,
+      "label": "Homework - Lesson 1: Introduction",
+      "path": "Unit 2/Lesson 1 - Introduction/book_sections/06-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit2-Lesson1-Introduction-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U02L01-bef4e7cc5e-bef4e7cc5e/bef4e7cc5e-Unit2-Lesson1-Introduction-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U02L01-bef4e7cc5e-bef4e7cc5e/bef4e7cc5e-Unit2-Lesson1-Introduction-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U02L01-ff4665531f-ff4665531f/ff4665531f-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 2,
+      "lesson": 2,
+      "label": "Homework - Lesson 2: Act I",
+      "path": "Unit 2/Lesson 2 - Act I/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit2-Lesson2-Act-I-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U02L02-621b9ba853-621b9ba853/621b9ba853-Unit2-Lesson2-Act-I-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U02L02-621b9ba853-621b9ba853/621b9ba853-Unit2-Lesson2-Act-I-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U02L02-f0cb956e78-f0cb956e78/f0cb956e78-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 2,
+      "lesson": 3,
+      "label": "Homework - Lesson 3: Act II",
+      "path": "Unit 2/Lesson 3 - Act II/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit2-Lesson3-Act-II-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U02L03-adba6fb281-adba6fb281/adba6fb281-Unit2-Lesson3-Act-II-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U02L03-adba6fb281-adba6fb281/adba6fb281-Unit2-Lesson3-Act-II-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U02L03-71300667cb-71300667cb/71300667cb-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 2,
+      "lesson": 4,
+      "label": "Homework - Lesson 4: Act III",
+      "path": "Unit 2/Lesson 4 - Act III/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit2-Lesson4-Act-III-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U02L04-a7cf118476-a7cf118476/a7cf118476-Unit2-Lesson4-Act-III-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U02L04-a7cf118476-a7cf118476/a7cf118476-Unit2-Lesson4-Act-III-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U02L04-3b9e49a2dd-3b9e49a2dd/3b9e49a2dd-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 2,
+      "lesson": 5,
+      "label": "Homework - Lesson 5: Act IV",
+      "path": "Unit 2/Lesson 5 - Act IV/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit2-Lesson5-Act-IV-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U02L05-fc8cbe9896-fc8cbe9896/fc8cbe9896-Unit2-Lesson5-Act-IV-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U02L05-fc8cbe9896-fc8cbe9896/fc8cbe9896-Unit2-Lesson5-Act-IV-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U02L05-7026322a09-7026322a09/7026322a09-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 2,
+      "lesson": 6,
+      "label": "Homework - Lesson 6: Act V",
+      "path": "Unit 2/Lesson 6 - Act V/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit2-Lesson6-Act-V-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U02L06-162441db82-162441db82/162441db82-Unit2-Lesson6-Act-V-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U02L06-162441db82-162441db82/162441db82-Unit2-Lesson6-Act-V-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U02L06-ec9b357d62-ec9b357d62/ec9b357d62-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 3,
+      "lesson": 1,
+      "label": "Homework - Lesson 1: Introduction",
+      "path": "Unit 3/Lesson 1 - Introduction/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit3-Lesson1-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U03L01-d6865e6545-d6865e6545/d6865e6545-Unit3-Lesson1-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U03L01-d6865e6545-d6865e6545/d6865e6545-Unit3-Lesson1-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U03L01-8fe7842cc7-8fe7842cc7/8fe7842cc7-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 3,
+      "lesson": 2,
+      "label": "Homework - Lesson 2: Advertisement",
+      "path": "Unit 3/Lesson 2 - Advertisement/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit3-Lesson2-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U03L02-e6cbc50e33-e6cbc50e33/e6cbc50e33-Unit3-Lesson2-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U03L02-e6cbc50e33-e6cbc50e33/e6cbc50e33-Unit3-Lesson2-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U03L02-dc8aa2e220-dc8aa2e220/dc8aa2e220-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 3,
+      "lesson": 3,
+      "label": "Homework - Lesson 3: Power of Words and Images in Ads",
+      "path": "Unit 3/Lesson 3 - Power of Words and Images in Ads/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit3-Lesson3-Power-of-Words-and-Images-in-Ads-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U03L03-e7fb24bb41-e7fb24bb41/e7fb24bb41-Unit3-Lesson3-Power-of-Words-and-Images-in-Ads-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U03L03-e7fb24bb41-e7fb24bb41/e7fb24bb41-Unit3-Lesson3-Power-of-Words-and-Images-in-Ads-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U03L03-18b26a764b-18b26a764b/18b26a764b-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 3,
+      "lesson": 4,
+      "label": "Homework - Lesson 4: The Art of Persuasion in Advertising",
+      "path": "Unit 3/Lesson 4 - The Art of Persuasion in Advertising/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit3-Lesson4-The-Art-of-Persuasion-in-Advertising-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U03L04-96bcde4fcc-96bcde4fcc/96bcde4fcc-Unit3-Lesson4-The-Art-of-Persuasion-in-Advertising-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U03L04-96bcde4fcc-96bcde4fcc/96bcde4fcc-Unit3-Lesson4-The-Art-of-Persuasion-in-Advertising-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U03L04-6925b4c333-6925b4c333/6925b4c333-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 3,
+      "lesson": 5,
+      "label": "Homework - Lesson 5: Advertising Strategies",
+      "path": "Unit 3/Lesson 5 - Advertising Strategies/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit3-Lesson5-Advertising-Strategies-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U03L05-67f4f294f4-67f4f294f4/67f4f294f4-Unit3-Lesson5-Advertising-Strategies-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U03L05-67f4f294f4-67f4f294f4/67f4f294f4-Unit3-Lesson5-Advertising-Strategies-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U03L05-fa77b04adf-fa77b04adf/fa77b04adf-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 3,
+      "lesson": 6,
+      "label": "Homework - Lesson 6: Deconstructing an Ad",
+      "path": "Unit 3/Lesson 6 - Deconstructing an Ad/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit3-Lesson6-Deconstructing-an-Advertisement-Homework.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U03L06-42ff2c4c94-42ff2c4c94/42ff2c4c94-Unit3-Lesson6-Deconstructing-an-Advertisement-Homework.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U03L06-42ff2c4c94-42ff2c4c94/42ff2c4c94-Unit3-Lesson6-Deconstructing-an-Advertisement-Homework.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U03L06-d752d85c11-d752d85c11/d752d85c11-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 4,
+      "lesson": 1,
+      "label": "Homework - Lesson 1: Introduction",
+      "path": "Unit 4/Lesson 1 - Introduction/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit4-Lesson1-Introduction-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U04L01-f3e9dd9938-f3e9dd9938/f3e9dd9938-Unit4-Lesson1-Introduction-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U04L01-f3e9dd9938-f3e9dd9938/f3e9dd9938-Unit4-Lesson1-Introduction-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U04L01-adf0f317a4-adf0f317a4/adf0f317a4-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 4,
+      "lesson": 2,
+      "label": "Homework - Lesson 2: Chapter 1 & 2",
+      "path": "Unit 4/Lesson 2 - Chapter 1 and 2/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit4-Lesson2-Chapters1-2-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U04L02-a6ccbfdc8b-a6ccbfdc8b/a6ccbfdc8b-Unit4-Lesson2-Chapters1-2-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U04L02-a6ccbfdc8b-a6ccbfdc8b/a6ccbfdc8b-Unit4-Lesson2-Chapters1-2-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U04L02-06a6ff2e4e-06a6ff2e4e/06a6ff2e4e-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 4,
+      "lesson": 3,
+      "label": "Homework - Lesson 3: Chapters 3 & 4",
+      "path": "Unit 4/Lesson 3 - Chapters 3 and 4/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit4-Lesson3-Chapters3-4-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U04L03-6e24276d0e-6e24276d0e/6e24276d0e-Unit4-Lesson3-Chapters3-4-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U04L03-6e24276d0e-6e24276d0e/6e24276d0e-Unit4-Lesson3-Chapters3-4-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U04L03-7a07202867-7a07202867/7a07202867-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 4,
+      "lesson": 4,
+      "label": "Homework - Lesson 4: Chapters 5 & 6",
+      "path": "Unit 4/Lesson 4 - Chapters 5 and 6/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit4-Lesson4-Chapters5-6Homework.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U04L04-a4b1560fc0-a4b1560fc0/a4b1560fc0-Unit4-Lesson4-Chapters5-6Homework.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U04L04-a4b1560fc0-a4b1560fc0/a4b1560fc0-Unit4-Lesson4-Chapters5-6Homework.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U04L04-1647743f0b-1647743f0b/1647743f0b-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 4,
+      "lesson": 5,
+      "label": "Homework - Lesson 5: Chapters 7 & 8",
+      "path": "Unit 4/Lesson 5 - Chapters 7 and 8/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit4-Lesson5-Chapters7-8-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U04L05-ee283dbada-ee283dbada/ee283dbada-Unit4-Lesson5-Chapters7-8-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U04L05-ee283dbada-ee283dbada/ee283dbada-Unit4-Lesson5-Chapters7-8-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U04L05-ba224c228a-ba224c228a/ba224c228a-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": true
+    },
+    {
+      "unit": 4,
+      "lesson": 6,
+      "label": "Homework - Lesson 6: Chapter 9",
+      "path": "Unit 4/Lesson 6 - Chapter 9/book_sections/05-homework.html",
+      "attachments": [
+        {
+          "label": "DOCUMENT - Unit4-Lesson6-Chapter9-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U04L06-f7cbbd05f2-f7cbbd05f2/f7cbbd05f2-Unit4-Lesson6-Chapter9-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U04L06-f7cbbd05f2-f7cbbd05f2/f7cbbd05f2-Unit4-Lesson6-Chapter9-Worksheet.docx.html"
+        },
+        {
+          "label": "DOCUMENT - Unit4-Lesson5-Chapters-7-8-Worksheet.docx",
+          "type": "docx",
+          "path": "localized-moodle-activities/file/U04L06-16cda2f003-16cda2f003/16cda2f003-Unit4-Lesson5-Chapters-7-8-Worksheet.docx",
+          "previewPath": "previews-html/localized-moodle-activities/file/U04L06-16cda2f003-16cda2f003/16cda2f003-Unit4-Lesson5-Chapters-7-8-Worksheet.docx.html"
+        },
+        {
+          "label": "PDF - Step-by-step-guide.pdf",
+          "type": "pdf",
+          "path": "localized-moodle-activities/file/U04L06-7fd54be9cf-7fd54be9cf/7fd54be9cf-Step-by-step-guide.pdf"
+        }
+      ],
+      "htmlPatched": false
+    }
+  ]
+}

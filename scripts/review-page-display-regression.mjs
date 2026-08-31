@@ -25,6 +25,12 @@ function text(value) {
   return String(value ?? "");
 }
 
+function flowScope(value) {
+  return text(value)
+    .toLowerCase()
+    .replace(/home[\s_-]*work/g, "homework");
+}
+
 function readJson(path) {
   return JSON.parse(readFileSync(path, "utf8"));
 }
@@ -60,7 +66,7 @@ function listCourses() {
 }
 
 function classifyFlowValue(value, fallback = "") {
-  const scope = text(value).toLowerCase();
+  const scope = flowScope(value);
   if (!scope) return fallback;
   if (scope.includes("learning goal") || scope.includes("success criteria")) return "expectations";
   if (scope.includes("expectation")) return "expectations";
@@ -77,7 +83,7 @@ function flowKey(section) {
     || classifyFlowValue(section?.category);
   if (structured) return structured;
   const value = [section?.label, section?.path]
-    .map((part) => text(part).toLowerCase())
+    .map((part) => flowScope(part))
     .join(" ");
   if (value.includes("expectation")) return "expectations";
   if (value.includes("hands")) return "hands_on";
@@ -138,7 +144,8 @@ function filesInsideMoodleSection(html, filesIndex) {
 function markerKinds(html) {
   const content = text(html).replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ");
   const kinds = [];
-  if (/<(?:iframe|div|script)\b[^>]*(?:localized-h5p|h5p_embed|h5p-player|h5p-content|\/h5p\/|\/h5p-external\/|\.h5p)/i.test(content)) kinds.push("h5p");
+  if (/<iframe\b[^>]*(?:localized-h5p|h5p_embed|h5p-player|h5p-content|\/h5p\/|\/h5p-external\/|\.h5p)[^>]*>/i.test(content)
+    || /<div\b[^>]*\bh5p-(?:player|content)\b[^>]*>/i.test(content)) kinds.push("h5p");
   if (/<(?:video|source|a)\b[^>]*(?:src|href|data-src)=["'][^"']*(?:\.mp4|\.webm|embed\/video|video\/)[^"']*["']/i.test(content)) kinds.push("video");
   if (/<(?:iframe|object|embed|div)\b[^>]*(?:localized-ispring|ispring|presentation\.html|html5-package)/i.test(content)) kinds.push("ispring");
   return kinds;
@@ -146,11 +153,26 @@ function markerKinds(html) {
 
 function isExpectedIspringForFlow(item, flow) {
   const scope = [item?.label, item?.role, item?.category, item?.path, item?.packagePath]
-    .map((value) => text(value).toLowerCase())
+    .map((value) => flowScope(value))
     .join(" ");
   if (!(scope.includes("ispring") || scope.includes("presentation.html") || scope.includes("lesson_ispring"))) return false;
   if (flow === "hands_on") return scope.includes("hands");
   if (flow === "consolidation") return scope.includes("consolidation") || scope.includes("consoldation");
+  if (flow === "homework") return scope.includes("homework");
+  if (flow === "lesson") return !(scope.includes("hands") || scope.includes("consolidation") || scope.includes("consoldation") || scope.includes("homework"));
+  return false;
+}
+
+function isExpectedH5pForFlow(item, flow) {
+  const type = text(item?.type).toLowerCase();
+  const category = text(item?.category).toLowerCase();
+  const scope = [item?.label, item?.role, item?.parentSection, item?.category, item?.path, item?.previewPath, item?.localizedPackagePath, item?.localizedPreviewPath]
+    .map((value) => flowScope(value))
+    .join(" ");
+  const isH5p = type === "h5p" || category.includes("h5p") || /(?:\/h5p\/|\/h5p-external\/|\.h5p(?:$|[?#]))/i.test(scope);
+  if (!isH5p) return false;
+  if (flow === "hands_on") return scope.includes("hands");
+  if (flow === "consolidation") return scope.includes("consolidation") || scope.includes("consoldation") || scope.includes("exit");
   if (flow === "homework") return scope.includes("homework");
   if (flow === "lesson") return !(scope.includes("hands") || scope.includes("consolidation") || scope.includes("consoldation") || scope.includes("homework"));
   return false;
@@ -303,6 +325,29 @@ function downloadSectionStem(item) {
     .match(/\/book_sections\/files\/([^/]+)\//)?.[1];
 }
 
+function positionKey(unit, lesson) {
+  const unitNumber = Number(unit?.unit || unit);
+  const lessonNumber = Number(lesson?.lesson || lesson);
+  return unitNumber && lessonNumber ? `${unitNumber}:${lessonNumber}` : "";
+}
+
+function isHomeworkSubmissionResource(item) {
+  const role = text(item?.role).toLowerCase();
+  const parentSection = text(item?.parentSection).toLowerCase();
+  const sourceGroup = text(item?.sourceGroup).toLowerCase();
+  if (role === "homework_answer_page" || /answer/.test(role)) return false;
+  if (role === "homework_submission_page" || role === "homework_submission") return true;
+  return /homework[\s_-]*submission[\s_-]*folder/.test(`${parentSection} ${sourceGroup}`);
+}
+
+function homeworkSubmissionAttachmentsForLesson(manifest, unit, lesson) {
+  const key = positionKey(unit, lesson);
+  if (!key) return [];
+  return attachmentList(manifest?.courseDownloads)
+    .filter((item) => isHomeworkSubmissionResource(item) && positionKey(item.unit, item.lesson) === key)
+    .flatMap((item) => attachmentList(item.attachments));
+}
+
 function sectionStem(section) {
   return text(section?.path)
     .replaceAll("\\", "/")
@@ -312,7 +357,7 @@ function sectionStem(section) {
     .toLowerCase();
 }
 
-function expectedBookSectionAttachments(courseRoot, lesson, section) {
+function expectedBookSectionAttachments(courseRoot, manifest, unit, lesson, section) {
   const flow = flowKey(section);
   const stem = sectionStem(section);
   const sectionChapterId = sourceBookChapterId(section);
@@ -336,6 +381,9 @@ function expectedBookSectionAttachments(courseRoot, lesson, section) {
       return false;
     })
     .forEach(add);
+  if (flow === "homework") {
+    homeworkSubmissionAttachmentsForLesson(manifest, unit, lesson).forEach(add);
+  }
 
   return [...byKey.values()];
 }
@@ -382,7 +430,7 @@ function reviewEng3uFileDisplay(courseRoot, html, sections, context, issues) {
   }
 }
 
-function reviewBookSection(courseRoot, course, unit, lesson, section) {
+function reviewBookSection(courseRoot, course, manifest, unit, lesson, section) {
   const issues = [];
   const sectionPath = join(courseRoot, section.path || "");
   const context = {
@@ -400,7 +448,7 @@ function reviewBookSection(courseRoot, course, unit, lesson, section) {
       ...context,
       shell: "missing",
       readableChars: 0,
-      attachments: expectedBookSectionAttachments(courseRoot, lesson, section).length,
+      attachments: expectedBookSectionAttachments(courseRoot, manifest, unit, lesson, section).length,
       markers: [],
       issues,
     };
@@ -410,11 +458,18 @@ function reviewBookSection(courseRoot, course, unit, lesson, section) {
   const shell = htmlShell(html);
   const files = filesSections(html);
   const displaySections = files.length ? files : attachmentDisplaySections(html);
-  const attachments = expectedBookSectionAttachments(courseRoot, lesson, section);
+  const attachments = expectedBookSectionAttachments(courseRoot, manifest, unit, lesson, section);
   const markers = markerKinds(html);
   const sectionFlow = flowKey(section);
   const expectedSectionIspring = ["lesson", "hands_on", "consolidation", "homework"].includes(sectionFlow)
     ? attachmentList(lesson.ispring).filter((item) => isExpectedIspringForFlow(item, sectionFlow) && item?.path && existsSync(join(courseRoot, item.path)))
+    : [];
+  const expectedSectionH5p = ["lesson", "hands_on", "consolidation", "homework"].includes(sectionFlow)
+    ? [
+      ...attachmentList(lesson.handsOn),
+      ...attachmentList(lesson.downloads),
+      ...attachmentList(section.attachments),
+    ].filter((item) => isExpectedH5pForFlow(item, sectionFlow) && item?.previewPath && existsSync(join(courseRoot, item.previewPath)))
     : [];
   const readableChars = stripHtml(html).length;
 
@@ -434,6 +489,16 @@ function reviewBookSection(courseRoot, course, unit, lesson, section) {
       "section-ispring-not-rendered-inline",
       "Book section has localized iSpring in the manifest but the page does not render it inline.",
       { ...context, expectedIspring: expectedSectionIspring.map((item) => item.path) },
+    );
+  }
+
+  if (expectedSectionH5p.length && !markers.includes("h5p")) {
+    addIssue(
+      issues,
+      "error",
+      "section-h5p-not-rendered-inline",
+      "Book section has localized H5P in the manifest but the page does not render it inline.",
+      { ...context, expectedH5p: expectedSectionH5p.map((item) => item.previewPath) },
     );
   }
 
@@ -564,7 +629,7 @@ function reviewCourse(course) {
   for (const unit of manifest.units || []) {
     for (const lesson of unit.lessons || []) {
       for (const section of lesson.bookSections || []) {
-        pages.push(reviewBookSection(courseRoot, course, unit, lesson, section));
+        pages.push(reviewBookSection(courseRoot, course, manifest, unit, lesson, section));
       }
     }
   }

@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-08-31T09:44:28.788Z",
+  "coursewareRoot": "D:\\工作文件\\SUNNYBROOK\\courseware",
+  "summary": {
+    "courses": 1,
+    "pages": 207,
+    "pass": 1,
+    "review": 0,
+    "fail": 0,
+    "errors": 0,
+    "warnings": 0
+  },
+  "courses": [
+    {
+      "course": "ENG4U",
+      "title": "",
+      "status": "pass",
+      "pages": 207,
+      "shellCounts": {
+        "eng3u": 207
+      },
+      "errors": 0,
+      "warnings": 0,
+      "issues": [],
+      "samples": []
+    }
+  ]
+}

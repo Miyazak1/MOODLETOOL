@@ -1,0 +1,276 @@
+{
+  "generatedAt": "2026-08-31T09:47:23.106Z",
+  "startedAt": "2026-08-31T09:44:28.537Z",
+  "course": "ENG4U",
+  "dryRun": false,
+  "keepOldPackages": false,
+  "outputPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\package-course-ENG4U.json",
+  "oldPackages": [
+    {
+      "name": "ENG4U-course-package-fixed-root-20260827-173350.zip",
+      "path": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-packages\\ENG4U-course-package-fixed-root-20260827-173350.zip",
+      "bytes": 5704211694,
+      "mtime": "2026-08-27T09:36:03.157Z"
+    }
+  ],
+  "plannedDeletePackages": [
+    {
+      "name": "ENG4U-course-package-fixed-root-20260827-173350.zip",
+      "path": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-packages\\ENG4U-course-package-fixed-root-20260827-173350.zip",
+      "bytes": 5704211694,
+      "mtime": "2026-08-27T09:36:03.157Z"
+    }
+  ],
+  "deletedPackages": [
+    {
+      "name": "ENG4U-course-package-fixed-root-20260827-173350.zip",
+      "path": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-packages\\ENG4U-course-package-fixed-root-20260827-173350.zip",
+      "bytes": 5704211694,
+      "mtime": "2026-08-27T09:36:03.157Z"
+    }
+  ],
+  "package": {
+    "course": "ENG4U",
+    "stagingCourse": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-package-staging\\ENG4U",
+    "zipPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-packages\\ENG4U-course-package-fixed-root-20260831-174510.zip",
+    "filesCopied": 805,
+    "dirsCopied": 86,
+    "missingFiles": [],
+    "missingDirs": [],
+    "bytes": 5704221252
+  },
+  "steps": [
+    {
+      "name": "pre-qa-course",
+      "startedAt": "2026-08-31T09:44:28.539Z",
+      "finishedAt": "2026-08-31T09:44:28.671Z",
+      "command": "node scripts/qa-course.mjs --course ENG4U --json",
+      "exitCode": 0,
+      "ok": true,
+      "status": "pass",
+      "report": {
+        "generatedAt": "2026-08-31T09:44:28.663Z",
+        "course": "ENG4U",
+        "courseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG4U",
+        "manifestPath": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG4U\\course-manifest.json",
+        "summary": {
+          "status": "pass",
+          "units": 4,
+          "lessons": 26,
+          "errors": 0,
+          "warnings": 0,
+          "counts": {
+            "resources": 585,
+            "playable": 134,
+            "h5p": 60,
+            "video": 48,
+            "ispring": 26,
+            "documents": 224,
+            "localPlayable": 134
+          }
+        },
+        "issues": []
+      },
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "pre-display-qa",
+      "startedAt": "2026-08-31T09:44:28.671Z",
+      "finishedAt": "2026-08-31T09:44:28.797Z",
+      "command": "node scripts/review-page-display-regression.mjs --courses ENG4U --json",
+      "exitCode": 0,
+      "ok": true,
+      "status": "pass",
+      "report": {
+        "generatedAt": "2026-08-31T09:44:28.788Z",
+        "coursewareRoot": "D:\\工作文件\\SUNNYBROOK\\courseware",
+        "summary": {
+          "courses": 1,
+          "pages": 207,
+          "pass": 1,
+          "review": 0,
+          "fail": 0,
+          "errors": 0,
+          "warnings": 0
+        },
+        "courses": [
+          {
+            "course": "ENG4U",
+            "title": "",
+            "status": "pass",
+            "pages": 207,
+            "shellCounts": {
+              "eng3u": 207
+            },
+            "errors": 0,
+            "warnings": 0,
+            "issues": [],
+            "samples": []
+          }
+        ]
+      },
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "package-clean-course",
+      "startedAt": "2026-08-31T09:44:28.803Z",
+      "finishedAt": "2026-08-31T09:47:20.404Z",
+      "command": "node scripts/package-clean-course.mjs --course ENG4U",
+      "exitCode": 0,
+      "ok": true,
+      "status": "pass",
+      "report": {
+        "course": "ENG4U",
+        "stagingCourse": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-package-staging\\ENG4U",
+        "zipPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-packages\\ENG4U-course-package-fixed-root-20260831-174510.zip",
+        "filesCopied": 805,
+        "dirsCopied": 86,
+        "missingFiles": [],
+        "missingDirs": [],
+        "bytes": 5704221252
+      },
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "post-qa-gate",
+      "startedAt": "2026-08-31T09:47:20.404Z",
+      "finishedAt": "2026-08-31T09:47:23.105Z",
+      "command": "node scripts/qa-gate.mjs --course ENG4U --zip D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-packages\\ENG4U-course-package-fixed-root-20260831-174510.zip --json",
+      "exitCode": 0,
+      "ok": true,
+      "status": "pass",
+      "report": {
+        "generatedAt": "2026-08-31T09:47:23.098Z",
+        "course": "ENG4U",
+        "outputPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\qa-gate-ENG4U.json",
+        "summary": {
+          "status": "pass",
+          "errors": 0,
+          "warnings": 0
+        },
+        "steps": [
+          {
+            "name": "course",
+            "command": "node scripts/qa-course.mjs --course ENG4U --json",
+            "exitCode": 0,
+            "status": "pass",
+            "summary": {
+              "status": "pass",
+              "exitCode": 0,
+              "errors": 0,
+              "warnings": 0
+            },
+            "report": {
+              "generatedAt": "2026-08-31T09:47:21.300Z",
+              "course": "ENG4U",
+              "courseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG4U",
+              "manifestPath": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG4U\\course-manifest.json",
+              "summary": {
+                "status": "pass",
+                "units": 4,
+                "lessons": 26,
+                "errors": 0,
+                "warnings": 0,
+                "counts": {
+                  "resources": 585,
+                  "playable": 134,
+                  "h5p": 60,
+                  "video": 48,
+                  "ispring": 26,
+                  "documents": 224,
+                  "localPlayable": 134
+                }
+              },
+              "issues": []
+            },
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "name": "package",
+            "command": "node scripts/qa-package.mjs --course ENG4U --zip D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-packages\\ENG4U-course-package-fixed-root-20260831-174510.zip --json",
+            "exitCode": 0,
+            "status": "pass",
+            "summary": {
+              "status": "pass",
+              "exitCode": 0,
+              "errors": 0,
+              "warnings": 0
+            },
+            "report": {
+              "generatedAt": "2026-08-31T09:47:22.348Z",
+              "course": "ENG4U",
+              "courseRoot": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG4U",
+              "manifestPath": "D:\\工作文件\\SUNNYBROOK\\courseware\\ENG4U\\course-manifest.json",
+              "mode": "zip",
+              "zipPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-packages\\ENG4U-course-package-fixed-root-20260831-174510.zip",
+              "entries": 22981,
+              "rootEntries": [
+                "course-manifest.json",
+                "course-sections",
+                "ispring-localized",
+                "localized-moodle",
+                "localized-moodle-activities",
+                "plans",
+                "previews-html",
+                "texts",
+                "Unit 1",
+                "Unit 2",
+                "Unit 3",
+                "Unit 4",
+                "_assets"
+              ],
+              "manifestInZip": true,
+              "expectedFiles": 805,
+              "expectedDirs": 86,
+              "issues": [],
+              "summary": {
+                "status": "pass",
+                "errors": 0,
+                "warnings": 0,
+                "missingZipFiles": 0,
+                "missingLocalFiles": 0
+              }
+            },
+            "stdout": "",
+            "stderr": ""
+          },
+          {
+            "name": "online",
+            "command": "",
+            "exitCode": 0,
+            "status": "skipped",
+            "summary": {
+              "status": "skipped",
+              "exitCode": 0,
+              "errors": 0,
+              "warnings": 0
+            },
+            "report": {
+              "summary": {
+                "status": "skipped",
+                "errors": 0,
+                "warnings": 0
+              },
+              "issues": []
+            },
+            "stdout": "",
+            "stderr": ""
+          }
+        ]
+      },
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "summary": {
+    "status": "pass",
+    "oldPackages": 1,
+    "plannedDeletePackages": 1,
+    "deletedPackages": 1,
+    "zipPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\course-packages\\ENG4U-course-package-fixed-root-20260831-174510.zip"
+  }
+}
