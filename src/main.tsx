@@ -467,6 +467,20 @@ function withMergedAttachments(item: LinkableResource, attachments: LinkableReso
   };
 }
 
+function withBookSectionAttachmentContext(
+  attachment: LinkableResource,
+  section: NonNullable<Lesson["bookSections"]>[number],
+): LinkableResource {
+  return {
+    ...attachment,
+    parentSection: attachment.parentSection || section.parentSection || section.sectionLabel || section.label,
+    sectionLabel: attachment.sectionLabel || section.sectionLabel || section.parentSection || section.label,
+    sectionTitle: attachment.sectionTitle || section.sectionTitle || section.sectionLabel || section.label,
+    sectionPath: attachment.sectionPath || section.sectionPath || section.path || section.previewPath,
+    sourceGroup: attachment.sourceGroup || "book_section_embed",
+  };
+}
+
 function normalizedRoleKey(value?: string): string {
   return String(value || "")
     .trim()
@@ -1423,10 +1437,14 @@ function LessonFlowPanel({
     const sectionFlowKey = bookSectionFlowKey(section);
     visibleAttachments(section).forEach((attachment) => {
       if (isLocalizedStandaloneLessonResource(attachment)) {
-        addUniqueResource(embeddedPlayableAttachments, attachment);
+        const contextualAttachment = withBookSectionAttachmentContext(attachment, section);
+        addUniqueResource(embeddedPlayableAttachments, contextualAttachment);
         playableAttachmentFlowByKey.set(resourceIdentity(attachment), sectionFlowKey);
+        playableAttachmentFlowByKey.set(resourceIdentity(contextualAttachment), sectionFlowKey);
         const sourceKey = resourceSourceIdentity(attachment);
         if (sourceKey) playableAttachmentFlowByKey.set(sourceKey, sectionFlowKey);
+        const contextualSourceKey = resourceSourceIdentity(contextualAttachment);
+        if (contextualSourceKey) playableAttachmentFlowByKey.set(contextualSourceKey, sectionFlowKey);
         return;
       }
       addResourceKeys(bookSectionAttachmentKeys, attachment);
