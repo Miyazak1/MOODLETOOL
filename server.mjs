@@ -1941,6 +1941,7 @@ function shouldBypassPortalLogin(pathname) {
     pathname.startsWith("/embed/") ||
     pathname.startsWith("/share/") ||
     pathname.startsWith("/assets/") ||
+    pathname.startsWith("/vendor/") ||
     pathname === "/downloads/filter_portalembed.zip" ||
     pathname === "/favicon.ico"
   );
@@ -2068,6 +2069,21 @@ function tokenForSharedPath(payload, requestedPath) {
   });
 }
 
+function tokenForEmbedPath(payload, requestedPath) {
+  const normalizedPath = toPosixPath(requestedPath);
+  return signEmbedPayload({
+    v: 1,
+    course: safeSegment(payload.course).toUpperCase(),
+    kind: payload.kind || "file",
+    lessonId: payload.lessonId,
+    label: payload.label,
+    section: payload.section,
+    path: normalizedPath,
+    prefix: dirnamePosix(normalizedPath),
+    exp: payload.exp,
+  });
+}
+
 function shareKindLabel(kind) {
   const labels = {
     ispring: "iSpring Courseware",
@@ -2141,8 +2157,9 @@ function publicOrigin(req) {
   return `${String(proto).split(",")[0]}://${String(host).split(",")[0]}`.replace(/\/+$/, "");
 }
 
-function embedTokenForResource({ course, kind, path, url, downloadUrl, label, section, lessonId }) {
+function embedTokenForResource({ course, kind, path, downloadPath, url, downloadUrl, label, section, lessonId }) {
   const normalizedPath = toPosixPath(path || "");
+  const normalizedDownloadPath = toPosixPath(downloadPath || "");
   const normalizedUrl = cleanExternalUrl(url || "");
   const normalizedDownloadUrl = cleanExternalUrl(downloadUrl || normalizedUrl);
   return signEmbedPayload({
@@ -2153,6 +2170,7 @@ function embedTokenForResource({ course, kind, path, url, downloadUrl, label, se
     label,
     section,
     path: normalizedPath,
+    downloadPath: normalizedDownloadPath,
     url: normalizedUrl,
     downloadUrl: normalizedDownloadUrl,
     prefix: normalizedPath ? dirnamePosix(normalizedPath) : "",
@@ -2172,6 +2190,63 @@ function injectEmbedBase(html, baseHref) {
   const base = `<base href="${htmlEscape(baseHref)}">`;
   if (/<head\b[^>]*>/i.test(html)) return html.replace(/<head\b([^>]*)>/i, `<head$1>${base}`);
   return `${base}\n${html}`;
+}
+
+function replaceJsStringOption(html, key, value) {
+  const pattern = new RegExp(`(\\b${key}\\s*:\\s*)(["'])(?:\\\\.|(?!\\2)[\\s\\S])*?\\2`, "m");
+  return String(html).replace(pattern, `$1${JSON.stringify(value)}`);
+}
+
+function isH5pStandalonePreviewPath(path) {
+  return /(?:^|\/)h5p-external\/[^/]+\/index\.html$/i.test(toPosixPath(path));
+}
+
+function h5pPackagePathFromPreviewPath(path) {
+  const normalizedPath = toPosixPath(path);
+  return isH5pStandalonePreviewPath(normalizedPath)
+    ? normalizedPath.replace(/\/index\.html$/i, ".h5p")
+    : "";
+}
+
+function h5pPreviewPathFromPackagePath(path) {
+  const normalizedPath = toPosixPath(path);
+  return /(?:^|\/)h5p-external\/[^/]+\.h5p$/i.test(normalizedPath)
+    ? normalizedPath.replace(/\.h5p$/i, "/index.html")
+    : "";
+}
+
+function addEmbeddedClassToBody(html) {
+  if (!/<body\b/i.test(html)) return html;
+  return String(html).replace(/<body\b([^>]*)>/i, (match, attributes) => {
+    const classMatch = /\bclass=(["'])([^"']*)\1/i.exec(attributes);
+    if (!classMatch) return `<body${attributes} class="is-embedded">`;
+    if (classMatch[2].split(/\s+/).includes("is-embedded")) return match;
+    const nextClass = `${classMatch[2]} is-embedded`.trim();
+    return `<body${attributes.replace(classMatch[0], `class=${classMatch[1]}${nextClass}${classMatch[1]}`)}>`;
+  });
+}
+
+function injectH5pEmbedCompatibility(html, { resourceBaseHref, vendorBaseHref, downloadHref }) {
+  const vendorBase = String(vendorBaseHref || "").replace(/\/+$/, "");
+  const resourceBase = String(resourceBaseHref || "").replace(/\/+$/, "");
+  const mainJs = `${vendorBase}/vendor/h5p-standalone/main.bundle.js`;
+  const frameJs = `${vendorBase}/vendor/h5p-standalone/frame.bundle.js`;
+  const frameCss = `${vendorBase}/vendor/h5p-standalone/styles/h5p.css`;
+  let nextHtml = String(html || "");
+
+  nextHtml = nextHtml
+    .replace(/href=(["'])\/vendor\/h5p-standalone\/styles\/h5p\.css\1/gi, `href="${htmlEscape(frameCss)}"`)
+    .replace(/src=(["'])\/vendor\/h5p-standalone\/main\.bundle\.js\1/gi, `src="${htmlEscape(mainJs)}"`);
+  nextHtml = replaceJsStringOption(nextHtml, "h5pJsonPath", resourceBase);
+  nextHtml = replaceJsStringOption(nextHtml, "librariesPath", resourceBase);
+  nextHtml = replaceJsStringOption(nextHtml, "contentJsonPath", `${resourceBase}/content`);
+  nextHtml = replaceJsStringOption(nextHtml, "frameJs", frameJs);
+  nextHtml = replaceJsStringOption(nextHtml, "frameCss", frameCss);
+  if (downloadHref) {
+    nextHtml = replaceJsStringOption(nextHtml, "downloadUrl", downloadHref);
+    nextHtml = nextHtml.replace(/(<a\b[^>]*\bhref=)(["'])\.\.\/[^"']+\.h5p\2/gi, `$1"${htmlEscape(downloadHref)}"`);
+  }
+  return addEmbeddedClassToBody(nextHtml);
 }
 
 const coursewareViewerStyle = `
@@ -2525,6 +2600,44 @@ async function sendEmbedCoursewareFile(req, res, course, requestedPath, payload)
   return true;
 }
 
+async function sendEmbedH5pPreview(req, res, course, requestedPath, payload) {
+  const normalizedPath = toPosixPath(requestedPath);
+  if (!isEmbedPathAllowed(payload, course, normalizedPath)) {
+    res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Forbidden: invalid embed token");
+    return true;
+  }
+  const previewPath = isH5pStandalonePreviewPath(normalizedPath)
+    ? normalizedPath
+    : h5pPreviewPathFromPackagePath(normalizedPath);
+  if (!previewPath) return sendEmbedCoursewareFile(req, res, course, normalizedPath, payload);
+  const resourceToken = tokenForEmbedPath(payload, previewPath);
+  const resourceHref = `/embed/t/${encodeURIComponent(resourceToken)}/${encodeURIComponent(course)}/${encodePathSegments(previewPath)}`;
+  const resourceBaseHref = resourceHref.slice(0, resourceHref.lastIndexOf("/") + 1);
+  const fallbackDownloadPath = h5pPackagePathFromPreviewPath(previewPath) || (/\.h5p$/i.test(normalizedPath) ? normalizedPath : "");
+  const downloadPath = toPosixPath(payload.downloadPath || fallbackDownloadPath);
+  const downloadToken = downloadPath ? tokenForEmbedPath(payload, downloadPath) : "";
+  const downloadHref = downloadPath
+    ? `/embed/t/${encodeURIComponent(downloadToken)}/${encodeURIComponent(course)}/${encodePathSegments(downloadPath)}?download=1`
+    : cleanExternalUrl(payload.downloadUrl || payload.url);
+  const root = courseRoot(course);
+  const filePath = ensureInside(root, join(root, previewPath));
+  let html = "";
+  try {
+    html = await readFile(filePath, "utf8");
+  } catch (error) {
+    const fallbackUrl = coursewareAssetUrl(course, previewPath) || cleanExternalUrl(payload.url);
+    if (!isTrustedCoursewareAssetUrl(fallbackUrl)) throw error;
+    html = await fetchTrustedCoursewareHtml(fallbackUrl);
+  }
+  sendHtml(res, 200, injectH5pEmbedCompatibility(html, {
+    resourceBaseHref,
+    vendorBaseHref: publicOrigin(req),
+    downloadHref,
+  }));
+  return true;
+}
+
 function localResourceCandidatesForLesson(lesson) {
   const candidates = [];
   for (const item of lesson.ispring || []) {
@@ -2621,10 +2734,17 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
   const appendRows = ({ unit = 0, lesson = 0, lessonId = "COURSE", lessonTitle = "Course Resources" }, candidates) => {
     for (const candidate of candidates) {
       const item = candidate.item;
+      const viewPath = candidate.kind === "h5p"
+        ? (item.previewPath || item.path || item.downloadPath)
+        : (item.path || item.previewPath || item.downloadPath);
+      const downloadPath = candidate.kind === "h5p"
+        ? (item.path || item.downloadPath || item.previewPath)
+        : (item.downloadPath || item.path || item.previewPath);
       const token = embedTokenForResource({
         course,
         kind: candidate.kind,
-        path: item.path || item.previewPath || item.downloadPath,
+        path: viewPath,
+        downloadPath,
         url: item.previewUrl || item.url,
         downloadUrl: item.downloadUrl || item.url,
         label: item.label,
@@ -2633,7 +2753,7 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
       });
       const resourceKey = item.path || item.previewPath || item.downloadPath || item.previewUrl || item.url || item.downloadUrl || item.label || candidate.role;
       const resourceId = resourceIdFor(resourceKey);
-      const embedUrl = `${origin}/embed/${candidate.kind}/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
+      let embedUrl = `${origin}/embed/${candidate.kind}/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
       const fileUrl = `${origin}/embed/file/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
       let moodleHtml = "";
       let moodleIframeHtml = "";
@@ -2649,6 +2769,7 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
         moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 540 });
         moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video", mimeTypes[ext] || "video/mp4");
       } else if (candidate.kind === "h5p") {
+        embedUrl = `${embedUrl}&embed=1`;
         moodleIframeHtml = moodleH5pIframeHtml(embedUrl);
         moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 560 });
         moodleHtml = moodleShortcode;
@@ -2668,7 +2789,7 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
         kind: candidate.kind,
         role: candidate.role,
         label: item.label || "",
-        path: item.path || item.previewPath || item.downloadPath || item.previewUrl || item.url || item.downloadUrl,
+        path: viewPath || item.previewUrl || item.url || item.downloadUrl,
         source: item.source || null,
         status,
         embedUrl,
@@ -2723,6 +2844,9 @@ async function handleEmbedRequest(req, res, requestUrl) {
   if (tokenPathMatch) {
     const course = safeSegment(tokenPathMatch[2]).toUpperCase();
     const requestedPath = decodePath(tokenPathMatch[3]);
+    if (payload.kind === "h5p" && isH5pStandalonePreviewPath(requestedPath)) {
+      return sendEmbedH5pPreview(req, res, course, requestedPath, payload);
+    }
     return sendEmbedCoursewareFile(req, res, course, requestedPath, payload);
   }
 
@@ -2730,6 +2854,9 @@ async function handleEmbedRequest(req, res, requestUrl) {
   if (coursewareMatch) {
     const course = safeSegment(coursewareMatch[1]).toUpperCase();
     const requestedPath = decodePath(coursewareMatch[2]);
+    if (payload.kind === "h5p" && isH5pStandalonePreviewPath(requestedPath)) {
+      return sendEmbedH5pPreview(req, res, course, requestedPath, payload);
+    }
     return sendEmbedCoursewareFile(req, res, course, requestedPath, payload);
   }
 
@@ -2829,6 +2956,9 @@ async function handleEmbedRequest(req, res, requestUrl) {
     const html = await readFile(filePath, "utf8");
     sendHtml(res, 200, html);
     return true;
+  }
+  if (kind === "h5p" && payload.path) {
+    return sendEmbedH5pPreview(req, res, course, payload.path, payload);
   }
   if (!payload.path && payloadDownloadUrl) {
     res.writeHead(302, { Location: payloadDownloadUrl });
