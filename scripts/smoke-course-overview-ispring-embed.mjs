@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
@@ -165,6 +165,18 @@ try {
   const lessonRow = data.rows?.find((item) => item.kind === "ispring" && item.lessonId === "U01L01" && item.path === "ispring-localized/unit-01/U01L01/presentation.html");
   if (!overviewRow) throw new Error(`Course overview iSpring embed row missing: ${JSON.stringify(data)}`);
   if (!lessonRow) throw new Error(`Traditional lesson iSpring embed row missing: ${JSON.stringify(data)}`);
+  for (const row of [overviewRow, lessonRow]) {
+    if (row.moodleShortcode?.includes('width="1500"') || row.moodleIframeHtml?.includes('width="1500"')) {
+      throw new Error(`iSpring Moodle embed must not use fixed 1500px width: ${JSON.stringify(row)}`);
+    }
+    if (!row.moodleShortcode?.includes('width="100%"') || !row.moodleIframeHtml?.includes("max-width: 100%")) {
+      throw new Error(`iSpring Moodle embed must be responsive: ${JSON.stringify(row)}`);
+    }
+  }
+  const filterPhp = await readFile(resolve(projectRoot, "moodle-plugins", "filter", "portalembed", "filter.php"), "utf8");
+  if (!filterPhp.includes("max-width:100%")) {
+    throw new Error("Portal embed Moodle filter must cap iframe width at max-width:100%.");
+  }
 
   const overviewEmbed = await check(overviewRow.embedUrl, "course overview iSpring embed wrapper", 200);
   const overviewHtml = await overviewEmbed.text();

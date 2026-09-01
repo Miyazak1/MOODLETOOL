@@ -2738,9 +2738,9 @@ function localResourceCandidatesFromResources(resources, fallbackRole = "resourc
 }
 
 function moodleIspringIframeHtml(src) {
-  return `<iframe style="border: none; background-color: transparent;"
+  return `<iframe style="display: block; width: 100%; max-width: 100%; border: none; background-color: transparent;"
     src="${htmlEscape(src)}"
-    width="1500" height="750" frameborder="0" scrolling="auto"
+    width="100%" height="720" frameborder="0" scrolling="auto"
     allow="autoplay; fullscreen; clipboard-write; encrypted-media; picture-in-picture"
     allowfullscreen="allowfullscreen"></iframe>`;
 }
@@ -2749,7 +2749,7 @@ function moodleShortcodeAttribute(value) {
   return String(value ?? "").replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("[", "&#91;").replaceAll("]", "&#93;");
 }
 
-function moodlePortalIframeShortcode(src, { width = 1500, height = 750 } = {}) {
+function moodlePortalIframeShortcode(src, { width = "100%", height = 720 } = {}) {
   return `[portal_iframe src="${moodleShortcodeAttribute(src)}" width="${moodleShortcodeAttribute(width)}" height="${moodleShortcodeAttribute(height)}"]`;
 }
 
@@ -2809,7 +2809,7 @@ function moodleEmbedRowsForCourse(req, course, manifest) {
       let status = "ready";
       if (candidate.kind === "ispring") {
         moodleIframeHtml = moodleIspringIframeHtml(embedUrl);
-        moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: 1500, height: 750 });
+        moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 720 });
         moodleHtml = moodleShortcode;
       } else if (candidate.kind === "video") {
         const ext = extname(item.path || item.url || "").toLowerCase();
