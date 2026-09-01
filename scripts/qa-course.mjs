@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, normalize, posix, resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
@@ -18,11 +18,18 @@ function normalizeRole(value = "") {
     .trim()
     .replace(/([a-z])([A-Z])/g, "$1_$2")
     .replace(/[\s-]+/g, "_")
-    .toLowerCase();
+    .toLowerCase()
+    .replace(/home_work/g, "homework");
 }
 
 function text(value) {
   return String(value ?? "");
+}
+
+function flowScope(value) {
+  return text(value)
+    .toLowerCase()
+    .replace(/home[\s_-]*work/g, "homework");
 }
 
 function toPosix(value) {
@@ -145,6 +152,11 @@ function isHomeworkSubmissionResource(item) {
   return (isNumberedLessonActivity(item) || isNumberedLessonAnswerActivity(item)) && /(?:student[\s_-]*submission|homework)/.test(scope);
 }
 
+function isHomeworkSubmissionRow(row) {
+  const scope = text(row?.context?.scope);
+  return /\.lessonDropboxes$|\.answerPages$/.test(scope) || isHomeworkSubmissionResource(row?.item);
+}
+
 function flowKeyFromText(value) {
   const label = normalizeRole(value);
   if (!label) return "";
@@ -159,7 +171,7 @@ function flowKeyFromText(value) {
 
 function flowKeyForResource(item) {
   const role = normalizeRole(item?.role);
-  const scope = lowerResourceScope(item);
+  const scope = flowScope(lowerResourceScope(item));
   const sectionFlow = flowKeyFromText(item?.sectionLabel);
   if (sectionFlow) return sectionFlow;
   if (text(item?.sectionLabel).trim()) return "resources";
@@ -173,8 +185,37 @@ function flowKeyForResource(item) {
   return "resources";
 }
 
+function portalFlowKeyForResourceScope(item) {
+  const role = normalizeRole(item?.role);
+  const parentScope = flowScope([item?.parentSection, item?.sectionLabel, item?.sectionTitle, item?.sourceGroup].join(" "));
+  if (role === "hands_on" || role === "handson" || parentScope.includes("hands")) return "hands_on";
+  if (role === "consolidation" || parentScope.includes("consolidation") || parentScope.includes("consoldation")) return "consolidation";
+  if (role === "homework" || parentScope.includes("homework")) return "homework";
+  if (role === "lesson_expectations" || role === "expectations" || parentScope.includes("expectation")) return "expectations";
+
+  const value = flowScope(lowerResourceScope(item));
+  if (value.includes("hands")) return "hands_on";
+  if (value.includes("consolidation") || value.includes("consoldation")) return "consolidation";
+  if (value.includes("homework")) return "homework";
+  if (value.includes("overview") || value.includes("expectation") || value.includes("introduction")) return "expectations";
+  return "resources";
+}
+
+function expectedEmbeddedFlow(item, context = {}) {
+  if (context.scope === "lesson.handsOn") return "hands_on";
+  const roleFlow = flowKeyFromText(item?.role);
+  if (["hands_on", "consolidation", "homework"].includes(roleFlow)) return roleFlow;
+  const parentFlow = flowKeyFromText([item?.parentSection, item?.sectionLabel, item?.sectionTitle].join(" "));
+  if (["hands_on", "consolidation", "homework"].includes(parentFlow)) return parentFlow;
+  const embeddedMatch = toPosix([item?.path, item?.previewPath, item?.localizedPackagePath, item?.localizedPreviewPath].join(" "))
+    .toLowerCase()
+    .match(/\/downloaded_resources\/([^/]+)\/h5p\//i);
+  if (embeddedMatch) return rawKindToFlow(embeddedMatch[1]);
+  return "";
+}
+
 function flowKeyForISpring(item) {
-  const scope = lowerResourceScope(item);
+  const scope = flowScope(lowerResourceScope(item));
   if (scope.includes("consolidation")) return "consolidation";
   if (scope.includes("homework")) return "homework";
   if (scope.includes("hands")) return "hands_on";
@@ -187,6 +228,37 @@ function resourceIdentity(item) {
 
 function localPath(courseRoot, relativePath) {
   return normalize(join(courseRoot, relativePath));
+}
+
+function normalizeComparablePath(value) {
+  return toPosix(decodeHtmlAttr(value))
+    .replace(/[?#].*$/, "")
+    .replace(/^\.?\//, "")
+    .replace(/^courseware\/[^/]+\//i, "");
+}
+
+function collectRegisteredLocalPaths(resourceRows) {
+  const paths = new Set();
+  const fields = ["path", "previewPath", "downloadPath", "packagePath"];
+  for (const { item } of resourceRows) {
+    for (const field of fields) {
+      const value = item?.[field];
+      if (!isLocalReference(value)) continue;
+      const normalizedPath = normalizeComparablePath(value);
+      if (!normalizedPath) continue;
+      paths.add(normalizedPath);
+      if (/\/index\.html$/i.test(normalizedPath)) {
+        paths.add(normalizedPath.replace(/\/index\.html$/i, ""));
+      }
+    }
+  }
+  return paths;
+}
+
+function isRegisteredLocalPage(relativePath, registeredPaths) {
+  const pagePath = normalizeComparablePath(relativePath);
+  if (!pagePath) return false;
+  return registeredPaths.has(pagePath) || registeredPaths.has(pagePath.replace(/\/index\.html$/i, ""));
 }
 
 function rawKindToFlow(kind) {
@@ -293,10 +365,19 @@ function htmlFilesSectionInsideMoodleSection(html) {
   const content = text(html);
   const filesMatch = /<section\b[^>]*class=["'][^"']*\bfiles\b/i.exec(content);
   if (!filesMatch) return true;
-  const beforeFiles = content.slice(0, filesMatch.index).toLowerCase();
-  const lastMoodleOpen = beforeFiles.lastIndexOf('<section class="moodle-section"');
-  const lastSectionClose = beforeFiles.lastIndexOf("</section>");
-  return lastMoodleOpen >= 0 && lastMoodleOpen > lastSectionClose;
+  const stack = [];
+  const tagRe = /<\/section\s*>|<section\b[^>]*>/gi;
+  for (const match of content.matchAll(tagRe)) {
+    if (match.index >= filesMatch.index) break;
+    const tag = match[0];
+    if (/^<\//.test(tag)) {
+      stack.pop();
+      continue;
+    }
+    const classMatch = /\bclass=["']([^"']*)["']/i.exec(tag);
+    stack.push({ moodle: /\bmoodle-section\b/i.test(classMatch?.[1] || "") });
+  }
+  return stack.some((entry) => entry.moodle);
 }
 
 function localizedIspringBlocks(html) {
@@ -439,6 +520,49 @@ function validatePaths(courseRoot, resourceRows, issues) {
   }
 }
 
+function validateH5pFlowMetadata(resourceRows, issues) {
+  for (const { item, context } of resourceRows) {
+    if (!isH5PResource(item) || !hasLocalResource(item)) continue;
+    const expectedFlow = expectedEmbeddedFlow(item, context);
+    if (!["hands_on", "consolidation", "homework"].includes(expectedFlow)) continue;
+
+    const portalFlow = portalFlowKeyForResourceScope(item);
+    if (portalFlow !== expectedFlow) {
+      addIssue(issues, "error", "h5p-flow-misgrouped", `${item.label || resourceIdentity(item)} should render under ${expectedFlow}, but portal grouping resolves it as ${portalFlow}.`, {
+        ...context,
+        label: item.label,
+        expectedFlow,
+        portalFlow,
+        role: item.role,
+        parentSection: item.parentSection,
+        sourceGroup: item.sourceGroup,
+        path: item.path,
+      });
+    }
+
+    const missing = [];
+    if (item.mode !== "local_embed") missing.push("mode=local_embed");
+    if (!item.parentSection) missing.push("parentSection");
+    if (item.sourceGroup !== "book_section_embed") missing.push("sourceGroup=book_section_embed");
+    if (!item.unit || Number(item.unit) !== Number(context.unit)) missing.push("unit");
+    if (!item.lesson || Number(item.lesson) !== Number(context.lesson)) missing.push("lesson");
+    if (/\.h5p(?:$|[?#])/i.test(toPosix(item.path)) && !item.localizedPackagePath) missing.push("localizedPackagePath");
+    if (item.previewPath && !item.localizedPreviewPath) missing.push("localizedPreviewPath");
+    if (missing.length) {
+      addIssue(issues, "error", "h5p-flow-metadata-incomplete", `${item.label || resourceIdentity(item)} is localized H5P for ${expectedFlow}, but missing display flow metadata: ${missing.join(", ")}.`, {
+        ...context,
+        label: item.label,
+        expectedFlow,
+        missing,
+        role: item.role,
+        parentSection: item.parentSection,
+        sourceGroup: item.sourceGroup,
+        path: item.path,
+      });
+    }
+  }
+}
+
 function validateLessonDisplay(courseRoot, manifest, issues) {
   for (const unit of manifest.units || []) {
     for (const lesson of unit.lessons || []) {
@@ -576,7 +700,7 @@ function validateHomeworkPairing(manifest, issues) {
   const resources = collectResources(manifest);
   const seenCandidates = new Set();
   for (const { item, context } of resources) {
-    if (!isHomeworkSubmissionResource(item)) continue;
+    if (!isHomeworkSubmissionRow({ item, context })) continue;
     const identity = `${numberedLessonPosition(item).unit}.${numberedLessonPosition(item).lesson}:${normalizeRole(item.role)}:${resourceIdentity(item)}`;
     if (seenCandidates.has(identity)) continue;
     seenCandidates.add(identity);
@@ -632,6 +756,68 @@ function validateHomeworkPairing(manifest, issues) {
   }
 }
 
+function listLocalizedAssignPages(courseRoot) {
+  const assignRoot = join(courseRoot, "localized-moodle-activities", "assign");
+  if (!existsSync(assignRoot)) return [];
+  return readdirSync(assignRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => {
+      const relativePath = posix.join("localized-moodle-activities", "assign", entry.name, "index.html");
+      const fullPath = join(assignRoot, entry.name, "index.html");
+      if (!existsSync(fullPath)) return null;
+      const html = readFileSync(fullPath, "utf8");
+      const heading = (html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1] || "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      return {
+        relativePath,
+        heading,
+        hasHomeworkSignal: /homework|assignment|dropbox|submit|submission/i.test(`${heading} ${html}`),
+        isNumberedLessonSubmission: /^Unit\s+\d+\s*-\s*Lesson\s+\d+$/i.test(heading),
+      };
+    })
+    .filter(Boolean);
+}
+
+function validateHomeworkSubmissionCoverage(courseRoot, manifest, issues) {
+  const resources = collectResources(manifest);
+  const homeworkResources = resources.filter((row) => isHomeworkSubmissionRow(row));
+  if (homeworkResources.length) return;
+
+  const homeworkAudit = manifest.sourceAudit?.homeworkSubmissionFolder;
+  if (homeworkAudit?.status === "source_not_present") return;
+
+  const assignPages = listLocalizedAssignPages(courseRoot);
+  const suspiciousAssignPages = assignPages.filter((page) => page.isNumberedLessonSubmission || page.hasHomeworkSignal);
+  if (!suspiciousAssignPages.length) return;
+  const registeredPaths = collectRegisteredLocalPaths(resources);
+  const unregisteredSuspiciousAssignPages = suspiciousAssignPages.filter((page) => !isRegisteredLocalPage(page.relativePath, registeredPaths));
+  const auditStatus = normalizeRole(homeworkAudit?.status);
+  const hasExplicitHomeworkFolderSource =
+    Boolean(auditStatus && !["source_not_present", "not_present", "not_applicable", "unknown"].includes(auditStatus)) ||
+    resources.some(({ item }) => /homework[\s_-]*submission[\s_-]*folder/i.test(lowerResourceScope(item)));
+
+  if (!hasExplicitHomeworkFolderSource && !unregisteredSuspiciousAssignPages.length) return;
+
+  addIssue(
+    issues,
+    "warn",
+    "missing-homework-submission-folder",
+    `Localized Moodle assign pages need Homework Submission Folder review; suspicious assign pages are not registered as homework submission resources.`,
+    {
+      assignPages: assignPages.length,
+      suspiciousAssignPages: suspiciousAssignPages.length,
+      unregisteredSuspiciousAssignPages: unregisteredSuspiciousAssignPages.length,
+      hasExplicitHomeworkFolderSource,
+      examples: (unregisteredSuspiciousAssignPages.length ? unregisteredSuspiciousAssignPages : suspiciousAssignPages).slice(0, 8).map((page) => ({
+        label: page.heading,
+        path: page.relativePath,
+      })),
+    },
+  );
+}
+
 function validateCourseStructure(courseRoot, manifest, issues) {
   if (manifest.navigation?.primary !== "unit" || manifest.navigation?.secondary !== "lesson") {
     addIssue(issues, "warn", "unexpected-navigation-model", "Manifest navigation is not unit-first / lesson-second.", {
@@ -674,8 +860,10 @@ function buildReport(course, courseRoot, manifestPath, manifest) {
   validateCourseShellCss(courseRoot, issues);
   validateCourseStructure(courseRoot, manifest, issues);
   validatePaths(courseRoot, resources, issues);
+  validateH5pFlowMetadata(resources, issues);
   validateLessonDisplay(courseRoot, manifest, issues);
   validateHomeworkPairing(manifest, issues);
+  validateHomeworkSubmissionCoverage(courseRoot, manifest, issues);
 
   const counts = {
     resources: resources.length,

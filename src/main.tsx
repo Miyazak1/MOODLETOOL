@@ -502,11 +502,18 @@ function resourceFlowScopeText(item: LinkableResource): string {
 }
 
 function flowKeyForResourceScope(item: LinkableResource): string {
+  const role = normalizedRoleKey(item.role);
+  const parentScope = flowScopeText([item.parentSection, item.sectionLabel, item.sectionTitle, item.sourceGroup].join(" "));
+  if (role === "hands_on" || role === "handson" || parentScope.includes("hands")) return "handsOn";
+  if (role === "consolidation" || parentScope.includes("consolidation")) return "consolidation";
+  if (role === "homework" || parentScope.includes("homework")) return "homework";
+  if (role === "lesson_expectations" || role === "expectations" || parentScope.includes("expectation")) return "expectations";
+
   const value = resourceFlowScopeText(item);
-  if (value.includes("overview") || value.includes("expectation") || value.includes("introduction")) return "expectations";
   if (value.includes("hands")) return "handsOn";
   if (value.includes("consolidation")) return "consolidation";
   if (value.includes("homework")) return "homework";
+  if (value.includes("overview") || value.includes("expectation") || value.includes("introduction")) return "expectations";
   return "other";
 }
 

@@ -152,6 +152,7 @@
     "qa:table": "node scripts/qa-table-courses.mjs",
     "qa:all-courses": "node scripts/qa-all-courses.mjs",
     "repair:empty-ispring-iframes": "node scripts/repair-empty-ispring-iframes.mjs",
+    "repair:h5p-flow-metadata": "node scripts/normalize-h5p-flow-metadata.mjs",
     "repair:inline-lesson-ispring": "node scripts/repair-inline-lesson-ispring.mjs",
     "repair:lesson-expectations-shell": "node scripts/repair-lesson-expectations-shell.mjs",
     "verify:eng3u-complete": "node scripts/verify-eng3u-complete.mjs",
