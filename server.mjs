@@ -347,6 +347,48 @@ function injectIspringEmbedCompatibility(html, baseHref) {
   return `${injection}\n${html}`;
 }
 
+function isRollPreviewIspringHtml(html) {
+  const value = String(html || "");
+  return /Preview\.createPlayer/.test(value)
+    || /__PACK_NAME__/.test(value)
+    || /roll-preview/i.test(value);
+}
+
+function renderIspringSameOriginEmbedWrapper({ title, src }) {
+  return `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${htmlEscape(title || "iSpring Courseware")}</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: #f4f7fb;
+        overflow: hidden;
+      }
+
+      iframe {
+        display: block;
+        width: 100%;
+        height: 100vh;
+        border: 0;
+        background: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <iframe
+      src="${htmlEscape(src)}"
+      allow="autoplay; fullscreen; clipboard-write; encrypted-media; picture-in-picture"
+      allowfullscreen="allowfullscreen"></iframe>
+  </body>
+</html>`;
+}
+
 function directoryHrefForUrl(value) {
   try {
     const url = new URL(value);
@@ -2674,6 +2716,9 @@ function localResourceCandidatesFromResource(resource, fallbackRole = "resource"
   for (const attachment of resource.attachments || []) {
     candidates.push(...localResourceCandidatesFromResource(attachment, attachment.role || `${resource.role || fallbackRole}_attachment`, resource));
   }
+  for (const ispring of resource.ispring || []) {
+    candidates.push(...localResourceCandidatesFromResource(ispring, ispring.role || `${resource.role || fallbackRole}_ispring`, resource));
+  }
   return candidates;
 }
 
@@ -2891,6 +2936,13 @@ async function handleEmbedRequest(req, res, requestUrl) {
       if (isTrustedCoursewareAssetUrl(payloadUrl)) {
         try {
           const html = await fetchTrustedCoursewareHtml(payloadUrl);
+          if (tokenizedRawUrl && isRollPreviewIspringHtml(html)) {
+            sendHtml(res, 200, renderIspringSameOriginEmbedWrapper({
+              title: payload.label || "iSpring Courseware",
+              src: tokenizedRawUrl,
+            }));
+            return true;
+          }
           const rawBaseHref = tokenizedRawUrl
             ? tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1)
             : directoryHrefForUrl(payloadUrl);
@@ -2909,6 +2961,13 @@ async function handleEmbedRequest(req, res, requestUrl) {
     const root = courseRoot(course);
     const filePath = ensureInside(root, join(root, toPosixPath(payload.path)));
     const html = await readFile(filePath, "utf8");
+    if (tokenizedRawUrl && isRollPreviewIspringHtml(html)) {
+      sendHtml(res, 200, renderIspringSameOriginEmbedWrapper({
+        title: payload.label || "iSpring Courseware",
+        src: tokenizedRawUrl,
+      }));
+      return true;
+    }
     const rawBaseHref = tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1)
       || coursewareAssetDirectoryHref(course, payload.path);
     sendHtml(res, 200, injectIspringEmbedCompatibility(html, rawBaseHref));
