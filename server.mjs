@@ -347,18 +347,6 @@ function injectIspringEmbedCompatibility(html, baseHref) {
   return `${injection}\n${html}`;
 }
 
-function patchIspringEmbedJavaScript(js) {
-  return String(js)
-    .replace(/\bparent\.window\.location\.hash\b/g, "window.location.hash")
-    .replace(/\bwindow\.parent\.location\.hash\b/g, "window.location.hash")
-    .replace(/\bwindow\.top\.location\.hash\b/g, "window.location.hash")
-    .replace(/\bparent\.location\.hash\b/g, "window.location.hash")
-    .replace(/\btop\.location\.hash\b/g, "window.location.hash")
-    .replace(/\blet\s+([A-Za-z_$][\w$]*)\s*=\s*parent\.window\s*;/g, "let $1=window;")
-    .replace(/\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*parent\.window\s*;/g, "const $1=window;")
-    .replace(/\bvar\s+([A-Za-z_$][\w$]*)\s*=\s*parent\.window\s*;/g, "var $1=window;");
-}
-
 function directoryHrefForUrl(value) {
   try {
     const url = new URL(value);
@@ -2603,16 +2591,6 @@ async function sendEmbedCoursewareFile(req, res, course, requestedPath, payload)
     }
     return true;
   }
-  if (payload.kind === "ispring" && extname(filePath).toLowerCase() === ".js") {
-    const js = await readFile(filePath, "utf8");
-    res.writeHead(200, {
-      "Content-Type": `${mimeTypes[".js"] || "application/javascript"}; charset=utf-8`,
-      "Cache-Control": "no-store, max-age=0",
-      "X-Content-Type-Options": "nosniff",
-    });
-    res.end(patchIspringEmbedJavaScript(js));
-    return true;
-  }
   try {
     await sendFile(req, res, filePath);
   } catch (error) {
@@ -2695,9 +2673,6 @@ function localResourceCandidatesFromResource(resource, fallbackRole = "resource"
   }
   for (const attachment of resource.attachments || []) {
     candidates.push(...localResourceCandidatesFromResource(attachment, attachment.role || `${resource.role || fallbackRole}_attachment`, resource));
-  }
-  for (const ispring of resource.ispring || []) {
-    candidates.push(...localResourceCandidatesFromResource(ispring, ispring.role || `${resource.role || fallbackRole}_ispring`, resource));
   }
   return candidates;
 }
