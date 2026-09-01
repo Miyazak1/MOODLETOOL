@@ -1,0 +1,21 @@
+{
+  "course": "GLC2O",
+  "moodleCourseId": 53,
+  "title": "Career Studies, Grade 10, Open",
+  "sections": [
+    { "id": 577, "unit": 0, "title": "Introduction" },
+    { "id": 578, "unit": 1, "title": "Unit 1: Developing the Skills, Strategies, and Habits Needed to Succeed" },
+    { "id": 579, "unit": 2, "title": "Unit 2: Exploring and Preparing for the World of Work" },
+    { "id": 580, "unit": 3, "title": "Unit 3: Planning and Financial Management to Help Meet Postsecondary Goals" },
+    { "id": 581, "unit": 4, "title": "ISP and Final Exam" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline|success criteria", "role": "course_outline" },
+    { "pattern": "unit plans?", "role": "unit_plan" },
+    { "pattern": "lesson plans?", "role": "lesson_plan_reference" },
+    { "pattern": "teacher resources", "role": "teacher_resource" },
+    { "pattern": "final exam|test", "role": "assessment" },
+    { "pattern": "learning log|teacher observation|conversation", "role": "reflection" },
+    { "pattern": "career planning|goal setting|budget|resume|cover letter|making financial decisions|making money|personal budget|postsecondary|business|assignment", "role": "assignment" }
+  ]
+}

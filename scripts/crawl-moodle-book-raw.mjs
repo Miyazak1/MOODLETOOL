@@ -9,6 +9,8 @@ loadEnvFile(join(projectRoot, ".env"));
 const course = readArg("--course")?.toUpperCase();
 const unit = Number(readArg("--unit") || 0);
 const bookId = Number(readArg("--book") || 0);
+const explicitBaseUrl = readArg("--base-url");
+const authPrefix = String(readArg("--auth-prefix") || "").trim().toUpperCase();
 const timeoutMs = Math.max(10000, Number(process.env.MOODLE_ACTIVITY_TIMEOUT_MS || 60000));
 
 if (!course || !unit || !bookId) {
@@ -90,6 +92,14 @@ class CookieJar {
 }
 
 const jar = new CookieJar(process.env.MOODLE_COOKIE || "");
+const moodleBaseUrl = normalizeBaseUrl(explicitBaseUrl || process.env.MOODLE_BASE_URL || "https://www.esunnybrook.com");
+
+function normalizeBaseUrl(value) {
+  return String(value || "https://www.esunnybrook.com")
+    .trim()
+    .replace(/\/+$/, "")
+    .replace(/\/login\/index\.php$/i, "");
+}
 
 async function request(url, options = {}, redirects = 0) {
   const headers = new Headers(options.headers || {});
@@ -127,10 +137,10 @@ function parseHiddenToken(html) {
 
 async function loginIfNeeded() {
   if (process.env.MOODLE_COOKIE) return;
-  const username = process.env.MOODLE_USERNAME;
-  const password = process.env.MOODLE_PASSWORD;
+  const username = authPrefix ? process.env[`${authPrefix}_MOODLE_USERNAME`] || process.env.MOODLE_USERNAME : process.env.MOODLE_USERNAME;
+  const password = authPrefix ? process.env[`${authPrefix}_MOODLE_PASSWORD`] || process.env.MOODLE_PASSWORD : process.env.MOODLE_PASSWORD;
   if (!username || !password) throw new Error("Set MOODLE_COOKIE or MOODLE_USERNAME/MOODLE_PASSWORD.");
-  const loginUrl = "https://www.esunnybrook.com/login/index.php";
+  const loginUrl = `${moodleBaseUrl}/login/index.php`;
   const loginPage = await request(loginUrl);
   const loginHtml = await loginPage.text();
   const token = parseHiddenToken(loginHtml);
@@ -155,13 +165,17 @@ async function fetchHtml(url) {
 }
 
 function extractChapterBody(html) {
-  const startMatch = /<div\b[^>]*id=["']mod_book-chapter["'][^>]*>/i.exec(html);
+  const startMatch =
+    /<div\b[^>]*id=["']mod_book-chapter["'][^>]*>/i.exec(html) ||
+    /<div\b[^>]*class=["'][^"']*\bbook_content\b[^"']*["'][^>]*>/i.exec(html) ||
+    /<div\b[^>]*class=["'][^"']*\bgeneralbox\b[^"']*["'][^>]*>/i.exec(html);
   if (!startMatch) return "";
   const start = startMatch.index;
   const tagPattern = /<\/?div\b[^>]*>/gi;
   tagPattern.lastIndex = start;
   let depth = 0;
-  for (const match of html.matchAll(tagPattern)) {
+  let match;
+  while ((match = tagPattern.exec(html))) {
     const tag = match[0];
     if (tag.startsWith("</")) {
       depth -= 1;
@@ -209,6 +223,7 @@ function normalizeLabel(value, index) {
   const text = stripTags(value);
   const lower = text.toLowerCase();
   if (!text && index === 1) return "Lesson";
+  if (/^lesson\s*(?:\d+\.)?\d+\s*[:：]/i.test(lower)) return "Lesson Expectations";
   if (lower.includes("expectation") || lower === "overview" || lower === "introduction") return "Lesson Expectations";
   if (lower.includes("hands")) return "Hands On";
   if (lower.includes("consolidation")) return "Consolidation";
@@ -228,7 +243,12 @@ function extractTocLinks(html, baseUrl) {
     const chapterId = parsed.searchParams.get("chapterid") || "";
     if (!chapterId || seen.has(chapterId)) continue;
     const text = stripTags(match.groups.text);
-    if (!text || /^previous|next|print book|print this chapter$/i.test(text)) continue;
+    if (
+      !text ||
+      parsed.searchParams.has("lang") ||
+      /^previous|next|print book|print this chapter$/i.test(text) ||
+      /^(?:english|简体中文|繁體中文|français|español)\b/i.test(text)
+    ) continue;
     seen.add(chapterId);
     links.push({ chapterId, text, url });
   }
@@ -264,12 +284,26 @@ function splitLessons(pages) {
 }
 
 await loginIfNeeded();
-const startUrl = `https://www.esunnybrook.com/mod/book/view.php?id=${bookId}`;
+const startUrl = `${moodleBaseUrl}/mod/book/view.php?id=${bookId}`;
 const first = await fetchHtml(startUrl);
 const chapterLinks = extractTocLinks(first.html, first.url);
 if (!chapterLinks.length) throw new Error(`No chapter links found for book ${bookId}.`);
 
 const pages = [];
+{
+  const body = extractChapterBody(first.html);
+  const heading = headingsFromBody(body);
+  pages.push({
+    linkText: heading[0] || "Lesson Expectations",
+    heading,
+    html: body,
+    navError: "",
+    refs: refsFromBody(body, first.url),
+    textPreview: stripTags(body).slice(0, 500),
+    title: titleFromPage(first.html, body),
+    url: first.url,
+  });
+}
 for (const link of chapterLinks) {
   const pageHtml = await fetchHtml(link.url);
   const body = extractChapterBody(pageHtml.html);

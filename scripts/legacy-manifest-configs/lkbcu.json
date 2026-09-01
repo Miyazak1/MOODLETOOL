@@ -1,0 +1,20 @@
+{
+  "course": "LKBCU",
+  "moodleCourseId": 44,
+  "title": "International Languages, Simplified Chinese, Level 2, University",
+  "sections": [
+    { "id": 501, "unit": 0, "title": "General" },
+    { "id": 502, "unit": 1, "title": "Unit 1" },
+    { "id": 503, "unit": 2, "title": "Unit 2" },
+    { "id": 504, "unit": 3, "title": "Unit 3: Classic Chinese Language and Literature" },
+    { "id": 505, "unit": 4, "title": "Unit 4: Modern Chinese Literature" },
+    { "id": 506, "unit": 5, "title": "Final Evaluation" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline|daily lesson plans|learning log|reflection card", "role": "course_document" },
+    { "pattern": "Teacher'?s Observation|Conversation Checklists|Teacher'?s ONLY", "role": "teacher_feedback" },
+    { "pattern": "AAL|AFL|AOL|Assessment|Test|Exam|Final Project|Writing|Project|Survey|submission", "role": "assessment" },
+    { "pattern": "Lesson|Course Material|Li Qingzhap|Li Qingzhao|Ci-poem|Narrative|Prose|Expository|News|Argumentative|Classic Chinese|Pre-Qin|Zhuangzi|Wei, Jin|Tang Dynasty|Qing Dynasty|Ah Q|Xu Zhimo|Shi Tiesheng|Reading material|Movie|Video|Explore Chinese", "role": "lesson_material" },
+    { "pattern": "video|movie|youtube|url|reading|Explore", "role": "external_reference" }
+  ]
+}

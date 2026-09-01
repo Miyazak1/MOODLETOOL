@@ -1,0 +1,185 @@
+import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { isAbsolute, join, relative, resolve } from "node:path";
+
+const projectRoot = resolve(import.meta.dirname, "..");
+const smokeRoot = join(projectRoot, "deployment", ".hybrid-raw-smoke");
+const sourceRoot = join(smokeRoot, "source");
+const coursewareRoot = join(smokeRoot, "courseware-active");
+const mockOssRoot = join(smokeRoot, "mock-oss");
+const registryPath = join(smokeRoot, "asset-registry.json");
+const course = "ZZZOVERFLOW";
+const sourceCourseRoot = join(sourceRoot, course);
+const zipPath = join(smokeRoot, `${course}.zip`);
+const reportPath = join(projectRoot, "deployment", `${course}-hybrid-raw-import-report.json`);
+
+function assertInside(parent, child, label) {
+  const rel = relative(parent, child);
+  if (rel === "" || (!rel.startsWith("..") && !isAbsolute(rel))) return;
+  throw new Error(`${label} is outside expected root: ${child}`);
+}
+
+function writeFixture(path, content) {
+  mkdirSync(resolve(path, ".."), { recursive: true });
+  writeFileSync(path, content);
+}
+
+assertInside(projectRoot, smokeRoot, "smoke root");
+assertInside(projectRoot, reportPath, "report path");
+if (existsSync(smokeRoot)) rmSync(smokeRoot, { recursive: true, force: true });
+if (existsSync(reportPath)) rmSync(reportPath, { force: true });
+mkdirSync(sourceCourseRoot, { recursive: true });
+
+try {
+  writeFileSync(join(sourceCourseRoot, "course-manifest.json"), `${JSON.stringify({
+    course,
+    title: "Overflow Smoke",
+    units: [{
+      id: "unit-1",
+      lessons: [{
+        id: "lesson-1",
+        downloads: [
+          { label: "ordinary pdf", path: "docs/ordinary.pdf" },
+          { label: "video", path: "media/lesson-video.mp4" },
+        ],
+        ispring: [
+          { label: "slides", path: "ispring-localized/unit-01/U01L01/presentation.html", packagePath: "ispring-localized/unit-01/U01L01" },
+        ],
+      }],
+    }],
+  }, null, 2)}\n`, "utf8");
+  writeFixture(join(sourceCourseRoot, "docs", "ordinary.pdf"), Buffer.from("%PDF-1.7\n"));
+  writeFixture(join(sourceCourseRoot, "media", "lesson-video.mp4"), Buffer.alloc(128, 1));
+  writeFixture(
+    join(sourceCourseRoot, "localized-moodle-activities", "assign", "lab", "index.html"),
+    '<!doctype html><video controls><source src="files/lab-video.mp4" type="video/mp4"><a href="files/lab-video.mp4">video</a></video>',
+  );
+  writeFixture(
+    join(sourceCourseRoot, "course-sections", "course-overview", "index.html"),
+    '<!doctype html><iframe class="localized-ispring" src="../../ispring-localized/unit-01/U01L01/presentation.html"></iframe>',
+  );
+  writeFixture(join(sourceCourseRoot, "localized-moodle-activities", "assign", "lab", "files", "lab-video.mp4"), Buffer.alloc(256, 3));
+  writeFixture(
+    join(sourceCourseRoot, "localized-moodle", "h5p-external", "hamlet-recording", "content", "content.json"),
+    JSON.stringify({ interactiveVideo: { video: { files: [{ path: "videos/hamlet.mp4", mime: "video/mp4" }] } } }),
+  );
+  writeFixture(join(sourceCourseRoot, "localized-moodle", "h5p-external", "hamlet-recording", "content", "videos", "hamlet.mp4"), Buffer.alloc(384, 4));
+  writeFixture(join(sourceCourseRoot, "ispring-localized", "unit-01", "U01L01", "presentation.html"), "<!doctype html><title>slides</title>");
+  writeFixture(join(sourceCourseRoot, "ispring-localized", "unit-01", "U01L01", "data", "slides.js"), "console.log('slides');");
+  writeFixture(join(coursewareRoot, course, "old-active", "stale.txt"), "stale");
+  writeFixture(join(coursewareRoot, course, "_admin_uploads", "keep.txt"), "keep");
+  writeFixture(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4"), Buffer.alloc(32, 9));
+  writeFixture(registryPath, `${JSON.stringify({
+    assetRecords: [
+      {
+        course,
+        kind: "video",
+        objectKey: `courseware-active/${course}/media/old-video.mp4`,
+        ossUri: `oss://moodletool/courseware-active/${course}/media/old-video.mp4`,
+      },
+      {
+        course: "OTHER",
+        kind: "video",
+        objectKey: "courseware-active/OTHER/media/keep.mp4",
+      },
+    ],
+  }, null, 2)}\n`, "utf8");
+
+  const tar = process.env.SystemRoot ? join(process.env.SystemRoot, "System32", "tar.exe") : "tar";
+  const zipResult = spawnSync(tar, ["-acf", zipPath, "-C", sourceCourseRoot, "."], { encoding: "utf8" });
+  if (zipResult.status !== 0) throw new Error(zipResult.stderr || zipResult.stdout || "zip fixture failed");
+
+  const result = spawnSync("node", [
+    "scripts/import-hybrid-raw-package.mjs",
+    "--course", course,
+    "--import-id", "upl-raw-smoke",
+    "--source-zip", zipPath,
+    "--mock-oss-root", mockOssRoot,
+    "--mock-fail-once", "1",
+    "--courseware-root", coursewareRoot,
+    "--bucket", "oss://moodletool",
+    "--cdn-base-url", "https://cdn.example.com/courseware-active",
+    "--registry", registryPath,
+  ], {
+    cwd: projectRoot,
+    encoding: "utf8",
+    stdio: "pipe",
+    shell: process.platform === "win32",
+  });
+  if (result.status !== 0) throw new Error(result.stderr || result.stdout);
+
+  const stdout = JSON.parse(result.stdout);
+  assert.equal(stdout.ok, true);
+  assert.equal(stdout.mode, "hybrid-raw");
+  assert.equal(stdout.uploaded, 5);
+
+  const targetCourseRoot = join(coursewareRoot, course);
+  assert.equal(existsSync(join(targetCourseRoot, "docs", "ordinary.pdf")), true);
+  assert.equal(existsSync(join(targetCourseRoot, "media", "lesson-video.mp4")), false);
+  assert.equal(existsSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "index.html")), true);
+  assert.equal(existsSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "files", "lab-video.mp4")), false);
+  assert.equal(existsSync(join(targetCourseRoot, "localized-moodle", "h5p-external", "hamlet-recording", "content", "content.json")), true);
+  assert.equal(existsSync(join(targetCourseRoot, "localized-moodle", "h5p-external", "hamlet-recording", "content", "videos", "hamlet.mp4")), false);
+  assert.equal(existsSync(join(targetCourseRoot, "course-sections", "course-overview", "index.html")), true);
+  assert.equal(existsSync(join(targetCourseRoot, "ispring-localized", "unit-01", "U01L01", "presentation.html")), true);
+  assert.equal(existsSync(join(targetCourseRoot, "old-active", "stale.txt")), false);
+  assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "keep.txt")), true);
+  assert.equal(existsSync(join(targetCourseRoot, "_admin_uploads", "raw-staging", "upl-raw-smoke", "previous-active")), false);
+  assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "lesson-video.mp4")), true);
+  assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "localized-moodle-activities", "assign", "lab", "files", "lab-video.mp4")), true);
+  assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "localized-moodle", "h5p-external", "hamlet-recording", "content", "videos", "hamlet.mp4")), true);
+  assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "media", "old-video.mp4")), false);
+  assert.equal(existsSync(join(mockOssRoot, "moodletool", "courseware-active", course, "ispring-localized", "unit-01", "U01L01", "presentation.html")), true);
+  const labHtml = readFileSync(join(targetCourseRoot, "localized-moodle-activities", "assign", "lab", "index.html"), "utf8");
+  assert.match(labHtml, /<source(?=[^>]*\ssrc="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4\?v=[a-f0-9]{12}")/);
+  assert.doesNotMatch(labHtml, /\bdata-src=/);
+  assert.match(labHtml, /href="https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle-activities\/assign\/lab\/files\/lab-video\.mp4\?v=[a-f0-9]{12}"/);
+  assert.doesNotMatch(labHtml, /ossd-video-load-button|Load video|querySelectorAll\("source\[data-src\]"\)/);
+  const h5pContentJson = JSON.parse(readFileSync(join(targetCourseRoot, "localized-moodle", "h5p-external", "hamlet-recording", "content", "content.json"), "utf8"));
+  assert.match(h5pContentJson.interactiveVideo.video.files[0].path, /^https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/localized-moodle\/h5p-external\/hamlet-recording\/content\/videos\/hamlet\.mp4\?v=[a-f0-9]{12}$/);
+  const overviewHtml = readFileSync(join(targetCourseRoot, "course-sections", "course-overview", "index.html"), "utf8");
+  assert.match(overviewHtml, /src="\/courseware\/ZZZOVERFLOW\/ispring-localized\/unit-01\/U01L01\/presentation\.html"/);
+  assert.doesNotMatch(overviewHtml, /cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/ispring-localized\/unit-01\/U01L01\/presentation\.html/);
+
+  const manifest = JSON.parse(readFileSync(join(targetCourseRoot, "course-manifest.json"), "utf8"));
+  const lesson = manifest.units[0].lessons[0];
+  assert.equal(lesson.downloads[0].path, "docs/ordinary.pdf");
+  assert.match(lesson.downloads[1].url, /^https:\/\/cdn\.example\.com\/courseware-active\/ZZZOVERFLOW\/media\/lesson-video\.mp4\?v=[a-f0-9]{12}$/);
+  assert.equal(lesson.downloads[1].path, undefined);
+  assert.match(lesson.ispring[0].url, /presentation\.html$/);
+  assert.match(lesson.ispring[0].url, /\/ispring-localized\/unit-01\/U01L01\/presentation\.html$/);
+  assert.equal(lesson.ispring[0].path, "ispring-localized/unit-01/U01L01/presentation.html");
+  assert.equal(lesson.ispring[0].packagePath, "ispring-localized/unit-01/U01L01");
+  assert.match(lesson.ispring[0].packageUrl, /\/ispring-localized\/unit-01\/U01L01\/$/);
+  assert.equal(manifest.sourceAudit.importMode, "hybrid-raw");
+  assert.equal(manifest.sourceAudit.htmlPlayableRefsRewritten, 3);
+  assert.equal(manifest.sourceAudit.jsonPlayableRefsRewritten, 1);
+  assert.equal(manifest.sourceAudit.playableRefsRewritten, 4);
+  assert.equal(manifest.sourceAudit.htmlPlayablePagesRewritten, 2);
+  assert.equal(manifest.sourceAudit.htmlLazyVideoPagesRewritten, undefined);
+
+  const registry = JSON.parse(readFileSync(registryPath, "utf8"));
+  assert.equal(registry.assetRecords.length, 6);
+  assert.equal(registry.assetRecords.some((item) => item.objectKey === `courseware-active/${course}/media/old-video.mp4`), false);
+  assert.equal(registry.assetRecords.some((item) => item.objectKey === "courseware-active/OTHER/media/keep.mp4"), true);
+  const report = JSON.parse(readFileSync(reportPath, "utf8"));
+  assert.ok(report.uploaded.some((item) => item.relativePath === "media/lesson-video.mp4" && item.attempts === 2));
+  assert.equal(report.summary.activeSwitch.rollback, "restored-on-switch-failure");
+  assert.equal(report.summary.htmlPlayableRefsRewritten, 3);
+  assert.equal(report.summary.jsonPlayableRefsRewritten, 1);
+  assert.equal(report.summary.playableRefsRewritten, 4);
+  assert.equal(report.summary.htmlPlayablePagesRewritten, 2);
+  assert.equal(report.summary.htmlLazyVideoPagesRewritten, undefined);
+  assert.equal(report.summary.staleOssObjects, 1);
+  assert.equal(report.summary.deletedStaleOssObjects, 1);
+
+  console.log("Hybrid raw package smoke passed.");
+} finally {
+  if (!process.argv.includes("--keep-output") && existsSync(smokeRoot)) {
+    rmSync(smokeRoot, { recursive: true, force: true });
+  }
+  if (!process.argv.includes("--keep-output") && existsSync(reportPath)) {
+    rmSync(reportPath, { force: true });
+  }
+}

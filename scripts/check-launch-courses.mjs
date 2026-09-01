@@ -80,6 +80,28 @@ function collectResourcePaths(manifest, courseRoot) {
   return records;
 }
 
+function countIspringEntries(manifest) {
+  const paths = new Set();
+  let count = 0;
+  function walk(value) {
+    if (Array.isArray(value)) {
+      for (const item of value) walk(item);
+      return;
+    }
+    if (!value || typeof value !== "object") return;
+    if (value.type === "ispring" || value.category === "ispring" || value.path?.endsWith("/presentation.html")) {
+      const key = value.path || value.source || JSON.stringify(value);
+      if (!paths.has(key)) {
+        paths.add(key);
+        count += 1;
+      }
+    }
+    for (const child of Object.values(value)) walk(child);
+  }
+  walk(manifest);
+  return count;
+}
+
 function bytesForCourse(root) {
   let total = 0;
   const stack = [root];
@@ -131,7 +153,14 @@ function checkCourse(code, catalog) {
   if (sourceAudit.ispringExpected && sourceAudit.ispringComplete < sourceAudit.ispringExpected) {
     blockers.push(`${code} iSpring incomplete: ${sourceAudit.ispringComplete}/${sourceAudit.ispringExpected}.`);
   }
-  if (sourceAudit.authenticatedResourceFailedFiles) warnings.push(`${code} source audit records ${sourceAudit.authenticatedResourceFailedFiles} failed authenticated resource file(s).`);
+  const resourceCoverageClean = sourceAudit.resourceCoverage?.exists
+    && sourceAudit.resourceCoverage.missing === 0
+    && (sourceAudit.resourceCoverage.uniqueMissing ?? 0) === 0;
+  const resourceValidationClean = sourceAudit.resourceValidation?.exists
+    && sourceAudit.resourceValidation.failedCount === 0;
+  if (sourceAudit.authenticatedResourceFailedFiles && !(resourceCoverageClean && resourceValidationClean)) {
+    warnings.push(`${code} source audit records ${sourceAudit.authenticatedResourceFailedFiles} failed authenticated resource file(s).`);
+  }
 
   const pathRecords = collectResourcePaths(manifest, courseRoot);
   const missingPathRecords = pathRecords.filter((record) => !record.path);
@@ -139,7 +168,7 @@ function checkCourse(code, catalog) {
   if (missingPathRecords.length) warnings.push(`${code} has ${missingPathRecords.length} resource record(s) without a local path.`);
   if (missingFiles.length) blockers.push(`${code} has ${missingFiles.length} referenced local file(s) missing; first: ${pathLabel(courseRoot, missingFiles[0].path)}.`);
 
-  const ispringEntries = lessons.reduce((sum, lesson) => sum + (lesson.ispring?.length || 0), 0);
+  const ispringEntries = countIspringEntries(manifest);
   const localResources = pathRecords.filter((record) => record.path).length;
   const metrics = {
     units: units.length,

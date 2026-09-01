@@ -1,0 +1,1237 @@
+{
+  "course": "BBI2O",
+  "apply": true,
+  "backupRoot": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z",
+  "totalVideos": 24,
+  "remuxCandidates": 22,
+  "remuxed": 22,
+  "skipped": 2,
+  "manifestUpdate": {
+    "updated": 22,
+    "exists": true
+  },
+  "stagingUpdates": [
+    "localized-moodle-activities/assign/U02L06-6891-6891-b9169728cc/files/U2-Class-Activity-1-Four-Factors-of-Production.mp4",
+    "localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-1.mp4",
+    "localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-2.mp4",
+    "localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-3.mp4",
+    "localized-moodle-activities/folder/U01L03-6871-6871-baf1efe447/files/U1L2-Needs-Wants-video-1.mp4",
+    "localized-moodle-activities/folder/U01L03-6871-6871-baf1efe447/files/U1L2-Needs-Wants-video-2.mp4",
+    "localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-1.mp4",
+    "localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-2.mp4",
+    "localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-3.mp4",
+    "localized-moodle-activities/folder/U01L09-6877-6877-414d9a4ff2/files/U1L6-Ethical-Dilemma-video-1.mp4",
+    "localized-moodle-activities/folder/U01L09-6877-6877-414d9a4ff2/files/U1L6-Ethical-Dilemma-video-2-Fair-Trade-Story.mp4",
+    "localized-moodle-activities/folder/U01L12-6880-6880-ceacc9a1fe/files/U1L8-Canada-Import-Export-Partners-video-1.mp4",
+    "localized-moodle-activities/folder/U01L12-6880-6880-ceacc9a1fe/files/U1L8-Canada-Import-Export-Partners-video-2.mp4",
+    "localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-1.mp4",
+    "localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-2.mp4",
+    "localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-3.mp4",
+    "localized-moodle-activities/folder/U02L03-6888-6888-18b884ae99/files/U2L1-Production-video-1.mp4",
+    "localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/files/U2L4-Management-Styles-Class-Activity-video-2.mp4",
+    "localized-moodle-activities/folder/U02L11-6896-6896-eba26a3b2c/files/U2L7-Technology-in-Business-video-1-Amazon-Go.mp4",
+    "localized-moodle-activities/folder/U02L11-6896-6896-eba26a3b2c/files/U2L7-Technology-in-Business-video-2-Business-Intelligence.mp4",
+    "localized-moodle-activities/folder/U03L03-6903-6903-d81007b6a4/files/U3L1-Types-of-Personal-Income-video-1-CPI-Explained.mp4",
+    "localized-moodle-activities/folder/U03L03-6903-6903-d81007b6a4/files/U3L1-Types-of-Personal-Income-video-2.mp4",
+    "manifest:22"
+  ],
+  "reportPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-report.json",
+  "rows": [
+    {
+      "rel": "localized-moodle-activities/assign/U02L06-6891-6891-b9169728cc/files/U2-Class-Activity-1-Four-Factors-of-Production.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 9764926,
+        "moov": 40,
+        "mdat": 3004,
+        "firstMoof": 1368,
+        "moofFound": true,
+        "mfra": 9762236,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\assign\\U02L06-6891-6891-b9169728cc\\files\\U2-Class-Activity-1-Four-Factors-of-Production.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 9857873,
+        "moov": 36,
+        "mdat": 224489,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "310.184875"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "310.353197"
+          }
+        ],
+        "format": {
+          "duration": "310.353197",
+          "size": "9857873",
+          "bit_rate": "254107"
+        }
+      },
+      "sha256": "8ac4689ef9696d3305ae9c7bd498d7dd7e8e09674004b37e89552583c1e9f708"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-1.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 5986454,
+        "moov": 40,
+        "mdat": 4678,
+        "firstMoof": 1370,
+        "moofFound": true,
+        "mfra": 5984486,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L02-6870-6870-a2d83b9142\\files\\U1L1-Supply-Demand-video-1.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 6133519,
+        "moov": 36,
+        "mdat": 270379,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 854,
+            "height": 480,
+            "duration": "264.033333"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "264.137098"
+          }
+        ],
+        "format": {
+          "duration": "264.137098",
+          "size": "6133519",
+          "bit_rate": "185767"
+        }
+      },
+      "sha256": "4f8f402798b8a577dc2db85471d56603927b697eb39004e1684a574478d6d002"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-2.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 16234400,
+        "moov": 40,
+        "mdat": 4429,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 16231558,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L02-6870-6870-a2d83b9142\\files\\U1L1-Supply-Demand-video-2.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 16354743,
+        "moov": 36,
+        "mdat": 283214,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "383.760000"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "383.842630"
+          }
+        ],
+        "format": {
+          "duration": "383.842630",
+          "size": "16354743",
+          "bit_rate": "340863"
+        }
+      },
+      "sha256": "4e2f8e8f48045ed048f512225408fbc94d6975d20f9eaa13b6c580a2ab21447d"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-3.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 9379158,
+        "moov": 40,
+        "mdat": 5061,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 9378102,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L02-6870-6870-a2d83b9142\\files\\U1L1-Supply-Demand-video-3.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 9461259,
+        "moov": 36,
+        "mdat": 152662,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "149.900000"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "149.987800"
+          }
+        ],
+        "format": {
+          "duration": "149.987800",
+          "size": "9461259",
+          "bit_rate": "504641"
+        }
+      },
+      "sha256": "3106730a2293a4cdf1ddcd78dbbb21185665a0820302e8bfd50ac8614d2f08ff"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L03-6871-6871-baf1efe447/files/U1L2-Needs-Wants-video-1.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 30341023,
+        "moov": 40,
+        "mdat": 3757,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 30334495,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L03-6871-6871-baf1efe447\\files\\U1L2-Needs-Wants-video-1.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 30454140,
+        "moov": 36,
+        "mdat": 301182,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "388.920000"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "389.067120"
+          }
+        ],
+        "format": {
+          "duration": "389.067120",
+          "size": "30454140",
+          "bit_rate": "626198"
+        }
+      },
+      "sha256": "b4ecdfca68e04f8289252f608f452752e409f9c118479b4cad2bab02f12b3fff"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L03-6871-6871-baf1efe447/files/U1L2-Needs-Wants-video-2.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 21892614,
+        "moov": 40,
+        "mdat": 4677,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 21887492,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L03-6871-6871-baf1efe447\\files\\U1L2-Needs-Wants-video-2.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 22263037,
+        "moov": 36,
+        "mdat": 684622,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 960,
+            "height": 720,
+            "duration": "678.166667"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "678.659728"
+          }
+        ],
+        "format": {
+          "duration": "678.659728",
+          "size": "22263037",
+          "bit_rate": "262435"
+        }
+      },
+      "sha256": "4b02f37bf3dca5f88e2b81f4f6e12b3e4cf086d3189d6f7f2c718e0475734dbe"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-1.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 34299467,
+        "moov": 40,
+        "mdat": 4277,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 34297765,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L08-6876-6876-1b076903b2\\files\\U1L5-Ethics-Social-Responsibility-video-1.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 34364970,
+        "moov": 36,
+        "mdat": 148866,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "189.800000"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "189.909569"
+          }
+        ],
+        "format": {
+          "duration": "189.909569",
+          "size": "34364970",
+          "bit_rate": "1447635"
+        }
+      },
+      "sha256": "09b80fe1b26954dd2010f42f942efea7dc23a5115127ba71b6936308b9cbd402"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-2.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 21679754,
+        "moov": 40,
+        "mdat": 3701,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 21676532,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L08-6876-6876-1b076903b2\\files\\U1L5-Ethics-Social-Responsibility-video-2.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 21771009,
+        "moov": 36,
+        "mdat": 255682,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "390.416667"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "390.508435"
+          }
+        ],
+        "format": {
+          "duration": "390.508435",
+          "size": "21771009",
+          "bit_rate": "446003"
+        }
+      },
+      "sha256": "06a3feb55bc31889469cad119aaf35fc0d01219594809b462558f24c5417a6b8"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-3.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 5062123,
+        "moov": 40,
+        "mdat": 3900,
+        "firstMoof": 1368,
+        "moofFound": true,
+        "mfra": 5060991,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L08-6876-6876-1b076903b2\\files\\U1L5-Ethics-Social-Responsibility-video-3.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 5136816,
+        "moov": 36,
+        "mdat": 137881,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "131.731600"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "131.853061"
+          }
+        ],
+        "format": {
+          "duration": "131.853061",
+          "size": "5136816",
+          "bit_rate": "311669"
+        }
+      },
+      "sha256": "ffad6681a242f04d05d1991ea5d7146cf468341cd671d289f5834ddc875a9090"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L09-6877-6877-414d9a4ff2/files/U1L6-Ethical-Dilemma-video-1.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 20142058,
+        "moov": 40,
+        "mdat": 3212,
+        "firstMoof": 1368,
+        "moofFound": true,
+        "mfra": 20138532,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L09-6877-6877-414d9a4ff2\\files\\U1L6-Ethical-Dilemma-video-1.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 20363329,
+        "moov": 36,
+        "mdat": 441561,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "476.509367"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "476.646168"
+          }
+        ],
+        "format": {
+          "duration": "476.646168",
+          "size": "20363329",
+          "bit_rate": "341776"
+        }
+      },
+      "sha256": "3a60cf82af820fe59242ef5bef1fd85a16934f69e25697e27c7368e5ab69b136"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L09-6877-6877-414d9a4ff2/files/U1L6-Ethical-Dilemma-video-2-Fair-Trade-Story.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 53832498,
+        "moov": 40,
+        "mdat": 1644,
+        "firstMoof": 1368,
+        "moofFound": true,
+        "mfra": 53827908,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L09-6877-6877-414d9a4ff2\\files\\U1L6-Ethical-Dilemma-video-2-Fair-Trade-Story.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 53891373,
+        "moov": 36,
+        "mdat": 192861,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "284.951333"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "285.066667"
+          }
+        ],
+        "format": {
+          "duration": "285.066667",
+          "size": "53891373",
+          "bit_rate": "1512386"
+        }
+      },
+      "sha256": "a516407ff0379534947a48f7015c8e509684fb60b9005f0f182cc1a774fed3c8"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L12-6880-6880-ceacc9a1fe/files/U1L8-Canada-Import-Export-Partners-video-1.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 18797727,
+        "moov": 40,
+        "mdat": 3589,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 18793441,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L12-6880-6880-ceacc9a1fe\\files\\U1L8-Canada-Import-Export-Partners-video-1.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 18908246,
+        "moov": 36,
+        "mdat": 346690,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 960,
+            "height": 720,
+            "duration": "708.600000"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "708.832562"
+          }
+        ],
+        "format": {
+          "duration": "708.832562",
+          "size": "18908246",
+          "bit_rate": "213401"
+        }
+      },
+      "sha256": "bff8b83d053d2d9f14bd941ea695469209f7e97021f3da2742bc860896753928"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L12-6880-6880-ceacc9a1fe/files/U1L8-Canada-Import-Export-Partners-video-2.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 66516145,
+        "moov": 40,
+        "mdat": 4596,
+        "firstMoof": 1368,
+        "moofFound": true,
+        "mfra": 66507717,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L12-6880-6880-ceacc9a1fe\\files\\U1L8-Canada-Import-Export-Partners-video-2.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 66804062,
+        "moov": 36,
+        "mdat": 696665,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "969.843875"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "969.939229"
+          }
+        ],
+        "format": {
+          "duration": "969.939229",
+          "size": "66804062",
+          "bit_rate": "550995"
+        }
+      },
+      "sha256": "1440911fcc413e18814d143306b695638b700726ecb6a7427668a48869a14dac"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-1.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 16811789,
+        "moov": 40,
+        "mdat": 4773,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 16809023,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L14-6882-6882-2300e10879\\files\\U1L9-Business-Etiquettes-Culture-video-1.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 16873724,
+        "moov": 36,
+        "mdat": 183478,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "279.958333"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "280.074331"
+          }
+        ],
+        "format": {
+          "duration": "280.074331",
+          "size": "16873724",
+          "bit_rate": "481978"
+        }
+      },
+      "sha256": "8a2c997a9f48ce3755da8e1d2d7605f70063da9b58c8f7060cd5a2db6ae65425"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-2.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 31712134,
+        "moov": 40,
+        "mdat": 4677,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 31708000,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L14-6882-6882-2300e10879\\files\\U1L9-Business-Etiquettes-Culture-video-2.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 31986097,
+        "moov": 36,
+        "mdat": 537286,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "570.166667"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "570.315420"
+          }
+        ],
+        "format": {
+          "duration": "570.315420",
+          "size": "31986097",
+          "bit_rate": "448679"
+        }
+      },
+      "sha256": "b65942b3fa40e89a45ed714a85f9d95baf1055ef58e9ff7436db6120513915dd"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-3.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 8838555,
+        "moov": 40,
+        "mdat": 1597,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 8836967,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U01L14-6882-6882-2300e10879\\files\\U1L9-Business-Etiquettes-Culture-video-3.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 8868688,
+        "moov": 36,
+        "mdat": 92302,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "140.208333"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "140.313424"
+          }
+        ],
+        "format": {
+          "duration": "140.313424",
+          "size": "8868688",
+          "bit_rate": "505650"
+        }
+      },
+      "sha256": "a44ed50ed3a66156b90952962d967a350350970babc68a833316ab723a8c4455"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U02L03-6888-6888-18b884ae99/files/U2L1-Production-video-1.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 9764926,
+        "moov": 40,
+        "mdat": 3004,
+        "firstMoof": 1368,
+        "moofFound": true,
+        "mfra": 9762236,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U02L03-6888-6888-18b884ae99\\files\\U2L1-Production-video-1.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 9857873,
+        "moov": 36,
+        "mdat": 224489,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "310.184875"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "310.353197"
+          }
+        ],
+        "format": {
+          "duration": "310.353197",
+          "size": "9857873",
+          "bit_rate": "254107"
+        }
+      },
+      "sha256": "8ac4689ef9696d3305ae9c7bd498d7dd7e8e09674004b37e89552583c1e9f708"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/files/U2L4-Management-Styles-Class-Activity-video-1.webm",
+      "action": "skipped",
+      "before": {
+        "ext": ".webm",
+        "sizeBytes": 39273123,
+        "moov": 40,
+        "mdat": 2133,
+        "firstMoof": 1417,
+        "moofFound": true,
+        "mfra": 39263327,
+        "sidx": -1,
+        "fragmented": true
+      }
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/files/U2L4-Management-Styles-Class-Activity-video-2.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 19319146,
+        "moov": 40,
+        "mdat": 5612,
+        "firstMoof": 1368,
+        "moofFound": true,
+        "mfra": 19316380,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U02L07-6892-6892-8b583664d8\\files\\U2L4-Management-Styles-Class-Activity-video-2.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 19429329,
+        "moov": 36,
+        "mdat": 212769,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "200.867333"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "201.002086"
+          }
+        ],
+        "format": {
+          "duration": "201.002086",
+          "size": "19429329",
+          "bit_rate": "773298"
+        }
+      },
+      "sha256": "f33a3fdf4d80820151ecbe492dd4bb9e2325ff5be4b5b90178b3b54dee1f1c7d"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U02L11-6896-6896-eba26a3b2c/files/U2L7-Technology-in-Business-video-1-Amazon-Go.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 45455933,
+        "moov": 40,
+        "mdat": 4660,
+        "firstMoof": 1368,
+        "moofFound": true,
+        "mfra": 45454535,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U02L11-6896-6896-eba26a3b2c\\files\\U2L7-Technology-in-Business-video-1-Amazon-Go.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 45498652,
+        "moov": 36,
+        "mdat": 124249,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "193.985458"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "194.090884"
+          }
+        ],
+        "format": {
+          "duration": "194.090884",
+          "size": "45498652",
+          "bit_rate": "1875354"
+        }
+      },
+      "sha256": "4f3f0961e17bc3d8aa280352cef0522a5d959b7a929aec0e83036aaf2ca0d24e"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U02L11-6896-6896-eba26a3b2c/files/U2L7-Technology-in-Business-video-2-Business-Intelligence.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 5917799,
+        "moov": 40,
+        "mdat": 4484,
+        "firstMoof": 1368,
+        "moofFound": true,
+        "mfra": 5915793,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U02L11-6896-6896-eba26a3b2c\\files\\U2L7-Technology-in-Business-video-2-Business-Intelligence.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 6041666,
+        "moov": 36,
+        "mdat": 231749,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "226.292733"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "226.381497"
+          }
+        ],
+        "format": {
+          "duration": "226.381497",
+          "size": "6041666",
+          "bit_rate": "213503"
+        }
+      },
+      "sha256": "bdfb6ad1a46c69c265f41eb18990f110be0827863193314b715feb3983021a6d"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U03L03-6903-6903-d81007b6a4/files/U3L1-Types-of-Personal-Income-video-1-CPI-Explained.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 53683202,
+        "moov": 40,
+        "mdat": 4413,
+        "firstMoof": 1369,
+        "moofFound": true,
+        "mfra": 53679524,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U03L03-6903-6903-d81007b6a4\\files\\U3L1-Types-of-Personal-Income-video-1-CPI-Explained.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 53739701,
+        "moov": 36,
+        "mdat": 182806,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 720,
+            "duration": "277.541667"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "277.613016"
+          }
+        ],
+        "format": {
+          "duration": "277.613016",
+          "size": "53739701",
+          "bit_rate": "1548621"
+        }
+      },
+      "sha256": "bc7dfc8fd6c51e914c90cbdf52437a3400324f63e09912786f96a622fbd60008"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U03L03-6903-6903-d81007b6a4/files/U3L1-Types-of-Personal-Income-video-2.mp4",
+      "action": "remuxed",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 7695754,
+        "moov": 40,
+        "mdat": 4679,
+        "firstMoof": 1371,
+        "moofFound": true,
+        "mfra": 7693596,
+        "sidx": -1,
+        "fragmented": true
+      },
+      "backupPath": "D:\\工作文件\\SUNNYBROOK\\backups\\ossd-course-portal\\bbi2o-video-remux-originals\\2026-08-22T10-19-21-802Z\\localized-moodle-activities\\folder\\U03L03-6903-6903-d81007b6a4\\files\\U3L1-Types-of-Personal-Income-video-2.mp4",
+      "after": {
+        "ext": ".mp4",
+        "sizeBytes": 7828545,
+        "moov": 36,
+        "mdat": 258196,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      },
+      "afterProbe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_type": "video",
+            "width": 1280,
+            "height": 718,
+            "duration": "266.166667"
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_type": "audio",
+            "duration": "266.273333"
+          }
+        ],
+        "format": {
+          "duration": "266.273333",
+          "size": "7828545",
+          "bit_rate": "235203"
+        }
+      },
+      "sha256": "d4995ac3b8f6aafbcc023d6040f57db776b5506e8cbd28b11ccc917218b73492"
+    },
+    {
+      "rel": "localized-moodle-activities/folder/U04L03-6916-6916-1869b48c5f/files/U4L1-Entrepreneurs-Exploring-Your-Own-video-1.mp4",
+      "action": "skipped",
+      "before": {
+        "ext": ".mp4",
+        "sizeBytes": 21503433,
+        "moov": 28,
+        "mdat": 462164,
+        "firstMoof": -1,
+        "moofFound": false,
+        "mfra": -1,
+        "sidx": -1,
+        "fragmented": false
+      }
+    }
+  ]
+}

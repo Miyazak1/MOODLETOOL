@@ -59,9 +59,13 @@ function prepareCourseware() {
             objectKey: "courseware-active/SMOKE/Unit 1/Lesson 1/html5-package/presentation.html",
             cdnUrl: `${cdnBaseUrl}/SMOKE/Unit%201/Lesson%201/html5-package/presentation.html`,
           },
+          "courseware-active/SMOKE/video.mp4",
+        ],
+        assetRecords: [
           {
             objectKey: "courseware-active/SMOKE/video.mp4",
             cdnUrl: `${cdnBaseUrl}/SMOKE/video.mp4`,
+            sha256: "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
           },
         ],
       },
@@ -119,6 +123,8 @@ async function assertLocalMode(baseUrl) {
   const html = await fetchText(`${baseUrl}/embed/ispring/SMOKE/U01L01/test?token=${encodeURIComponent(token)}`);
   if (!html.includes("/embed/t/")) throw new Error("Expected local mode iSpring base to use /embed/t/.");
   if (html.includes(cdnBaseUrl)) throw new Error("Local mode should not emit CDN base URLs.");
+  const directHtml = await fetchText(`${baseUrl}/courseware/SMOKE/${encodePathSegments(ispringPath)}`);
+  if (directHtml.includes(cdnBaseUrl)) throw new Error("Local mode direct iSpring page should not emit CDN base URLs.");
 
   const videoToken = signEmbedPayload({
     v: 1,
@@ -131,6 +137,9 @@ async function assertLocalMode(baseUrl) {
   const videoHtml = await fetchText(`${baseUrl}/embed/video/SMOKE/U01L01/video?token=${encodeURIComponent(videoToken)}`);
   if (!videoHtml.includes("/embed/t/")) throw new Error("Expected local mode video source to use /embed/t/.");
   if (videoHtml.includes(cdnBaseUrl)) throw new Error("Local mode video should not emit CDN URLs.");
+  if (videoHtml.includes("Load video") || videoHtml.includes("video-load") || videoHtml.includes('preload="none"')) {
+    throw new Error("Video embed page should load directly without a manual Load video button.");
+  }
 }
 
 async function assertCdnMode(baseUrl) {
@@ -146,6 +155,8 @@ async function assertCdnMode(baseUrl) {
   const html = await fetchText(`${baseUrl}/embed/ispring/SMOKE/U01L01/test?token=${encodeURIComponent(token)}`);
   const expectedBase = `${cdnBaseUrl}/SMOKE/${encodePathSegments(dirname(ispringPath))}/`;
   if (!html.includes(`<base href="${expectedBase}">`)) throw new Error(`Expected CDN iSpring base: ${expectedBase}`);
+  const directHtml = await fetchText(`${baseUrl}/courseware/SMOKE/${encodePathSegments(ispringPath)}`);
+  if (!directHtml.includes(`<base href="${expectedBase}">`)) throw new Error(`Expected direct CDN iSpring base: ${expectedBase}`);
 
   const videoToken = signEmbedPayload({
     v: 1,
@@ -157,9 +168,17 @@ async function assertCdnMode(baseUrl) {
   });
   const videoHtml = await fetchText(`${baseUrl}/embed/video/SMOKE/U01L01/video?token=${encodeURIComponent(videoToken)}`);
   if (!videoHtml.includes(`${cdnBaseUrl}/SMOKE/video.mp4`)) throw new Error("Expected CDN video source.");
+  if (videoHtml.includes("Load video") || videoHtml.includes("video-load") || videoHtml.includes('preload="none"')) {
+    throw new Error("CDN video embed page should load directly without a manual Load video button.");
+  }
 }
 
 async function assertHybridMode(baseUrl) {
+  const ispringPath = "Unit 1/Lesson 1/html5-package/presentation.html";
+  const expectedBase = `${cdnBaseUrl}/SMOKE/${encodePathSegments(dirname(ispringPath))}/`;
+  const directHtml = await fetchText(`${baseUrl}/courseware/SMOKE/${encodePathSegments(ispringPath)}`);
+  if (!directHtml.includes(`<base href="${expectedBase}">`)) throw new Error(`Expected hybrid direct CDN iSpring base: ${expectedBase}`);
+
   const registeredToken = signEmbedPayload({
     v: 1,
     course: "SMOKE",
@@ -170,6 +189,12 @@ async function assertHybridMode(baseUrl) {
   });
   const registeredHtml = await fetchText(`${baseUrl}/embed/video/SMOKE/U01L01/video?token=${encodeURIComponent(registeredToken)}`);
   if (!registeredHtml.includes(`${cdnBaseUrl}/SMOKE/video.mp4`)) throw new Error("Expected registered hybrid asset to use CDN.");
+  if (!registeredHtml.includes(`${cdnBaseUrl}/SMOKE/video.mp4?v=abcdef123456`)) {
+    throw new Error("Expected registered hybrid asset to include sha256 cache-busting version from assetRecords.");
+  }
+  if (registeredHtml.includes("Load video") || registeredHtml.includes("video-load") || registeredHtml.includes('preload="none"')) {
+    throw new Error("Hybrid video embed page should load directly without a manual Load video button.");
+  }
 
   const missingToken = signEmbedPayload({
     v: 1,

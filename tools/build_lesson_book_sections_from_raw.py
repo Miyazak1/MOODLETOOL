@@ -100,11 +100,17 @@ def section_label(page: dict, index: int) -> str:
 
 
 def section_title(page: dict, fallback: str) -> str:
+    def clean_title(value: str) -> str:
+        text = re.sub(r"\s+", " ", html.unescape(value)).strip()
+        if re.search(r"https?://|pluginfile\.php|mod_book/chapter", text, flags=re.I):
+            return ""
+        return text
+
     headings = [str(item) for item in page.get("heading") or [] if str(item).strip()]
     if len(headings) > 2:
-        return headings[2]
+        return clean_title(headings[2]) or fallback
     if len(headings) > 1:
-        return headings[1]
+        return clean_title(headings[1]) or fallback
     return fallback
 
 
@@ -152,6 +158,8 @@ def local_resource_map(lesson: dict) -> dict[str, str]:
         names = {Path(path).name.lower()}
         source = resource.get("source") or resource.get("url") or ""
         if source:
+            mapped.setdefault(str(source), path)
+            mapped.setdefault(str(source).replace("&", "&amp;"), path)
             source_name = url_basename(str(source))
             if source_name:
                 names.add(source_name)
@@ -166,10 +174,28 @@ def local_resource_map(lesson: dict) -> dict[str, str]:
 
 
 def local_path_for_url(value: str, resource_map: dict[str, str]) -> str | None:
+    if value in resource_map:
+        return resource_map[value]
+    html_unescaped = html.unescape(value)
+    if html_unescaped in resource_map:
+        return resource_map[html_unescaped]
     name = url_basename(value)
     if name and name in resource_map:
         return resource_map[name]
     return None
+
+
+def local_h5p_embed_for_path(local_path: str, output_dir: Path, course_root: Path, title: str = "Local H5P activity") -> str:
+    href = relative_course_href(output_dir, course_root, local_path)
+    escaped_title = html.escape(title)
+    if str(local_path).lower().endswith("/index.html") or str(local_path).lower().endswith("\\index.html"):
+        return (
+            '<div class="embedded-h5p">'
+            f'<iframe src="{html.escape(href + "?embed=1", quote=True)}" title="{escaped_title}" '
+            'loading="lazy" allowfullscreen="allowfullscreen"></iframe>'
+            "</div>"
+        )
+    return sanitized_notice(f"Embedded activity is available as a local resource: {Path(local_path).name}")
 
 
 def sanitized_notice(label: str) -> str:
@@ -293,10 +319,13 @@ def local_video_embed(lesson: dict, output_dir: Path, course_root: Path, section
             '<div class="embedded-resource-card">'
             f"<strong>{title}</strong>"
             "<span>Local video file.</span>"
-            f'<a href="{html.escape(href, quote=True)}" download>Download video</a>'
             "</div>"
         )
     return "".join(parts)
+
+
+def missing_video_notice(body: str, section_label_value: str) -> str:
+    return ""
 
 
 def normalized_video_name(path: str) -> str:
@@ -327,6 +356,7 @@ def sanitize_body(
     output_dir: Path,
     course_root: Path,
     resource_map: dict[str, str],
+    section_label_value: str = "",
     ispring_embed: str = "",
     h5p_embed: str = "",
     video_embed: str = "",
@@ -334,11 +364,13 @@ def sanitize_body(
     def replace_iframe(match: re.Match[str]) -> str:
         source_match = re.search(r'\bsrc\s*=\s*["\']([^"\']+)["\']', match.group(0), re.IGNORECASE)
         if source_match:
+            local_path = local_path_for_url(source_match.group(1), resource_map)
             if ispring_embed and is_ispring_url(source_match.group(1)):
                 return ispring_embed
+            if local_path and is_h5p_url(source_match.group(1)):
+                return local_h5p_embed_for_path(local_path, output_dir, course_root)
             if h5p_embed and is_h5p_url(source_match.group(1)):
                 return h5p_embed
-            local_path = local_path_for_url(source_match.group(1), resource_map)
             if local_path:
                 return sanitized_notice(f"Embedded activity is available as a local resource: {Path(local_path).name}")
             if is_quizlet_url(source_match.group(1)):
@@ -365,12 +397,19 @@ def sanitize_body(
     if video_embed:
         cleaned = strip_moodle_video_players(cleaned)
         cleaned = insert_video_embed(cleaned, video_embed)
+    else:
+        video_notice = missing_video_notice(cleaned, section_label_value)
+        if video_notice:
+            cleaned = strip_moodle_video_players(cleaned)
+            cleaned = insert_video_embed(cleaned, video_notice)
     cleaned = IFRAME_PATTERN.sub(replace_iframe, cleaned)
     cleaned = CSS_URL_PATTERN.sub("url('')", cleaned)
     cleaned = EXTERNAL_ATTR_PATTERN.sub(replace_attr, cleaned)
     cleaned = EXTERNAL_DATA_SOURCE_PATTERN.sub("", cleaned)
     cleaned = re.sub(r'<a\b[^>]*title=["\']Edit H5P content["\'][^>]*>.*?</a>', "", cleaned, flags=re.IGNORECASE | re.DOTALL)
     cleaned = re.sub(r">https?://[^<]+<", ">Local resource<", cleaned)
+    cleaned = re.sub(r'<a\b[^>]*\bdata-localized-link=["\']removed["\'][^>]*>\s*</a>', "", cleaned, flags=re.IGNORECASE | re.DOTALL)
+    cleaned = re.sub(r'<a\b([^>]*)\bdata-localized-link=["\']removed["\']([^>]*)>(.*?)</a>', r"<span\1\2>\3</span>", cleaned, flags=re.IGNORECASE | re.DOTALL)
     cleaned = re.sub(r"<p>\s*(<div class=\"embedded-ispring\">.*?</div>)\s*</p>", r"\1", cleaned, flags=re.DOTALL)
     cleaned = re.sub(r"<p>\s*(<div class=\"embedded-h5p\">.*?</div>)\s*</p>", r"\1", cleaned, flags=re.DOTALL)
     return cleaned
@@ -495,7 +534,16 @@ def build_sections(course: str, unit_number: int | None = None) -> dict:
                 ispring_embed = local_ispring_embed(lesson, output_path.parent, course_root, label)
                 h5p_embed = local_h5p_embed(lesson, output_path.parent, course_root, label)
                 video_embed = local_video_embed(lesson, output_path.parent, course_root, label)
-                body = sanitize_body(str(page.get("html") or ""), output_path.parent, course_root, resources_by_name, ispring_embed, h5p_embed, video_embed)
+                body = sanitize_body(
+                    str(page.get("html") or ""),
+                    output_path.parent,
+                    course_root,
+                    resources_by_name,
+                    label,
+                    ispring_embed,
+                    h5p_embed,
+                    video_embed,
+                )
                 output_path.write_text(
                     standalone_section_html(course, int(unit["unit"]), int(lesson["lesson"]), str(lesson["title"]), index, label, title, body),
                     encoding="utf-8",

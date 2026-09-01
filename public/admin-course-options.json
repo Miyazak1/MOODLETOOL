@@ -47,6 +47,12 @@
       "planningFileCount": 41
     },
     {
+      "code": "ENG1D",
+      "title": "English, Grade 9, Academic",
+      "grade": "Grade 9",
+      "planningFileCount": 33
+    },
+    {
       "code": "ENG4U",
       "title": "English",
       "grade": "Grade 12",
@@ -191,9 +197,21 @@
       "planningFileCount": 0
     },
     {
+      "code": "AVI4M",
+      "title": "Visual Arts",
+      "grade": "Grade 12",
+      "planningFileCount": 0
+    },
+    {
       "code": "BAF3M",
       "title": "BAF3M",
       "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "BAT4M",
+      "title": "Financial Accounting Principles",
+      "grade": "Grade 12",
       "planningFileCount": 0
     },
     {
@@ -257,6 +275,12 @@
       "planningFileCount": 0
     },
     {
+      "code": "HSB4U",
+      "title": "Challenge and Change in Society",
+      "grade": "Grade 12",
+      "planningFileCount": 0
+    },
+    {
       "code": "ICS2O",
       "title": "ICS2O",
       "grade": "Unknown",
@@ -271,18 +295,6 @@
     {
       "code": "LKBCU",
       "title": "LKBCU",
-      "grade": "Unknown",
-      "planningFileCount": 0
-    },
-    {
-      "code": "MAP4C",
-      "title": "Foundations for College Mathematics",
-      "grade": "Grade 12",
-      "planningFileCount": 0
-    },
-    {
-      "code": "MBF3C",
-      "title": "MBF3C",
       "grade": "Unknown",
       "planningFileCount": 0
     },
@@ -313,6 +325,12 @@
     {
       "code": "PPL3O",
       "title": "PPL3O",
+      "grade": "Unknown",
+      "planningFileCount": 0
+    },
+    {
+      "code": "SES4U",
+      "title": "SES4U",
       "grade": "Unknown",
       "planningFileCount": 0
     },

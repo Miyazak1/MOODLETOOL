@@ -4,1419 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OSSD Teacher Admin</title>
-    <style>
-      :root {
-        color-scheme: light;
-        --ink: #18212f;
-        --muted: #667085;
-        --line: #d7dee8;
-        --page: #f4f7fa;
-        --surface: #fff;
-        --navy: #15365d;
-        --teal: #16736a;
-        --gold: #a06a12;
-        --red: #a23b3b;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden;
-        font-family: Arial, "Microsoft YaHei", sans-serif;
-        color: var(--ink);
-        background: var(--page);
-        line-height: 1.45;
-      }
-      .admin-topbar {
-        display: flex;
-        justify-content: space-between;
-        gap: 20px;
-        align-items: center;
-        padding: 24px 32px;
-        color: #fff;
-        background: linear-gradient(110deg, #15365d 0%, #225375 58%, #236b65 100%);
-      }
-      .admin-kicker {
-        margin: 0 0 6px;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        opacity: 0.82;
-      }
-      h1 {
-        margin: 0;
-        font-size: 26px;
-      }
-      .admin-subtitle {
-        margin: 8px 0 0;
-        color: rgba(255, 255, 255, 0.82);
-        font-size: 14px;
-      }
-      .topbar-actions {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        min-width: 0;
-        gap: 10px;
-      }
-      .auth-chip {
-        display: inline-flex;
-        align-items: center;
-        min-height: 38px;
-        border: 1px solid rgba(255, 255, 255, 0.34);
-        border-radius: 999px;
-        padding: 7px 12px;
-        color: #fff;
-        font-size: 13px;
-        font-weight: 800;
-        background: rgba(255, 255, 255, 0.1);
-      }
-      .auth-chip.signed-out {
-        color: #143b60;
-        background: #fff;
-      }
-      .admin-shell {
-        display: grid;
-        grid-template-columns: 260px minmax(0, 1fr);
-        gap: 20px;
-        width: 100%;
-        max-width: 1440px;
-        margin: 0 auto;
-        padding: 24px;
-      }
-      .admin-sidebar {
-        min-width: 0;
-        position: sticky;
-        top: 18px;
-        align-self: start;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 12px;
-        background: var(--surface);
-        box-shadow: 0 12px 28px rgba(21, 54, 93, 0.08);
-      }
-      .admin-sidebar-title {
-        padding: 8px 10px 10px;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0;
-      }
-      .admin-nav {
-        display: grid;
-        gap: 6px;
-      }
-      .admin-nav button {
-        justify-content: flex-start;
-        width: 100%;
-        border-color: transparent;
-        border-radius: 7px;
-        text-align: left;
-        color: var(--ink);
-        background: transparent;
-      }
-      .admin-nav button:hover:not(:disabled),
-      .admin-nav button.active {
-        border-color: #bfd2e8;
-        color: #123d67;
-        background: #eef5fb;
-      }
-      .admin-nav button:disabled {
-        color: #98a2b3;
-        cursor: not-allowed;
-        background: transparent;
-      }
-      main {
-        display: grid;
-        gap: 16px;
-        min-width: 0;
-        padding: 0;
-      }
-      section {
-        min-width: 0;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 18px;
-        background: var(--surface);
-        box-shadow: 0 10px 24px rgba(21, 54, 93, 0.05);
-      }
-      h2 {
-        margin: 0 0 12px;
-        font-size: 18px;
-      }
-      .panel-heading {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        gap: 12px;
-        align-items: flex-start;
-        margin-bottom: 12px;
-      }
-      .panel-heading h2 {
-        margin: 0;
-      }
-      label {
-        display: block;
-        margin-bottom: 6px;
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 700;
-      }
-      input,
-      select,
-      button {
-        font: inherit;
-      }
-      input,
-      select {
-        width: 100%;
-        min-height: 40px;
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        padding: 0 10px;
-        background: #fff;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
-        gap: 12px;
-        min-width: 0;
-      }
-      .grid.compact {
-        grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
-      }
-      .actions {
-        display: flex;
-        flex-wrap: wrap;
-        min-width: 0;
-        gap: 8px;
-        margin-top: 14px;
-      }
-      button {
-        max-width: 100%;
-        min-height: 38px;
-        border: 1px solid #93abc6;
-        border-radius: 6px;
-        padding: 7px 12px;
-        color: #123d67;
-        font-weight: 700;
-        background: #f7fbff;
-        cursor: pointer;
-        overflow-wrap: anywhere;
-        white-space: normal;
-      }
-      button:hover:not(:disabled),
-      .button-link:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 14px rgba(21, 54, 93, 0.12);
-      }
-      button:disabled {
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-      }
-      button.is-busy {
-        opacity: 0.72;
-        cursor: progress;
-      }
-      button.primary {
-        border-color: #6ca39b;
-        color: #0f5b54;
-        background: #e7f4ef;
-      }
-      .button-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        max-width: 100%;
-        min-height: 38px;
-        border: 1px solid #93abc6;
-        border-radius: 6px;
-        padding: 7px 12px;
-        color: #123d67;
-        font-weight: 700;
-        text-decoration: none;
-        background: #f7fbff;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-        overflow-wrap: anywhere;
-        white-space: normal;
-      }
-      .button-link.primary {
-        border-color: rgba(255, 255, 255, 0.42);
-        color: #fff;
-        background: rgba(255, 255, 255, 0.14);
-      }
-      .button-link.subtle {
-        color: #0f5b54;
-        background: #eef8f5;
-        border-color: #94c9bd;
-      }
-      .sidebar-course-card {
-        display: grid;
-        gap: 6px;
-        margin: 4px 0 12px;
-        border: 1px solid #c9d8e8;
-        border-radius: 8px;
-        padding: 12px;
-        background: linear-gradient(180deg, #f8fbff, #eef6fb);
-      }
-      .sidebar-course-card span {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 700;
-      }
-      .sidebar-course-card strong {
-        color: #123d67;
-        font-size: 20px;
-      }
-      .sidebar-course-card small {
-        color: var(--muted);
-        line-height: 1.35;
-      }
-      .sidebar-course-card .button-link {
-        width: 100%;
-        min-height: 34px;
-        margin-top: 4px;
-      }
-      .sidebar-course-card button {
-        width: 100%;
-        min-height: 34px;
-        margin-top: 4px;
-      }
-      .sidebar-session {
-        margin: 0 0 12px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 10px 12px;
-        background: #fff;
-      }
-      .sidebar-session span {
-        display: block;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 700;
-      }
-      .sidebar-session strong {
-        display: block;
-        margin-top: 3px;
-        color: #123d67;
-      }
-      .auth-status {
-        display: grid;
-        gap: 8px;
-        margin-bottom: 16px;
-        border: 1px solid #94c9bd;
-        border-radius: 8px;
-        padding: 14px;
-        color: #0f5b54;
-        background: #f0faf6;
-      }
-      .auth-status.signed-out {
-        border-color: #e4c687;
-        color: #735014;
-        background: #fff8eb;
-      }
-      .auth-status strong {
-        color: inherit;
-        font-size: 18px;
-      }
-      .nav-group-label {
-        margin: 10px 8px 2px;
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-      }
-      .course-context-bar {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 14px;
-        align-items: center;
-        min-width: 0;
-        border: 1px solid #94c9bd;
-        border-radius: 8px;
-        padding: 14px 16px;
-        background: linear-gradient(180deg, #f6fcfa, #eef8f5);
-        box-shadow: 0 10px 24px rgba(15, 91, 84, 0.08);
-      }
-      .context-eyebrow {
-        display: block;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 800;
-      }
-      .context-title {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        align-items: baseline;
-        margin-top: 4px;
-      }
-      .context-title strong {
-        color: #123d67;
-        font-size: 24px;
-      }
-      .context-title span {
-        color: var(--ink);
-        font-weight: 700;
-      }
-      .context-note {
-        margin-top: 6px;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .context-actions {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        min-width: 0;
-        gap: 8px;
-      }
-      .workflow-steps {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 10px;
-        margin: 14px 0;
-      }
-      .workflow-step {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 12px;
-        background: #f7f9fc;
-      }
-      .workflow-step strong {
-        display: block;
-        color: #123d67;
-      }
-      .workflow-step span {
-        display: block;
-        margin-top: 4px;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .guide-layout {
-        display: grid;
-        gap: 14px;
-        margin-top: 14px;
-      }
-      .guide-block {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 14px;
-        background: #f8fbff;
-      }
-      .guide-block h3 {
-        margin: 0 0 8px;
-        color: #123d67;
-        font-size: 16px;
-      }
-      .guide-block p {
-        margin: 6px 0 0;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .guide-list {
-        margin: 8px 0 0;
-        padding-left: 18px;
-        color: var(--ink);
-        font-size: 13px;
-        line-height: 1.55;
-      }
-      .guide-code {
-        position: relative;
-        margin-top: 10px;
-      }
-      .guide-code pre {
-        min-height: 0;
-        margin: 0;
-        padding-right: 116px;
-      }
-      .guide-code button {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        min-height: 30px;
-        padding: 5px 9px;
-        font-size: 12px;
-      }
-      pre {
-        min-height: 120px;
-        overflow: auto;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 12px;
-        white-space: pre-wrap;
-        background: #f7f9fc;
-      }
-      .warn {
-        color: var(--gold);
-      }
-      .hint {
-        margin: 8px 0 0;
-        color: var(--muted);
-        font-size: 13px;
-        line-height: 1.45;
-      }
-      .meta-line {
-        margin: 8px 0 0;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .upload-status {
-        display: grid;
-        gap: 8px;
-        margin-top: 12px;
-        border: 1px solid #bfd2e8;
-        border-radius: 8px;
-        padding: 12px;
-        background: #f7fbff;
-      }
-      .upload-status.warn {
-        border-color: #e4c687;
-        background: #fff8eb;
-      }
-      .upload-status.error {
-        border-color: #efb4b4;
-        background: #fff1f1;
-      }
-      .upload-status strong {
-        color: #123d67;
-      }
-      .upload-status.warn strong {
-        color: #735014;
-      }
-      .upload-status.error strong {
-        color: var(--red);
-      }
-      .upload-status pre {
-        max-height: 24rem;
-        overflow: auto;
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-      .feedback-bar {
-        display: grid;
-        gap: 6px;
-        border: 1px solid #bfd2e8;
-        border-radius: 8px;
-        padding: 12px 14px;
-        color: #123d67;
-        background: #f7fbff;
-        box-shadow: 0 10px 24px rgba(21, 54, 93, 0.05);
-      }
-      .feedback-bar.success {
-        border-color: #94c9bd;
-        color: #0f5b54;
-        background: #f0faf6;
-      }
-      .feedback-bar.warn {
-        border-color: #e4c687;
-        color: #735014;
-        background: #fff8eb;
-      }
-      .feedback-bar.error {
-        border-color: #efb4b4;
-        color: #8b2f2f;
-        background: #fff1f1;
-      }
-      .feedback-bar strong {
-        color: inherit;
-      }
-      .feedback-detail {
-        color: var(--muted);
-        font-size: 13px;
-        overflow-wrap: anywhere;
-      }
-      .progress {
-        width: 100%;
-        height: 12px;
-        overflow: hidden;
-        border: 1px solid #bfd2e8;
-        border-radius: 999px;
-        background: #eaf1f8;
-      }
-      .progress-bar {
-        width: 0%;
-        height: 100%;
-        background: linear-gradient(90deg, #2876bd, #16736a);
-        transition: width 0.2s ease;
-      }
-      .meter {
-        display: grid;
-        gap: 6px;
-      }
-      .meter-head {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 700;
-      }
-      .meter-track {
-        height: 10px;
-        overflow: hidden;
-        border-radius: 999px;
-        background: #e8eef6;
-      }
-      .meter-fill {
-        width: 0%;
-        height: 100%;
-        background: linear-gradient(90deg, #0f766e, #2876bd);
-      }
-      .meter-fill.warn-fill {
-        background: linear-gradient(90deg, #b46b00, #d9921e);
-      }
-      .meter-fill.danger-fill {
-        background: linear-gradient(90deg, #b42318, #d92d20);
-      }
-      .stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 10px;
-        margin-top: 12px;
-      }
-      .stat {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 10px;
-        background: #f7f9fc;
-      }
-      .stat span {
-        display: block;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 700;
-      }
-      .stat strong {
-        display: block;
-        margin-top: 4px;
-        font-size: 18px;
-      }
-      .inline-action {
-        min-height: 30px;
-        margin-left: 8px;
-        padding: 4px 8px;
-        font-size: 12px;
-      }
-      .error {
-        color: var(--red);
-      }
-      .readiness {
-        display: grid;
-        gap: 10px;
-        margin-top: 14px;
-      }
-      .readiness-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-        gap: 10px;
-      }
-      .readiness-card {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 10px;
-        background: #f7f9fc;
-      }
-      .readiness-card.ok {
-        border-color: #94c9bd;
-        background: #f0faf6;
-      }
-      .readiness-card.warn-card {
-        border-color: #e4c687;
-        background: #fff8eb;
-      }
-      .readiness-card span {
-        display: block;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 700;
-      }
-      .readiness-card strong {
-        display: block;
-        margin-top: 4px;
-        font-size: 16px;
-      }
-      .gap-list {
-        display: grid;
-        gap: 6px;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        color: var(--muted);
-        font-size: 13px;
-      }
-      .gap-list li {
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        padding: 8px 10px;
-        background: #fff;
-      }
-      .task-list {
-        display: grid;
-        gap: 8px;
-        margin-top: 12px;
-      }
-      .task-card {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 10px;
-        align-items: center;
-        min-width: 0;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 10px;
-        background: #fff;
-      }
-      .task-card strong,
-      .task-card span {
-        overflow-wrap: anywhere;
-      }
-      .task-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-top: 6px;
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .chip {
-        border-radius: 999px;
-        background: #eef4fb;
-        color: var(--ink);
-        padding: 3px 8px;
-        font-weight: 700;
-      }
-      .filename {
-        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      }
-      button.small {
-        min-height: 30px;
-        padding: 5px 9px;
-        font-size: 12px;
-      }
-      .table-wrap {
-        margin-top: 12px;
-        max-width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #fff;
-      }
-      .storage-mini {
-        margin-top: 12px;
-      }
-      .checkbox-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 8px;
-        margin-top: 8px;
-      }
-      .checkbox-grid label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        min-height: 32px;
-        margin: 0;
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        padding: 5px 8px;
-        color: var(--ink);
-        background: #fff;
-      }
-      .checkbox-grid input {
-        width: auto;
-        min-height: 0;
-      }
-      .inline-check {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-height: 40px;
-        margin: 0;
-        color: var(--ink);
-      }
-      .inline-check input {
-        width: auto;
-        min-height: 0;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: min(780px, 100%);
-      }
-      th,
-      td {
-        border-bottom: 1px solid var(--line);
-        padding: 9px 10px;
-        text-align: left;
-        font-size: 13px;
-        overflow-wrap: anywhere;
-      }
-      th {
-        color: var(--muted);
-        background: #f7f9fc;
-        font-size: 12px;
-      }
-      tr:last-child td {
-        border-bottom: 0;
-      }
-      td.nowrap,
-      th.nowrap {
-        white-space: nowrap;
-      }
-      .media-toolbar {
-        align-items: center;
-      }
-      .media-refresh-state {
-        align-self: center;
-        color: var(--muted);
-        display: block;
-        flex: 1 1 260px;
-        font-size: 12px;
-        line-height: 18px;
-        min-height: 18px;
-        min-width: 260px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .media-oss-stats .stat strong {
-        overflow-wrap: anywhere;
-      }
-      .media-oss-stats .stat strong.small-value {
-        font-size: 14px;
-        line-height: 1.35;
-      }
-      .media-section-title {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 12px;
-        margin: 18px 0 8px;
-      }
-      .media-section-title h3 {
-        margin: 0;
-        font-size: 16px;
-      }
-      .media-course-controls {
-        display: grid;
-        grid-template-columns: minmax(170px, 220px) minmax(240px, 1fr) minmax(170px, 220px);
-        gap: 10px;
-        margin: 12px 0;
-      }
-      .media-course-table-wrap {
-        scrollbar-gutter: stable;
-      }
-      .media-course-table {
-        min-width: 1120px;
-        table-layout: auto;
-      }
-      .media-course-table th,
-      .media-course-table td {
-        white-space: nowrap;
-        overflow-wrap: normal;
-      }
-      .media-course-table td:nth-child(2),
-      .media-course-table td:nth-child(10) {
-        min-width: 180px;
-        white-space: normal;
-        overflow-wrap: break-word;
-      }
-      .media-course-table td:nth-child(10) {
-        min-width: 220px;
-      }
-      .media-course-status {
-        display: grid;
-        gap: 3px;
-      }
-      .media-course-status strong {
-        font-size: 13px;
-      }
-      .media-course-status small {
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .media-course-row-current td {
-        background: #f1fbf7;
-      }
-      .media-course-current-badge {
-        display: inline-flex;
-        align-items: center;
-        min-height: 20px;
-        margin-left: 8px;
-        border: 1px solid #98d0bf;
-        border-radius: 999px;
-        padding: 1px 7px;
-        background: #fff;
-        color: #0f6a46;
-        font-size: 12px;
-        font-weight: 700;
-      }
-      .media-job-id {
-        display: block;
-        max-width: 100%;
-        overflow: hidden;
-        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .media-job-result {
-        display: block;
-        max-height: 4.8em;
-        overflow: hidden;
-        color: var(--ink);
-        line-height: 1.45;
-        overflow-wrap: anywhere;
-      }
-      .media-job-progress {
-        display: grid;
-        gap: 5px;
-        margin-top: 7px;
-      }
-      .media-job-progress .progress {
-        height: 8px;
-        margin: 0;
-      }
-      .media-job-progress-meta {
-        display: flex;
-        justify-content: space-between;
-        gap: 8px;
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .media-job-progress-message {
-        color: var(--ink);
-        font-size: 12px;
-        line-height: 1.35;
-        overflow-wrap: anywhere;
-      }
-      .media-job-current {
-        max-width: 100%;
-        overflow: hidden;
-        color: var(--muted);
-        font-size: 12px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .media-job-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-      .media-job-card-list {
-        display: grid;
-        gap: 10px;
-        min-width: 0;
-      }
-      .media-job-card {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(120px, auto);
-        gap: 12px;
-        min-width: 0;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 12px;
-        background: #fff;
-      }
-      .media-job-card > div,
-      .media-upload-card > div,
-      .media-lock-card > div {
-        min-width: 0;
-      }
-      .media-job-card.active {
-        border-left: 4px solid #3f7dbb;
-      }
-      .media-job-card.issue {
-        border-left: 4px solid #c44;
-      }
-      .media-job-card.warning {
-        border-left: 4px solid #c47f00;
-      }
-      .media-job-card header {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 8px;
-      }
-      .media-job-card header strong {
-        font-size: 14px;
-      }
-      .media-job-card .media-job-id {
-        max-width: 260px;
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .media-job-card .media-job-result {
-        margin-top: 8px;
-        max-height: none;
-        overflow-wrap: anywhere;
-      }
-      .media-job-result details {
-        margin-top: 6px;
-      }
-      .media-job-result summary {
-        color: var(--blue);
-        cursor: pointer;
-        font-size: 12px;
-      }
-      .media-job-result pre {
-        max-height: 180px;
-        overflow: auto;
-        border: 1px solid var(--line);
-        border-radius: 6px;
-        padding: 8px;
-        background: #f7fafc;
-        white-space: pre-wrap;
-      }
-      .media-job-resolution {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        align-items: baseline;
-        margin-top: 8px;
-        border-left: 3px solid #7aa7d9;
-        padding: 6px 0 6px 9px;
-        color: #335b7e;
-        font-size: 12px;
-        line-height: 1.45;
-      }
-      .media-job-resolution strong {
-        color: #123d67;
-      }
-      .media-job-card-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .media-job-metrics {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-top: 8px;
-      }
-      .media-job-metrics span {
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 3px 8px;
-        background: #f8fafc;
-        color: var(--ink);
-        font-size: 12px;
-      }
-      .media-job-card-actions {
-        display: flex;
-        align-items: flex-start;
-        justify-content: flex-end;
-        flex-wrap: wrap;
-        gap: 6px;
-        min-width: 112px;
-      }
-      .media-job-empty {
-        margin: 0;
-        border: 1px dashed var(--line);
-        border-radius: 8px;
-        padding: 14px;
-        color: var(--muted);
-        background: #fbfdff;
-      }
-      .media-upload-card-list {
-        display: grid;
-        gap: 10px;
-        min-width: 0;
-      }
-      .media-lock-list {
-        display: grid;
-        gap: 8px;
-        margin-top: 12px;
-      }
-      .media-lock-card {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 10px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 10px;
-        background: #fff;
-      }
-      .media-lock-card header {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        align-items: center;
-        margin-bottom: 6px;
-      }
-      .media-lock-card.issue {
-        border-left: 4px solid #c47f00;
-      }
-      .media-upload-card {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 12px;
-        min-width: 0;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 12px;
-        background: #fff;
-      }
-      .media-upload-card header {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 8px;
-      }
-      .media-upload-card-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .media-upload-object {
-        max-width: 100%;
-        overflow: hidden;
-        margin-top: 8px;
-        color: var(--muted);
-        font-size: 12px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .media-upload-timeline {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 8px;
-        margin-top: 10px;
-      }
-      .media-upload-step {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 8px;
-        background: #f8fafc;
-      }
-      .media-upload-step strong {
-        display: block;
-        margin-bottom: 2px;
-        font-size: 12px;
-      }
-      .media-upload-step span {
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .media-upload-step.done {
-        border-color: #98d0bf;
-        background: #f1fbf7;
-      }
-      .media-upload-step.active {
-        border-color: #7aa7d9;
-        background: #f2f7ff;
-      }
-      .media-upload-step.issue {
-        border-color: #efb0b0;
-        background: #fff5f5;
-      }
-      .media-detail-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 8px;
-        margin: 10px 0;
-      }
-      .media-detail-item {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 8px;
-        background: #fff;
-      }
-      .media-detail-item span {
-        display: block;
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .media-detail-item strong {
-        display: block;
-        overflow-wrap: anywhere;
-      }
-      .media-detail-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 8px;
-      }
-      .media-detail-panel {
-        max-width: 100%;
-        overflow-x: auto;
-      }
-      .media-detail-panel pre {
-        max-width: 100%;
-        overflow: auto;
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-      .media-job-card-actions button,
-      .media-toolbar button,
-      .oss-direct-upload button {
-        white-space: nowrap;
-      }
-      .oss-direct-upload {
-        display: grid;
-        gap: 12px;
-        margin-top: 14px;
-        border: 1px solid #bfd2e8;
-        border-radius: 8px;
-        padding: 12px;
-        background: #f8fbff;
-      }
-      .oss-direct-upload h3 {
-        margin: 0;
-        font-size: 15px;
-      }
-      .oss-direct-hint {
-        margin: -2px 0 0;
-        color: var(--muted);
-        font-size: 12px;
-        line-height: 1.45;
-      }
-      .oss-direct-upload .upload-status {
-        margin-top: 0;
-      }
-      .oss-direct-queue {
-        display: grid;
-        gap: 8px;
-      }
-      .oss-direct-queue-summary {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        align-items: center;
-        color: var(--muted);
-        font-size: 12px;
-      }
-      .oss-direct-queue-summary span {
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 3px 8px;
-        background: #fff;
-      }
-      .oss-direct-overall-progress {
-        display: block;
-        width: 100%;
-        height: 8px;
-        overflow: hidden;
-        border: 0;
-        border-radius: 999px;
-        background: #dce8f5;
-        appearance: none;
-        -webkit-appearance: none;
-      }
-      .oss-direct-overall-progress::-webkit-progress-bar {
-        border-radius: 999px;
-        background: #dce8f5;
-      }
-      .oss-direct-overall-progress::-webkit-progress-value {
-        height: 100%;
-        border-radius: 999px;
-        background: var(--blue);
-      }
-      .oss-direct-overall-progress::-moz-progress-bar {
-        border-radius: 999px;
-        background: var(--blue);
-      }
-      .oss-direct-queue-item {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(90px, auto);
-        gap: 10px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 10px;
-        background: #fff;
-      }
-      .oss-direct-queue-heading {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        min-width: 0;
-      }
-      .oss-direct-course {
-        flex: 0 0 auto;
-        border: 1px solid #9fc2e3;
-        border-radius: 999px;
-        padding: 2px 7px;
-        background: #eef7ff;
-        color: #164f7a;
-        font-size: 12px;
-        font-weight: 800;
-      }
-      .oss-direct-queue-item strong {
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .oss-direct-queue-item small {
-        display: block;
-        overflow-wrap: anywhere;
-      }
-      .oss-direct-queue-item small {
-        color: var(--muted);
-      }
-      .oss-direct-queue-detail {
-        margin-top: 3px;
-      }
-      .oss-direct-queue-metrics {
-        display: block;
-        margin-top: 3px;
-        color: #335b7e !important;
-        font-weight: 700;
-      }
-      .oss-direct-queue-progress {
-        display: block;
-        width: 100%;
-        height: 6px;
-        margin-top: 8px;
-        overflow: hidden;
-        border: 0;
-        border-radius: 999px;
-        background: #dce8f5;
-      }
-      .oss-direct-queue-progress-bar {
-        width: 0;
-        height: 100%;
-        border-radius: 999px;
-        background: var(--green);
-        transition: width 0.2s ease;
-      }
-      .oss-direct-queue-item.failed .oss-direct-queue-progress-bar {
-        background: var(--red);
-      }
-      .oss-direct-queue-item.uploading .oss-direct-queue-progress-bar,
-      .oss-direct-queue-item.authorizing .oss-direct-queue-progress-bar,
-      .oss-direct-queue-item.verifying .oss-direct-queue-progress-bar {
-        background: var(--blue);
-      }
-      .oss-direct-queue-status {
-        text-align: right;
-        white-space: nowrap;
-      }
-      .status-ok {
-        color: #0f6a46;
-        font-weight: 700;
-      }
-      .status-missing {
-        color: var(--gold);
-        font-weight: 700;
-      }
-      .status-risk {
-        color: var(--red);
-        font-weight: 700;
-      }
-      .status-badge {
-        display: inline-flex;
-        align-items: center;
-        min-height: 22px;
-        border-radius: 999px;
-        padding: 2px 8px;
-        font-size: 12px;
-        font-weight: 700;
-      }
-      .status-badge.status-running {
-        background: #eaf5ff;
-        color: #185c8d;
-      }
-      .status-badge.status-warning {
-        background: #fff4dc;
-        color: #9a5a00;
-      }
-      .toolbar-grid {
-        display: grid;
-        grid-template-columns: minmax(220px, 1fr) minmax(170px, 0.55fr) minmax(220px, 0.8fr);
-        gap: 10px;
-        margin-top: 12px;
-      }
-      .notice {
-        margin-top: 12px;
-        border: 1px solid #e4c687;
-        border-radius: 8px;
-        padding: 10px 12px;
-        color: #735014;
-        background: #fff8eb;
-        line-height: 1.45;
-      }
-      .badge {
-        display: inline-block;
-        border-radius: 999px;
-        padding: 3px 8px;
-        font-size: 12px;
-        font-weight: 700;
-        background: #eef3f8;
-      }
-      .badge.risk {
-        color: #8b2f2f;
-        background: #fdecec;
-      }
-      .selection-banner {
-        margin-top: 12px;
-        border: 1px solid #94c9bd;
-        border-radius: 8px;
-        padding: 10px 12px;
-        color: #0f5b54;
-        background: #f0faf6;
-        line-height: 1.45;
-      }
-      tr.selected-row td {
-        background: #eef8f5;
-      }
-      tr.selected-row td:first-child {
-        border-left: 4px solid var(--teal);
-      }
-      @media (max-width: 860px) {
-        .admin-topbar {
-          align-items: flex-start;
-          flex-direction: column;
-          padding: 20px;
-        }
-        .topbar-actions {
-          justify-content: flex-start;
-          width: 100%;
-        }
-        .admin-shell {
-          grid-template-columns: 1fr;
-          padding: 14px;
-        }
-        .admin-sidebar {
-          position: static;
-        }
-        .admin-nav {
-          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        }
-        .course-context-bar {
-          grid-template-columns: 1fr;
-        }
-        .context-actions {
-          justify-content: flex-start;
-        }
-        .task-card {
-          grid-template-columns: 1fr;
-        }
-        .media-course-controls,
-        .media-job-card {
-          grid-template-columns: 1fr;
-        }
-        .media-job-card-actions {
-          justify-content: flex-start;
-        }
-      }
-      [hidden] {
-        display: none !important;
-      }
-    </style>
+    <link rel="stylesheet" href="/admin.css" />
   </head>
   <body>
     <header class="admin-topbar">
@@ -1448,11 +36,12 @@
         <nav class="admin-nav" aria-label="Admin sections">
           <button class="active" type="button" data-admin-nav="login">登录状态</button>
           <div class="nav-group-label">课程上下文</div>
+          <button type="button" data-admin-nav="dashboard" data-auth-required="1" disabled>总览</button>
           <button type="button" data-admin-nav="course" data-auth-required="1" disabled>选择当前课程</button>
           <div class="nav-group-label">当前课程操作</div>
           <button type="button" data-admin-nav="media" data-auth-required="1" disabled>媒体发布</button>
           <button type="button" data-admin-nav="upload" data-auth-required="1" disabled>本地维护上传</button>
-          <button type="button" data-admin-nav="package" data-auth-required="1" disabled>本地 ZIP 导入</button>
+          <button type="button" data-admin-nav="package" data-auth-required="1" disabled>课程压缩包</button>
           <button type="button" data-admin-nav="lifecycle" data-auth-required="1" disabled>启用 / 归档</button>
           <button type="button" data-admin-nav="maintenance" data-auth-required="1" disabled>维护</button>
           <div class="nav-group-label">全局管理</div>
@@ -1519,11 +108,52 @@
         </div>
       </section>
 
+      <section class="admin-panel auth-required" data-admin-panel="dashboard" hidden>
+        <div class="panel-heading">
+          <div>
+            <h2>后台总览</h2>
+            <p class="meta-line">汇总课程上线、完整性缺口与存储空间。这里不修改课程内容，只帮助先判断今天要处理哪里。</p>
+          </div>
+          <div class="actions">
+            <button id="dashboardRefreshButton" type="button">刷新总览</button>
+            <button type="button" data-switch-panel="storage">查看存储空间</button>
+            <button type="button" data-switch-panel="overview">查看全课程缺口</button>
+          </div>
+        </div>
+        <div class="admin-workbench-grid" aria-label="常用后台操作">
+          <button class="admin-workbench-card primary" type="button" data-switch-panel="media">
+            <span>媒体发布</span>
+            <strong>发布 / 审计当前课程</strong>
+            <small>视频、H5P、iSpring 与 OSS/CDN 状态。</small>
+          </button>
+          <button class="admin-workbench-card" type="button" data-switch-panel="package">
+            <span>整课导入</span>
+            <strong>上传课程 ZIP</strong>
+            <small>先生成预览，再确认替换课程内容。</small>
+          </button>
+          <button class="admin-workbench-card" type="button" data-switch-panel="lifecycle">
+            <span>上线状态</span>
+            <strong>启用 / 归档</strong>
+            <small>处理 active、archive 与首批上线课程。</small>
+          </button>
+          <button class="admin-workbench-card" type="button" data-switch-panel="users">
+            <span>权限</span>
+            <strong>老师账号与课程可见性</strong>
+            <small>管理 admin / teacher 账号和授权课程。</small>
+          </button>
+        </div>
+        <div id="dashboardPanel" hidden></div>
+        <div class="admin-empty-state">
+          <strong>等待读取后台总览</strong>
+          <span>点击“刷新总览”后，会汇总课程上线状态、内容缺口和存储空间。</span>
+        </div>
+      </section>
+
       <section class="admin-panel auth-required" data-admin-panel="course" hidden>
         <div class="panel-heading">
           <div>
             <h2>选择当前课程</h2>
-            <p class="meta-line">先在这里确定要操作哪一门课。选择后，启用/归档、当前课程维护、本地维护上传都会同步作用于这门课程。完整课件包优先走媒体发布里的 OSS 直传。</p>
+            <p class="meta-line">先在这里确定要操作哪一门课。选择后，启用/归档、当前课程维护、本地维护上传都会同步作用于这门课程。完整课件包走“课程压缩包”导入，系统会自动把高并发资源发布到 OSS/CDN。</p>
           </div>
           <a class="button-link subtle" id="coursePanelLink" href="/?course=ENG3U">返回当前课程页面</a>
         </div>
@@ -1553,7 +183,7 @@
         <div class="actions">
           <button id="statusButton" type="button">读取状态</button>
           <button class="primary" type="button" data-switch-panel="media">去媒体发布</button>
-          <button type="button" data-switch-panel="package">去本地 ZIP 导入</button>
+          <button type="button" data-switch-panel="package">去课程压缩包</button>
           <button type="button" data-switch-panel="upload">去本地维护上传</button>
         </div>
         <div class="stats" id="statusStats" hidden></div>
@@ -1607,9 +237,9 @@
 
       <section class="admin-panel auth-required" data-admin-panel="upload" hidden>
         <h2>当前课程本地维护上传</h2>
-        <p class="meta-line">这个入口会先上传到 ECS，再写入当前课程目录，适合少量文本、iSpring 修补和维护性替换。大视频和完整课件包请优先使用“媒体发布”的 OSS 直传。</p>
+        <p class="meta-line">这个入口会先上传到 ECS，再写入当前课程目录，适合少量文本、iSpring 修补和维护性替换。完整课件包请使用“课程压缩包”导入。</p>
         <div class="notice">
-          常规新课件包上传请走 <button class="small" type="button" data-switch-panel="media">媒体发布 / 直传 OSS</button>，这样使用本地网络直传 OSS，不占用 ECS 5M 公网带宽。
+          常规新课件包上传请走 <button class="small" type="button" data-switch-panel="package">课程压缩包</button>，导入完成后会自动判断哪些资源留在 ECS、哪些发布到 OSS/CDN。
         </div>
         <div class="storage-mini" id="uploadStorageMini" hidden></div>
         <div id="courseUploadTasks" hidden></div>
@@ -1685,44 +315,6 @@
           <button id="readinessMediaButton" type="button">检查媒体配置</button>
           <span class="media-refresh-state" id="mediaRefreshState">自动刷新未启动</span>
         </div>
-        <div class="oss-direct-upload">
-          <div>
-            <h3>直传 OSS inbox</h3>
-            <p class="meta-line">大文件会从浏览器直接上传到 OSS，不经过 ECS 公网带宽。完整课件包会按文件名自动识别课程，上传后登记为 OSS-only 待解压/索引，不会下载回 ECS。</p>
-          </div>
-          <div class="grid compact">
-            <div>
-              <label for="ossDirectKind">上传类型</label>
-              <select id="ossDirectKind">
-                <option value="course-package">完整课件包 ZIP</option>
-                <option value="video">单个视频</option>
-                <option value="h5p">H5P 文件</option>
-                <option value="ispring-package">iSpring 包</option>
-              </select>
-            </div>
-            <div>
-              <label for="ossDirectFile">文件</label>
-              <input id="ossDirectFile" type="file" multiple />
-            </div>
-            <div>
-              <label>完成后动作</label>
-              <label class="inline-check"><input id="ossDirectAutoPublish" type="checkbox" /> 上传后自动创建发布任务</label>
-            </div>
-          </div>
-          <p class="oss-direct-hint">完整课件包支持一次选择多个 ZIP，系统会从文件名识别课程码，例如 ESLDO-course-package-20260803.zip。视频、H5P 和 iSpring 单包仍按当前课程保存；完整课件包后续由 OSS-side 解压/索引流程接管。</p>
-          <div class="actions">
-            <button class="primary" id="ossDirectUploadButton" type="button">自动识别并直传 OSS</button>
-            <button id="ossDirectCancelButton" type="button" hidden>取消当前上传</button>
-          </div>
-          <div class="upload-status" id="ossDirectStatus" hidden>
-            <strong id="ossDirectStatusTitle">等待上传</strong>
-            <div class="progress" id="ossDirectProgress" hidden>
-              <div class="progress-bar" id="ossDirectProgressBar"></div>
-            </div>
-            <div class="meta-line" id="ossDirectStatusDetail"></div>
-          </div>
-          <div class="oss-direct-queue" id="ossDirectQueue" hidden></div>
-        </div>
         <div class="media-course-controls">
           <div>
             <label for="mediaCourseFilter">课程显示</label>
@@ -1750,8 +342,11 @@
           </div>
         </div>
         <div id="mediaCourseTable" hidden></div>
-        <div id="mediaUploadsTable" hidden></div>
         <div id="mediaJobsTable" hidden></div>
+        <div class="admin-empty-state">
+          <strong>等待媒体状态</strong>
+          <span>点击“刷新媒体状态”查看课程发布状态和最近任务；发布按钮会根据当前课程选择执行。</span>
+        </div>
         <div id="mediaJobLogPanel" class="upload-status media-detail-panel" hidden>
           <strong id="mediaJobLogTitle">媒体详情</strong>
           <div id="mediaJobLogText"></div>
@@ -1759,19 +354,34 @@
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="package" hidden>
-        <h2>当前课程本地 ZIP 导入</h2>
-        <p class="meta-line">这个入口会把 ZIP 先传到 ECS 再解压分析，只建议用于小包、补救或测试。大课件包请走“媒体发布”的 OSS 直传，文件只保存在 OSS。</p>
+        <h2>当前课程压缩包导入</h2>
+        <p class="meta-line">这个入口统一处理课程 ZIP：小型无媒体课程可先到 ECS 并生成确认预览；大课程、媒体课程会 multipart 直传 OSS raw package，再由 ECS 通过内网流式读取并自动导入。</p>
         <div class="notice">
-          新课程包建议使用 <button class="small" type="button" data-switch-panel="media">媒体发布 / 直传 OSS</button>。这里保留为本地维护通道，避免需要 SSH 时没有后门。
+          视频、H5P、iSpring 和超大附件会发布到 OSS/CDN，普通课程资料保留在 ECS。
         </div>
         <div class="storage-mini" id="packageStorageMini" hidden></div>
-        <div>
-          <label for="coursePackageFile">课程压缩包</label>
-          <input id="coursePackageFile" type="file" accept=".zip" />
+        <div class="form-grid">
+          <div>
+            <label for="coursePackageRoute">导入路径</label>
+            <select id="coursePackageRoute">
+              <option value="auto">自动选择</option>
+              <option value="raw">OSS raw 大课包 / 媒体课包</option>
+              <option value="ecs">ECS 小型无媒体课包</option>
+            </select>
+          </div>
+          <div>
+            <label for="coursePackageFile">课程压缩包</label>
+            <input id="coursePackageFile" type="file" accept=".zip" multiple />
+            <p class="hint">可一次选择多门课程 ZIP。多文件会按文件名识别课程码，排队直传 OSS raw package；勾选下方选项后才会自动创建导入任务。</p>
+          </div>
         </div>
+        <label class="inline-check">
+          <input id="coursePackageBatchAutoConfirm" type="checkbox" />
+          多文件上传完成后自动创建导入任务，会替换对应课程内容
+        </label>
         <div class="actions">
-          <button id="coursePackageUploadButton" type="button">上传并生成预览</button>
-          <button class="primary" id="coursePackageCommitButton" type="button" disabled>确认导入到当前课程</button>
+          <button id="coursePackageUploadButton" type="button">上传并导入</button>
+          <button class="primary" id="coursePackageCommitButton" type="button" disabled hidden>确认替换课程内容</button>
         </div>
         <div class="upload-status" id="coursePackageStatus" hidden>
           <strong id="coursePackageStatusTitle">等待上传</strong>
@@ -1780,6 +390,7 @@
           </div>
           <div class="meta-line" id="coursePackageStatusDetail"></div>
         </div>
+        <div id="coursePackageBatchQueue" class="oss-direct-queue" hidden></div>
         <div id="coursePackagePanel" hidden></div>
       </section>
 
@@ -1804,6 +415,10 @@
         <div id="courseReadinessTable" hidden></div>
         <div id="uploadGapTable" hidden></div>
         <div id="contentWorkbenchTable" hidden></div>
+        <div class="admin-empty-state">
+          <strong>等待全课程数据</strong>
+          <span>选择上方任一读取操作后，会展示缺口、上传清单或内容工作台表格。</span>
+        </div>
       </section>
 
       <section class="admin-panel auth-required" data-admin-panel="users" hidden>
@@ -1813,6 +428,10 @@
           <div>
             <label for="portalUsername">Username</label>
             <input id="portalUsername" placeholder="teacher1" />
+          </div>
+          <div>
+            <label for="portalDisplayName">老师名字 / 昵称</label>
+            <input id="portalDisplayName" placeholder="Ms. Smith" />
           </div>
           <div>
             <label for="portalPassword">Password</label>
@@ -1969,10 +588,10 @@ pm2 restart ossd-course-portal --update-env</pre>
     <script src="/admin-api-client.js"></script>
     <script src="/admin-course-data-client.js"></script>
     <script src="/admin-media-panel.js"></script>
-    <script src="/admin-media-direct-panel.js"></script>
     <script src="/admin-course-package-panel.js"></script>
     <script src="/admin-course-package-action.js"></script>
     <script src="/admin-storage-panel.js"></script>
+    <script src="/admin-dashboard-panel.js"></script>
     <script src="/admin-course-lifecycle-panel.js"></script>
     <script src="/admin-readiness-panel.js"></script>
     <script src="/admin-upload-form-panel.js"></script>
@@ -2000,6 +619,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         textId: document.querySelector("#textId"),
         file: document.querySelector("#file"),
         portalUsername: document.querySelector("#portalUsername"),
+        portalDisplayName: document.querySelector("#portalDisplayName"),
         portalPassword: document.querySelector("#portalPassword"),
         portalRole: document.querySelector("#portalRole"),
         portalStatus: document.querySelector("#portalStatus"),
@@ -2007,7 +627,9 @@ pm2 restart ossd-course-portal --update-env</pre>
         launchCourses: document.querySelector("#launchCourses"),
         lifecycleFilter: document.querySelector("#lifecycleFilter"),
         lifecycleSearch: document.querySelector("#lifecycleSearch"),
+        coursePackageBatchAutoConfirm: document.querySelector("#coursePackageBatchAutoConfirm"),
         coursePackageFile: document.querySelector("#coursePackageFile"),
+        coursePackageRoute: document.querySelector("#coursePackageRoute"),
       };
       const unitField = document.querySelector("#unitField");
       const lessonField = document.querySelector("#lessonField");
@@ -2017,6 +639,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       const statusStats = document.querySelector("#statusStats");
       const uploadStorageMini = document.querySelector("#uploadStorageMini");
       const packageStorageMini = document.querySelector("#packageStorageMini");
+      const dashboardPanelElement = document.querySelector("#dashboardPanel");
       const storageSummary = document.querySelector("#storageSummary");
       const storageCourseTable = document.querySelector("#storageCourseTable");
       const readinessPanel = document.querySelector("#readinessPanel");
@@ -2032,6 +655,10 @@ pm2 restart ossd-course-portal --update-env</pre>
       const coursePackageProgressBar = document.querySelector("#coursePackageProgressBar");
       const coursePackageUploadButton = document.querySelector("#coursePackageUploadButton");
       const coursePackageCommitButton = document.querySelector("#coursePackageCommitButton");
+      const coursePackageBatchQueue = document.querySelector("#coursePackageBatchQueue");
+      let activeCoursePackageBatchController = null;
+      let coursePackageBatchItems = [];
+      const cancelledCoursePackageBatchItemIds = new Set();
       const courseUploadTasks = document.querySelector("#courseUploadTasks");
       const adminFeedback = document.querySelector("#adminFeedback");
       const adminFeedbackTitle = document.querySelector("#adminFeedbackTitle");
@@ -2052,7 +679,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       const mediaLocksPanel = document.querySelector("#mediaLocksPanel");
       const mediaNotice = document.querySelector("#mediaNotice");
       const mediaCourseTable = document.querySelector("#mediaCourseTable");
-      const mediaUploadsTable = document.querySelector("#mediaUploadsTable");
       const mediaJobsTable = document.querySelector("#mediaJobsTable");
       const mediaJobLogPanel = document.querySelector("#mediaJobLogPanel");
       const mediaJobLogTitle = document.querySelector("#mediaJobLogTitle");
@@ -2066,17 +692,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       const syncCurrentCourseButton = document.querySelector("#syncCurrentCourseButton");
       const publishAllMediaButton = document.querySelector("#publishAllMediaButton");
       const readinessMediaButton = document.querySelector("#readinessMediaButton");
-      const ossDirectKind = document.querySelector("#ossDirectKind");
-      const ossDirectFile = document.querySelector("#ossDirectFile");
-      const ossDirectAutoPublish = document.querySelector("#ossDirectAutoPublish");
-      const ossDirectUploadButton = document.querySelector("#ossDirectUploadButton");
-      const ossDirectCancelButton = document.querySelector("#ossDirectCancelButton");
-      const ossDirectStatus = document.querySelector("#ossDirectStatus");
-      const ossDirectStatusTitle = document.querySelector("#ossDirectStatusTitle");
-      const ossDirectStatusDetail = document.querySelector("#ossDirectStatusDetail");
-      const ossDirectProgress = document.querySelector("#ossDirectProgress");
-      const ossDirectProgressBar = document.querySelector("#ossDirectProgressBar");
-      const ossDirectQueue = document.querySelector("#ossDirectQueue");
       const courseNavigationLinks = [
         document.querySelector("#topCourseLink"),
         document.querySelector("#sidebarCourseLink"),
@@ -2106,11 +721,10 @@ pm2 restart ossd-course-portal --update-env</pre>
       let shellPanel = null;
       let mediaPanel = null;
       let mediaAutoRefresh = null;
-      let ossDirectPanel = null;
-      let ossDirectUploadController = null;
       let coursePackageUi = null;
       let coursePackageAction = null;
       let storagePanel = null;
+      let dashboardPanel = null;
       let lifecyclePanel = null;
       let readinessUi = null;
       let uploadFormPanel = null;
@@ -2194,6 +808,14 @@ pm2 restart ossd-course-portal --update-env</pre>
         },
         escapeHtml,
         formatBytes,
+      });
+      dashboardPanel = window.AdminDashboardPanel.createPanel({
+        elements: {
+          root: dashboardPanelElement,
+        },
+        escapeHtml,
+        formatBytes,
+        meterHtml,
       });
       readinessUi = window.AdminReadinessPanel.createPanel({
         elements: {
@@ -2279,6 +901,7 @@ pm2 restart ossd-course-portal --update-env</pre>
       usersPanel = window.AdminUsersPanel.createPanel({
         elements: {
           coursesContainer: userCourseCheckboxes,
+          displayName: fields.portalDisplayName,
           password: fields.portalPassword,
           role: fields.portalRole,
           status: fields.portalStatus,
@@ -2322,6 +945,8 @@ pm2 restart ossd-course-portal --update-env</pre>
         write,
         afterSuccess: async () => {
           await readStorage({ writeOutput: false });
+          await readStatus({ writeOutput: false });
+          await readMedia({ writeOutput: false });
         },
         getCurrentImport: () => currentCoursePackageImport,
         setUploadDisabled: (disabled) => {
@@ -2333,6 +958,8 @@ pm2 restart ossd-course-portal --update-env</pre>
         clearPackageFile: () => {
           fields.coursePackageFile.value = "";
         },
+        uploadRawPackage: uploadCoursePackageRaw,
+        shouldUseRawUpload: (file) => shouldUseRawCoursePackageUpload(file),
         afterCommitSuccess: async (data) => {
           await loadSelectedCourseManifest();
           await readStatus({ writeOutput: false });
@@ -2342,21 +969,6 @@ pm2 restart ossd-course-portal --update-env</pre>
           await readMedia({ writeOutput: false });
           if (data.backups?.length) await readBackups({ writeOutput: false });
         },
-      });
-      ossDirectPanel = window.AdminMediaDirectPanel.createPanel({
-        elements: {
-          cancelButton: ossDirectCancelButton,
-          fileInput: ossDirectFile,
-          progress: ossDirectProgress,
-          progressBar: ossDirectProgressBar,
-          queue: ossDirectQueue,
-          status: ossDirectStatus,
-          statusDetail: ossDirectStatusDetail,
-          statusTitle: ossDirectStatusTitle,
-          uploadButton: ossDirectUploadButton,
-        },
-        formatBytes,
-        getController: () => ossDirectUploadController,
       });
       mediaPanel = window.AdminMediaPanel.createPanel({
         elements: {
@@ -2375,11 +987,9 @@ pm2 restart ossd-course-portal --update-env</pre>
           readinessMediaButton,
           refreshState: mediaRefreshState,
           syncCurrentCourseButton,
-          uploadsTable: mediaUploadsTable,
         },
         getSelectedCourse: () => fields.course.value,
         jobTypeLabel: window.AdminMediaView.jobTypeLabel,
-        renderOssDirectUploadConfig: (config) => ossDirectPanel.renderConfig(config),
       });
       mediaAutoRefresh = window.AdminMediaApi.createAutoRefresh({
         isEnabled: () => Boolean(adminAuthenticated && activeAdminPanel === "media"),
@@ -2409,25 +1019,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         write,
         confirm: (message) => confirm(message),
       });
-      ossDirectUploadController = window.AdminMediaUpload.createDirectUploadController({
-        api: mediaApi,
-        getKind: () => ossDirectKind?.value || "course-package",
-        getFiles: () => Array.from(ossDirectFile?.files || []),
-        getSelectedCourse: () => String(fields.course.value || "").trim().toUpperCase(),
-        getCourseCodes: () => knownAdminCourseCodes(),
-        getAutoPublish: () => Boolean(ossDirectAutoPublish?.checked),
-        hasActiveWriteJob: () => mediaPanel.activeWriteJob(),
-        jobTypeLabel: window.AdminMediaView.jobTypeLabel,
-        confirm: (message) => confirm(message),
-        formatProgress: (file) => window.AdminMediaView.uploadProgressFormatter(file),
-        onActiveUploadChange: (xhr) => ossDirectPanel.setActiveUpload(xhr),
-        onStatus: ({ title, detail, percent, type }) => ossDirectPanel.setStatus(title, detail, percent, type),
-        onQueueChange: (items) => ossDirectPanel.renderQueue(items),
-        onRefresh: () => readMedia({ writeOutput: false }),
-        onStartRefresh: () => startMediaAutoRefresh(),
-        onWrite: (data) => write(data),
-      });
-
       function showFeedback(title, type = "info", detail = "") {
         if (!adminFeedback) return;
         adminFeedback.hidden = false;
@@ -2535,6 +1126,16 @@ pm2 restart ossd-course-portal --update-env</pre>
         }
         if (activeAdminPanel === "storage" && adminAuthenticated) {
           readStorage({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+        }
+        if (activeAdminPanel === "dashboard" && adminAuthenticated) {
+          readDashboard({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+        }
+        if (activeAdminPanel === "overview" && adminAuthenticated) {
+          readAllCourseReadiness({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+        }
+        if (activeAdminPanel === "lifecycle" && adminAuthenticated) {
+          readCourseLifecycle({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
+          readCourseLifecycleJobs({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
         }
         if (activeAdminPanel === "media" && adminAuthenticated) {
           readMedia({ writeOutput: false }).catch((error) => write(`Error: ${error.message}`));
@@ -2674,13 +1275,10 @@ pm2 restart ossd-course-portal --update-env</pre>
         mediaPanel.renderJobs(data);
       }
 
-      function renderMediaUploads(data) {
-        mediaPanel.renderUploads(data);
-      }
-
       function renderMedia(data) {
         mediaData = mediaPanel.setData(data);
         mediaPanel.render(mediaData);
+        if (coursePackageBatchItems.length) renderCoursePackageBatchQueue(coursePackageBatchItems);
       }
 
       function renderMediaQuiet(data) {
@@ -2832,6 +1430,8 @@ pm2 restart ossd-course-portal --update-env</pre>
           if (data.ok && data.task) {
             renderCoursePackageTaskStatus(data.task);
             if (data.task.status === "complete" && data.task.review) return data.task.review;
+            if (data.task.status === "committed" && data.task.result) return data.task.result;
+            if (data.task.status === "blocked") throw new Error(data.task.error || "ECS 空间不足，需要走 OSS raw package。");
             if (data.task.status === "failed") throw new Error(data.task.error || "服务器处理整课包失败。");
           }
           await sleep(5000);
@@ -2845,6 +1445,435 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       async function uploadCoursePackageChunkWithRetry({ url, blob, onProgress, onRetry }) {
         return uploadTransport.uploadWithRetry({ url, blob, onProgress, onRetry });
+      }
+
+      function normalizeCoursePackageEntryName(name) {
+        return String(name || "").replace(/\\/g, "/").replace(/^\.\/+/, "").toLowerCase();
+      }
+
+      function coursePackageEntryNeedsRaw(name) {
+        const entry = normalizeCoursePackageEntryName(name);
+        if (!entry || entry.endsWith("/")) return false;
+        if (/\.(mp4|webm|mov|m4v|h5p)$/i.test(entry)) return true;
+        if (/(^|\/)(html5-package|html5-package-admin|ispring-localized)\//i.test(entry)) return true;
+        if (/(^|\/)presentation\.html$/i.test(entry)) return true;
+        if (/(^|\/)(story|index)\.html$/i.test(entry) && /(^|\/)(data|story_content|res)\//i.test(entry)) return true;
+        return false;
+      }
+
+      async function coursePackageZipHasPlayableAssets(file) {
+        if (!file || !file.size) return false;
+        const decoder = new TextDecoder("utf-8");
+        const tailLength = Math.min(file.size, 1024 * 1024);
+        const tailOffset = file.size - tailLength;
+        const tail = new Uint8Array(await file.slice(tailOffset, file.size).arrayBuffer());
+        const eocdSignature = 0x06054b50;
+        let eocdOffset = -1;
+        for (let index = tail.length - 22; index >= 0; index -= 1) {
+          if (
+            tail[index] === 0x50 &&
+            tail[index + 1] === 0x4b &&
+            tail[index + 2] === 0x05 &&
+            tail[index + 3] === 0x06
+          ) {
+            eocdOffset = index;
+            break;
+          }
+        }
+        if (eocdOffset < 0) return false;
+
+        const eocd = new DataView(tail.buffer, tail.byteOffset + eocdOffset, tail.length - eocdOffset);
+        if (eocd.getUint32(0, true) !== eocdSignature) return false;
+        const centralDirectorySize = eocd.getUint32(12, true);
+        const centralDirectoryOffset = eocd.getUint32(16, true);
+        if (!centralDirectorySize || centralDirectoryOffset >= file.size) return false;
+
+        const maxCentralDirectoryBytes = 64 * 1024 * 1024;
+        if (centralDirectorySize > maxCentralDirectoryBytes) return false;
+        const centralEnd = Math.min(file.size, centralDirectoryOffset + centralDirectorySize);
+        const central = new Uint8Array(await file.slice(centralDirectoryOffset, centralEnd).arrayBuffer());
+        const view = new DataView(central.buffer, central.byteOffset, central.byteLength);
+        let offset = 0;
+        while (offset + 46 <= central.length) {
+          if (view.getUint32(offset, true) !== 0x02014b50) break;
+          const nameLength = view.getUint16(offset + 28, true);
+          const extraLength = view.getUint16(offset + 30, true);
+          const commentLength = view.getUint16(offset + 32, true);
+          const nameStart = offset + 46;
+          const nameEnd = nameStart + nameLength;
+          if (nameEnd > central.length) break;
+          const name = decoder.decode(central.slice(nameStart, nameEnd));
+          if (coursePackageEntryNeedsRaw(name)) return true;
+          offset = nameEnd + extraLength + commentLength;
+        }
+        return false;
+      }
+
+      async function shouldUseRawCoursePackageUpload(file) {
+        const route = fields.coursePackageRoute?.value || "auto";
+        if (route === "raw") return true;
+        if (route === "ecs") return false;
+        if (await coursePackageZipHasPlayableAssets(file)) return true;
+        const rawMinBytes = Number(mediaData?.config?.directUpload?.coursePackageRawMinBytes || 2 * 1024 * 1024 * 1024);
+        return Number(file?.size || 0) >= rawMinBytes;
+      }
+
+      function updateRawCoursePackageQueueStatus(items, setStatus) {
+        const list = Array.isArray(items) ? items : [];
+        const item = list.find((entry) => ["authorizing", "uploading", "verifying"].includes(entry.status))
+          || list.find((entry) => entry.status === "failed")
+          || list.find((entry) => entry.status === "queued" || entry.status === "ready")
+          || list.at(-1);
+        if (!item || typeof setStatus !== "function") return;
+        const percent = Number.isFinite(Number(item.percent)) ? Number(item.percent) : null;
+        const titleByStatus = {
+          authorizing: "正在准备 OSS raw 上传",
+          cancelled: "OSS raw 上传已取消",
+          done: "OSS raw 上传完成，等待服务器导入",
+          failed: "OSS raw 上传失败",
+          imported: "课程包已导入完成",
+          importing: "课程包已上传，服务器正在导入",
+          queued: "OSS raw 上传排队中",
+          skipped: "OSS raw 上传已跳过",
+          uploaded: "OSS raw 上传完成",
+          uploading: `正在上传 ${item.name || "课程 ZIP"}`,
+          verifying: "正在确认 OSS raw 上传",
+          warning: "OSS raw 上传完成但有提示",
+        };
+        const loadedText = Number.isFinite(Number(item.loaded)) && Number.isFinite(Number(item.total)) && Number(item.total) > 0
+          ? `已上传 ${window.AdminMediaView.formatBytes(Number(item.loaded))} / ${window.AdminMediaView.formatBytes(Number(item.total))}`
+          : "";
+        const metrics = [
+          item.detail || "",
+          loadedText,
+          item.speedText ? `速度 ${item.speedText}` : "",
+          item.ossConfirmedText || "",
+          item.etaText ? `剩余约 ${item.etaText}` : "",
+        ].filter(Boolean);
+        setStatus({
+          title: titleByStatus[item.status] || titleByStatus.uploading,
+          detail: metrics.join(" · "),
+          percent,
+          showProgress: percent !== null,
+          error: item.status === "failed",
+        });
+      }
+
+      function selectedCoursePackageFiles() {
+        return Array.from(fields.coursePackageFile?.files || []);
+      }
+
+      function coursePackageBatchPreview(files) {
+        const preview = window.AdminMediaUpload.createDirectUploadPreview({
+          kind: "course-package-raw",
+          files,
+          selectedCourse: fields.course.value,
+          courseCodes: knownAdminCourseCodes(),
+        });
+        applyCoursePackageBatchCancellations(preview);
+        return preview;
+      }
+
+      function applyCoursePackageBatchCancellations(preview) {
+        if (!preview?.items?.length || !cancelledCoursePackageBatchItemIds.size) return preview;
+        preview.items.forEach((item) => {
+          if (!cancelledCoursePackageBatchItemIds.has(item.id)) return;
+          item.detail = "已取消这个课包，本次不会上传。";
+          item.status = "cancelled";
+          item.uploadable = false;
+        });
+        preview.totalBytes = preview.items
+          .filter((item) => item.uploadable !== false)
+          .reduce((sum, item) => sum + Number(item.size || item.file?.size || 0), 0);
+        preview.courses = [...new Set(preview.items
+          .filter((item) => item.uploadable !== false)
+          .map((item) => item.course)
+          .filter(Boolean))];
+        return preview;
+      }
+
+      function renderCoursePackageBatchQueue(items = []) {
+        if (!coursePackageBatchQueue) return;
+        if (!items.length) {
+          coursePackageBatchItems = [];
+          coursePackageBatchQueue.hidden = true;
+          coursePackageBatchQueue.innerHTML = "";
+          return;
+        }
+        const mergedItems = items.map(mergeCoursePackageBatchItemWithServerRecord);
+        coursePackageBatchItems = mergedItems;
+        const uploadable = mergedItems.filter((item) => item.uploadable !== false);
+        const uploadFinishedStatuses = new Set(["done", "warning", "uploaded", "importing", "imported"]);
+        const done = mergedItems.filter((item) => ["done", "warning", "uploaded", "imported"].includes(item.status)).length;
+        const importing = mergedItems.filter((item) => item.status === "importing").length;
+        const skipped = mergedItems.filter((item) => item.status === "skipped").length;
+        const failed = mergedItems.filter((item) => item.status === "failed").length;
+        const cancelled = mergedItems.filter((item) => item.status === "cancelled").length;
+        const active = mergedItems.filter((item) => ["authorizing", "uploading", "verifying"].includes(item.status)).length;
+        const waiting = mergedItems.filter((item) => ["queued", "ready"].includes(item.status)).length;
+        const totalBytes = uploadable.reduce((sum, item) => sum + Number(item.size || item.file?.size || 0), 0);
+        const loadedBytes = uploadable.reduce((sum, item) => {
+          if (uploadFinishedStatuses.has(item.status)) return sum + Number(item.size || item.file?.size || 0);
+          return sum + Number(item.loaded || 0);
+        }, 0);
+        const overallPercent = totalBytes ? Math.max(0, Math.min(100, Math.round((loadedBytes / totalBytes) * 100))) : 0;
+        const rows = mergedItems.map((item) => {
+          const percent = Math.max(0, Math.min(100, Number(item.percent || 0)));
+          const statusText = {
+            authorizing: "授权中",
+            cancelled: "已取消",
+            done: "完成",
+            failed: "失败",
+            imported: "已导入",
+            importing: "导入中",
+            queued: "排队中",
+            ready: "待上传",
+            skipped: "已跳过",
+            uploaded: "已上传",
+            uploading: "上传中",
+            verifying: "校验中",
+            warning: "已完成",
+          }[item.status] || item.status || "待上传";
+          const itemTotal = Number(item.total || item.size || item.file?.size || 0);
+          const itemLoaded = uploadFinishedStatuses.has(item.status)
+            ? itemTotal
+            : Math.min(itemTotal || Number.MAX_SAFE_INTEGER, Number(item.loaded || 0));
+          const loadedText = itemTotal > 0
+            ? `${formatBytes(itemLoaded)} / ${formatBytes(itemTotal)}`
+            : "";
+          const metrics = [
+            loadedText,
+            item.speedText ? `速度 ${item.speedText}` : "",
+            item.ossConfirmedText || "",
+            item.etaText ? `剩余 ${item.etaText}` : "",
+          ].filter(Boolean).join(" · ");
+          const canCancel = ["queued", "ready", "authorizing", "uploading", "verifying"].includes(item.status);
+          const cancelButton = canCancel
+            ? `<button class="small" type="button" data-course-package-batch-action="cancel-item" data-course-package-batch-id="${escapeHtml(item.id || "")}">取消</button>`
+            : "";
+          return `
+            <div class="oss-direct-queue-item ${escapeHtml(item.status || "ready")}">
+              <div>
+                <div class="oss-direct-queue-heading">
+                  <span class="oss-direct-course">${escapeHtml(item.course || "-")}</span>
+                  <strong>${escapeHtml(item.name || "")}</strong>
+                </div>
+                <small class="oss-direct-queue-detail">${escapeHtml(item.detail || "")}</small>
+                ${metrics ? `<small class="oss-direct-queue-metrics">${escapeHtml(metrics)}</small>` : ""}
+                <div class="oss-direct-queue-progress"><div class="oss-direct-queue-progress-bar" style="width:${percent}%"></div></div>
+              </div>
+              <div class="oss-direct-queue-status">
+                <strong>${escapeHtml(statusText)}</strong>
+                <small>${Math.round(percent)}%</small>
+                ${cancelButton}
+              </div>
+            </div>
+          `;
+        }).join("");
+        coursePackageBatchQueue.innerHTML = `
+          <div class="oss-direct-queue-summary">
+            <span>队列 ${uploadable.length}/${items.length}</span>
+            <span>完成 ${done}</span>
+            <span>导入中 ${importing}</span>
+            <span>上传中 ${active}</span>
+            <span>待上传 ${waiting}</span>
+            <span>跳过 ${skipped}</span>
+            <span>取消 ${cancelled}</span>
+            <span>失败 ${failed}</span>
+            <span>总进度 ${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}</span>
+          </div>
+          <progress class="oss-direct-overall-progress" value="${overallPercent}" max="100"></progress>
+          ${rows}
+        `;
+        coursePackageBatchQueue.hidden = false;
+      }
+
+      function mergeCoursePackageBatchItemWithServerRecord(item) {
+        if (!item) return item;
+        const uploads = Array.isArray(mediaData?.uploads) ? mediaData.uploads : [];
+        const uploadId = String(item.uploadId || item.id || "");
+        const record = uploadId
+          ? uploads.find((upload) => upload.id === uploadId || upload.importId === item.importId)
+          : null;
+        if (!record) return item;
+        const next = { ...item };
+        next.completedAt = record.completedAt || next.completedAt || null;
+        next.importedAt = record.importedAt || next.importedAt || null;
+        next.importStatus = record.importStatus || next.importStatus || "";
+        next.objectKey = record.objectKey || next.objectKey || "";
+        next.uploadId = record.id || next.uploadId || "";
+        if (record.error) {
+          next.status = "failed";
+          next.detail = record.error;
+          return next;
+        }
+        if (record.importedAt || record.status === "imported" || record.importStatus === "committed") {
+          next.status = "imported";
+          next.percent = 100;
+          next.loaded = Number(next.total || next.size || next.file?.size || record.fileSize || 0);
+          next.detail = `服务器已导入：${record.importedAt || record.importStatus || "committed"}`;
+          return next;
+        }
+        if (record.status === "importing" || record.importStatus) {
+          next.status = "importing";
+          next.percent = 100;
+          next.loaded = Number(next.total || next.size || next.file?.size || record.fileSize || 0);
+          next.detail = `服务器导入中：${record.importStatus || record.status}`;
+          return next;
+        }
+        if (record.completedAt || record.status === "uploaded" || record.status === "queued") {
+          next.status = "uploaded";
+          next.percent = 100;
+          next.loaded = Number(next.total || next.size || next.file?.size || record.fileSize || 0);
+          next.detail = `OSS 已收到：${record.completedAt || record.status}`;
+          return next;
+        }
+        return next;
+      }
+
+      function updateCoursePackageFileSelection() {
+        const files = selectedCoursePackageFiles();
+        coursePackageUploadButton.textContent = files.length > 1 ? `批量上传 ${files.length} 个课包` : "上传并导入";
+        if (files.length <= 1) {
+          renderCoursePackageBatchQueue([]);
+          return;
+        }
+        const preview = coursePackageBatchPreview(files);
+        renderCoursePackageBatchQueue(preview.items);
+        const uploadable = preview.items.filter((item) => item.uploadable !== false).length;
+        const warnings = preview.warnings?.length ? ` ${preview.warnings.join(" ")}` : "";
+        setCoursePackageStatus({
+          title: preview.ok ? "批量课包已就绪" : "批量课包预检失败",
+          detail: preview.ok
+            ? `将排队上传 ${uploadable} 个课包；重复课程会自动只保留最新包。${warnings}`.trim()
+            : preview.errors.join("；"),
+          percent: null,
+          showProgress: false,
+          error: !preview.ok,
+        });
+      }
+
+      async function uploadCoursePackageRaw({ course, file, setStatus, write: writeOutput }) {
+        const rawController = window.AdminMediaUpload.createDirectUploadController({
+          api: mediaApi,
+          confirm: (message) => confirm(message),
+          formatProgress: window.AdminMediaView.uploadProgressFormatter,
+          getAutoPublish: () => true,
+          getCourseCodes: () => knownAdminCourseCodes(),
+          getFiles: () => [file],
+          getKind: () => "course-package-raw",
+          getSelectedCourse: () => course,
+          hasActiveWriteJob: () => null,
+          jobTypeLabel: window.AdminMediaView.jobTypeLabel,
+          onActiveUploadChange: () => {},
+          onQueueChange: (items) => {
+            updateRawCoursePackageQueueStatus(items, setStatus);
+          },
+          onRefresh: async () => {
+            await readMedia({ writeOutput: false, fromAutoRefresh: true });
+          },
+          onStartRefresh: () => {
+            startMediaAutoRefresh();
+          },
+          onStatus: (statusOrTitle, detail = "", percent = null, type = "info") => {
+            const status = typeof statusOrTitle === "object" && statusOrTitle
+              ? statusOrTitle
+              : { title: statusOrTitle, detail, percent, type };
+            setStatus({
+              title: status.title,
+              detail: status.detail,
+              percent: status.percent,
+              showProgress: status.percent !== null && status.percent !== undefined,
+              error: status.type === "error",
+            });
+          },
+          onWrite: (data) => {
+            if (typeof writeOutput === "function") writeOutput(data);
+          },
+        });
+        return rawController.uploadSelected();
+      }
+
+      async function uploadCoursePackageBatch(files) {
+        const preview = coursePackageBatchPreview(files);
+        const autoImport = Boolean(fields.coursePackageBatchAutoConfirm.checked);
+        renderCoursePackageBatchQueue(preview.items);
+        if (!preview.ok) {
+          throw new Error(`批量课包预检未通过：${preview.errors[0]}`);
+        }
+        const uploadable = preview.items.filter((item) => item.uploadable !== false);
+        if (!uploadable.length) throw new Error("本次选择没有可上传的完整课件包。请检查文件名和重复课程。");
+        const courses = uploadable.map((item) => item.course).filter(Boolean);
+        const warningText = preview.warnings?.length ? `\n\n提示：\n${preview.warnings.join("\n")}` : "";
+        const actionText = autoImport
+          ? "上传完成后会自动创建导入任务并替换对应课程内容。"
+          : "本次只排队上传 OSS raw package，不会自动替换课程内容。";
+        const ok = confirm(
+          `确认开始批量上传 ${uploadable.length} 个课程压缩包？\n\n` +
+          `将按文件名识别课程：${courses.join("、")}。\n` +
+          `${actionText}${warningText}`
+        );
+        if (!ok) return { canceled: true, message: "已取消批量课程压缩包上传。" };
+
+        currentCoursePackageImport = null;
+        updateCoursePackageCommitState(null);
+        coursePackageUi.hidePreview();
+        coursePackageUploadButton.disabled = true;
+        coursePackageCommitButton.hidden = true;
+        const rawController = window.AdminMediaUpload.createDirectUploadController({
+          api: mediaApi,
+          confirm: () => true,
+          formatProgress: window.AdminMediaView.uploadProgressFormatter,
+          getAutoPublish: () => autoImport,
+          getCourseCodes: () => knownAdminCourseCodes(),
+          getFiles: () => files,
+          getKind: () => "course-package-raw",
+          getSelectedCourse: () => fields.course.value,
+          hasActiveWriteJob: () => null,
+          initialCancelledIds: cancelledCoursePackageBatchItemIds,
+          jobTypeLabel: window.AdminMediaView.jobTypeLabel,
+          onActiveUploadChange: () => {},
+          onQueueChange: (items) => {
+            renderCoursePackageBatchQueue(items);
+            updateRawCoursePackageQueueStatus(items, setCoursePackageStatus);
+          },
+          onRefresh: async () => {
+            await readMedia({ writeOutput: false, fromAutoRefresh: true });
+          },
+          onStartRefresh: () => {
+            startMediaAutoRefresh();
+          },
+          onStatus: (statusOrTitle, detail = "", percent = null, type = "info") => {
+            const status = typeof statusOrTitle === "object" && statusOrTitle
+              ? statusOrTitle
+              : { title: statusOrTitle, detail, percent, type };
+            setCoursePackageStatus({
+              title: status.title,
+              detail: status.detail,
+              percent: status.percent,
+              showProgress: status.percent !== null && status.percent !== undefined,
+              error: status.type === "error",
+            });
+          },
+          onWrite: write,
+        });
+        activeCoursePackageBatchController = rawController;
+
+        try {
+          const data = await rawController.uploadSelected();
+          write(data);
+          await readStorage({ writeOutput: false });
+          await readMedia({ writeOutput: false });
+          if (autoImport) {
+            await readStatus({ writeOutput: false });
+            startMediaAutoRefresh();
+          }
+          return data;
+        } finally {
+          activeCoursePackageBatchController = null;
+          coursePackageUploadButton.disabled = false;
+          coursePackageUploadButton.textContent = files.length > 1 ? `批量上传 ${files.length} 个课包` : "上传并导入";
+        }
       }
 
       function reusableCoursePackageImportId(file) {
@@ -2918,7 +1947,7 @@ pm2 restart ossd-course-portal --update-env</pre>
         adminAuthenticated = Boolean(isAuthenticated);
         currentAdminSession = adminAuthenticated ? { ...(currentAdminSession || {}), ...(sessionData || {}) } : null;
         if (!adminAuthenticated && activeAdminPanel !== "output") activeAdminPanel = "login";
-        if (adminAuthenticated && activeAdminPanel === "login") activeAdminPanel = "course";
+        if (adminAuthenticated && activeAdminPanel === "login") activeAdminPanel = "dashboard";
         if (!adminAuthenticated) stopMediaAutoRefresh();
         document.querySelector("#logoutButton").hidden = !isAuthenticated;
         document.querySelector("#loginButton").hidden = isAuthenticated;
@@ -2931,12 +1960,11 @@ pm2 restart ossd-course-portal --update-env</pre>
         setAuthenticated(Boolean(data.authenticated), data);
         if (data.authenticated) {
           await readUsers({ writeOutput: false });
-          await readCourseLifecycle({ writeOutput: false });
+          await readDashboard({ writeOutput: false });
           await readCourseLifecycleJobs({ writeOutput: false });
-          await readStorage({ writeOutput: false });
           await readMedia({ writeOutput: false });
           await restoreCoursePackageTask({ writeOutput: false });
-          write(`已登录：${data.username}`);
+          write(`已登录：${data.displayName || data.username}`);
         }
         return data;
       }
@@ -2949,9 +1977,8 @@ pm2 restart ossd-course-portal --update-env</pre>
         setAuthenticated(Boolean(data.ok), data);
         if (data.ok) {
           await readUsers({ writeOutput: false });
-          await readCourseLifecycle({ writeOutput: false });
+          await readDashboard({ writeOutput: false });
           await readCourseLifecycleJobs({ writeOutput: false });
-          await readStorage({ writeOutput: false });
           await readMedia({ writeOutput: false });
           await restoreCoursePackageTask({ writeOutput: false });
         }
@@ -2977,9 +2004,52 @@ pm2 restart ossd-course-portal --update-env</pre>
         return data;
       }
 
-      async function readStorage({ writeOutput = true } = {}) {
-        const data = await adminApi.storage();
+      async function readStorage({ writeOutput = true, refresh = false } = {}) {
+        const data = await adminApi.storage(refresh ? { refresh: 1 } : {});
         if (data.ok) renderStorageOverview(data);
+        if (writeOutput) write(data);
+        return data;
+      }
+
+      async function readDashboard({ writeOutput = true } = {}) {
+        dashboardPanel.renderLoading();
+        const data = {
+          lifecycle: null,
+          readiness: null,
+          storage: null,
+        };
+        const tasks = [
+          adminApi.storage({ summary: 1 })
+            .then((storage) => {
+              data.storage = storage;
+              dashboardPanel.update({ storage });
+            })
+            .catch((error) => {
+              data.storage = { ok: false, error: errorMessage(error) };
+              dashboardPanel.update({ errors: { storage: errorMessage(error) } });
+            }),
+          adminApi.readiness()
+            .then((readiness) => {
+              data.readiness = readiness;
+              dashboardPanel.update({ readiness });
+            })
+            .catch((error) => {
+              data.readiness = { ok: false, error: errorMessage(error) };
+              dashboardPanel.update({ errors: { readiness: errorMessage(error) } });
+            }),
+          adminApi.courseLifecycle()
+            .then((lifecycle) => {
+              data.lifecycle = lifecycle;
+              if (lifecycle?.ok) courseLifecycleData = { ...lifecycle, courses: sortCoursesByCode(lifecycle.courses || []) };
+              dashboardPanel.update({ lifecycle });
+            })
+            .catch((error) => {
+              data.lifecycle = { ok: false, error: errorMessage(error) };
+              dashboardPanel.update({ errors: { lifecycle: errorMessage(error) } });
+            }),
+        ];
+        await Promise.all(tasks);
+        data.ok = Boolean(data.storage?.ok && data.readiness?.ok && data.lifecycle?.ok);
         if (writeOutput) write(data);
         return data;
       }
@@ -3105,10 +2175,8 @@ pm2 restart ossd-course-portal --update-env</pre>
 
       async function readMedia({ writeOutput = true, fromAutoRefresh = false } = {}) {
         const data = await mediaApi.read({ refreshOss: !fromAutoRefresh });
-        const directUploadActive = Boolean(fromAutoRefresh && ossDirectUploadController?.isUploading?.());
         if (data.coursesOk) {
-          if (directUploadActive) renderMediaQuiet(data);
-          else renderMedia(data);
+          renderMedia(data);
         }
         else renderMediaJobs({ jobs: data.jobs || [] });
         mediaLastUpdatedAt = new Date();
@@ -3204,6 +2272,8 @@ pm2 restart ossd-course-portal --update-env</pre>
       }
 
       async function uploadCoursePackage() {
+        const files = selectedCoursePackageFiles();
+        if (files.length > 1) return uploadCoursePackageBatch(files);
         return coursePackageAction.uploadCoursePackage();
       }
 
@@ -3215,7 +2285,10 @@ pm2 restart ossd-course-portal --update-env</pre>
         runButtonAction("#statusButton", "正在读取当前课程状态...", () => readStatus(), "课程状态已更新");
       });
       document.querySelector("#storageButton").addEventListener("click", () => {
-        runButtonAction("#storageButton", "正在刷新存储容量...", () => readStorage(), "存储容量已更新");
+        runButtonAction("#storageButton", "正在刷新存储容量...", () => readStorage({ refresh: true }), "存储容量已更新");
+      });
+      document.querySelector("#dashboardRefreshButton").addEventListener("click", () => {
+        runButtonAction("#dashboardRefreshButton", "正在刷新后台总览...", () => readDashboard(), "后台总览已更新");
       });
       document.querySelector("#fillLocalLogin").addEventListener("click", () => {
         fields.username.value = "admin";
@@ -3235,10 +2308,77 @@ pm2 restart ossd-course-portal --update-env</pre>
       coursePackageUploadButton.addEventListener("click", () => {
         uploadCoursePackage().catch((error) => write(`Error: ${error.message}`));
       });
+      fields.coursePackageFile.addEventListener("change", () => {
+        cancelledCoursePackageBatchItemIds.clear();
+        updateCoursePackageFileSelection();
+      });
+      coursePackageBatchQueue?.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-course-package-batch-action='cancel-item']");
+        if (!button) return;
+        const id = button.dataset.coursePackageBatchId || "";
+        const cancelled = activeCoursePackageBatchController?.cancelQueueItem(id);
+        let preCancelled = false;
+        if (!activeCoursePackageBatchController && id) {
+          cancelledCoursePackageBatchItemIds.add(id);
+          coursePackageBatchItems = coursePackageBatchItems.map((item) =>
+            item.id === id
+              ? { ...item, detail: "已取消这个课包，本次不会上传。", status: "cancelled", uploadable: false }
+              : item
+          );
+          renderCoursePackageBatchQueue(coursePackageBatchItems);
+          preCancelled = true;
+        }
+        if (cancelled || preCancelled) {
+          setCoursePackageStatus({
+            title: "已取消队列中的课包",
+            detail: "未开始的课包不会上传；如果取消的是当前上传项，浏览器会中止当前连接并继续后续可上传课包。",
+            percent: null,
+            showProgress: false,
+          });
+        }
+      });
       document.querySelector("#coursePackageCommitButton").addEventListener("click", () => {
-        runButtonAction("#coursePackageCommitButton", "正在导入整课 ZIP...", () => commitCoursePackage(), "整课导入完成").then(() => {
-          updateCoursePackageCommitState();
+        const button = document.querySelector("#coursePackageCommitButton");
+        setButtonBusy(button, true, "正在替换...");
+        setCoursePackageStatus({
+          title: "正在替换课程内容...",
+          detail: "服务器正在把确认预览写入正式课程目录，并刷新 manifest。",
+          percent: 100,
+          showProgress: true,
         });
+        commitCoursePackage()
+          .then((data) => {
+            if (data?.canceled) {
+              setCoursePackageStatus({
+                title: "小型课包已生成确认预览",
+                detail: data.message || "确认无误后点击“确认替换课程内容”。",
+                percent: 100,
+                showProgress: true,
+              });
+              return;
+            }
+            if (data?.ok === false) throw new Error(responseMessage(data, "服务器返回失败。"));
+            setCoursePackageStatus({
+              title: "整课导入完成",
+              detail: responseMessage(data, "正式课程目录已更新。"),
+              percent: 100,
+              showProgress: true,
+            });
+          })
+          .catch((error) => {
+            const message = errorMessage(error);
+            setCoursePackageStatus({
+              title: "整课导入失败",
+              detail: message,
+              showProgress: false,
+              error: true,
+            });
+            write(`Error: ${message}`);
+          })
+          .finally(() => {
+            setButtonBusy(button, false);
+            updateCoursePackageCommitState();
+          });
       });
       document.querySelector("#historyButton").addEventListener("click", () => {
         runButtonAction("#historyButton", "正在读取上传历史...", () => readHistory(), "上传历史已更新");
@@ -3322,22 +2462,6 @@ pm2 restart ossd-course-portal --update-env</pre>
       document.querySelector("#readinessMediaButton").addEventListener("click", () => {
         runButtonAction("#readinessMediaButton", "正在创建媒体配置检查任务...", () => mediaActions.checkReadiness(), "媒体配置检查任务已创建");
       });
-      if (ossDirectUploadButton) {
-        ossDirectUploadButton.addEventListener("click", () => {
-          runButtonAction(ossDirectUploadButton, "正在直传 OSS...", () => ossDirectPanel.uploadSelected(), "OSS 直传流程已完成");
-        });
-      }
-      if (ossDirectFile) {
-        ossDirectFile.addEventListener("change", () => ossDirectPanel.refreshPreview());
-      }
-      if (ossDirectKind) {
-        ossDirectKind.addEventListener("change", () => ossDirectPanel.refreshPreview());
-      }
-      if (ossDirectCancelButton) {
-        ossDirectCancelButton.addEventListener("click", () => {
-          ossDirectPanel.cancelActiveUpload();
-        });
-      }
       if (mediaCourseFilter) {
         mediaCourseFilter.addEventListener("change", () => renderMediaCourses(mediaData));
       }
@@ -3363,18 +2487,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         const button = event.target.closest("[data-media-job-action]");
         if (!button) return;
         handleMediaJobAction(button);
-      });
-      mediaUploadsTable.addEventListener("click", (event) => {
-        const uploadButton = event.target.closest("[data-media-upload-action]");
-        if (uploadButton) {
-          const action = uploadButton.dataset.mediaUploadAction;
-          if (action === "detail") {
-            runButtonAction(uploadButton, "正在打开 OSS 直传详情...", () => mediaActions.showUploadDetail(uploadButton.dataset.upload), "直传详情已打开");
-          }
-          return;
-        }
-        const jobButton = event.target.closest("[data-media-job-action]");
-        if (jobButton) handleMediaJobAction(jobButton);
       });
       if (mediaLocksPanel) {
         mediaLocksPanel.addEventListener("click", (event) => {
@@ -3425,7 +2537,6 @@ pm2 restart ossd-course-portal --update-env</pre>
         if (activeAdminPanel === "media") {
           renderMediaCourses(mediaData);
           updateMediaActionControls(mediaData);
-          ossDirectPanel.refreshPreview();
         }
         loadSelectedCourseManifest()
           .then(renderCurrentCourseUploadTasks)

@@ -74,15 +74,16 @@
       const courseMatches = Boolean(data) && (!previewCourse || previewCourse === selected);
       const canCommit = Boolean(data) && hasReady && courseMatches;
       if (elements.commitButton) {
+        elements.commitButton.hidden = !data;
         elements.commitButton.disabled = !canCommit;
-        elements.commitButton.textContent = selected ? `确认导入到 ${selected}` : "确认导入到当前课程";
+        elements.commitButton.textContent = selected ? `确认替换 ${selected} 课程内容` : "确认替换课程内容";
         elements.commitButton.title = !data
-          ? "请先上传整课 ZIP 并生成预览"
+          ? "小型 ECS 导入生成预览后才需要确认"
           : !hasReady
             ? "预览里没有可导入的资源"
             : !courseMatches
               ? `这次预览属于 ${previewCourse}，当前课程是 ${selected}`
-              : `确认导入到 ${selected}`;
+              : `确认替换 ${selected} 课程内容`;
       }
       return { selected, previewCourse, hasReady, courseMatches, canCommit };
     }
@@ -99,6 +100,7 @@
 
     function hidePreview() {
       if (elements.panel) elements.panel.hidden = true;
+      if (elements.commitButton) elements.commitButton.hidden = true;
     }
 
     function renderPreview(data) {
@@ -185,8 +187,8 @@
       }
       if (task.status === "complete") {
         setStatus({
-          title: "最近一次上传已生成预览",
-          detail: `已扫描 ${task.summary?.total || task.review?.operations?.length || 0} 个导入项。确认无误后点击“确认导入到当前课程”。`,
+          title: "小型课包已生成确认预览",
+          detail: `已扫描 ${task.summary?.total || task.review?.operations?.length || 0} 个导入项。确认无误后点击“确认替换课程内容”。`,
           percent: 100,
           showProgress: true,
         });
@@ -205,9 +207,29 @@
         }
         return;
       }
+      if (task.status === "committed") {
+        setStatus({
+          title: "课程压缩包已导入完成",
+          detail: task.result?.manifest || "导入完成。普通资料保存在 ECS，高并发资源已发布到 OSS/CDN。",
+          percent: 100,
+          showProgress: true,
+        });
+        currentImport = null;
+        commitState(null);
+        hidePreview();
+        return;
+      }
+      if (task.status === "blocked") {
+        setStatus({
+          title: "ECS 空间不足",
+          detail: task.error || "当前 ECS 空间不足，需要走 OSS raw package。",
+          error: true,
+        });
+        return;
+      }
       if (task.status === "failed") {
         setStatus({
-          title: "最近一次上传未完成",
+          title: "最近一次导入未完成",
           detail: task.error || "上传连接已中断或服务器处理失败，请重新选择文件上传。",
           error: true,
         });

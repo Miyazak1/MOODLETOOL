@@ -1,0 +1,517 @@
+{
+  "generatedAt": "2026-08-22T10:37:17.859Z",
+  "status": "ready",
+  "apply": false,
+  "listPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-publish-list.json",
+  "deltaRoot": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822",
+  "courseActiveRoot": "D:\\工作文件\\SUNNYBROOK\\courseware",
+  "registryPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\asset-registry.json",
+  "bucket": "",
+  "cdnBaseUrl": "https://cdn.moodletool.work/courseware-active",
+  "ossutilPath": "ossutil",
+  "summary": {
+    "videos": 24,
+    "ecsFiles": 2,
+    "uploaded": 0,
+    "copied": 0,
+    "blockers": 0,
+    "cdnChecked": 0,
+    "cdnOk": 0
+  },
+  "blockers": [],
+  "videoResults": [
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-1.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-1.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-1.mp4",
+      "bytes": 6133519,
+      "sha256": "4f8f402798b8a577dc2db85471d56603927b697eb39004e1684a574478d6d002",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L02-6870-6870-a2d83b9142\\files\\U1L1-Supply-Demand-video-1.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 6133519,
+        "sha256": "4f8f402798b8a577dc2db85471d56603927b697eb39004e1684a574478d6d002",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-2.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-2.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-2.mp4",
+      "bytes": 16354743,
+      "sha256": "4e2f8e8f48045ed048f512225408fbc94d6975d20f9eaa13b6c580a2ab21447d",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L02-6870-6870-a2d83b9142\\files\\U1L1-Supply-Demand-video-2.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 16354743,
+        "sha256": "4e2f8e8f48045ed048f512225408fbc94d6975d20f9eaa13b6c580a2ab21447d",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-3.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-3.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L02-6870-6870-a2d83b9142/files/U1L1-Supply-Demand-video-3.mp4",
+      "bytes": 9461259,
+      "sha256": "3106730a2293a4cdf1ddcd78dbbb21185665a0820302e8bfd50ac8614d2f08ff",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L02-6870-6870-a2d83b9142\\files\\U1L1-Supply-Demand-video-3.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 9461259,
+        "sha256": "3106730a2293a4cdf1ddcd78dbbb21185665a0820302e8bfd50ac8614d2f08ff",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L03-6871-6871-baf1efe447/files/U1L2-Needs-Wants-video-1.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L03-6871-6871-baf1efe447/files/U1L2-Needs-Wants-video-1.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L03-6871-6871-baf1efe447/files/U1L2-Needs-Wants-video-1.mp4",
+      "bytes": 30454140,
+      "sha256": "b4ecdfca68e04f8289252f608f452752e409f9c118479b4cad2bab02f12b3fff",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L03-6871-6871-baf1efe447\\files\\U1L2-Needs-Wants-video-1.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 30454140,
+        "sha256": "b4ecdfca68e04f8289252f608f452752e409f9c118479b4cad2bab02f12b3fff",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L03-6871-6871-baf1efe447/files/U1L2-Needs-Wants-video-2.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L03-6871-6871-baf1efe447/files/U1L2-Needs-Wants-video-2.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L03-6871-6871-baf1efe447/files/U1L2-Needs-Wants-video-2.mp4",
+      "bytes": 22263037,
+      "sha256": "4b02f37bf3dca5f88e2b81f4f6e12b3e4cf086d3189d6f7f2c718e0475734dbe",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L03-6871-6871-baf1efe447\\files\\U1L2-Needs-Wants-video-2.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 22263037,
+        "sha256": "4b02f37bf3dca5f88e2b81f4f6e12b3e4cf086d3189d6f7f2c718e0475734dbe",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-1.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-1.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-1.mp4",
+      "bytes": 34364970,
+      "sha256": "09b80fe1b26954dd2010f42f942efea7dc23a5115127ba71b6936308b9cbd402",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L08-6876-6876-1b076903b2\\files\\U1L5-Ethics-Social-Responsibility-video-1.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 34364970,
+        "sha256": "09b80fe1b26954dd2010f42f942efea7dc23a5115127ba71b6936308b9cbd402",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-2.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-2.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-2.mp4",
+      "bytes": 21771009,
+      "sha256": "06a3feb55bc31889469cad119aaf35fc0d01219594809b462558f24c5417a6b8",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L08-6876-6876-1b076903b2\\files\\U1L5-Ethics-Social-Responsibility-video-2.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 21771009,
+        "sha256": "06a3feb55bc31889469cad119aaf35fc0d01219594809b462558f24c5417a6b8",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-3.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-3.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L08-6876-6876-1b076903b2/files/U1L5-Ethics-Social-Responsibility-video-3.mp4",
+      "bytes": 5136816,
+      "sha256": "ffad6681a242f04d05d1991ea5d7146cf468341cd671d289f5834ddc875a9090",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L08-6876-6876-1b076903b2\\files\\U1L5-Ethics-Social-Responsibility-video-3.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 5136816,
+        "sha256": "ffad6681a242f04d05d1991ea5d7146cf468341cd671d289f5834ddc875a9090",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L09-6877-6877-414d9a4ff2/files/U1L6-Ethical-Dilemma-video-1.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L09-6877-6877-414d9a4ff2/files/U1L6-Ethical-Dilemma-video-1.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L09-6877-6877-414d9a4ff2/files/U1L6-Ethical-Dilemma-video-1.mp4",
+      "bytes": 20363329,
+      "sha256": "3a60cf82af820fe59242ef5bef1fd85a16934f69e25697e27c7368e5ab69b136",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L09-6877-6877-414d9a4ff2\\files\\U1L6-Ethical-Dilemma-video-1.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 20363329,
+        "sha256": "3a60cf82af820fe59242ef5bef1fd85a16934f69e25697e27c7368e5ab69b136",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L09-6877-6877-414d9a4ff2/files/U1L6-Ethical-Dilemma-video-2-Fair-Trade-Story.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L09-6877-6877-414d9a4ff2/files/U1L6-Ethical-Dilemma-video-2-Fair-Trade-Story.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L09-6877-6877-414d9a4ff2/files/U1L6-Ethical-Dilemma-video-2-Fair-Trade-Story.mp4",
+      "bytes": 53891373,
+      "sha256": "a516407ff0379534947a48f7015c8e509684fb60b9005f0f182cc1a774fed3c8",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L09-6877-6877-414d9a4ff2\\files\\U1L6-Ethical-Dilemma-video-2-Fair-Trade-Story.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 53891373,
+        "sha256": "a516407ff0379534947a48f7015c8e509684fb60b9005f0f182cc1a774fed3c8",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L12-6880-6880-ceacc9a1fe/files/U1L8-Canada-Import-Export-Partners-video-1.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L12-6880-6880-ceacc9a1fe/files/U1L8-Canada-Import-Export-Partners-video-1.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L12-6880-6880-ceacc9a1fe/files/U1L8-Canada-Import-Export-Partners-video-1.mp4",
+      "bytes": 18908246,
+      "sha256": "bff8b83d053d2d9f14bd941ea695469209f7e97021f3da2742bc860896753928",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L12-6880-6880-ceacc9a1fe\\files\\U1L8-Canada-Import-Export-Partners-video-1.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 18908246,
+        "sha256": "bff8b83d053d2d9f14bd941ea695469209f7e97021f3da2742bc860896753928",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L12-6880-6880-ceacc9a1fe/files/U1L8-Canada-Import-Export-Partners-video-2.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L12-6880-6880-ceacc9a1fe/files/U1L8-Canada-Import-Export-Partners-video-2.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L12-6880-6880-ceacc9a1fe/files/U1L8-Canada-Import-Export-Partners-video-2.mp4",
+      "bytes": 66804062,
+      "sha256": "1440911fcc413e18814d143306b695638b700726ecb6a7427668a48869a14dac",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L12-6880-6880-ceacc9a1fe\\files\\U1L8-Canada-Import-Export-Partners-video-2.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 66804062,
+        "sha256": "1440911fcc413e18814d143306b695638b700726ecb6a7427668a48869a14dac",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-1.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-1.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-1.mp4",
+      "bytes": 16873724,
+      "sha256": "8a2c997a9f48ce3755da8e1d2d7605f70063da9b58c8f7060cd5a2db6ae65425",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L14-6882-6882-2300e10879\\files\\U1L9-Business-Etiquettes-Culture-video-1.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 16873724,
+        "sha256": "8a2c997a9f48ce3755da8e1d2d7605f70063da9b58c8f7060cd5a2db6ae65425",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-2.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-2.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-2.mp4",
+      "bytes": 31986097,
+      "sha256": "b65942b3fa40e89a45ed714a85f9d95baf1055ef58e9ff7436db6120513915dd",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L14-6882-6882-2300e10879\\files\\U1L9-Business-Etiquettes-Culture-video-2.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 31986097,
+        "sha256": "b65942b3fa40e89a45ed714a85f9d95baf1055ef58e9ff7436db6120513915dd",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-3.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-3.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U01L14-6882-6882-2300e10879/files/U1L9-Business-Etiquettes-Culture-video-3.mp4",
+      "bytes": 8868688,
+      "sha256": "a44ed50ed3a66156b90952962d967a350350970babc68a833316ab723a8c4455",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U01L14-6882-6882-2300e10879\\files\\U1L9-Business-Etiquettes-Culture-video-3.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 8868688,
+        "sha256": "a44ed50ed3a66156b90952962d967a350350970babc68a833316ab723a8c4455",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U02L03-6888-6888-18b884ae99/files/U2L1-Production-video-1.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U02L03-6888-6888-18b884ae99/files/U2L1-Production-video-1.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U02L03-6888-6888-18b884ae99/files/U2L1-Production-video-1.mp4",
+      "bytes": 9857873,
+      "sha256": "8ac4689ef9696d3305ae9c7bd498d7dd7e8e09674004b37e89552583c1e9f708",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U02L03-6888-6888-18b884ae99\\files\\U2L1-Production-video-1.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 9857873,
+        "sha256": "8ac4689ef9696d3305ae9c7bd498d7dd7e8e09674004b37e89552583c1e9f708",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/assign/U02L06-6891-6891-b9169728cc/files/U2-Class-Activity-1-Four-Factors-of-Production.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/assign/U02L06-6891-6891-b9169728cc/files/U2-Class-Activity-1-Four-Factors-of-Production.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/assign/U02L06-6891-6891-b9169728cc/files/U2-Class-Activity-1-Four-Factors-of-Production.mp4",
+      "bytes": 9857873,
+      "sha256": "8ac4689ef9696d3305ae9c7bd498d7dd7e8e09674004b37e89552583c1e9f708",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\assign\\U02L06-6891-6891-b9169728cc\\files\\U2-Class-Activity-1-Four-Factors-of-Production.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 9857873,
+        "sha256": "8ac4689ef9696d3305ae9c7bd498d7dd7e8e09674004b37e89552583c1e9f708",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/files/U2L4-Management-Styles-Class-Activity-video-1.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/files/U2L4-Management-Styles-Class-Activity-video-1.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/files/U2L4-Management-Styles-Class-Activity-video-1.mp4",
+      "bytes": 40271584,
+      "sha256": "cabe90198243401394b25cabdabe5471cab03641e46263dd39b1ce47602fc449",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U02L07-6892-6892-8b583664d8\\files\\U2L4-Management-Styles-Class-Activity-video-1.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 40271584,
+        "sha256": "cabe90198243401394b25cabdabe5471cab03641e46263dd39b1ce47602fc449",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/files/U2L4-Management-Styles-Class-Activity-video-2.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/files/U2L4-Management-Styles-Class-Activity-video-2.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/files/U2L4-Management-Styles-Class-Activity-video-2.mp4",
+      "bytes": 19429329,
+      "sha256": "f33a3fdf4d80820151ecbe492dd4bb9e2325ff5be4b5b90178b3b54dee1f1c7d",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U02L07-6892-6892-8b583664d8\\files\\U2L4-Management-Styles-Class-Activity-video-2.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 19429329,
+        "sha256": "f33a3fdf4d80820151ecbe492dd4bb9e2325ff5be4b5b90178b3b54dee1f1c7d",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U02L11-6896-6896-eba26a3b2c/files/U2L7-Technology-in-Business-video-1-Amazon-Go.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U02L11-6896-6896-eba26a3b2c/files/U2L7-Technology-in-Business-video-1-Amazon-Go.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U02L11-6896-6896-eba26a3b2c/files/U2L7-Technology-in-Business-video-1-Amazon-Go.mp4",
+      "bytes": 45498652,
+      "sha256": "4f3f0961e17bc3d8aa280352cef0522a5d959b7a929aec0e83036aaf2ca0d24e",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U02L11-6896-6896-eba26a3b2c\\files\\U2L7-Technology-in-Business-video-1-Amazon-Go.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 45498652,
+        "sha256": "4f3f0961e17bc3d8aa280352cef0522a5d959b7a929aec0e83036aaf2ca0d24e",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U02L11-6896-6896-eba26a3b2c/files/U2L7-Technology-in-Business-video-2-Business-Intelligence.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U02L11-6896-6896-eba26a3b2c/files/U2L7-Technology-in-Business-video-2-Business-Intelligence.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U02L11-6896-6896-eba26a3b2c/files/U2L7-Technology-in-Business-video-2-Business-Intelligence.mp4",
+      "bytes": 6041666,
+      "sha256": "bdfb6ad1a46c69c265f41eb18990f110be0827863193314b715feb3983021a6d",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U02L11-6896-6896-eba26a3b2c\\files\\U2L7-Technology-in-Business-video-2-Business-Intelligence.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 6041666,
+        "sha256": "bdfb6ad1a46c69c265f41eb18990f110be0827863193314b715feb3983021a6d",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U03L03-6903-6903-d81007b6a4/files/U3L1-Types-of-Personal-Income-video-1-CPI-Explained.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U03L03-6903-6903-d81007b6a4/files/U3L1-Types-of-Personal-Income-video-1-CPI-Explained.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U03L03-6903-6903-d81007b6a4/files/U3L1-Types-of-Personal-Income-video-1-CPI-Explained.mp4",
+      "bytes": 53739701,
+      "sha256": "bc7dfc8fd6c51e914c90cbdf52437a3400324f63e09912786f96a622fbd60008",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U03L03-6903-6903-d81007b6a4\\files\\U3L1-Types-of-Personal-Income-video-1-CPI-Explained.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 53739701,
+        "sha256": "bc7dfc8fd6c51e914c90cbdf52437a3400324f63e09912786f96a622fbd60008",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U03L03-6903-6903-d81007b6a4/files/U3L1-Types-of-Personal-Income-video-2.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U03L03-6903-6903-d81007b6a4/files/U3L1-Types-of-Personal-Income-video-2.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U03L03-6903-6903-d81007b6a4/files/U3L1-Types-of-Personal-Income-video-2.mp4",
+      "bytes": 7828545,
+      "sha256": "d4995ac3b8f6aafbcc023d6040f57db776b5506e8cbd28b11ccc917218b73492",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U03L03-6903-6903-d81007b6a4\\files\\U3L1-Types-of-Personal-Income-video-2.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 7828545,
+        "sha256": "d4995ac3b8f6aafbcc023d6040f57db776b5506e8cbd28b11ccc917218b73492",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U04L03-6916-6916-1869b48c5f/files/U4L1-Entrepreneurs-Exploring-Your-Own-video-1.mp4",
+      "objectKey": "courseware-active/BBI2O/localized-moodle-activities/folder/U04L03-6916-6916-1869b48c5f/files/U4L1-Entrepreneurs-Exploring-Your-Own-video-1.mp4",
+      "cdnUrl": "https://cdn.moodletool.work/courseware-active/BBI2O/localized-moodle-activities/folder/U04L03-6916-6916-1869b48c5f/files/U4L1-Entrepreneurs-Exploring-Your-Own-video-1.mp4",
+      "bytes": 21503433,
+      "sha256": "4bcea24a9748f1869c914a3d279523cbec3943bf6179ff263b5b1a132d89b490",
+      "contentType": "video/mp4",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U04L03-6916-6916-1869b48c5f\\files\\U4L1-Entrepreneurs-Exploring-Your-Own-video-1.mp4",
+      "validation": {
+        "ok": true,
+        "bytes": 21503433,
+        "sha256": "4bcea24a9748f1869c914a3d279523cbec3943bf6179ff263b5b1a132d89b490",
+        "error": ""
+      },
+      "upload": {
+        "action": "would-upload",
+        "ossUri": ""
+      }
+    }
+  ],
+  "ecsResults": [
+    {
+      "relativePath": "course-manifest.json",
+      "target": "ECS courseware-active/BBI2O/course-manifest.json",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\course-manifest.json",
+      "validation": {
+        "ok": true,
+        "bytes": 131025,
+        "sha256": "bae495abf2a26d1d9c374e4e2c79bc5c81482057cf120aa60341806e9a70c227",
+        "error": ""
+      },
+      "copy": {
+        "action": "would-copy",
+        "targetPath": "D:\\工作文件\\SUNNYBROOK\\courseware\\BBI2O\\course-manifest.json"
+      }
+    },
+    {
+      "relativePath": "localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/index.html",
+      "target": "ECS courseware-active/BBI2O/localized-moodle-activities/folder/U02L07-6892-6892-8b583664d8/index.html",
+      "sourcePath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\bbi2o-video-remux-delta-20260822\\BBI2O\\localized-moodle-activities\\folder\\U02L07-6892-6892-8b583664d8\\index.html",
+      "validation": {
+        "ok": true,
+        "bytes": 3302,
+        "sha256": "421d6c3a474e79c86ba8b744c1e83922d35ff2525a99068f58d30ccc54d622ce",
+        "error": ""
+      },
+      "copy": {
+        "action": "would-copy",
+        "targetPath": "D:\\工作文件\\SUNNYBROOK\\courseware\\BBI2O\\localized-moodle-activities\\folder\\U02L07-6892-6892-8b583664d8\\index.html"
+      }
+    }
+  ],
+  "registry": {
+    "action": "would-update",
+    "registryPath": "D:\\工作文件\\SUNNYBROOK\\ossd-course-portal\\deployment\\asset-registry.json"
+  },
+  "cdnChecks": []
+}

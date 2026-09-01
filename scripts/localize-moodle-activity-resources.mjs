@@ -93,14 +93,28 @@ function collectManifestItems(manifest) {
   for (const item of manifest.courseDownloads || []) {
     items.push({ scope: "courseDownloads", item });
   }
+  for (const item of manifest.teacherResources || []) {
+    items.push({ scope: "teacherResources", item });
+  }
   for (const unit of manifest.units || []) {
+    for (const resource of Object.values(unit.unitResources || {})) {
+      if (Array.isArray(resource)) {
+        for (const item of resource) items.push({ scope: "unitResources", unit, item });
+      } else if (resource) {
+        items.push({ scope: "unitResources", unit, item: resource });
+      }
+    }
     for (const lesson of unit.lessons || []) {
       for (const item of lesson.downloads || []) {
         items.push({ scope: "lesson", unit, lesson, item });
       }
     }
   }
-  return items.filter(({ item }) => item?.url && !item.path && parseMoodleSource(item.url));
+  return items.filter(({ item }) => {
+    if (!item) return false;
+    if (!item.url && force && parseMoodleSource(item.source)) item.url = item.source;
+    return item.url && (force || !item.path) && parseMoodleSource(item.url);
+  });
 }
 
 function extensionFor(filename, contentType) {
@@ -134,7 +148,8 @@ function validateSignature(type, buffer, contentType) {
   const startsWithPk = buffer[0] === 0x50 && buffer[1] === 0x4b;
   const startsWithPdf = buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46;
   const startsWithOle = buffer[0] === 0xd0 && buffer[1] === 0xcf && buffer[2] === 0x11 && buffer[3] === 0xe0;
-  if (["docx", "xlsx", "pptx"].includes(type) && !startsWithPk) throw new Error(`downloaded ${type} is not an OOXML package`);
+  if (type === "docx" && !startsWithPk && !startsWithOle) throw new Error("downloaded docx is not an OOXML or legacy Word package");
+  if (["xlsx", "pptx"].includes(type) && !startsWithPk) throw new Error(`downloaded ${type} is not an OOXML package`);
   if (type === "pdf" && !startsWithPdf) throw new Error("downloaded file is not a PDF");
   if (type === "doc" && !startsWithOle) throw new Error("downloaded file is not a legacy DOC");
   if (type === "html" && !/html/i.test(contentType)) throw new Error("downloaded file is not HTML");
@@ -191,8 +206,8 @@ function parseHiddenToken(html) {
   return /name=["']logintoken["'][^>]*value=["']([^"']+)["']/i.exec(html)?.[1] || "";
 }
 
-async function loginIfNeeded() {
-  if (cookieHeader) return { loggedIn: false, reason: "cookie-provided" };
+async function loginIfNeeded({ force = false } = {}) {
+  if (cookieHeader && !force) return { loggedIn: false, reason: "cookie-provided" };
   const username = process.env.MOODLE_USERNAME;
   const password = process.env.MOODLE_PASSWORD;
   if (!username || !password) throw new Error("Set MOODLE_COOKIE or MOODLE_USERNAME/MOODLE_PASSWORD.");
@@ -223,7 +238,16 @@ async function fetchBuffer(url) {
   const buffer = Buffer.from(await response.arrayBuffer());
   const contentType = response.headers.get("content-type") || "";
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  if (isLoginHtml(buffer, contentType, response.url || url)) throw new Error("download returned Moodle login page");
+  if (isLoginHtml(buffer, contentType, response.url || url)) {
+    if (cookieHeader && !process.env.MOODLE_USERNAME) throw new Error("download returned Moodle login page");
+    await loginIfNeeded({ force: true });
+    const retry = await request(url);
+    const retryBuffer = Buffer.from(await retry.arrayBuffer());
+    const retryContentType = retry.headers.get("content-type") || "";
+    if (!retry.ok) throw new Error(`HTTP ${retry.status}`);
+    if (isLoginHtml(retryBuffer, retryContentType, retry.url || url)) throw new Error("download returned Moodle login page after re-login");
+    return { response: retry, buffer: retryBuffer, contentType: retryContentType };
+  }
   return { response, buffer, contentType };
 }
 
@@ -242,7 +266,9 @@ function pluginfileUrls(html, baseUrl) {
 }
 
 function extractBody(htmlText) {
-  const region = /<section\b[^>]*\brole=["']main["'][^>]*>([\s\S]*?)<\/section>/i.exec(htmlText)?.[1]
+  const region = /<div\b[^>]*\brole=["']main["'][^>]*>([\s\S]*?)<div\b[^>]*\bclass=["'][^"']*\bactivity-navigation\b/i.exec(htmlText)?.[1]
+    || /<section\b[^>]*\bid=["']region-main["'][^>]*>([\s\S]*?)<\/section>/i.exec(htmlText)?.[1]
+    || /<section\b[^>]*\brole=["']main["'][^>]*>([\s\S]*?)<\/section>/i.exec(htmlText)?.[1]
     || /<div\b[^>]*\bclass=["'][^"']*\bactivity-description\b[^"']*["'][^>]*>([\s\S]*?)<\/div>/i.exec(htmlText)?.[1]
     || /<body\b[^>]*>([\s\S]*?)<\/body>/i.exec(htmlText)?.[1]
     || htmlText;
@@ -304,7 +330,18 @@ function embedYoutubeLinks(html) {
 function isMoodleActivityUrl(url) {
   try {
     const parsed = new URL(url);
-    return parsed.hostname === "www.esunnybrook.com" && /^\/(?:mod|theme|lib|pluginfile|webservice)\//i.test(parsed.pathname);
+    return parsed.hostname === "www.esunnybrook.com";
+  } catch {
+    return false;
+  }
+}
+
+function isUsableExternalCandidate(url) {
+  try {
+    const parsed = new URL(url);
+    return /^https?:$/i.test(parsed.protocol)
+      && parsed.hostname !== "www.esunnybrook.com"
+      && !/(^|\.)moodle\.org$/i.test(parsed.hostname);
   } catch {
     return false;
   }
@@ -321,7 +358,7 @@ function extractExternalUrlFromMoodleUrlHtml(htmlText, baseUrl) {
   for (const pattern of patterns) {
     for (const match of htmlText.matchAll(pattern)) {
       const raw = String(match[1] || "").replaceAll("&amp;", "&").trim();
-      if (!raw) continue;
+      if (!raw || raw.startsWith("#") || /^javascript:/i.test(raw)) continue;
       try {
         candidates.push(new URL(raw, baseUrl).toString());
       } catch {
@@ -329,7 +366,7 @@ function extractExternalUrlFromMoodleUrlHtml(htmlText, baseUrl) {
       }
     }
   }
-  return candidates.find((url) => !isMoodleActivityUrl(url) && !/\/login\/index\.php/i.test(url)) || "";
+  return candidates.find((url) => isUsableExternalCandidate(url) && !/\/login\/index\.php/i.test(url)) || "";
 }
 
 function standaloneHtml(title, body, attachments = [], externalUrl = "") {
@@ -430,7 +467,7 @@ async function processActivity(owner) {
   if (activity.mod === "url") {
     const finalUrl = first.response.url || "";
     const htmlText = htmlLike ? first.buffer.toString("utf8") : "";
-    const externalUrl = finalUrl && !isMoodleActivityUrl(finalUrl)
+    const externalUrl = finalUrl && isUsableExternalCandidate(finalUrl)
       ? finalUrl
       : extractExternalUrlFromMoodleUrlHtml(htmlText, item.url);
     const rel = toPosix(join(baseRel, "index.html"));
@@ -473,7 +510,10 @@ async function processActivity(owner) {
     }
   }
 
-  const body = extractBody(htmlText);
+  let body = extractBody(htmlText);
+  if (attachments.some((file) => file.path)) {
+    body = body.replace(/<div\b[^>]*class=["'][^"']*\bfileuploadsubmission\b[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, "");
+  }
   const rel = toPosix(join(baseRel, "index.html"));
   const abs = join(courseRoot, rel);
   if (!dryRun) {

@@ -47,6 +47,47 @@
     });
   }
 
+  function formatDurationSeconds(value) {
+    const seconds = Math.max(0, Math.round(Number(value || 0)));
+    if (!seconds || !Number.isFinite(seconds)) return "计算中";
+    if (seconds < 60) return `${seconds} 秒`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} 分${seconds % 60 ? `${seconds % 60} 秒` : ""}`;
+    const hours = Math.floor(minutes / 60);
+    const restMinutes = minutes % 60;
+    return `${hours} 小时${restMinutes ? `${restMinutes} 分` : ""}`;
+  }
+
+  function createUploadSpeedTracker({ totalBytes, formatBytes, initialLoaded = 0 }) {
+    const startedAt = Date.now();
+    let lastAt = startedAt;
+    let lastLoaded = Math.max(0, Number(initialLoaded || 0));
+    let smoothedBytesPerSecond = 0;
+    return (loadedBytes) => {
+      const loaded = Math.max(0, Number(loadedBytes || 0));
+      const total = Math.max(0, Number(totalBytes || 0));
+      const now = Date.now();
+      const elapsedMs = Math.max(1, now - lastAt);
+      const deltaBytes = Math.max(0, loaded - lastLoaded);
+      const instantBytesPerSecond = (deltaBytes / elapsedMs) * 1000;
+      if (instantBytesPerSecond > 0) {
+        smoothedBytesPerSecond = smoothedBytesPerSecond
+          ? smoothedBytesPerSecond * 0.7 + instantBytesPerSecond * 0.3
+          : instantBytesPerSecond;
+      }
+      lastAt = now;
+      lastLoaded = loaded;
+      const averageBytesPerSecond = loaded > 0 ? loaded / Math.max(1, (now - startedAt) / 1000) : 0;
+      const bytesPerSecond = smoothedBytesPerSecond || averageBytesPerSecond;
+      const remainingBytes = Math.max(0, total - loaded);
+      const etaSeconds = bytesPerSecond > 0 ? remainingBytes / bytesPerSecond : 0;
+      return {
+        etaText: formatDurationSeconds(etaSeconds),
+        speedText: bytesPerSecond > 0 ? `${formatBytes(bytesPerSecond)}/s` : "计算中",
+      };
+    };
+  }
+
   function createAction({
     fields,
     chunkBytes,
@@ -70,6 +111,8 @@
     confirmCommit,
     clearPackageFile,
     afterCommitSuccess,
+    uploadRawPackage,
+    shouldUseRawUpload,
   } = {}) {
     if (!fields) throw new Error("AdminCoursePackageAction requires fields.");
     const bytesLabel = requireFunction(formatBytes, "formatBytes");
@@ -81,6 +124,59 @@
     const importIdFor = requireFunction(reusableImportId, "reusableImportId");
     const showPreview = requireFunction(renderPreview, "renderPreview");
     const currentImport = typeof getCurrentImport === "function" ? getCurrentImport : () => null;
+    const rawUpload = typeof uploadRawPackage === "function" ? uploadRawPackage : null;
+    const shouldUseRaw = typeof shouldUseRawUpload === "function" ? shouldUseRawUpload : () => false;
+
+    function rawUploadRequired(error) {
+      const message = error instanceof Error ? error.message : String(error || "");
+      return Boolean(error?.data?.task?.rawUploadRequired || /ECS 剩余空间不足|OSS raw package|raw package/i.test(message));
+    }
+
+    function rawUploadImportId(data, fallback) {
+      return data?.coursePackageTask?.importId
+        || data?.upload?.importId
+        || data?.uploads?.[0]?.coursePackageTask?.importId
+        || data?.uploads?.[0]?.upload?.importId
+        || fallback;
+    }
+
+    async function runRawPackageUpload({ course, file, importId, writeRawReason }) {
+      if (!rawUpload) throw new Error("OSS raw package 上传入口未初始化。");
+      if (writeRawReason && typeof write === "function") write(writeRawReason);
+      const rawData = await rawUpload({
+        course,
+        file,
+        importId,
+        write,
+        setStatus: showStatus,
+      });
+      const rawImportId = rawUploadImportId(rawData, importId);
+      const finalData = await waitForServerReview(rawImportId);
+      rememberUpload({
+        rememberTask: rememberSavedTask,
+        course,
+        importId: rawImportId,
+        file,
+        chunkTotal: 0,
+        chunksReceived: 0,
+        status: finalData?.imported ? "committed" : "complete",
+      });
+      if (finalData?.imported) {
+        showStatus({
+          title: "OSS raw 导入完成",
+          detail: "普通资料已保存到 ECS，高并发资源已发布到 OSS/CDN。",
+          percent: 100,
+          showProgress: true,
+        });
+        if (typeof write === "function") write(finalData);
+        if (typeof clearPackageFile === "function") clearPackageFile();
+        if (typeof afterSuccess === "function") await afterSuccess(finalData, file);
+        return finalData;
+      }
+      showPreview(finalData);
+      if (typeof afterSuccess === "function") await afterSuccess(finalData, file);
+      return finalData;
+    }
 
     async function uploadCoursePackage() {
       const file = selectedPackageFile(fields);
@@ -102,6 +198,50 @@
 
       const importId = importIdFor(file);
       const chunkTotal = chunkCount(file.size, chunkBytes);
+      if (rawUpload && await shouldUseRaw(file)) {
+        showStatus({
+          title: "正在准备 OSS raw 上传",
+          detail: "这个课包将先 multipart 直传 OSS raw package，再由 ECS worker 通过内网流式读取并导入。",
+          percent: 0,
+          showProgress: true,
+        });
+        rememberUpload({
+          rememberTask: rememberSavedTask,
+          course,
+          importId,
+          file,
+          chunkTotal: 0,
+          chunksReceived: 0,
+          status: "uploading",
+        });
+        try {
+          return await runRawPackageUpload({
+            course,
+            file,
+            importId,
+            writeRawReason: "正在走 OSS raw package 导入：浏览器 multipart 直传原始 ZIP，ECS worker 内网流式处理。",
+          });
+        } catch (error) {
+          rememberUpload({
+            rememberTask: rememberSavedTask,
+            course,
+            importId,
+            file,
+            chunkTotal: 0,
+            chunksReceived: 0,
+            status: "failed",
+          });
+          showStatus({
+            title: "OSS raw 上传或导入失败",
+            detail: error instanceof Error ? error.message : String(error),
+            error: true,
+          });
+          if (typeof write === "function") write(`Error: ${error instanceof Error ? error.message : String(error)}`);
+          return undefined;
+        } finally {
+          if (typeof setUploadDisabled === "function") setUploadDisabled(false);
+        }
+      }
       const restoredTask = await restoreSavedTask({ writeOutput: false });
       const startChunk = resumableStartChunk({
         restoredTask,
@@ -109,6 +249,11 @@
         filename: file.name,
         totalBytes: file.size,
         chunkTotal,
+      });
+      const speedTracker = createUploadSpeedTracker({
+        totalBytes: file.size,
+        formatBytes: bytesLabel,
+        initialLoaded: Math.min(file.size, startChunk * chunkBytes),
       });
 
       rememberUpload({
@@ -149,9 +294,10 @@
             onProgress: (loaded) => {
               const totalLoaded = Math.min(file.size, start + loaded);
               const percent = Math.round((totalLoaded / file.size) * 100);
+              const progressMeta = speedTracker(totalLoaded);
               showStatus({
                 title: `正在上传 ${file.name}`,
-                detail: `分片 ${index + 1}/${chunkTotal}，已上传 ${bytesLabel(totalLoaded)} / ${bytesLabel(file.size)} (${percent}%)。断线会自动重试。`,
+                detail: `分片 ${index + 1}/${chunkTotal}，已上传 ${bytesLabel(totalLoaded)} / ${bytesLabel(file.size)} (${percent}%)。速度 ${progressMeta.speedText} · 剩余约 ${progressMeta.etaText}。断线会自动重试。`,
                 percent,
                 showProgress: true,
               });
@@ -202,8 +348,8 @@
         if (!finalData?.ok) throw new Error("所有分片已上传，但服务器没有返回导入预览。请刷新任务状态。");
 
         showStatus({
-          title: "上传完成，服务器已生成预览",
-          detail: `已扫描 ${finalData.operations?.length || 0} 个导入项。确认无误后点击“确认导入到当前课程”。`,
+          title: "小型课包已生成确认预览",
+          detail: `已扫描 ${finalData.operations?.length || 0} 个导入项。确认无误后点击“确认替换课程内容”。`,
           percent: 100,
           showProgress: true,
         });
@@ -221,6 +367,21 @@
         if (typeof afterSuccess === "function") await afterSuccess(finalData, file);
         return finalData;
       } catch (error) {
+        if (rawUpload && rawUploadRequired(error)) {
+          showStatus({
+            title: "ECS 空间不足，切换 OSS raw",
+            detail: "课程 ZIP 会先直传到 OSS raw package，再由 ECS worker 通过内网流式读取并自动分流。",
+            percent: 0,
+            showProgress: true,
+          });
+          const finalData = await runRawPackageUpload({
+            course,
+            file,
+            importId,
+            writeRawReason: "ECS 空间不足，正在切换到 OSS raw package 导入。",
+          });
+          return finalData;
+        }
         const latest = await restoreSavedTask({ writeOutput: false }).catch(() => null);
         rememberUpload({
           rememberTask: rememberSavedTask,
@@ -233,7 +394,7 @@
         });
         showStatus({
           title: "上传失败",
-          detail: `${error instanceof Error ? error.message : String(error)}。重新点“上传并生成预览”会从服务器已有分片继续。`,
+          detail: `${error instanceof Error ? error.message : String(error)}。重新点“上传并导入”会从服务器已有分片继续。`,
           percent: null,
           showProgress: false,
           error: true,
@@ -248,8 +409,8 @@
     async function commitCoursePackage() {
       const importData = currentImport();
       if (!importData?.importId) {
-        if (typeof write === "function") write("请先上传整课 ZIP 并生成预览。");
-        return { canceled: true, message: "请先上传整课 ZIP 并生成预览。" };
+        if (typeof write === "function") write("请先上传整课 ZIP；只有小型 ECS 导入生成预览后才需要确认。");
+        return { canceled: true, message: "请先上传整课 ZIP；只有小型 ECS 导入生成预览后才需要确认。" };
       }
       const commitState = typeof updateCommitState === "function"
         ? updateCommitState(importData)

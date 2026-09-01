@@ -1,14 +1,16 @@
 import { createServer } from "node:http";
-import { appendFile, cp, mkdir, readdir, readFile, rename, rm, stat, statfs } from "node:fs/promises";
+import { appendFile, cp, mkdir, readdir, readFile, rename, rm, stat, statfs, writeFile } from "node:fs/promises";
 import { createReadStream, createWriteStream, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, normalize, relative, resolve } from "node:path";
 import { spawn, spawnSync } from "node:child_process";
 import { finished, pipeline } from "node:stream/promises";
-import { Transform } from "node:stream";
+import { Readable, Transform } from "node:stream";
 import { createHash, createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import {
   directUploadKindCanAutoPublish,
+  isCoursePackageUploadKind,
   isPlayableCoursewareAsset,
+  isRawCoursePackageUploadKind,
   playableCoursewareVideoExts,
 } from "./scripts/lib/media-delivery-assets.mjs";
 import {
@@ -29,9 +31,14 @@ import {
   createDirectUploadPolicy as buildDirectUploadPolicy,
   directUploadConfigFromEnv,
   directUploadPublicConfig as buildDirectUploadPublicConfig,
+  listDirectMultipartUploadedParts,
   resolveDirectUploadCourse,
   resumeDirectMultipartUpload,
 } from "./scripts/lib/oss-direct-upload.mjs";
+import {
+  coursePackageEntryKind,
+  isLightweightCourseContentAsset,
+} from "./scripts/lib/oss-course-package-extractor-core.mjs";
 import { createOssUploadRecordStore } from "./scripts/lib/oss-upload-records.mjs";
 import { listCourseLocks, removeCourseLock } from "./scripts/lib/course-operation-locks.mjs";
 
@@ -44,7 +51,10 @@ const portEndArgIndex = process.argv.indexOf("--port-end");
 const portEnd = portEndArgIndex >= 0 ? Number(process.argv[portEndArgIndex + 1]) : port;
 const shouldOpen = process.argv.includes("--open");
 const rootArgIndex = process.argv.indexOf("--root");
-const webRoot = rootArgIndex >= 0 ? resolve(projectRoot, process.argv[rootArgIndex + 1]) : projectRoot;
+const webRoot = rootArgIndex >= 0 ? resolve(projectRoot, process.argv[rootArgIndex + 1]) : join(projectRoot, "public");
+const distRoot = join(projectRoot, "dist");
+const distIndexPath = join(distRoot, "index.html");
+const shouldServeDistApp = rootArgIndex < 0 && existsSync(distIndexPath);
 const adminUploadsEnabled = process.env.ADMIN_UPLOADS_ENABLED === "1";
 const adminToken = process.env.ADMIN_TOKEN || "";
 const adminUsername = process.env.ADMIN_USERNAME || "";
@@ -67,6 +77,8 @@ const portalUsersPath = resolve(process.env.PORTAL_USERS_FILE || join(portalData
 const courseStatusPath = resolve(process.env.COURSE_STATUS_FILE || join(portalDataRoot, "course-status.json"));
 const courseActiveRoot = resolve(process.env.COURSE_ACTIVE_ROOT || join(workspaceRoot, "courseware"));
 const courseArchiveRoot = resolve(process.env.COURSE_ARCHIVE_ROOT || join(workspaceRoot, "courseware-archive"));
+const storageOverviewCacheVersion = 1;
+const storageOverviewCachePath = resolve(process.env.STORAGE_OVERVIEW_CACHE_FILE || join(portalDataRoot, "storage-overview-cache.json"));
 const xAccelCoursewarePrefix = process.env.X_ACCEL_COURSEWARE_PREFIX || "";
 const coursewareAssetBaseUrl = String(process.env.COURSEWARE_ASSET_BASE_URL || "").replace(/\/+$/, "");
 const coursewareAssetMode = ["local", "hybrid", "cdn"].includes(String(process.env.COURSEWARE_ASSET_MODE || "").toLowerCase())
@@ -83,13 +95,16 @@ const ossExtractCallbackSecret = process.env.OSS_EXTRACT_CALLBACK_SECRET || "";
 const embedTokenSecret = process.env.EMBED_TOKEN_SECRET || adminSessionSecret || portalSessionSecret || "";
 const embedTokenMaxAgeSeconds = Number(process.env.EMBED_TOKEN_MAX_AGE_SECONDS || 3650 * 24 * 60 * 60);
 const embedPublicOrigin = process.env.EMBED_PUBLIC_ORIGIN || "";
+const ispringEmbedLazyCoverEnabled = ["1", "true", "yes", "on"].includes(String(process.env.ISPRING_EMBED_LAZY_COVER || "").toLowerCase());
 const shareTokenMaxAgeSeconds = Number(process.env.SHARE_TOKEN_MAX_AGE_SECONDS || 30 * 24 * 60 * 60);
 const loginRateLimitMaxFailures = Number(process.env.LOGIN_RATE_LIMIT_MAX_FAILURES || 8);
 const loginRateLimitWindowMs = Number(process.env.LOGIN_RATE_LIMIT_WINDOW_SECONDS || 15 * 60) * 1000;
 const loginRateLimitLockMs = Number(process.env.LOGIN_RATE_LIMIT_LOCK_SECONDS || 15 * 60) * 1000;
 const maxDocumentUploadBytes = Number(process.env.ADMIN_MAX_DOCUMENT_MB || 50) * 1024 * 1024;
 const maxIspringUploadBytes = Number(process.env.ADMIN_MAX_ISPRING_MB || 2048) * 1024 * 1024;
-const maxCoursePackageUploadBytes = Number(process.env.ADMIN_MAX_COURSE_PACKAGE_MB || 4096) * 1024 * 1024;
+const maxCoursePackageUploadBytes = Number(process.env.ADMIN_MAX_COURSE_PACKAGE_MB || 32768) * 1024 * 1024;
+const coursePackageEcsSpaceFactor = Math.max(1, Number(process.env.COURSE_PACKAGE_ECS_SPACE_FACTOR || 3));
+const coursePackageDiskReserveBytes = Math.max(0, Number(process.env.COURSE_PACKAGE_DISK_RESERVE_MB || 4096)) * 1024 * 1024;
 const generatePreviewsAfterUploads = process.env.GENERATE_PREVIEWS_AFTER_UPLOADS === "1";
 const mediaJobsEnabled = process.env.MEDIA_JOBS_ENABLED === "1";
 const mediaJobsDataRoot = resolve(process.env.MEDIA_JOBS_DATA_ROOT || join(portalDataRoot, "media-jobs"));
@@ -100,9 +115,20 @@ const mediaJobsLogTailBytes = Math.max(16 * 1024, Number(process.env.MEDIA_JOBS_
 const mediaJobsAutoPublishAfterUpload = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_UPLOAD === "1";
 const mediaJobsAutoPublishAfterPackage = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_PACKAGE === "1";
 const mediaJobsAutoPublishAfterActivate = process.env.MEDIA_JOBS_AUTO_PUBLISH_AFTER_ACTIVATE === "1";
-const coursePackageImportMode = ["oss-only", "legacy-local"].includes(String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase())
-  ? String(process.env.COURSE_PACKAGE_IMPORT_MODE || "").toLowerCase()
-  : "oss-only";
+const configuredCoursePackageImportMode = String(process.env.COURSE_PACKAGE_IMPORT_MODE || "ecs-first")
+  .trim()
+  .toLowerCase();
+const supportedCoursePackageImportModes = new Set(["ecs-first", "hybrid-worker"]);
+const coursePackageImportMode = supportedCoursePackageImportModes.has(configuredCoursePackageImportMode)
+  ? configuredCoursePackageImportMode
+  : "ecs-first";
+if (configuredCoursePackageImportMode && !supportedCoursePackageImportModes.has(configuredCoursePackageImportMode)) {
+  console.warn(`COURSE_PACKAGE_IMPORT_MODE=${configuredCoursePackageImportMode} is no longer supported; using ecs-first.`);
+}
+const rawCoursePackageImportRetries = Math.max(1, Number(process.env.COURSE_RAW_IMPORT_RETRIES || 3));
+const courseLocalContentEnabled = process.env.COURSE_LOCAL_CONTENT_ENABLED !== "0";
+const courseLocalMaxFileBytes = Math.max(1, Number(process.env.COURSE_LOCAL_MAX_FILE_MB || 50)) * 1024 * 1024;
+const courseLocalMaxCourseBytes = Math.max(1, Number(process.env.COURSE_LOCAL_MAX_COURSE_MB || 1024)) * 1024 * 1024;
 const courseOperationLockRoot = resolve(process.env.COURSE_OPERATION_LOCK_DIR || join(projectRoot, "deployment", "locks"));
 const ossBucketUri = process.env.OSS_BUCKET_URI || "";
 const ossDirectUploadConfig = directUploadConfigFromEnv(process.env, { ossBucketUri });
@@ -180,14 +206,17 @@ function decodePath(urlPath) {
 
 function resolveRequestPath(urlPath) {
   const decoded = decodePath(urlPath.split("?")[0]);
+  if (decoded === "/favicon.ico") {
+    return join(webRoot, "favicon.svg");
+  }
   if (decoded === "/login") {
     return join(webRoot, "login.html");
   }
-  if (decoded === "/teacher-admin") {
+  if (decoded === "/teacher-admin" || decoded === "/teacher-admin/") {
     return join(webRoot, "teacher-admin.html");
   }
   if (decoded === "/" || decoded === "") {
-    return join(webRoot, "index.html");
+    return shouldServeDistApp ? distIndexPath : join(webRoot, "index.html");
   }
 
   if (decoded.startsWith("/courseware/") && decoded.split("/").includes("_admin_uploads")) {
@@ -195,8 +224,9 @@ function resolveRequestPath(urlPath) {
   }
 
   const isCoursewareRequest = decoded.startsWith("/courseware/");
+  const isDistAssetRequest = shouldServeDistApp && decoded.startsWith("/assets/");
   const relativePath = isCoursewareRequest ? decoded.replace(/^\/courseware\/?/i, "") : decoded;
-  const root = isCoursewareRequest ? courseActiveRoot : webRoot;
+  const root = isCoursewareRequest ? courseActiveRoot : isDistAssetRequest ? distRoot : webRoot;
   const candidate = normalize(join(root, relativePath));
   const allowedRoot = root;
 
@@ -207,11 +237,19 @@ function resolveRequestPath(urlPath) {
 }
 
 function sendJson(res, statusCode, data) {
+  if (res.headersSent || res.writableEnded) {
+    console.warn(`Skipped JSON response ${statusCode}; headers already sent.${data?.error ? ` ${data.error}` : ""}`);
+    return;
+  }
   res.writeHead(statusCode, { "Content-Type": "application/json; charset=utf-8" });
   res.end(`${JSON.stringify(data, null, 2)}\n`);
 }
 
 function sendNoStoreJson(res, statusCode, data) {
+  if (res.headersSent || res.writableEnded) {
+    console.warn(`Skipped no-store JSON response ${statusCode}; headers already sent.${data?.error ? ` ${data.error}` : ""}`);
+    return;
+  }
   res.writeHead(statusCode, {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store, max-age=0",
@@ -265,6 +303,15 @@ function htmlEscape(value) {
     .replaceAll("'", "&#39;");
 }
 
+function jsStringLiteral(value) {
+  return JSON.stringify(String(value ?? ""))
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
 function directoryHrefForRequest(req) {
   const requestUrl = new URL(req.url || "/", "http://127.0.0.1");
   const pathname = requestUrl.pathname || "/";
@@ -275,9 +322,33 @@ function directoryHrefForRequest(req) {
 
 function injectIspringEmbedCompatibility(html, baseHref) {
   const compatibilityScript = `<script>
+    (function disableIspringWebglTransitions() {
+      if (!window.HTMLCanvasElement || !HTMLCanvasElement.prototype) return;
+      var originalGetContext = HTMLCanvasElement.prototype.getContext;
+      if (!originalGetContext || originalGetContext.__ispringNoWebgl) return;
+
+      function patchedGetContext(type) {
+        var name = String(type || "").toLowerCase();
+        if (name === "webgl" || name === "experimental-webgl" || name === "webgl2") {
+          return null;
+        }
+        return originalGetContext.apply(this, arguments);
+      }
+
+      patchedGetContext.__ispringNoWebgl = true;
+      HTMLCanvasElement.prototype.getContext = patchedGetContext;
+    })();
+
     window.ispringPresentationConnector = window.ispringPresentationConnector || {
       getState: function() { return undefined; },
-      register: function() {}
+      getStateText: function() { return null; },
+      getStateValue: null,
+      setState: function() {},
+      setStateText: function() {},
+      setStateValue: function() {},
+      register: function(player) {
+        window.__ispringPlayer = player;
+      }
     };
   </script>`;
   const baseTag = baseHref && !/<base\s/i.test(html) ? `<base href="${htmlEscape(baseHref)}">` : "";
@@ -287,6 +358,199 @@ function injectIspringEmbedCompatibility(html, baseHref) {
     return html.replace(/<head(\s[^>]*)?>/i, (match) => `${match}\n    ${injection}`);
   }
   return `${injection}\n${html}`;
+}
+
+function isRollPreviewIspringHtml(html) {
+  const value = String(html || "");
+  return /Preview\.createPlayer/.test(value)
+    || /__PACK_NAME__/.test(value)
+    || /roll-preview/i.test(value);
+}
+
+function renderIspringSameOriginEmbedWrapper({ title, src }) {
+  return `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${htmlEscape(title || "iSpring Courseware")}</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: #f4f7fb;
+        overflow: hidden;
+      }
+
+      iframe {
+        display: block;
+        width: 100%;
+        height: 100vh;
+        border: 0;
+        background: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <iframe
+      src="${htmlEscape(src)}"
+      allow="autoplay; fullscreen; clipboard-write; encrypted-media; picture-in-picture"
+      allowfullscreen="allowfullscreen"></iframe>
+  </body>
+</html>`;
+}
+
+function renderIspringLazyCoverWrapper({ title, src }) {
+  const safeTitle = title || "iSpring Courseware";
+  const targetLiteral = jsStringLiteral(src);
+  const titleLiteral = jsStringLiteral(safeTitle);
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${htmlEscape(safeTitle)}</title>
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: #f4f7fb;
+        color: #001f3f;
+        font-family: Inter, "Segoe UI", Arial, sans-serif;
+        overflow: hidden;
+      }
+      .cover,
+      .player {
+        width: 100%;
+        height: 100vh;
+      }
+      .cover {
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          linear-gradient(135deg, rgba(0, 61, 110, .88), rgba(0, 93, 76, .82)),
+          linear-gradient(180deg, #f8fbff, #dfeaf6);
+      }
+      .launch {
+        display: grid;
+        gap: 14px;
+        justify-items: center;
+        width: min(560px, 100%);
+        padding: 32px 26px;
+        border: 1px solid rgba(255, 255, 255, .48);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, .94);
+        box-shadow: 0 22px 50px rgba(0, 31, 63, .22);
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+        color: #001f3f;
+        font-size: clamp(22px, 4vw, 34px);
+        line-height: 1.18;
+        letter-spacing: 0;
+      }
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0 22px;
+        border: 1px solid #003d6e;
+        border-radius: 7px;
+        background: #003d6e;
+        color: #fff;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 3px solid rgba(30, 132, 242, .45);
+        outline-offset: 3px;
+      }
+      .open-link {
+        color: #003d6e;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .player {
+        display: none;
+        border: 0;
+        background: transparent;
+      }
+      body.is-playing .cover {
+        display: none;
+      }
+      body.is-playing .player {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="cover">
+      <section class="launch" aria-label="${htmlEscape(safeTitle)}">
+        <h1>${htmlEscape(safeTitle)}</h1>
+        <button type="button" id="playButton">Play</button>
+        <a class="open-link" href="${htmlEscape(src)}" target="_blank" rel="noopener">Open in new window</a>
+      </section>
+    </main>
+    <script>
+      (function() {
+        var target = ${targetLiteral};
+        var button = document.getElementById("playButton");
+        function loadPlayer() {
+          if (document.querySelector(".player")) return;
+          document.body.className = "is-playing";
+          var iframe = document.createElement("iframe");
+          iframe.className = "player";
+          iframe.title = ${titleLiteral};
+          iframe.allow = "autoplay; fullscreen; clipboard-write; encrypted-media; picture-in-picture";
+          iframe.allowFullscreen = true;
+          iframe.src = target;
+          document.body.appendChild(iframe);
+        }
+        button && button.addEventListener("click", loadPlayer);
+      })();
+    </script>
+  </body>
+</html>`;
+}
+
+function directoryHrefForUrl(value) {
+  try {
+    const url = new URL(value);
+    url.pathname = url.pathname.slice(0, url.pathname.lastIndexOf("/") + 1);
+    url.search = "";
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return "";
+  }
+}
+
+function isTrustedCoursewareAssetUrl(value) {
+  if (!coursewareAssetBaseUrl) return false;
+  try {
+    const url = new URL(value);
+    const base = new URL(`${coursewareAssetBaseUrl}/`);
+    return url.protocol === "https:" && url.origin === base.origin && url.pathname.startsWith(base.pathname);
+  } catch {
+    return false;
+  }
+}
+
+async function fetchTrustedCoursewareHtml(value) {
+  if (!isTrustedCoursewareAssetUrl(value)) throw new Error("Remote iSpring URL is outside COURSEWARE_ASSET_BASE_URL.");
+  const response = await fetch(value, { signal: AbortSignal.timeout(15000) });
+  if (!response.ok) throw new Error(`Remote HTML returned HTTP ${response.status}`);
+  return response.text();
 }
 
 function toPosixPath(value) {
@@ -309,9 +573,33 @@ function coursewareObjectKey(course, requestedPath) {
   return [coursewareAssetPrefix, coursePart, resourcePath].filter(Boolean).join("/");
 }
 
+function coursewareObjectKeyVariants(course, requestedPath) {
+  const coursePart = safeSegment(course).toUpperCase();
+  const rawPath = toPosixPath(requestedPath);
+  const encodedPath = encodePathSegments(requestedPath);
+  return Array.from(new Set([
+    [coursewareAssetPrefix, coursePart, rawPath].filter(Boolean).join("/"),
+    [coursewareAssetPrefix, coursePart, encodedPath].filter(Boolean).join("/"),
+  ]));
+}
+
 function generatedCoursewareAssetUrl(course, requestedPath) {
   if (!coursewareAssetBaseUrl) return "";
   return `${coursewareAssetBaseUrl}/${encodeURIComponent(safeSegment(course).toUpperCase())}/${encodePathSegments(requestedPath)}`;
+}
+
+function appendAssetVersionQuery(url, version) {
+  const value = String(url || "");
+  const token = String(version || "").replace(/[^a-f0-9]/gi, "").slice(0, 12);
+  if (!value || !token) return value;
+  const hashIndex = value.indexOf("#");
+  const beforeHash = hashIndex >= 0 ? value.slice(0, hashIndex) : value;
+  const hash = hashIndex >= 0 ? value.slice(hashIndex) : "";
+  return `${beforeHash}${beforeHash.includes("?") ? "&" : "?"}v=${token}${hash}`;
+}
+
+function coursewareRegistryAssetUrl(asset, fallbackUrl) {
+  return appendAssetVersionQuery(asset?.cdnUrl || fallbackUrl, asset?.sha256);
 }
 
 function readCoursewareAssetRegistry() {
@@ -327,9 +615,17 @@ function readCoursewareAssetRegistry() {
     }
     const data = JSON.parse(readFileSync(coursewareAssetRegistryPath, "utf8").replace(/^\uFEFF/, ""));
     const byKey = new Map();
+    for (const asset of data.assetRecords || []) {
+      if (asset?.objectKey) byKey.set(toPosixPath(asset.objectKey), asset);
+    }
     for (const asset of data.assets || []) {
-      if (typeof asset === "string") byKey.set(toPosixPath(asset), {});
-      else if (asset?.objectKey) byKey.set(toPosixPath(asset.objectKey), asset);
+      if (typeof asset === "string") {
+        const key = toPosixPath(asset);
+        if (!byKey.has(key)) byKey.set(key, {});
+      } else if (asset?.objectKey) {
+        const key = toPosixPath(asset.objectKey);
+        byKey.set(key, { ...(byKey.get(key) || {}), ...asset });
+      }
     }
     coursewareAssetRegistryCache = { byKey, missing: false, mtimeMs };
   } catch (error) {
@@ -345,9 +641,11 @@ function coursewareAssetUrl(course, requestedPath) {
   if (!path) return "";
   if (coursewareAssetMode === "hybrid") {
     const registry = readCoursewareAssetRegistry();
-    const asset = registry.byKey.get(coursewareObjectKey(course, path));
+    const asset = coursewareObjectKeyVariants(course, path)
+      .map((key) => registry.byKey.get(key))
+      .find(Boolean);
     if (!asset) return "";
-    return asset.cdnUrl || generatedCoursewareAssetUrl(course, path);
+    return coursewareRegistryAssetUrl(asset, generatedCoursewareAssetUrl(course, path));
   }
   return generatedCoursewareAssetUrl(course, path);
 }
@@ -359,6 +657,66 @@ function coursewareAssetDirectoryHref(course, requestedPath) {
   return slash >= 0 ? `${assetUrl.slice(0, slash + 1)}` : "";
 }
 
+function isCoursewareCdnFallbackPath(requestedPath) {
+  const normalized = `/${toPosixPath(requestedPath).toLowerCase()}`;
+  return normalized.includes("/html5-package/")
+    || normalized.includes("/html5-package-admin/")
+    || normalized.includes("/ispring-localized/");
+}
+
+function coursewareCdnFallbackUrl(course, requestedPath) {
+  if (!coursewareAssetBaseUrl || coursewareAssetMode === "local") return "";
+  const assetUrl = coursewareAssetUrl(course, requestedPath);
+  if (assetUrl) return assetUrl;
+  if (!isCoursewareCdnFallbackPath(requestedPath)) return "";
+  return generatedCoursewareAssetUrl(course, requestedPath);
+}
+
+function shouldProxyCoursewareCdnFallback(requestedPath) {
+  return new Set([
+    ".css",
+    ".js",
+    ".json",
+    ".map",
+    ".wasm",
+    ".xml",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".otf",
+    ".eot",
+  ]).has(extname(requestedPath).toLowerCase());
+}
+
+async function sendCoursewareCdnFallback(req, res, course, requestedPath) {
+  const assetUrl = coursewareCdnFallbackUrl(course, requestedPath);
+  if (!assetUrl) return false;
+  if (!shouldProxyCoursewareCdnFallback(requestedPath)) {
+    res.writeHead(302, {
+      Location: assetUrl,
+      "Cache-Control": "public, max-age=300",
+    });
+    res.end();
+    return true;
+  }
+
+  const response = await fetch(assetUrl, { signal: AbortSignal.timeout(15000) });
+  if (!response.ok || !response.body) return false;
+  const ext = extname(requestedPath).toLowerCase();
+  const headers = {
+    "Content-Type": response.headers.get("content-type") || mimeTypes[ext] || "application/octet-stream",
+    "Cache-Control": "no-store, max-age=0",
+    "X-Content-Type-Options": "nosniff",
+  };
+  res.writeHead(200, headers);
+  if (req.method === "HEAD") {
+    res.end();
+    return true;
+  }
+  await pipeline(Readable.fromWeb(response.body), res);
+  return true;
+}
+
 function sendRateLimitJson(res, retryAfterSeconds) {
   res.writeHead(429, {
     "Content-Type": "application/json; charset=utf-8",
@@ -368,15 +726,19 @@ function sendRateLimitJson(res, retryAfterSeconds) {
 }
 
 function hasLocalResource(item) {
-  return Boolean(item?.path || item?.previewPath || item?.downloadPath);
+  const source = String(item?.source || "").toLowerCase();
+  const trustedRemote = ["cdn", "oss"].includes(source);
+  return Boolean(item?.path || item?.previewPath || item?.downloadPath || (trustedRemote && (item?.url || item?.previewUrl || item?.downloadUrl)));
 }
 
 function sanitizePublicResource(item) {
   if (!item || typeof item !== "object") return null;
   const sanitized = { ...item };
-  if (!sanitized.path) delete sanitized.url;
-  if (!sanitized.previewPath) delete sanitized.previewUrl;
-  if (!sanitized.downloadPath) delete sanitized.downloadUrl;
+  const source = String(sanitized.source || "").toLowerCase();
+  const trustedRemote = ["cdn", "oss"].includes(source);
+  if (!sanitized.path && !trustedRemote) delete sanitized.url;
+  if (!sanitized.previewPath && !trustedRemote) delete sanitized.previewUrl;
+  if (!sanitized.downloadPath && !trustedRemote) delete sanitized.downloadUrl;
   if (String(sanitized.source || "").toLowerCase().includes("moodle")) delete sanitized.source;
   return hasLocalResource(sanitized) ? sanitized : null;
 }
@@ -564,8 +926,10 @@ function loadPortalUsers() {
 }
 
 function normalizePortalUser(user) {
+  const displayName = String(user.displayName || user.nickname || user.name || user.fullName || "").trim();
   return {
     username: String(user.username || "").trim(),
+    displayName,
     password: user.password ? String(user.password) : undefined,
     passwordHash: user.passwordHash ? String(user.passwordHash) : undefined,
     role: String(user.role || "teacher").trim() || "teacher",
@@ -579,6 +943,7 @@ function normalizePortalUser(user) {
 function publicPortalUser(user) {
   return {
     username: user.username,
+    displayName: user.displayName || "",
     role: user.role,
     courses: user.courses,
     status: user.status || "active",
@@ -786,10 +1151,13 @@ function directUploadPublicConfig() {
 }
 
 async function createDirectUploadPolicy({ course, fileName, fileSize, contentType, kind, actor }) {
+  if (!isRawCoursePackageUploadKind(kind)) {
+    throw new Error("OSS browser upload is reserved for raw course ZIP packages handled by the ECS worker. Use the course package upload entry; media/iSpring/H5P publishing is automatic.");
+  }
   const catalog = await readCourseCatalog();
   const courseCodes = (catalog.courses || []).map((entry) => entry.code);
   const size = Number(fileSize || 0);
-  if (size > ossDirectUploadConfig.simpleMaxBytes) {
+  if (isRawCoursePackageUploadKind(kind) || size > ossDirectUploadConfig.simpleMaxBytes) {
     const resolved = resolveDirectUploadCourse({ course, fileName, kind, courseCodes });
     const reusable = findReusableMultipartUpload({
       course: resolved.course,
@@ -1237,14 +1605,17 @@ function syncOssUploadFromMediaJob(job) {
     Object.assign(patch, {
       status: "imported",
       importStatus: job.status === "warning" ? "indexed-with-warnings" : "indexed",
+      mediaStatus: job.status === "warning" ? "warning" : "ready",
+      hasPlayableMedia: true,
       importedAt: now,
-      ingestMessage: "OSS 资源已索引，播放和下载将使用 OSS/CDN；ECS 未保存课件副本。",
+      ingestMessage: "OSS 资源已索引，播放和下载将使用 OSS/CDN；课程壳由 ECS 提供。",
       error: "",
     });
   } else {
     Object.assign(patch, {
       status: "uploaded",
       importStatus: `oss-index-${job.status}`,
+      mediaStatus: "failed",
       ingestMessage: "OSS 资源索引任务未完成，请查看媒体任务日志后重试索引。",
       error: job.error || "",
     });
@@ -1388,6 +1759,7 @@ function walkCourseFilesSync(root, result = []) {
 async function mediaCourseStatus(courseEntry, assetSet) {
   const code = safeSegment(courseEntry.code || courseEntry).toUpperCase();
   const root = courseRoot(code);
+  const manifest = readJsonFileSync(join(root, "course-manifest.json"), null);
   const files = walkCourseFilesSync(root);
   const mediaFiles = coursewareOssAssetScope === "all"
     ? files
@@ -1421,7 +1793,7 @@ async function mediaCourseStatus(courseEntry, assetSet) {
   const publishState = activeJob
     ? "publishing"
     : mediaFiles.length === 0
-      ? "empty"
+      ? "no-media"
       : published === mediaFiles.length
         ? "published"
         : published > 0
@@ -1441,6 +1813,10 @@ async function mediaCourseStatus(courseEntry, assetSet) {
     cdnCoverage: mediaFiles.length ? published / mediaFiles.length : 0,
     assetScope: coursewareOssAssetScope,
     publishState,
+    importStatus: manifest?.sourceAudit?.importStatus || (existsSync(join(root, "course-manifest.json")) ? "course-created" : ""),
+    mediaStatus: mediaFiles.length ? (published === mediaFiles.length ? "ready" : published > 0 ? "warning" : "pending") : "not-required",
+    localContentStatus: files.length ? "available" : "missing",
+    hasPlayableMedia: mediaFiles.length > 0,
     activeJob: activeJob ? publicMediaJob(activeJob) : null,
     latestJob: latestJob ? publicMediaJob(latestJob) : null,
   };
@@ -1647,6 +2023,7 @@ function readPortalSession(req) {
     if (!user) return null;
     return {
       username: user.username,
+      displayName: user.displayName || "",
       role: user.role,
       courses: user.courses,
     };
@@ -1690,12 +2067,14 @@ function publicPortalSession(session) {
     ? {
         authenticated: true,
         username: session.username,
+        displayName: session.displayName || "",
         role: session.role,
         courses: session.courses,
       }
     : {
         authenticated: false,
         username: null,
+        displayName: null,
         role: null,
         courses: [],
       };
@@ -1721,16 +2100,25 @@ function courseFromCoursewarePath(pathname) {
   return match ? safeSegment(match[1]).toUpperCase() : null;
 }
 
+function pathFromCoursewarePath(pathname) {
+  const match = /^\/courseware\/[^/]+\/(.+)$/i.exec(pathname);
+  return match ? toPosixPath(match[1]) : "";
+}
+
 function shouldBypassPortalLogin(pathname) {
   return (
     pathname === "/login" ||
     pathname === "/api/portal/session" ||
     pathname === "/api/portal/login" ||
     pathname === "/api/portal/logout" ||
+    pathname === "/teacher-admin" ||
+    pathname === "/teacher-admin/" ||
     pathname.startsWith("/api/admin/") ||
     pathname.startsWith("/embed/") ||
     pathname.startsWith("/share/") ||
     pathname.startsWith("/assets/") ||
+    pathname.startsWith("/vendor/") ||
+    pathname === "/downloads/filter_portalembed.zip" ||
     pathname === "/favicon.ico"
   );
 }
@@ -1791,10 +2179,44 @@ function dirnamePosix(path) {
   return index >= 0 ? value.slice(0, index) : "";
 }
 
-function shareTokenForResource({ course, kind, path, previewPath, label, expiresInSeconds }) {
+function cleanExternalUrl(value) {
+  const url = String(value || "").trim();
+  return /^https?:\/\//i.test(url) ? url : "";
+}
+
+const shareableEmbedKinds = new Set(["ispring", "video", "h5p", "interactive"]);
+
+function pathTextForResource(item) {
+  return `${item?.path || ""} ${item?.previewPath || ""} ${item?.downloadPath || ""} ${item?.url || ""} ${item?.previewUrl || ""} ${item?.downloadUrl || ""}`.toLowerCase();
+}
+
+function embedKindForShareableItem(item) {
+  const type = String(item?.type || "").toLowerCase();
+  const category = String(item?.category || "").toLowerCase();
+  const role = String(item?.role || "").toLowerCase();
+  const path = pathTextForResource(item);
+  if (type === "ispring" || category.includes("ispring") || path.includes("ispring-localized/")) return "ispring";
+  if (type === "mp4" || type === "webm" || type === "mov" || type === "m4v" || type === "video" || category.includes("video") || /\.(?:mp4|webm|mov|m4v)(?:$|[?#])/i.test(path)) return "video";
+  if (type === "h5p" || type === "h5pactivity" || category.includes("h5p") || path.includes("/h5p/") || /\.h5p(?:$|[?#])/i.test(path)) return "h5p";
+  if (
+    type === "interactive_lab" ||
+    type === "geogebra_lab" ||
+    category === "localized_external_lab" ||
+    category === "interactive_lab" ||
+    role === "interactive_lab" ||
+    path.includes("/external-labs/")
+  ) {
+    return "interactive";
+  }
+  return "";
+}
+
+function shareTokenForResource({ course, kind, path, previewPath, url, previewUrl, downloadUrl, label, expiresInSeconds }) {
   const rawPath = toPosixPath(path || previewPath || "");
   const viewPath = toPosixPath(previewPath || path || "");
-  if (!rawPath && !viewPath) throw new Error("A local resource path is required.");
+  const rawUrl = cleanExternalUrl(downloadUrl || url || previewUrl);
+  const viewUrl = cleanExternalUrl(previewUrl || url || downloadUrl);
+  if (!rawPath && !viewPath && !rawUrl && !viewUrl) throw new Error("A local resource path or trusted URL is required.");
   return signEmbedPayload({
     v: 1,
     share: true,
@@ -1803,6 +2225,8 @@ function shareTokenForResource({ course, kind, path, previewPath, label, expires
     label,
     path: viewPath || rawPath,
     downloadPath: rawPath || viewPath,
+    url: viewUrl || rawUrl,
+    downloadUrl: rawUrl || viewUrl,
     exp: Math.floor(Date.now() / 1000) + Math.max(60, Math.min(Number(expiresInSeconds) || shareTokenMaxAgeSeconds, embedTokenMaxAgeSeconds)),
   });
 }
@@ -1821,10 +2245,26 @@ function tokenForSharedPath(payload, requestedPath) {
   });
 }
 
+function tokenForEmbedPath(payload, requestedPath) {
+  const normalizedPath = toPosixPath(requestedPath);
+  return signEmbedPayload({
+    v: 1,
+    course: safeSegment(payload.course).toUpperCase(),
+    kind: payload.kind || "file",
+    lessonId: payload.lessonId,
+    label: payload.label,
+    section: payload.section,
+    path: normalizedPath,
+    prefix: dirnamePosix(normalizedPath),
+    exp: payload.exp,
+  });
+}
+
 function shareKindLabel(kind) {
   const labels = {
     ispring: "iSpring Courseware",
     h5p: "H5P Activity",
+    interactive: "Interactive Activity",
     video: "Video",
     "book-section": "Lesson Page",
     file: "Course Resource",
@@ -1836,12 +2276,15 @@ function renderSharePage(req, token, payload) {
   const course = safeSegment(payload.course).toUpperCase();
   const viewPath = toPosixPath(payload.path || payload.downloadPath || "");
   const downloadPath = toPosixPath(payload.downloadPath || payload.path || "");
-  const viewToken = tokenForSharedPath(payload, viewPath);
-  const downloadToken = tokenForSharedPath(payload, downloadPath);
-  const viewHref = `/embed/t/${encodeURIComponent(viewToken)}/${encodeURIComponent(course)}/${encodePathSegments(viewPath)}`;
-  const downloadHref = `/embed/t/${encodeURIComponent(downloadToken)}/${encodeURIComponent(course)}/${encodePathSegments(downloadPath)}?download=1`;
+  const externalViewUrl = cleanExternalUrl(payload.url);
+  const externalDownloadUrl = cleanExternalUrl(payload.downloadUrl || payload.url);
+  const viewToken = viewPath ? tokenForSharedPath(payload, viewPath) : "";
+  const downloadToken = downloadPath ? tokenForSharedPath(payload, downloadPath) : "";
+  const viewHref = externalViewUrl || `/embed/t/${encodeURIComponent(viewToken)}/${encodeURIComponent(course)}/${encodePathSegments(viewPath)}`;
+  const downloadHref = externalDownloadUrl || `/embed/t/${encodeURIComponent(downloadToken)}/${encodeURIComponent(course)}/${encodePathSegments(downloadPath)}?download=1`;
   const expiresAt = payload.exp ? new Date(Number(payload.exp) * 1000).toLocaleString("zh-CN", { hour12: false }) : "未设置";
   const title = payload.label || basename(downloadPath || viewPath) || "Shared resource";
+  const metaTarget = downloadPath || viewPath || externalDownloadUrl || externalViewUrl;
   return `<!doctype html>
 <html lang="zh-CN">
   <head>
@@ -1869,7 +2312,7 @@ function renderSharePage(req, token, payload) {
       <section class="share-header">
         <p class="kicker">${htmlEscape(course)} · ${htmlEscape(shareKindLabel(payload.kind))}</p>
         <h1>${htmlEscape(title)}</h1>
-        <div class="meta">${htmlEscape(downloadPath || viewPath)}<br>分享有效期至：${htmlEscape(expiresAt)}</div>
+        <div class="meta">${htmlEscape(metaTarget)}<br>分享有效期至：${htmlEscape(expiresAt)}</div>
         <div class="actions">
           <a class="button primary" href="${htmlEscape(viewHref)}" target="_blank" rel="noopener">新窗口查看</a>
           <a class="button" href="${htmlEscape(downloadHref)}">下载原始文件</a>
@@ -1890,8 +2333,11 @@ function publicOrigin(req) {
   return `${String(proto).split(",")[0]}://${String(host).split(",")[0]}`.replace(/\/+$/, "");
 }
 
-function embedTokenForResource({ course, kind, path, label, section, lessonId }) {
-  const normalizedPath = toPosixPath(path);
+function embedTokenForResource({ course, kind, path, downloadPath, url, downloadUrl, label, section, lessonId }) {
+  const normalizedPath = toPosixPath(path || "");
+  const normalizedDownloadPath = toPosixPath(downloadPath || "");
+  const normalizedUrl = cleanExternalUrl(url || "");
+  const normalizedDownloadUrl = cleanExternalUrl(downloadUrl || normalizedUrl);
   return signEmbedPayload({
     v: 1,
     course: safeSegment(course).toUpperCase(),
@@ -1900,7 +2346,10 @@ function embedTokenForResource({ course, kind, path, label, section, lessonId })
     label,
     section,
     path: normalizedPath,
-    prefix: dirnamePosix(normalizedPath),
+    downloadPath: normalizedDownloadPath,
+    url: normalizedUrl,
+    downloadUrl: normalizedDownloadUrl,
+    prefix: normalizedPath ? dirnamePosix(normalizedPath) : "",
     exp: Math.floor(Date.now() / 1000) + embedTokenMaxAgeSeconds,
   });
 }
@@ -1917,6 +2366,63 @@ function injectEmbedBase(html, baseHref) {
   const base = `<base href="${htmlEscape(baseHref)}">`;
   if (/<head\b[^>]*>/i.test(html)) return html.replace(/<head\b([^>]*)>/i, `<head$1>${base}`);
   return `${base}\n${html}`;
+}
+
+function replaceJsStringOption(html, key, value) {
+  const pattern = new RegExp(`(\\b${key}\\s*:\\s*)(["'])(?:\\\\.|(?!\\2)[\\s\\S])*?\\2`, "m");
+  return String(html).replace(pattern, `$1${JSON.stringify(value)}`);
+}
+
+function isH5pStandalonePreviewPath(path) {
+  return /(?:^|\/)h5p-external\/[^/]+\/index\.html$/i.test(toPosixPath(path));
+}
+
+function h5pPackagePathFromPreviewPath(path) {
+  const normalizedPath = toPosixPath(path);
+  return isH5pStandalonePreviewPath(normalizedPath)
+    ? normalizedPath.replace(/\/index\.html$/i, ".h5p")
+    : "";
+}
+
+function h5pPreviewPathFromPackagePath(path) {
+  const normalizedPath = toPosixPath(path);
+  return /(?:^|\/)h5p-external\/[^/]+\.h5p$/i.test(normalizedPath)
+    ? normalizedPath.replace(/\.h5p$/i, "/index.html")
+    : "";
+}
+
+function addEmbeddedClassToBody(html) {
+  if (!/<body\b/i.test(html)) return html;
+  return String(html).replace(/<body\b([^>]*)>/i, (match, attributes) => {
+    const classMatch = /\bclass=(["'])([^"']*)\1/i.exec(attributes);
+    if (!classMatch) return `<body${attributes} class="is-embedded">`;
+    if (classMatch[2].split(/\s+/).includes("is-embedded")) return match;
+    const nextClass = `${classMatch[2]} is-embedded`.trim();
+    return `<body${attributes.replace(classMatch[0], `class=${classMatch[1]}${nextClass}${classMatch[1]}`)}>`;
+  });
+}
+
+function injectH5pEmbedCompatibility(html, { resourceBaseHref, vendorBaseHref, downloadHref }) {
+  const vendorBase = String(vendorBaseHref || "").replace(/\/+$/, "");
+  const resourceBase = String(resourceBaseHref || "").replace(/\/+$/, "");
+  const mainJs = `${vendorBase}/vendor/h5p-standalone/main.bundle.js`;
+  const frameJs = `${vendorBase}/vendor/h5p-standalone/frame.bundle.js`;
+  const frameCss = `${vendorBase}/vendor/h5p-standalone/styles/h5p.css`;
+  let nextHtml = String(html || "");
+
+  nextHtml = nextHtml
+    .replace(/href=(["'])\/vendor\/h5p-standalone\/styles\/h5p\.css\1/gi, `href="${htmlEscape(frameCss)}"`)
+    .replace(/src=(["'])\/vendor\/h5p-standalone\/main\.bundle\.js\1/gi, `src="${htmlEscape(mainJs)}"`);
+  nextHtml = replaceJsStringOption(nextHtml, "h5pJsonPath", resourceBase);
+  nextHtml = replaceJsStringOption(nextHtml, "librariesPath", resourceBase);
+  nextHtml = replaceJsStringOption(nextHtml, "contentJsonPath", `${resourceBase}/content`);
+  nextHtml = replaceJsStringOption(nextHtml, "frameJs", frameJs);
+  nextHtml = replaceJsStringOption(nextHtml, "frameCss", frameCss);
+  if (downloadHref) {
+    nextHtml = replaceJsStringOption(nextHtml, "downloadUrl", downloadHref);
+    nextHtml = nextHtml.replace(/(<a\b[^>]*\bhref=)(["'])\.\.\/[^"']+\.h5p\2/gi, `$1"${htmlEscape(downloadHref)}"`);
+  }
+  return addEmbeddedClassToBody(nextHtml);
 }
 
 const coursewareViewerStyle = `
@@ -1995,6 +2501,12 @@ function shouldUseCoursewareViewerStyle(filePath) {
 function shouldUseCoursewareTextViewer(filePath) {
   if (![".md", ".txt"].includes(extname(filePath).toLowerCase())) return false;
   return Boolean(coursewareRelativePath(filePath));
+}
+
+function shouldUseCoursewareIspringCdnBase(course, requestedPath, filePath) {
+  if (basename(filePath).toLowerCase() !== "presentation.html") return false;
+  if (!isCoursewareCdnFallbackPath(requestedPath)) return false;
+  return Boolean(coursewareAssetDirectoryHref(course, requestedPath));
 }
 
 function titleFromText(filePath, text) {
@@ -2246,28 +2758,112 @@ async function sendEmbedCoursewareFile(req, res, course, requestedPath, payload)
   const root = courseRoot(course);
   const filePath = ensureInside(root, join(root, toPosixPath(requestedPath)));
   if (payload.kind === "ispring" && basename(filePath).toLowerCase() === "presentation.html") {
-    const html = await readFile(filePath, "utf8");
-    sendHtml(res, 200, injectIspringEmbedCompatibility(html, coursewareAssetDirectoryHref(course, requestedPath) || directoryHrefForRequest(req)));
+    try {
+      const html = await readFile(filePath, "utf8");
+      sendHtml(res, 200, injectIspringEmbedCompatibility(html, directoryHrefForRequest(req)));
+    } catch (error) {
+      if (await sendCoursewareCdnFallback(req, res, course, requestedPath)) return true;
+      throw error;
+    }
     return true;
   }
-  await sendFile(req, res, filePath);
+  try {
+    await sendFile(req, res, filePath);
+  } catch (error) {
+    if (await sendCoursewareCdnFallback(req, res, course, requestedPath)) return true;
+    throw error;
+  }
+  return true;
+}
+
+async function sendEmbedH5pPreview(req, res, course, requestedPath, payload) {
+  const normalizedPath = toPosixPath(requestedPath);
+  if (!isEmbedPathAllowed(payload, course, normalizedPath)) {
+    res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Forbidden: invalid embed token");
+    return true;
+  }
+  const previewPath = isH5pStandalonePreviewPath(normalizedPath)
+    ? normalizedPath
+    : h5pPreviewPathFromPackagePath(normalizedPath);
+  if (!previewPath) return sendEmbedCoursewareFile(req, res, course, normalizedPath, payload);
+  const resourceToken = tokenForEmbedPath(payload, previewPath);
+  const resourceHref = `/embed/t/${encodeURIComponent(resourceToken)}/${encodeURIComponent(course)}/${encodePathSegments(previewPath)}`;
+  const resourceBaseHref = resourceHref.slice(0, resourceHref.lastIndexOf("/") + 1);
+  const fallbackDownloadPath = h5pPackagePathFromPreviewPath(previewPath) || (/\.h5p$/i.test(normalizedPath) ? normalizedPath : "");
+  const downloadPath = toPosixPath(payload.downloadPath || fallbackDownloadPath);
+  const downloadToken = downloadPath ? tokenForEmbedPath(payload, downloadPath) : "";
+  const downloadHref = downloadPath
+    ? `/embed/t/${encodeURIComponent(downloadToken)}/${encodeURIComponent(course)}/${encodePathSegments(downloadPath)}?download=1`
+    : cleanExternalUrl(payload.downloadUrl || payload.url);
+  const root = courseRoot(course);
+  const filePath = ensureInside(root, join(root, previewPath));
+  let html = "";
+  try {
+    html = await readFile(filePath, "utf8");
+  } catch (error) {
+    const fallbackUrl = coursewareAssetUrl(course, previewPath) || cleanExternalUrl(payload.url);
+    if (!isTrustedCoursewareAssetUrl(fallbackUrl)) throw error;
+    html = await fetchTrustedCoursewareHtml(fallbackUrl);
+  }
+  sendHtml(res, 200, injectH5pEmbedCompatibility(html, {
+    resourceBaseHref,
+    vendorBaseHref: publicOrigin(req),
+    downloadHref,
+  }));
   return true;
 }
 
 function localResourceCandidatesForLesson(lesson) {
   const candidates = [];
   for (const item of lesson.ispring || []) {
-    if (item.path) candidates.push({ kind: "ispring", role: item.role || "lesson_ispring", item });
+    candidates.push(...localResourceCandidatesFromResource(item, item.role || "lesson_ispring"));
   }
-  for (const item of lesson.downloads || []) {
-    if (!item.path) continue;
-    const type = String(item.type || "").toLowerCase();
-    const ext = extname(item.path || "").toLowerCase();
-    const kind = type === "mp4" || type === "webm" || type === "video" || [".mp4", ".webm"].includes(ext) ? "video" : type === "h5p" ? "h5p" : "file";
-    candidates.push({ kind, role: item.role || "download", item });
+  for (const item of [
+    lesson.lessonPlan,
+    ...(lesson.lessonText || []),
+    ...(lesson.textExports || []),
+    ...(lesson.downloads || []),
+    ...(lesson.handsOn || []),
+    ...(lesson.bookSections || []),
+  ]) {
+    candidates.push(...localResourceCandidatesFromResource(item, item?.role || "download"));
   }
-  for (const item of lesson.bookSections || []) {
-    if (item.path) candidates.push({ kind: "book-section", role: item.role || "lesson_book_section", item });
+  return candidates;
+}
+
+function localResourceCandidatesFromResource(resource, fallbackRole = "resource", parentResource = null) {
+  if (!resource) return [];
+  const candidates = [];
+  if (resource.path || resource.url || resource.previewPath || resource.previewUrl || resource.downloadPath || resource.downloadUrl) {
+    const kind = embedKindForShareableItem(resource);
+    if (shareableEmbedKinds.has(kind)) {
+      candidates.push({
+        kind,
+        role: resource.role || fallbackRole,
+        item: parentResource && !resource.sectionLabel
+          ? { ...resource, sectionLabel: parentResource.label || parentResource.sectionLabel || fallbackRole }
+          : resource,
+      });
+    }
+  }
+  for (const attachment of resource.attachments || []) {
+    candidates.push(...localResourceCandidatesFromResource(attachment, attachment.role || `${resource.role || fallbackRole}_attachment`, resource));
+  }
+  for (const ispring of resource.ispring || []) {
+    candidates.push(...localResourceCandidatesFromResource(ispring, ispring.role || `${resource.role || fallbackRole}_ispring`, resource));
+  }
+  return candidates;
+}
+
+function localResourceCandidatesFromResources(resources, fallbackRole = "resource") {
+  const candidates = [];
+  for (const resource of resources || []) {
+    if (Array.isArray(resource)) {
+      candidates.push(...localResourceCandidatesFromResources(resource, fallbackRole));
+    } else {
+      candidates.push(...localResourceCandidatesFromResource(resource, resource?.role || fallbackRole));
+    }
   }
   return candidates;
 }
@@ -2314,69 +2910,100 @@ function moodleContentIframeHtml(src, { height = 750 } = {}) {
 function moodleEmbedRowsForCourse(req, course, manifest) {
   const origin = publicOrigin(req);
   const rows = [];
+  const appendRows = ({ unit = 0, lesson = 0, lessonId = "COURSE", lessonTitle = "Course Resources" }, candidates) => {
+    for (const candidate of candidates) {
+      const item = candidate.item;
+      const viewPath = candidate.kind === "h5p"
+        ? (item.previewPath || item.path || item.downloadPath)
+        : (item.path || item.previewPath || item.downloadPath);
+      const downloadPath = candidate.kind === "h5p"
+        ? (item.path || item.downloadPath || item.previewPath)
+        : (item.downloadPath || item.path || item.previewPath);
+      const token = embedTokenForResource({
+        course,
+        kind: candidate.kind,
+        path: viewPath,
+        downloadPath,
+        url: item.previewUrl || item.url,
+        downloadUrl: item.downloadUrl || item.url,
+        label: item.label,
+        section: item.sectionLabel || candidate.role,
+        lessonId,
+      });
+      const resourceKey = item.path || item.previewPath || item.downloadPath || item.previewUrl || item.url || item.downloadUrl || item.label || candidate.role;
+      const resourceId = resourceIdFor(resourceKey);
+      let embedUrl = `${origin}/embed/${candidate.kind}/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
+      const fileUrl = `${origin}/embed/file/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
+      let moodleHtml = "";
+      let moodleIframeHtml = "";
+      let moodleShortcode = "";
+      let status = "ready";
+      if (candidate.kind === "ispring") {
+        moodleIframeHtml = moodleIspringIframeHtml(embedUrl);
+        moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: 1500, height: 750 });
+        moodleHtml = moodleShortcode;
+      } else if (candidate.kind === "video") {
+        const ext = extname(item.path || item.url || "").toLowerCase();
+        moodleIframeHtml = moodleContentIframeHtml(embedUrl, { height: 540 });
+        moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 540 });
+        moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video", mimeTypes[ext] || "video/mp4");
+      } else if (candidate.kind === "h5p") {
+        embedUrl = `${embedUrl}&embed=1`;
+        moodleIframeHtml = moodleH5pIframeHtml(embedUrl);
+        moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 560 });
+        moodleHtml = moodleShortcode;
+      } else if (candidate.kind === "interactive") {
+        moodleIframeHtml = moodleContentIframeHtml(embedUrl, { height: 700 });
+        moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 700 });
+        moodleHtml = moodleShortcode;
+      } else {
+        continue;
+      }
+      rows.push({
+        course,
+        unit,
+        lesson,
+        lessonId,
+        lessonTitle,
+        kind: candidate.kind,
+        role: candidate.role,
+        label: item.label || "",
+        path: viewPath || item.previewUrl || item.url || item.downloadUrl,
+        source: item.source || null,
+        status,
+        embedUrl,
+        fileUrl,
+        moodleShortcode,
+        moodleIframeHtml,
+        moodleHtml,
+      });
+    }
+  };
+
+  appendRows(
+    { lessonId: "COURSE", lessonTitle: "Course Resources" },
+    localResourceCandidatesFromResources([
+      ...(manifest.courseSections || []),
+      ...(manifest.courseDownloads || []),
+      ...(manifest.teacherResources || []),
+      ...((manifest.texts || []).flatMap((text) => [text, ...(text.materials || [])])),
+    ], "course_resource"),
+  );
   for (const unit of manifest.units || []) {
+    const unitId = `U${String(unit.unit).padStart(2, "0")}`;
+    appendRows(
+      { unit: unit.unit, lesson: 0, lessonId: unitId, lessonTitle: unit.title || `Unit ${unit.unit}` },
+      localResourceCandidatesFromResources([
+        unit.unitPlan,
+        ...Object.values(unit.unitResources || {}),
+      ], "unit_resource"),
+    );
     for (const lesson of unit.lessons || []) {
       const lessonId = `U${String(unit.unit).padStart(2, "0")}L${String(lesson.lesson).padStart(2, "0")}`;
-      for (const candidate of localResourceCandidatesForLesson(lesson)) {
-        const item = candidate.item;
-        const token = embedTokenForResource({
-          course,
-          kind: candidate.kind,
-          path: item.path,
-          label: item.label,
-          section: item.sectionLabel || candidate.role,
-          lessonId,
-        });
-        const resourceId = resourceIdFor(item.path);
-        const embedUrl = `${origin}/embed/${candidate.kind}/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
-        const fileUrl = `${origin}/embed/file/${encodeURIComponent(course)}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
-        let moodleHtml = "";
-        let moodleIframeHtml = "";
-        let moodleShortcode = "";
-        let status = "ready";
-        if (candidate.kind === "ispring") {
-          moodleIframeHtml = moodleIspringIframeHtml(embedUrl);
-          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: 1500, height: 750 });
-          moodleHtml = moodleShortcode;
-        } else if (candidate.kind === "video") {
-          const ext = extname(item.path || "").toLowerCase();
-          moodleIframeHtml = moodleContentIframeHtml(embedUrl, { height: 540 });
-          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 540 });
-          moodleHtml = moodleVideoHtml(fileUrl, item.label || "Video", mimeTypes[ext] || "video/mp4");
-        } else if (candidate.kind === "book-section") {
-          moodleIframeHtml = moodleContentIframeHtml(embedUrl);
-          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 750 });
-          moodleHtml = moodleShortcode;
-        } else if (candidate.kind === "h5p") {
-          moodleIframeHtml = moodleH5pIframeHtml(embedUrl);
-          moodleShortcode = moodlePortalIframeShortcode(embedUrl, { width: "100%", height: 560 });
-          moodleHtml = moodleShortcode;
-        } else if (String(item.type || "").toLowerCase() === "pdf") {
-          moodleIframeHtml = moodleContentIframeHtml(fileUrl);
-          moodleShortcode = moodlePortalIframeShortcode(fileUrl, { width: "100%", height: 750 });
-          moodleHtml = moodleShortcode;
-        } else {
-          moodleHtml = `<a href="${fileUrl}" target="_blank" rel="noopener">${htmlEscape(item.label || "Download resource")}</a>`;
-        }
-        rows.push({
-          course,
-          unit: unit.unit,
-          lesson: lesson.lesson,
-          lessonId,
-          lessonTitle: lesson.title,
-          kind: candidate.kind,
-          role: candidate.role,
-          label: item.label || "",
-          path: item.path,
-          source: item.source || null,
-          status,
-          embedUrl,
-          fileUrl,
-          moodleShortcode,
-          moodleIframeHtml,
-          moodleHtml,
-        });
-      }
+      appendRows(
+        { unit: unit.unit, lesson: lesson.lesson, lessonId, lessonTitle: lesson.title },
+        localResourceCandidatesForLesson(lesson),
+      );
     }
   }
   return rows;
@@ -2396,6 +3023,9 @@ async function handleEmbedRequest(req, res, requestUrl) {
   if (tokenPathMatch) {
     const course = safeSegment(tokenPathMatch[2]).toUpperCase();
     const requestedPath = decodePath(tokenPathMatch[3]);
+    if (payload.kind === "h5p" && isH5pStandalonePreviewPath(requestedPath)) {
+      return sendEmbedH5pPreview(req, res, course, requestedPath, payload);
+    }
     return sendEmbedCoursewareFile(req, res, course, requestedPath, payload);
   }
 
@@ -2403,10 +3033,13 @@ async function handleEmbedRequest(req, res, requestUrl) {
   if (coursewareMatch) {
     const course = safeSegment(coursewareMatch[1]).toUpperCase();
     const requestedPath = decodePath(coursewareMatch[2]);
+    if (payload.kind === "h5p" && isH5pStandalonePreviewPath(requestedPath)) {
+      return sendEmbedH5pPreview(req, res, course, requestedPath, payload);
+    }
     return sendEmbedCoursewareFile(req, res, course, requestedPath, payload);
   }
 
-  const match = /^\/embed\/(ispring|video|file|book-section|h5p)\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/i.exec(requestUrl.pathname);
+  const match = /^\/embed\/(ispring|video|file|book-section|h5p|interactive)\/([^/]+)\/([^/]+)(?:\/([^/]+))?$/i.exec(requestUrl.pathname);
   if (!match) {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     res.end("Unknown embed endpoint");
@@ -2415,7 +3048,7 @@ async function handleEmbedRequest(req, res, requestUrl) {
   const kind = match[1].toLowerCase();
   const course = safeSegment(match[2]).toUpperCase();
   const lessonId = match[3];
-  if (payload.kind !== kind && !(kind === "file" && ["file", "h5p"].includes(payload.kind))) {
+  if (payload.kind !== kind && !(kind === "file" && (payload.kind === "file" || shareableEmbedKinds.has(payload.kind)))) {
     res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
     res.end("Forbidden: embed token kind mismatch");
     return true;
@@ -2426,18 +3059,66 @@ async function handleEmbedRequest(req, res, requestUrl) {
     return true;
   }
 
-  const tokenizedRawUrl = `/embed/t/${encodeURIComponent(token)}/${encodeURIComponent(course)}/${encodePathSegments(payload.path)}`;
-  const assetRawUrl = coursewareAssetUrl(course, payload.path) || tokenizedRawUrl;
+  const payloadUrl = cleanExternalUrl(payload.url);
+  const payloadDownloadUrl = cleanExternalUrl(payload.downloadUrl || payload.url);
+  const tokenizedRawUrl = payload.path
+    ? `/embed/t/${encodeURIComponent(token)}/${encodeURIComponent(course)}/${encodePathSegments(payload.path)}`
+    : "";
+  const assetRawUrl = payloadUrl || coursewareAssetUrl(course, payload.path) || tokenizedRawUrl;
   if (kind === "ispring") {
+    const lazyParam = String(requestUrl.searchParams.get("lazy") || "").toLowerCase();
+    if (ispringEmbedLazyCoverEnabled && lazyParam !== "0" && lazyParam !== "false" && (tokenizedRawUrl || payloadUrl)) {
+      sendHtml(res, 200, renderIspringLazyCoverWrapper({
+        title: payload.label || "iSpring Courseware",
+        src: tokenizedRawUrl || payloadUrl,
+      }));
+      return true;
+    }
+    if (payloadUrl) {
+      if (isTrustedCoursewareAssetUrl(payloadUrl)) {
+        try {
+          const html = await fetchTrustedCoursewareHtml(payloadUrl);
+          if (tokenizedRawUrl && isRollPreviewIspringHtml(html)) {
+            sendHtml(res, 200, renderIspringSameOriginEmbedWrapper({
+              title: payload.label || "iSpring Courseware",
+              src: tokenizedRawUrl,
+            }));
+            return true;
+          }
+          const rawBaseHref = tokenizedRawUrl
+            ? tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1)
+            : directoryHrefForUrl(payloadUrl);
+          sendHtml(res, 200, injectIspringEmbedCompatibility(html, rawBaseHref));
+        } catch (error) {
+          console.warn(`Trusted CDN iSpring proxy failed; redirecting to source: ${error.message}`);
+          res.writeHead(302, { Location: payloadUrl });
+          res.end();
+        }
+      } else {
+        res.writeHead(302, { Location: payloadUrl });
+        res.end();
+      }
+      return true;
+    }
     const root = courseRoot(course);
     const filePath = ensureInside(root, join(root, toPosixPath(payload.path)));
     const html = await readFile(filePath, "utf8");
-    const rawBaseHref = coursewareAssetDirectoryHref(course, payload.path) || tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1);
+    if (tokenizedRawUrl && isRollPreviewIspringHtml(html)) {
+      sendHtml(res, 200, renderIspringSameOriginEmbedWrapper({
+        title: payload.label || "iSpring Courseware",
+        src: tokenizedRawUrl,
+      }));
+      return true;
+    }
+    const rawBaseHref = tokenizedRawUrl.slice(0, tokenizedRawUrl.lastIndexOf("/") + 1)
+      || coursewareAssetDirectoryHref(course, payload.path);
     sendHtml(res, 200, injectIspringEmbedCompatibility(html, rawBaseHref));
     return true;
   }
   if (kind === "video") {
-    const videoType = mimeTypes[extname(payload.path || "").toLowerCase()] || "video/mp4";
+    const videoType = mimeTypes[extname(payload.path || payloadUrl || "").toLowerCase()] || "video/mp4";
+    const videoSrc = htmlEscape(assetRawUrl);
+    const videoLabel = htmlEscape(payload.label || "Video");
     sendHtml(
       res,
       200,
@@ -2446,23 +3127,43 @@ async function handleEmbedRequest(req, res, requestUrl) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${htmlEscape(payload.label || "Video")}</title>
-    <style>html,body{margin:0;background:#000;}video{display:block;width:100%;height:100vh;max-height:100vh;background:#000;}</style>
+    <title>${videoLabel}</title>
+    <style>
+      html,body{margin:0;background:#000;color:#fff;font-family:Arial,sans-serif;}
+      .video-shell{position:relative;width:100vw;height:100vh;background:#000;}
+      video{display:block;width:100%;height:100%;background:#000;}
+    </style>
   </head>
   <body>
-    <video controls preload="metadata">
-      <source src="${htmlEscape(assetRawUrl)}" type="${htmlEscape(videoType)}">
-    </video>
+    <div class="video-shell">
+      <video controls preload="metadata" playsinline aria-label="${videoLabel}">
+        <source src="${videoSrc}" type="${htmlEscape(videoType)}">
+        <a href="${videoSrc}" target="_blank" rel="noopener">Open video file</a>
+      </video>
+    </div>
   </body>
 </html>`,
     );
     return true;
   }
   if (kind === "book-section") {
+    if (payloadUrl) {
+      res.writeHead(302, { Location: payloadUrl });
+      res.end();
+      return true;
+    }
     const root = courseRoot(course);
     const filePath = ensureInside(root, join(root, toPosixPath(payload.path)));
     const html = await readFile(filePath, "utf8");
     sendHtml(res, 200, html);
+    return true;
+  }
+  if (kind === "h5p" && payload.path) {
+    return sendEmbedH5pPreview(req, res, course, payload.path, payload);
+  }
+  if (!payload.path && payloadDownloadUrl) {
+    res.writeHead(302, { Location: payloadDownloadUrl });
+    res.end();
     return true;
   }
   return sendEmbedCoursewareFile(req, res, course, payload.path, payload);
@@ -2649,6 +3350,7 @@ function adminPrincipal(req) {
   if (legacySession) {
     return {
       username: legacySession.username,
+      displayName: legacySession.username,
       role: "admin",
       courses: ["*"],
       source: "admin",
@@ -2695,21 +3397,29 @@ function emptyCourseManifest(course) {
   const code = safeSegment(course).toUpperCase();
   return {
     schemaVersion: 1,
+    generatedAt: new Date().toISOString(),
     course: {
       code,
       title: code,
-      grade: "",
+      audience: "",
+      source: "oss-hybrid-course-shell",
       description: "",
+    },
+    navigation: {
+      primary: "Units",
+      secondary: "Activities",
     },
     courseDownloads: [],
     units: [],
-    textMaterials: [],
+    texts: [],
     sourceAudit: {
-      generatedFrom: "empty-admin-import",
+      generatedFrom: "oss-hybrid-course-shell",
       lessonCount: 0,
       ispringComplete: 0,
+      importStatus: "course-created",
+      mediaStatus: "not-required",
+      hasPlayableMedia: false,
     },
-    generatedAt: new Date().toISOString(),
   };
 }
 
@@ -2720,6 +3430,454 @@ async function readManifestOrEmpty(course) {
     if (error?.code !== "ENOENT") throw error;
     return emptyCourseManifest(course);
   }
+}
+
+async function readManifestForAdminStatus(course) {
+  try {
+    return {
+      manifest: await readManifest(course),
+      manifestStatus: "ready",
+      manifestError: "",
+    };
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+    const code = safeSegment(course).toUpperCase();
+    return {
+      manifest: emptyCourseManifest(code),
+      manifestStatus: "missing",
+      manifestError: `Missing course-manifest.json for ${code}. Upload or import this course before publishing.`,
+    };
+  }
+}
+
+function normalizedOssExtractSummary(body = {}) {
+  const summary = body.summary || {};
+  const mediaExtracted = Number(body.mediaExtracted ?? summary.mediaExtracted ?? summary.extracted ?? 0);
+  const lightweightCandidates = Number(body.lightweightCandidates ?? summary.lightweightCandidates ?? summary.lightweight ?? 0);
+  const entries = Number(body.entries ?? summary.entries ?? 0);
+  const skipped = Number(body.skipped ?? summary.skipped ?? 0);
+  const status = String(body.status || summary.status || (mediaExtracted > 0 ? "media-ready" : "no-media")).toLowerCase();
+  return {
+    entries: Number.isFinite(entries) ? entries : 0,
+    mediaExtracted: Number.isFinite(mediaExtracted) ? mediaExtracted : 0,
+    lightweightCandidates: Number.isFinite(lightweightCandidates) ? lightweightCandidates : 0,
+    skipped: Number.isFinite(skipped) ? skipped : 0,
+    status,
+    manifestObjectKey: String(body.manifestObjectKey || summary.manifestObjectKey || ""),
+  };
+}
+
+async function ensureHybridCourseShell({ course, actor, extractSummary = {}, sourceObjectKey = "", uploadId = "" }) {
+  const code = safeSegment(course).toUpperCase();
+  if (!code) throw new Error("Course is required.");
+  const root = courseRoot(code);
+  const manifestPath = join(root, "course-manifest.json");
+  await mkdir(root, { recursive: true });
+  let manifest = null;
+  let created = false;
+  if (existsSync(manifestPath)) {
+    manifest = await readManifestOrEmpty(code);
+  } else {
+    manifest = emptyCourseManifest(code);
+    manifest.sourceAudit = {
+      ...(manifest.sourceAudit || {}),
+      generatedFrom: "oss-hybrid-course-shell",
+      sourceObjectKey,
+      latestUploadId: uploadId,
+      importStatus: "course-created",
+      mediaStatus: extractSummary.mediaExtracted > 0 ? "pending" : "not-required",
+      hasPlayableMedia: extractSummary.mediaExtracted > 0,
+      lightweightCandidates: extractSummary.lightweightCandidates || 0,
+    };
+    writeJsonFile(manifestPath, manifest);
+    created = true;
+  }
+  const catalogEntry = await ensureCourseCatalogEntry(code, manifest);
+  const lifecycle = setCourseLifecycleStatus(code, "active", actor, "Activated automatically after OSS course package shell import.");
+  try {
+    await appendAdminHistory(code, {
+      actor,
+      action: "oss-course-shell-import",
+      uploadId,
+      sourceObjectKey,
+      created,
+      entries: extractSummary.entries || 0,
+      mediaExtracted: extractSummary.mediaExtracted || 0,
+      lightweightCandidates: extractSummary.lightweightCandidates || 0,
+      status: extractSummary.status || "",
+      lifecycleStatus: lifecycle.status,
+    });
+  } catch {
+    // History is helpful for audits, but shell creation should not fail because of it.
+  }
+  return { manifest, catalogEntry, lifecycle, created };
+}
+
+async function createPortalOssClient() {
+  if (!ossDirectUploadConfig.bucket || !ossDirectUploadConfig.accessKeyId || !ossDirectUploadConfig.accessKeySecret) {
+    throw new Error("OSS credentials are not configured for lightweight course content import.");
+  }
+  const module = await import("ali-oss");
+  const OSS = module.default || module;
+  const options = {
+    bucket: ossDirectUploadConfig.bucket,
+    secure: true,
+    accessKeyId: ossDirectUploadConfig.accessKeyId,
+    accessKeySecret: ossDirectUploadConfig.accessKeySecret,
+  };
+  if (ossDirectUploadConfig.endpoint) options.endpoint = ossDirectUploadConfig.endpoint;
+  if (ossDirectUploadConfig.securityToken) options.stsToken = ossDirectUploadConfig.securityToken;
+  return new OSS(options);
+}
+
+async function ossObjectStream(client, objectKey) {
+  const result = await client.getStream(objectKey);
+  return result.stream || result.res || result;
+}
+
+async function readOssJsonObject(client, objectKey) {
+  const stream = await ossObjectStream(client, objectKey);
+  const chunks = [];
+  for await (const chunk of stream) chunks.push(Buffer.from(chunk));
+  return JSON.parse(Buffer.concat(chunks).toString("utf8").replace(/^\uFEFF/, ""));
+}
+
+function safeLightweightRelativePath(value) {
+  const normalized = normalizeImportPath(value).replace(/^\/+/, "");
+  if (!normalized || normalized.includes("\0")) return "";
+  const parts = normalized.split("/");
+  if (parts.some((part) => !part || part === "." || part === "..")) return "";
+  return normalized;
+}
+
+function lightweightStagingRoot(course, uploadId) {
+  const root = courseRoot(course);
+  return ensureInside(root, join(root, "_admin_uploads", "lightweight-staging", safeSegment(uploadId || `manual-${Date.now()}`)));
+}
+
+async function downloadOssObjectToFile(client, objectKey, targetPath) {
+  await mkdir(dirname(targetPath), { recursive: true });
+  const stream = await ossObjectStream(client, objectKey);
+  await pipeline(stream, createWriteStream(targetPath));
+}
+
+async function copyLightweightStagingContent(stagingRoot, targetRoot) {
+  const entries = await readdir(stagingRoot, { withFileTypes: true });
+  let copied = 0;
+  for (const entry of entries) {
+    if (entry.name === "_admin_uploads") continue;
+    const source = join(stagingRoot, entry.name);
+    const target = ensureInside(targetRoot, join(targetRoot, entry.name));
+    await cp(source, target, { recursive: true });
+    copied += 1;
+  }
+  return copied;
+}
+
+function activityTitleFromPath(relativePath) {
+  const parts = normalizeImportPath(relativePath).split("/");
+  const folder = parts.length > 1 ? parts[parts.length - 2] : fileStem(parts[0] || "");
+  return cleanImportLabel(folder.replace(/^[A-Z]\d{2}L\d{2}[-_ ]*/i, "")) || "Moodle Activity";
+}
+
+function lessonKeyFromPath(relativePath, fallbackIndex) {
+  const detected = detectUnitLesson(relativePath);
+  if (detected?.unit && detected?.lesson) return detected;
+  return { unit: 1, lesson: fallbackIndex };
+}
+
+function buildManifestFromLightweightFiles(course, lightweightFiles = []) {
+  const code = safeSegment(course).toUpperCase();
+  const manifest = emptyCourseManifest(code);
+  manifest.sourceAudit = {
+    ...(manifest.sourceAudit || {}),
+    generatedFrom: "oss-lightweight-import",
+    importStatus: "lightweight-imported",
+    mediaStatus: "not-required",
+    hasPlayableMedia: false,
+  };
+  const files = lightweightFiles
+    .map((item) => ({ ...item, path: safeLightweightRelativePath(item.path) }))
+    .filter((item) => item.path);
+  const indexFiles = files.filter((item) => /(?:^|\/)localized-moodle-activities\/.+\/index\.html$/i.test(item.path));
+  const indexDirs = new Map(indexFiles.map((item, index) => {
+    const key = lessonKeyFromPath(item.path, index + 1);
+    return [dirname(item.path).replaceAll("\\", "/"), { item, unit: key.unit, lesson: key.lesson }];
+  }));
+  if (!indexDirs.size) {
+    for (const item of files.filter((file) => file.path !== "course-manifest.json")) {
+      const ext = extname(item.path).toLowerCase().replace(".", "") || "file";
+      upsertResource(manifest.courseDownloads, {
+        label: cleanImportLabel(fileStem(basename(item.path))),
+        type: ext,
+        category: "course_resource",
+        role: "course_resource",
+        path: item.path,
+        bytes: Number(item.bytes || 0),
+        source: "local",
+      });
+    }
+    recomputeManifestSummaries(manifest);
+    return manifest;
+  }
+
+  for (const { item, unit, lesson } of indexDirs.values()) {
+    const lessonRecord = ensureManifestLesson(manifest, unit, lesson, activityTitleFromPath(item.path));
+    lessonRecord.path = dirname(item.path).replaceAll("\\", "/");
+    lessonRecord.downloads = lessonRecord.downloads || [];
+    upsertResource(lessonRecord.downloads, {
+      label: "Activity page",
+      type: "html",
+      category: "moodle_activity",
+      role: "lesson_resource",
+      path: item.path,
+      bytes: Number(item.bytes || 0),
+      source: "local",
+    });
+  }
+
+  for (const item of files) {
+    if (item.path === "course-manifest.json" || item.path.endsWith("/index.html")) continue;
+    const parent = [...indexDirs.keys()].find((dir) => item.path.startsWith(`${dir}/`));
+    const ext = extname(item.path).toLowerCase().replace(".", "") || "file";
+    const record = {
+      label: cleanImportLabel(fileStem(basename(item.path))),
+      type: ext,
+      category: coursePackageEntryKind(item.path) === "document" ? "course_document" : "moodle_activity",
+      role: "lesson_resource",
+      path: item.path,
+      bytes: Number(item.bytes || 0),
+      source: "local",
+    };
+    if (parent && indexDirs.has(parent)) {
+      const owner = indexDirs.get(parent);
+      const lessonRecord = ensureManifestLesson(manifest, owner.unit, owner.lesson, activityTitleFromPath(owner.item.path));
+      lessonRecord.downloads = lessonRecord.downloads || [];
+      upsertResource(lessonRecord.downloads, record);
+    } else {
+      upsertResource(manifest.courseDownloads, { ...record, role: "course_resource" });
+    }
+  }
+  recomputeManifestSummaries(manifest);
+  return manifest;
+}
+
+function shouldUseCdnForManifestPath(path) {
+  const kind = coursePackageEntryKind(path);
+  return ["video", "audio", "h5p", "ispring"].includes(kind);
+}
+
+function rewriteResourceForHybridStorage(course, item) {
+  if (!item || typeof item !== "object") return item;
+  const path = item.path || item.previewPath || "";
+  if (!path || !shouldUseCdnForManifestPath(path)) return item;
+  const cdnUrl = generatedCoursewareAssetUrl(course, path);
+  if (!cdnUrl) return item;
+  const next = { ...item, source: "cdn" };
+  if (item.path) {
+    next.url = cdnUrl;
+    delete next.path;
+  }
+  if (item.previewPath) {
+    next.previewUrl = generatedCoursewareAssetUrl(course, item.previewPath);
+    delete next.previewPath;
+  }
+  if (item.downloadPath) {
+    next.downloadUrl = generatedCoursewareAssetUrl(course, item.downloadPath);
+    delete next.downloadPath;
+  }
+  return next;
+}
+
+function rewriteManifestForHybridStorage(manifest, course) {
+  const code = safeSegment(course).toUpperCase();
+  const rewriteList = (items = []) => items.map((item) => rewriteResourceForHybridStorage(code, item));
+  manifest.courseDownloads = rewriteList(manifest.courseDownloads || []);
+  manifest.texts = (manifest.texts || []).map((text) => ({
+    ...text,
+    materials: rewriteList(text.materials || []),
+  }));
+  for (const unit of manifest.units || []) {
+    if (unit.unitPlan) unit.unitPlan = rewriteResourceForHybridStorage(code, unit.unitPlan);
+    for (const lesson of unit.lessons || []) {
+      if (lesson.lessonPlan) lesson.lessonPlan = rewriteResourceForHybridStorage(code, lesson.lessonPlan);
+      lesson.downloads = rewriteList(lesson.downloads || []);
+      lesson.textExports = rewriteList(lesson.textExports || []);
+      lesson.bookSections = rewriteList(lesson.bookSections || []);
+      lesson.ispring = rewriteList(lesson.ispring || []);
+    }
+  }
+  return manifest;
+}
+
+function stripCoursewareReferencePrefix(course, referencePath) {
+  const normalized = toPosixPath(referencePath || "").replace(/^\/+/, "");
+  const code = safeSegment(course).toUpperCase();
+  if (!normalized || !code) return normalized;
+
+  const coursewarePrefix = `courseware/${code}/`;
+  if (normalized.toUpperCase().startsWith(coursewarePrefix.toUpperCase())) {
+    return normalized.slice(coursewarePrefix.length);
+  }
+
+  const assetPrefix = toPosixPath(coursewareAssetPrefix || "courseware-active").replace(/^\/+|\/+$/g, "");
+  const assetCoursePrefix = assetPrefix ? `${assetPrefix}/${code}/` : "";
+  if (assetCoursePrefix && normalized.toUpperCase().startsWith(assetCoursePrefix.toUpperCase())) {
+    return normalized.slice(assetCoursePrefix.length);
+  }
+
+  return normalized;
+}
+
+function htmlReferenceValueToCoursePath(course, htmlPath, rawValue) {
+  const value = String(rawValue || "").trim();
+  if (
+    !value ||
+    value.startsWith("#") ||
+    /^(?:https?:|mailto:|tel:|data:|blob:|javascript:)/i.test(value)
+  ) {
+    return "";
+  }
+  const rawPath = decodePath(value.split(/[?#]/)[0] || "").replace(/\\/g, "/");
+  if (!rawPath) return "";
+  const strippedRootPath = stripCoursewareReferencePrefix(course, rawPath);
+  const combined = value.startsWith("/") || strippedRootPath !== rawPath.replace(/^\/+/, "")
+    ? strippedRootPath
+    : normalize(toPosixPath(join(dirname(htmlPath), rawPath)));
+  const normalized = toPosixPath(combined);
+  if (!normalized || normalized.startsWith("../") || normalized.includes("/../")) return "";
+  return normalized;
+}
+
+function rewriteHtmlPlayableReferencesForHybridStorage(html, course, htmlPath) {
+  let rewritten = 0;
+  const body = String(html || "").replace(/\b(href|src|poster)\s*=\s*(["'])([^"']+)\2/gi, (match, attr, quote, rawValue) => {
+    const coursePath = htmlReferenceValueToCoursePath(course, htmlPath, rawValue);
+    if (!coursePath || !isPlayableCoursewareAsset(coursePath)) return match;
+    const cdnUrl = generatedCoursewareAssetUrl(course, coursePath);
+    if (!cdnUrl) return match;
+    rewritten += 1;
+    return `${attr}=${quote}${cdnUrl}${quote}`;
+  });
+  return { html: body, rewritten };
+}
+
+function rewriteJsonPlayableReferencesForHybridStorage(value, course, jsonPath) {
+  let rewritten = 0;
+  const pathLikeKeys = new Set(["path", "src", "href", "poster", "url", "file"]);
+  const rewriteNode = (node, key = "") => {
+    if (Array.isArray(node)) return node.map((item) => rewriteNode(item, key));
+    if (node && typeof node === "object") {
+      const next = {};
+      for (const [childKey, child] of Object.entries(node)) next[childKey] = rewriteNode(child, childKey);
+      return next;
+    }
+    if (typeof node !== "string") return node;
+    if (!pathLikeKeys.has(String(key || "").toLowerCase())) return node;
+    const coursePath = htmlReferenceValueToCoursePath(course, jsonPath, node);
+    if (!coursePath || !isPlayableCoursewareAsset(coursePath)) return node;
+    const cdnUrl = generatedCoursewareAssetUrl(course, coursePath);
+    if (!cdnUrl) return node;
+    rewritten += 1;
+    return cdnUrl;
+  };
+  return { value: rewriteNode(value), rewritten };
+}
+
+async function importLightweightContentFromOssManifest({ course, manifestObjectKey, uploadId, actor }) {
+  const code = safeSegment(course).toUpperCase();
+  if (!courseLocalContentEnabled) return { status: "skipped", reason: "COURSE_LOCAL_CONTENT_ENABLED=0" };
+  if (!manifestObjectKey) return { status: "skipped", reason: "No import manifest object key." };
+  const client = await createPortalOssClient();
+  const importManifest = await readOssJsonObject(client, manifestObjectKey);
+  const lightweightFiles = Array.isArray(importManifest.lightweightFiles) ? importManifest.lightweightFiles : [];
+  const selectedFiles = lightweightFiles
+    .map((item) => ({
+      ...item,
+      path: safeLightweightRelativePath(item.path),
+      objectKey: String(item.objectKey || ""),
+      bytes: Number(item.bytes || 0),
+    }))
+    .filter((item) => item.path && item.objectKey && isLightweightCourseContentAsset(item.path, { size: item.bytes, maxBytes: courseLocalMaxFileBytes }));
+  const totalBytes = selectedFiles.reduce((sum, item) => sum + Math.max(0, Number(item.bytes || 0)), 0);
+  if (totalBytes > courseLocalMaxCourseBytes) {
+    throw new Error(`Lightweight content exceeds course limit: ${Math.round(totalBytes / 1024 / 1024)} MB.`);
+  }
+  const stagingRoot = lightweightStagingRoot(code, uploadId);
+  await rm(stagingRoot, { recursive: true, force: true });
+  await mkdir(stagingRoot, { recursive: true });
+  for (const item of selectedFiles) {
+    const target = ensureInside(stagingRoot, join(stagingRoot, item.path));
+    await downloadOssObjectToFile(client, item.objectKey, target);
+  }
+
+  let lightweightHtmlPlayableRefsRewritten = 0;
+  let lightweightJsonPlayableRefsRewritten = 0;
+  for (const item of selectedFiles) {
+    const target = ensureInside(stagingRoot, join(stagingRoot, item.path));
+    if (!existsSync(target)) continue;
+    if (/\.(?:html?|htm)$/i.test(item.path)) {
+      const currentHtml = await readFile(target, "utf8");
+      const rewritten = rewriteHtmlPlayableReferencesForHybridStorage(currentHtml, code, item.path);
+      if (rewritten.rewritten > 0) {
+        await writeFile(target, rewritten.html, "utf8");
+        lightweightHtmlPlayableRefsRewritten += rewritten.rewritten;
+      }
+    } else if (/\.json$/i.test(item.path) && !/(?:^|\/)course-manifest\.json$/i.test(item.path)) {
+      try {
+        const currentJson = JSON.parse(await readFile(target, "utf8"));
+        const rewritten = rewriteJsonPlayableReferencesForHybridStorage(currentJson, code, item.path);
+        if (rewritten.rewritten > 0) {
+          await writeFile(target, `${JSON.stringify(rewritten.value, null, 2)}\n`, "utf8");
+          lightweightJsonPlayableRefsRewritten += rewritten.rewritten;
+        }
+      } catch {
+        // Non-JSON files with a .json suffix are left as-is.
+      }
+    }
+  }
+
+  const root = courseRoot(code);
+  await mkdir(root, { recursive: true });
+  const copiedTopLevelEntries = await copyLightweightStagingContent(stagingRoot, root);
+  const stagedManifestPath = join(stagingRoot, "course-manifest.json");
+  let manifest = null;
+  if (existsSync(stagedManifestPath)) {
+    manifest = normalizeManifestCourse(JSON.parse(await readFile(stagedManifestPath, "utf8")), code);
+  } else {
+    manifest = buildManifestFromLightweightFiles(code, selectedFiles);
+  }
+  rewriteManifestForHybridStorage(manifest, code);
+  manifest.sourceAudit = {
+    ...(manifest.sourceAudit || {}),
+    generatedFrom: manifest.sourceAudit?.generatedFrom || "oss-lightweight-import",
+    importStatus: "lightweight-imported",
+    mediaStatus: (manifest.sourceAudit?.hasPlayableMedia || false) ? "pending" : "not-required",
+    hasPlayableMedia: Boolean(manifest.sourceAudit?.hasPlayableMedia),
+    latestUploadId: uploadId,
+    lightweightFilesImported: selectedFiles.length,
+    lightweightBytes: totalBytes,
+    lightweightHtmlPlayableRefsRewritten,
+    lightweightJsonPlayableRefsRewritten,
+    lightweightPlayableRefsRewritten: lightweightHtmlPlayableRefsRewritten + lightweightJsonPlayableRefsRewritten,
+    importManifestObjectKey: manifestObjectKey,
+  };
+  recomputeManifestSummaries(manifest);
+  writeJsonFile(join(root, "course-manifest.json"), manifest);
+  const catalogEntry = await ensureCourseCatalogEntry(code, manifest);
+  const lifecycle = setCourseLifecycleStatus(code, "active", actor, "Activated automatically after OSS lightweight course content import.");
+  await rm(stagingRoot, { recursive: true, force: true });
+  return {
+    status: "imported",
+    files: selectedFiles.length,
+    bytes: totalBytes,
+    htmlPlayableRefsRewritten: lightweightHtmlPlayableRefsRewritten,
+    jsonPlayableRefsRewritten: lightweightJsonPlayableRefsRewritten,
+    playableRefsRewritten: lightweightHtmlPlayableRefsRewritten + lightweightJsonPlayableRefsRewritten,
+    copiedTopLevelEntries,
+    catalogEntry,
+    lifecycle,
+  };
 }
 
 async function readCourseCatalog() {
@@ -2835,14 +3993,92 @@ function manifestReadiness(manifest) {
   };
 }
 
+function manifestDisplayability(manifest, manifestStatus) {
+  if (manifestStatus !== "ready") {
+    return {
+      ok: false,
+      reason: manifestStatus === "missing" ? "missing-manifest" : "manifest-not-ready",
+      units: 0,
+      lessons: 0,
+      bookSections: 0,
+      resources: 0,
+      ispring: 0,
+      videos: 0,
+      texts: 0,
+      textMaterials: 0,
+      courseDownloads: 0,
+    };
+  }
+
+  const units = Array.isArray(manifest.units) ? manifest.units : [];
+  const texts = Array.isArray(manifest.texts) ? manifest.texts : [];
+  const courseDownloads = Array.isArray(manifest.courseDownloads) ? manifest.courseDownloads : [];
+  let lessons = 0;
+  let bookSections = 0;
+  let resources = 0;
+  let ispring = 0;
+  let videos = 0;
+
+  for (const unit of units) {
+    for (const lesson of unit.lessons || []) {
+      lessons += 1;
+      bookSections += (lesson.bookSections || []).length;
+      ispring += (lesson.ispring || []).length;
+      for (const section of ["lesson", "downloads", "handsOn", "consolidation", "homework", "resources"]) {
+        const items = Array.isArray(lesson[section]) ? lesson[section] : [];
+        resources += items.length;
+        videos += items.filter((item) => {
+          const text = JSON.stringify(item || {});
+          return /\.(mp4|webm|mov|m4v)(\?|#|"|$)/i.test(text);
+        }).length;
+      }
+    }
+  }
+
+  const textMaterials = texts.reduce((sum, text) => sum + (text.materials?.length || 0), 0);
+  const ok = Boolean(
+    units.length &&
+      (
+        lessons ||
+        bookSections ||
+        resources ||
+        ispring ||
+        videos ||
+        texts.length ||
+        textMaterials ||
+        courseDownloads.length
+      ),
+  );
+
+  return {
+    ok,
+    reason: ok ? "" : "no-displayable-content",
+    units: units.length,
+    lessons,
+    bookSections,
+    resources,
+    ispring,
+    videos,
+    texts: texts.length,
+    textMaterials,
+    courseDownloads: courseDownloads.length,
+  };
+}
+
 async function courseReadinessRecord(course) {
-  const manifest = await readManifest(course.code);
+  const { manifest, manifestStatus, manifestError } = await readManifestForAdminStatus(course.code);
   const readiness = manifestReadiness(manifest);
+  const displayable = manifestDisplayability(manifest, manifestStatus);
   return {
     code: course.code,
     title: course.title,
     status: course.status,
     level: course.level,
+    uploaded: manifestStatus === "ready",
+    completed: displayable.ok,
+    displayable,
+    manifestStatus,
+    manifestError,
     units: manifest.units?.length || 0,
     lessons: manifest.sourceAudit?.lessonCount || (manifest.units || []).reduce((sum, unit) => sum + (unit.lessons?.length || 0), 0),
     readiness,
@@ -2982,6 +4218,10 @@ function upsertPortalUser(users, input) {
   const next = normalizePortalUser({
     ...(existing || {}),
     username,
+    displayName:
+      input.displayName !== undefined || input.nickname !== undefined || input.name !== undefined || input.fullName !== undefined
+        ? String(input.displayName || input.nickname || input.name || input.fullName || "").trim()
+        : existing?.displayName || "",
     role,
     courses,
     status: input.status === "disabled" ? "disabled" : "active",
@@ -3008,10 +4248,25 @@ function removePortalUser(users, username) {
 }
 
 async function courseUploadGapRecord(course) {
-  const manifest = await readManifest(course.code);
+  const { manifest, manifestStatus, manifestError } = await readManifestForAdminStatus(course.code);
+  if (manifestStatus !== "ready") {
+    return {
+      code: course.code,
+      title: course.title,
+      uploaded: false,
+      manifestStatus,
+      manifestError,
+      uploadItems: [],
+      reviewItems: [],
+      externalItems: [],
+    };
+  }
   return {
     code: course.code,
     title: course.title,
+    uploaded: true,
+    manifestStatus,
+    manifestError,
     uploadItems: directUploadGapItems(course, manifest),
     reviewItems: reviewGapItems(course, manifest),
     externalItems: externalGapItems(course, manifest),
@@ -3087,6 +4342,34 @@ async function generateContentWorkbench() {
   return runCommand("node", [scriptPath], projectRoot);
 }
 
+async function finalizeEcsFirstCourseStorage(course, importId) {
+  const scriptPath = join(projectRoot, "scripts", "finalize-ecs-first-course-storage.mjs");
+  const args = [
+    scriptPath,
+    "--course",
+    safeSegment(course).toUpperCase(),
+    "--courseware-root",
+    courseActiveRoot,
+    "--bucket",
+    ossBucketUri,
+    "--cdn-base-url",
+    coursewareAssetBaseUrl,
+    "--prefix",
+    coursewareAssetPrefix,
+    "--registry",
+    coursewareAssetRegistryPath,
+    "--ossutil",
+    ossutilPath,
+    "--apply",
+  ];
+  const result = await runCommand("node", args, projectRoot);
+  return parseJobPayload(result.stdout) || {
+    ok: result.code === 0,
+    stdout: result.stdout,
+    stderr: result.stderr,
+  };
+}
+
 async function readContentWorkbench() {
   return JSON.parse(await readFile(join(projectRoot, "deployment", "course-content-workbench.json"), "utf8"));
 }
@@ -3139,6 +4422,42 @@ async function diskInfoFor(path) {
   }
 }
 
+function formatBytesForError(bytes) {
+  const value = Number(bytes || 0);
+  if (!Number.isFinite(value) || value <= 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let size = value;
+  let unit = 0;
+  while (size >= 1024 && unit < units.length - 1) {
+    size /= 1024;
+    unit += 1;
+  }
+  return `${size.toFixed(unit === 0 ? 0 : 1)} ${units[unit]}`;
+}
+
+async function coursePackageEcsCapacityPreflight(totalBytes) {
+  const packageBytes = Number(totalBytes || 0);
+  const disk = await diskInfoFor(courseActiveRoot) || await diskInfoFor(projectRoot);
+  const requiredBytes = Math.ceil(packageBytes * coursePackageEcsSpaceFactor + coursePackageDiskReserveBytes);
+  const ok = !disk || disk.freeBytes >= requiredBytes;
+  return {
+    ok,
+    disk,
+    packageBytes,
+    requiredBytes,
+    freeBytes: disk?.freeBytes ?? null,
+    spaceFactor: coursePackageEcsSpaceFactor,
+    reserveBytes: coursePackageDiskReserveBytes,
+    rawUploadRequired: !ok,
+  };
+}
+
+async function assertCoursePackageEcsCapacity(totalBytes) {
+  const capacity = await coursePackageEcsCapacityPreflight(totalBytes);
+  if (capacity.ok) return capacity;
+  throw new Error(`ECS 剩余空间不足，不能走 ECS 本地课程包导入：ZIP ${formatBytesForError(capacity.packageBytes)}，预估峰值需要 ${formatBytesForError(capacity.requiredBytes)}，当前可用 ${formatBytesForError(capacity.freeBytes)}。请走 OSS raw package，由 ECS worker 从 OSS 内网流式读取并分流。`);
+}
+
 async function listDirectoryNames(root) {
   try {
     return (await readdir(root, { withFileTypes: true }))
@@ -3175,40 +4494,196 @@ async function courseStorageRecord(courseCode, catalogEntry = null) {
   };
 }
 
-async function storageOverview() {
+async function storageCourseIndex() {
   const catalog = await readCourseCatalog();
   const catalogCourses = visibleCatalogCourses(catalog);
   const catalogMap = new Map(catalogCourses.map((course) => [String(course.code || "").toUpperCase(), course]));
   const activeDirs = await listDirectoryNames(courseActiveRoot);
   const archiveDirs = await listDirectoryNames(courseArchiveRoot);
+  const activeDirCourses = activeDirs
+    .map((name) => String(name || "").toUpperCase())
+    .filter((name) => name && !isExcludedCourseCode(name));
+  const extraActiveDirCourses = activeDirCourses.filter((course) => !catalogMap.has(course));
   const courseCodes = new Set([
     ...catalogCourses.map((course) => String(course.code || "").toUpperCase()).filter(Boolean),
-    ...activeDirs.map((name) => String(name || "").toUpperCase()).filter((name) => name && !isExcludedCourseCode(name)),
+    ...activeDirCourses,
     ...archiveDirs
       .map((name) => String(name || "").replace(/\.(tar\.gz|zip)$/i, "").toUpperCase())
       .filter((name) => name && !isExcludedCourseCode(name)),
   ]);
-  const courses = (await Promise.all([...courseCodes].map((course) => courseStorageRecord(course, catalogMap.get(course)))))
+  return {
+    catalogCourses,
+    catalogMap,
+    activeDirCourses,
+    extraActiveDirCourses,
+    courseCodes,
+  };
+}
+
+function summarizeStorageCourses(courses, index) {
+  return {
+    courseCount: courses.length,
+    catalogCourses: index.catalogCourses.length,
+    activeDirectoryCourses: index.activeDirCourses.length,
+    extraActiveDirectoryCourses: index.extraActiveDirCourses.length,
+    activeRootBytes: courses.reduce((sum, course) => sum + Number(course.activeBytes || 0), 0),
+    archiveRootBytes: courses.reduce((sum, course) => sum + Number(course.archiveBytes || 0), 0),
+    adminUploadBytes: courses.reduce((sum, course) => sum + Number(course.adminUploadBytes || 0), 0),
+    courseTotalBytes: courses.reduce((sum, course) => sum + Number(course.totalBytes || 0), 0),
+  };
+}
+
+function normalizeStorageCourseRecord(record) {
+  return {
+    course: safeSegment(record?.course || "").toUpperCase(),
+    title: String(record?.title || ""),
+    status: String(record?.status || "active"),
+    activeBytes: Number(record?.activeBytes || 0),
+    adminUploadBytes: Number(record?.adminUploadBytes || 0),
+    archiveBytes: Number(record?.archiveBytes || 0),
+    totalBytes: Number(record?.totalBytes || 0),
+  };
+}
+
+function storageCacheMeta(status, cache = null) {
+  const updatedAt = cache?.updatedAt || cache?.generatedAt || null;
+  const ageSeconds = updatedAt ? Math.max(0, Math.round((Date.now() - Date.parse(updatedAt)) / 1000)) : null;
+  const usable = ["ready", "rebuilt", "updated"].includes(status);
+  return {
+    path: storageOverviewCachePath,
+    exists: Boolean(cache),
+    usable,
+    status,
+    updatedAt,
+    ageSeconds,
+  };
+}
+
+function storageCacheIsUsable(cache) {
+  return Boolean(
+    cache
+      && cache.version === storageOverviewCacheVersion
+      && cache.activeRoot === courseActiveRoot
+      && cache.archiveRoot === courseArchiveRoot
+      && Array.isArray(cache.courses)
+      && cache.summary
+  );
+}
+
+function readStorageOverviewCache() {
+  const cache = readJsonFileSync(storageOverviewCachePath, null);
+  if (!cache) return { cache: null, meta: storageCacheMeta("missing") };
+  if (!storageCacheIsUsable(cache)) return { cache: null, meta: storageCacheMeta("stale", cache) };
+  return { cache, meta: storageCacheMeta("ready", cache) };
+}
+
+async function writeStorageOverviewCache(cache) {
+  await mkdir(dirname(storageOverviewCachePath), { recursive: true });
+  writeJsonFile(storageOverviewCachePath, cache);
+  return cache;
+}
+
+async function rebuildStorageOverviewCache() {
+  const index = await storageCourseIndex();
+  const courses = (await Promise.all([...index.courseCodes].map((course) => courseStorageRecord(course, index.catalogMap.get(course)))))
+    .map(normalizeStorageCourseRecord)
+    .filter((course) => course.course)
     .sort((a, b) => b.totalBytes - a.totalBytes || a.course.localeCompare(b.course));
-  const disk = await diskInfoFor(courseActiveRoot);
-  const activeRootBytes = await directorySize(courseActiveRoot);
-  const archiveRootBytes = await directorySize(courseArchiveRoot);
-  const adminUploadBytes = courses.reduce((sum, course) => sum + course.adminUploadBytes, 0);
+  const now = new Date().toISOString();
+  const cache = {
+    ok: true,
+    version: storageOverviewCacheVersion,
+    generatedAt: now,
+    updatedAt: now,
+    activeRoot: courseActiveRoot,
+    archiveRoot: courseArchiveRoot,
+    summary: summarizeStorageCourses(courses, index),
+    courses,
+    warnings: [],
+  };
+  return writeStorageOverviewCache(cache);
+}
+
+function publicStorageOverview(cache, { disk, summaryOnly, cacheMeta }) {
   return {
     ok: true,
-    generatedAt: new Date().toISOString(),
+    generatedAt: cache.generatedAt || cache.updatedAt || new Date().toISOString(),
+    updatedAt: cache.updatedAt || cache.generatedAt || null,
     activeRoot: courseActiveRoot,
     archiveRoot: courseArchiveRoot,
     disk,
     summary: {
-      courseCount: courses.length,
-      activeRootBytes,
-      archiveRootBytes,
-      adminUploadBytes,
-      courseTotalBytes: courses.reduce((sum, course) => sum + course.totalBytes, 0),
+      ...(cache.summary || {}),
+      lightweight: summaryOnly,
+      cached: Boolean(cacheMeta?.usable),
     },
+    cache: cacheMeta,
+    courses: summaryOnly ? [] : cache.courses || [],
+    warnings: cache.warnings || [],
+  };
+}
+
+async function storageOverview({ summaryOnly = false, refresh = false } = {}) {
+  const disk = await diskInfoFor(courseActiveRoot);
+  if (refresh || !summaryOnly) {
+    const cached = readStorageOverviewCache();
+    if (!refresh && cached.cache) return publicStorageOverview(cached.cache, { disk, summaryOnly, cacheMeta: cached.meta });
+    const rebuilt = await rebuildStorageOverviewCache();
+    return publicStorageOverview(rebuilt, { disk, summaryOnly, cacheMeta: storageCacheMeta("rebuilt", rebuilt) });
+  }
+
+  const cached = readStorageOverviewCache();
+  if (cached.cache) return publicStorageOverview(cached.cache, { disk, summaryOnly, cacheMeta: cached.meta });
+
+  const index = await storageCourseIndex();
+  const now = new Date().toISOString();
+  const lightweightCache = {
+    ok: true,
+    version: storageOverviewCacheVersion,
+    generatedAt: now,
+    updatedAt: now,
+    activeRoot: courseActiveRoot,
+    archiveRoot: courseArchiveRoot,
+    summary: {
+      courseCount: 0,
+      catalogCourses: index.catalogCourses.length,
+      activeDirectoryCourses: index.activeDirCourses.length,
+      extraActiveDirectoryCourses: index.extraActiveDirCourses.length,
+      activeRootBytes: null,
+      archiveRootBytes: null,
+      adminUploadBytes: null,
+      courseTotalBytes: null,
+    },
+    courses: [],
+    warnings: ["Storage cache is missing; open the storage page or rebuild the cache to calculate course sizes."],
+  };
+  return publicStorageOverview(lightweightCache, { disk, summaryOnly, cacheMeta: cached.meta });
+}
+
+async function refreshStorageCacheForCourse(courseCode) {
+  const course = safeSegment(courseCode || "").toUpperCase();
+  if (!course) return null;
+  const current = readStorageOverviewCache();
+  if (!current.cache) return null;
+  const index = await storageCourseIndex();
+  const record = normalizeStorageCourseRecord(await courseStorageRecord(course, index.catalogMap.get(course)));
+  const courses = (current.cache.courses || [])
+    .map(normalizeStorageCourseRecord)
+    .filter((item) => item.course && item.course !== course);
+  if (record.activeBytes || record.adminUploadBytes || record.archiveBytes || index.catalogMap.has(course)) {
+    courses.push(record);
+  }
+  courses.sort((a, b) => b.totalBytes - a.totalBytes || a.course.localeCompare(b.course));
+  const now = new Date().toISOString();
+  const next = {
+    ...current.cache,
+    updatedAt: now,
+    activeRoot: courseActiveRoot,
+    archiveRoot: courseArchiveRoot,
+    summary: summarizeStorageCourses(courses, index),
     courses,
   };
+  return writeStorageOverviewCache(next);
 }
 
 async function appendAdminHistory(course, entry) {
@@ -3945,13 +5420,226 @@ function startCoursePackageFinalize({ course, importId, actor }) {
   });
 }
 
+function isRetryableRawCoursePackageImportError(error) {
+  const message = error instanceof Error ? error.message : String(error || "");
+  return /unexpected end of file|Z_BUF_ERROR|socket hang up|ECONNRESET|ETIMEDOUT|EPIPE|Premature close|aborted|read ECONNRESET/i.test(message);
+}
+
+async function runRawCoursePackageImportCommand({ args, course, importId, filename, record }) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= rawCoursePackageImportRetries; attempt += 1) {
+    if (attempt > 1) {
+      writeCoursePackageTask(course, importId, {
+        status: "processing",
+        phase: "retrying-oss-raw",
+        filename,
+        source: "oss-raw-package",
+        ossUri: record.ossUri,
+        totalBytes: record.fileSize || null,
+        percent: 10,
+        importMode: "hybrid-raw",
+        attempt,
+        maxAttempts: rawCoursePackageImportRetries,
+        previousError: lastError instanceof Error ? lastError.message : String(lastError || ""),
+      });
+      ossUploadStore.patchRecord(record.id, {
+        status: "importing",
+        importStatus: "oss-raw-retrying",
+        ingestMessage: `OSS raw 导入读取流中断，正在重新从 OSS raw ZIP 启动 worker（${attempt}/${rawCoursePackageImportRetries}）。`,
+        error: "",
+      });
+    }
+    try {
+      return await runCommand("node", args, projectRoot);
+    } catch (error) {
+      lastError = error;
+      if (attempt >= rawCoursePackageImportRetries || !isRetryableRawCoursePackageImportError(error)) throw error;
+    }
+  }
+  throw lastError || new Error("OSS raw package import failed.");
+}
+
+function startRawOssCoursePackageImport({ record, actor }) {
+  const course = safeSegment(record?.course || "").toUpperCase();
+  const importId = safeSegment(record?.id || coursePackageId());
+  const filename = safeSegment(record?.fileName || "course-package.zip") || "course-package.zip";
+  const key = coursePackageTaskKey(course, importId);
+  if (!course) throw new Error("Course is required for raw OSS package import.");
+  if (!record?.ossUri) throw new Error("Raw OSS course package is missing ossUri.");
+  if (coursePackageFinalizeTasks.has(key)) {
+    return writeCoursePackageTask(course, importId, {
+      status: "processing",
+      phase: "streaming-oss-raw",
+      filename,
+      source: "oss-raw-package",
+      ossUri: record.ossUri,
+      totalBytes: record.fileSize || null,
+      percent: 10,
+      importMode: "hybrid-raw",
+    });
+  }
+
+  const promise = (async () => {
+    writeCoursePackageTask(course, importId, {
+      status: "processing",
+      phase: "streaming-oss-raw",
+      filename,
+      source: "oss-raw-package",
+      ossUri: record.ossUri,
+      totalBytes: record.fileSize || null,
+      percent: 10,
+      startedAt: new Date().toISOString(),
+      importMode: "hybrid-raw",
+    });
+    ossUploadStore.patchRecord(record.id, {
+      status: "importing",
+      importId,
+      importStatus: "oss-raw-streaming",
+      importMode: "hybrid-raw",
+      ossOnly: false,
+      error: "",
+      ingestMessage: "课程包已进入 ECS worker：从 OSS raw ZIP 流式读取，普通资料落 ECS，高并发资源发布到 OSS/CDN。",
+    });
+
+    const scriptPath = join(projectRoot, "scripts", "import-hybrid-raw-package.mjs");
+    const rawImportArgs = [
+      scriptPath,
+      "--course",
+      course,
+      "--import-id",
+      importId,
+      "--source-oss-uri",
+      record.ossUri,
+      "--courseware-root",
+      courseActiveRoot,
+      "--bucket",
+      ossBucketUri,
+      "--cdn-base-url",
+      coursewareAssetBaseUrl,
+      "--prefix",
+      coursewareAssetPrefix,
+      "--registry",
+      coursewareAssetRegistryPath,
+      "--actor",
+      actor || "unknown",
+    ];
+    const result = await runRawCoursePackageImportCommand({
+      args: rawImportArgs,
+      course,
+      importId,
+      filename,
+      record,
+    });
+    const payload = parseJobPayload(result.stdout) || { ok: true, stdout: result.stdout, stderr: result.stderr };
+    const manifest = await readManifest(course);
+    const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
+    const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after hybrid raw course package import.");
+    let lightweightPreview = null;
+    let lightweightPreviewWarning = null;
+    try {
+      lightweightPreview = await generateLightweightPreviews(course);
+    } catch (error) {
+      lightweightPreviewWarning = error instanceof Error ? error.message : String(error);
+    }
+    const finalResult = {
+      ok: true,
+      course,
+      importId,
+      imported: true,
+      mode: "hybrid-raw",
+      payload,
+      catalogEntry,
+      lifecycle,
+      lightweightPreview: lightweightPreview?.stdout?.trim() || null,
+      lightweightPreviewWarning,
+      manifest: "manifest imported from OSS raw package and finalized for hybrid ECS/OSS storage",
+    };
+    writeCoursePackageTask(course, importId, {
+      status: "committed",
+      phase: "imported",
+      percent: 100,
+      filename,
+      result: finalResult,
+      importMode: "hybrid-raw",
+    });
+    ossUploadStore.patchRecord(record.id, {
+      status: "imported",
+      importStatus: "committed",
+      mediaStatus: manifest.sourceAudit?.mediaStatus || "",
+      hasPlayableMedia: manifest.sourceAudit?.hasPlayableMedia === true,
+      latestUploadId: record.id,
+      latestImportSummary: payload,
+      importedAt: new Date().toISOString(),
+      importResult: {
+        mode: finalResult.mode,
+        manifest: finalResult.manifest,
+      },
+      ingestMessage: "OSS raw 导入完成：普通资料保存在 ECS，高并发资源已发布到 OSS/CDN。",
+      error: "",
+    });
+    await appendAdminHistory(course, {
+      actor,
+      action: "course-package-raw-import",
+      importId,
+      filename,
+      ossUri: record.ossUri,
+      payload,
+      lifecycleStatus: lifecycle.status,
+      lightweightPreview: lightweightPreview?.stdout?.trim() || null,
+      lightweightPreviewWarning,
+    });
+  })()
+    .catch((error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      writeCoursePackageTask(course, importId, {
+        status: "failed",
+        phase: "failed",
+        filename,
+        source: "oss-raw-package",
+        ossUri: record.ossUri,
+        importMode: "hybrid-raw",
+        error: message,
+      });
+      ossUploadStore.patchRecord(record.id, {
+        status: "failed",
+        importId,
+        importStatus: "failed",
+        importMode: "hybrid-raw",
+        error: message,
+      });
+    })
+    .finally(() => {
+      coursePackageFinalizeTasks.delete(key);
+    });
+  coursePackageFinalizeTasks.set(key, promise);
+
+  return writeCoursePackageTask(course, importId, {
+    status: "processing",
+    phase: "streaming-oss-raw",
+    filename,
+    source: "oss-raw-package",
+    ossUri: record.ossUri,
+    totalBytes: record.fileSize || null,
+    percent: 10,
+    startedAt: new Date().toISOString(),
+    importMode: "hybrid-raw",
+  });
+}
+
 function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
+  if (!isRawCoursePackageUploadKind(record?.kind)) {
+    throw new Error("这个课程包记录来自已停用的历史导入接口，不能继续处理。请通过课程压缩包入口重新上传课程 ZIP。");
+  }
   const course = safeSegment(record?.course || "").toUpperCase();
   const importId = safeSegment(record?.id || coursePackageId());
   if (!course) throw new Error("Course is required for OSS course package import.");
   if (!record?.ossUri) throw new Error("OSS upload record is missing ossUri.");
   const filename = safeSegment(record.fileName || "course-package.zip") || "course-package.zip";
   if (extname(filename).toLowerCase() !== ".zip") throw new Error("Course package import requires a .zip file.");
+
+  if (isRawCoursePackageUploadKind(record?.kind)) {
+    return startRawOssCoursePackageImport({ record, actor });
+  }
 
   const key = coursePackageTaskKey(course, importId);
   if (coursePackageFinalizeTasks.has(key)) {
@@ -4128,6 +5816,9 @@ function startOssCoursePackageImport({ record, actor, autoCommit = true }) {
 }
 
 async function markOssCoursePackageAwaitingExtract({ record, actor }) {
+  if (coursePackageImportMode === "ecs-first") {
+    throw new Error("历史 OSS-side 解压等待状态已停用。请通过课程压缩包入口上传课程 ZIP。");
+  }
   const course = safeSegment(record?.course || "").toUpperCase();
   const importId = safeSegment(record?.id || coursePackageId());
   if (!course) throw new Error("Course is required for OSS course package ingest.");
@@ -4135,7 +5826,7 @@ async function markOssCoursePackageAwaitingExtract({ record, actor }) {
   const filename = safeSegment(record.fileName || "course-package.zip") || "course-package.zip";
   if (extname(filename).toLowerCase() !== ".zip") throw new Error("Course package ingest requires a .zip file.");
 
-  const message = "完整课件包已保存在 OSS inbox，等待 OSS-side 解压/索引；不会下载到 ECS。";
+  const message = "历史 OSS-side 课程包链路已停用；请通过课程压缩包入口重新上传课程 ZIP。";
   const task = {
     ok: true,
     course,
@@ -4177,6 +5868,9 @@ async function markOssCoursePackageAwaitingExtract({ record, actor }) {
 }
 
 async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
+  if (coursePackageImportMode === "ecs-first") {
+    throw new Error("历史 OSS-side 解压回调已停用。请通过课程压缩包入口重新上传课程 ZIP。");
+  }
   const course = safeSegment(record?.course || "").toUpperCase();
   if (!course) throw new Error("Course is required for OSS course package indexing.");
   if (record?.kind !== "course-package") throw new Error("Only course package uploads can be marked extracted.");
@@ -4185,6 +5879,7 @@ async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
   }
   const now = new Date().toISOString();
   const targetPrefix = toPosixPath(body.targetPrefix || record.targetPrefix || `${coursewareAssetPrefix}/${course}/`).replace(/^\/+/, "").replace(/\/?$/, "/");
+  const extractSummary = normalizedOssExtractSummary(body);
   const extractReport = {
     schemaVersion: 1,
     uploadId: record.id,
@@ -4196,9 +5891,77 @@ async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
     targetPrefix,
     extractor: safeSegment(body.extractor || "external"),
     summary: body.summary || null,
+    entries: extractSummary.entries,
+    mediaExtracted: extractSummary.mediaExtracted,
+    lightweightCandidates: extractSummary.lightweightCandidates,
+    skipped: extractSummary.skipped,
+    status: extractSummary.status,
+    manifestObjectKey: extractSummary.manifestObjectKey,
     note: String(body.note || ""),
   };
   writeJsonFile(ossUploadStore.uploadPath(record.id, "oss-extract-result.json"), extractReport);
+
+  const shell = await ensureHybridCourseShell({
+    course,
+    actor,
+    extractSummary,
+    sourceObjectKey: record.objectKey || "",
+    uploadId: record.id,
+  });
+  let lightweightImport = null;
+  let lightweightWarning = "";
+  if (extractSummary.manifestObjectKey) {
+    try {
+      lightweightImport = await importLightweightContentFromOssManifest({
+        course,
+        manifestObjectKey: extractSummary.manifestObjectKey,
+        uploadId: record.id,
+        actor,
+      });
+    } catch (error) {
+      lightweightWarning = error instanceof Error ? error.message : String(error);
+    }
+  }
+
+  if (extractSummary.mediaExtracted <= 0) {
+    const next = ossUploadStore.patchRecord(record.id, {
+      status: "imported",
+      importStatus: "no-media",
+      mediaStatus: "not-required",
+      localContentStatus: lightweightImport?.status === "imported"
+        ? "lightweight-imported"
+        : extractSummary.lightweightCandidates > 0
+          ? "pending-lightweight-import"
+          : "course-shell-only",
+      hasPlayableMedia: false,
+      latestUploadId: record.id,
+      latestImportSummary: {
+        entries: extractSummary.entries,
+        mediaExtracted: extractSummary.mediaExtracted,
+        lightweightCandidates: extractSummary.lightweightCandidates,
+        lightweightImported: lightweightImport?.files || 0,
+        skipped: extractSummary.skipped,
+        status: extractSummary.status,
+        manifestObjectKey: extractSummary.manifestObjectKey,
+      },
+      importMode: "oss-only",
+      ossOnly: true,
+      importedAt: now,
+      extractedAt: now,
+      extractedBy: actor,
+      extractReport: "oss-extract-result.json",
+      targetPrefix,
+      jobId: "",
+      mediaJobWarning: lightweightWarning,
+      ingestMessage: lightweightImport?.status === "imported"
+        ? `课程壳和轻量内容已导入（${lightweightImport.files || 0} files）；未发现视频/H5P/iSpring。媒体发布不需要执行。`
+        : extractSummary.lightweightCandidates > 0
+          ? "课程壳已创建；未发现视频/H5P/iSpring，轻量内容等待导入。媒体发布不需要执行。"
+          : "课程壳已创建；未发现可发布媒体。媒体发布不需要执行。",
+      error: "",
+    });
+    return { upload: next, job: null, warning: lightweightWarning, shell, lightweightImport };
+  }
 
   const { job, warning } = tryCreateMediaJob({
     type: "index-oss",
@@ -4209,6 +5972,23 @@ async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
   const next = ossUploadStore.patchRecord(record.id, {
     status: job ? "queued" : "uploaded",
     importStatus: job ? "oss-index-queued" : "oss-extracted",
+    mediaStatus: job ? "pending" : "warning",
+    localContentStatus: lightweightImport?.status === "imported"
+      ? "lightweight-imported"
+      : extractSummary.lightweightCandidates > 0
+        ? "pending-lightweight-import"
+        : "course-shell-only",
+    hasPlayableMedia: true,
+    latestUploadId: record.id,
+    latestImportSummary: {
+      entries: extractSummary.entries,
+      mediaExtracted: extractSummary.mediaExtracted,
+      lightweightCandidates: extractSummary.lightweightCandidates,
+      lightweightImported: lightweightImport?.files || 0,
+      skipped: extractSummary.skipped,
+      status: extractSummary.status,
+      manifestObjectKey: extractSummary.manifestObjectKey,
+    },
     importMode: "oss-only",
     ossOnly: true,
     extractedAt: now,
@@ -4216,13 +5996,13 @@ async function markOssCoursePackageExtracted({ record, actor, body = {} }) {
     extractReport: "oss-extract-result.json",
     targetPrefix,
     jobId: job?.id || record.jobId || "",
-    mediaJobWarning: warning || "",
+    mediaJobWarning: warning || lightweightWarning || "",
     ingestMessage: job
-      ? "OSS-side 解压已确认，正在索引 OSS 资源；不会下载到 ECS。"
+      ? `课程壳已创建；${lightweightImport?.status === "imported" ? "轻量内容已导入；" : ""}OSS-side 媒体解压已确认，正在索引 OSS 资源。`
       : `OSS-side 解压已确认，但索引任务未创建：${warning || "任务中心未启用"}`,
     error: "",
   });
-  return { upload: next, job, warning };
+  return { upload: next, job, warning: warning || lightweightWarning, shell, lightweightImport };
 }
 
 async function packageContentRoot(extractRoot) {
@@ -4768,12 +6548,16 @@ async function commitManifestCoursePackageImport({ course, importId, actor, revi
   }
 
   const root = courseRoot(course);
-  const manifest = normalizeManifestCourse(packageManifest.manifest, course);
+  let manifest = normalizeManifestCourse(packageManifest.manifest, course);
   await clearCourseRootForManifestPackage(course);
   const copiedTopLevelEntries = await copyManifestPackageContent(review.contentRoot, root);
   const removedGeneratedLocalPackageNotes = await pruneGeneratedLocalPackageNotes(course, manifest);
   recomputeManifestSummaries(manifest);
   writeJsonFile(join(root, "course-manifest.json"), manifest);
+  const ecsFirstStorage = await finalizeEcsFirstCourseStorage(course, importId);
+  if (ecsFirstStorage) {
+    manifest = normalizeManifestCourse(JSON.parse(await readFile(join(root, "course-manifest.json"), "utf8")), course);
+  }
   const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
   const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after whole-course ZIP import.");
   let lightweightPreview = null;
@@ -4791,6 +6575,7 @@ async function commitManifestCoursePackageImport({ course, importId, actor, revi
     originalFilename: review.originalFilename,
     copiedTopLevelEntries,
     removedGeneratedLocalPackageNotes,
+    ecsFirstStorage,
     lifecycleStatus: lifecycle.status,
     lightweightPreview: lightweightPreview?.stdout?.trim() || null,
     lightweightPreviewWarning,
@@ -4812,12 +6597,13 @@ async function commitManifestCoursePackageImport({ course, importId, actor, revi
     installed: review.operations || [],
     copiedTopLevelEntries,
     removedGeneratedLocalPackageNotes,
+    ecsFirstStorage,
     cleanup,
     catalogEntry,
     lifecycle,
     lightweightPreview: lightweightPreview?.stdout?.trim() || null,
     lightweightPreviewWarning,
-    manifest: "manifest restored from course package",
+    manifest: ecsFirstStorage ? "manifest restored and finalized for hybrid ECS/OSS storage" : "manifest restored from course package",
   };
 }
 
@@ -4912,7 +6698,11 @@ async function commitCoursePackageImport({ course, importId, actor }) {
   const removedGeneratedLocalPackageNotes = await pruneGeneratedLocalPackageNotes(course, manifest);
   recomputeManifestSummaries(manifest);
   writeJsonFile(join(courseRoot(course), "course-manifest.json"), manifest);
-  const catalogEntry = await ensureCourseCatalogEntry(course, manifest);
+  const ecsFirstStorage = await finalizeEcsFirstCourseStorage(course, importId);
+  const finalManifest = ecsFirstStorage
+    ? normalizeManifestCourse(JSON.parse(await readFile(join(courseRoot(course), "course-manifest.json"), "utf8")), course)
+    : manifest;
+  const catalogEntry = await ensureCourseCatalogEntry(course, finalManifest);
   const lifecycle = setCourseLifecycleStatus(course, "active", actor, "Activated automatically after whole-course ZIP import.");
   let lightweightPreview = null;
   let lightweightPreviewWarning = null;
@@ -4928,6 +6718,7 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     originalFilename: review.originalFilename,
     installedCount: installed.length,
     removedGeneratedLocalPackageNotes,
+    ecsFirstStorage,
     backups,
     lifecycleStatus: lifecycle.status,
     lightweightPreview: lightweightPreview?.stdout?.trim() || null,
@@ -4950,9 +6741,10 @@ async function commitCoursePackageImport({ course, importId, actor }) {
     catalogEntry,
     lifecycle,
     removedGeneratedLocalPackageNotes,
+    ecsFirstStorage,
     lightweightPreview: lightweightPreview?.stdout?.trim() || null,
     lightweightPreviewWarning,
-    manifest: "manifest updated directly from course package import",
+    manifest: ecsFirstStorage ? "manifest updated and finalized for hybrid ECS/OSS storage" : "manifest updated directly from course package import",
   };
 }
 
@@ -4973,6 +6765,7 @@ async function handleAdminApi(req, res) {
         authenticated: Boolean(principal),
         loginEnabled: adminLoginConfigured(),
         username: principal?.username || null,
+        displayName: principal?.displayName || null,
         role: principal?.role || null,
         authSource: principal?.source || null,
       });
@@ -4996,7 +6789,7 @@ async function handleAdminApi(req, res) {
       if (legacyUsernameOk && legacyPasswordOk) {
         clearLoginFailures(rateKeys);
         setSessionCookie(res, adminUsername);
-        sendJson(res, 200, { ok: true, username: adminUsername, role: "admin", authSource: "admin" });
+        sendJson(res, 200, { ok: true, username: adminUsername, displayName: adminUsername, role: "admin", authSource: "admin" });
         return true;
       }
 
@@ -5008,6 +6801,7 @@ async function handleAdminApi(req, res) {
         sendJson(res, 200, {
           ok: true,
           username: portalUser.username,
+          displayName: portalUser.displayName || "",
           role: portalUser.role,
           courses: portalUser.courses,
           authSource: "portal",
@@ -5034,6 +6828,10 @@ async function handleAdminApi(req, res) {
     }
 
     const ossExtractCallbackMatch = /^\/api\/admin\/oss\/uploads\/([^/]+)\/extracted$/.exec(requestUrl.pathname);
+    if (ossExtractCallbackMatch && req.method === "POST" && coursePackageImportMode === "ecs-first") {
+      sendJson(res, 410, { ok: false, error: "历史课程包回调接口已停用。请使用课程压缩包入口上传导入。" });
+      return true;
+    }
     if (ossExtractCallbackMatch && req.method === "POST" && isOssExtractCallbackAuthorized(req)) {
       const uploadId = safeSegment(ossExtractCallbackMatch[1]);
       const record = ossUploadStore.readRecord(uploadId);
@@ -5118,7 +6916,41 @@ async function handleAdminApi(req, res) {
         sendJson(res, 200, { ok: true, upload: ossUploadStore.publicRecord(record) });
         return true;
       }
+      if (action === "parts" && req.method === "GET") {
+        if (record.uploadMode !== "multipart") {
+          sendJson(res, 200, {
+            ok: true,
+            upload: ossUploadStore.publicRecord(record),
+            multipart: {
+              uploadedBytes: 0,
+              uploadedParts: [],
+              uploadedPartCount: 0,
+              partCount: Number(record.multipartPartCount || 0),
+            },
+          });
+          return true;
+        }
+        const uploadedParts = await listDirectMultipartUploadedParts({
+          config: ossDirectUploadConfig,
+          record,
+        });
+        const uploadedBytes = uploadedParts.reduce((sum, part) => sum + Math.max(0, Number(part.size || 0)), 0);
+        sendJson(res, 200, {
+          ok: true,
+          upload: ossUploadStore.publicRecord(record),
+          multipart: {
+            uploadedBytes,
+            uploadedParts,
+            uploadedPartCount: uploadedParts.length,
+            partCount: Number(record.multipartPartCount || 0),
+          },
+        });
+        return true;
+      }
       if (action === "complete" && req.method === "POST") {
+        if (!isRawCoursePackageUploadKind(record.kind)) {
+          throw new Error("这个直传记录来自已停用的历史入口，不能继续完成或发布。请通过课程压缩包入口重新上传课程 ZIP。");
+        }
         const body = await readJsonBody(req, 64 * 1024);
         if (body.objectKey && body.objectKey !== record.objectKey) throw new Error("Completed object key does not match this upload.");
         if (record.uploadMode === "multipart") {
@@ -5131,6 +6963,10 @@ async function handleAdminApi(req, res) {
           record.multipartPartEtags = Array.isArray(body.parts) ? body.parts : [];
         }
         const parsed = verifyOssObjectWithOssutil(record.ossUri);
+        const expectedBytes = Number(record.fileSize || 0);
+        if (expectedBytes > 0 && parsed.totalBytes !== expectedBytes) {
+          throw new Error(`OSS object size mismatch after upload: expected ${expectedBytes} bytes, got ${parsed.totalBytes} bytes. Please retry the upload; the raw ZIP object is incomplete.`);
+        }
         record.status = "uploaded";
         record.completedAt = new Date().toISOString();
         record.completedBy = adminActor(req);
@@ -5143,26 +6979,22 @@ async function handleAdminApi(req, res) {
         let warning = "";
         const wantsAutoPublish = body.autoPublish === true || body.autoPublish === "1";
         let coursePackageTask = null;
-        if (wantsAutoPublish && record.kind === "course-package") {
+        if (wantsAutoPublish && isCoursePackageUploadKind(record.kind)) {
           ossUploadStore.writeRecord(record);
-          if (coursePackageImportMode === "legacy-local") {
+          if (isRawCoursePackageUploadKind(record.kind)) {
             record.status = "importing";
             record.importId = record.id;
-            record.importStatus = "queued";
-            record.importMode = "legacy-local";
+            record.importStatus = "oss-raw-queued";
+            record.importMode = "hybrid-raw";
             ossUploadStore.writeRecord(record);
             coursePackageTask = startOssCoursePackageImport({
               record: { ...record },
               actor: adminActor(req),
               autoCommit: true,
             });
-            warning = "完整课件包已直传到 OSS，legacy-local 模式会下载到 ECS 导入；仅建议临时补救使用。";
+            warning = "完整课件包已保存为 OSS raw package，ECS worker 会从 OSS 内网流式读取并自动分流；不使用 FC 解压。";
           } else {
-            coursePackageTask = await markOssCoursePackageAwaitingExtract({
-              record: { ...record },
-              actor: adminActor(req),
-            });
-            warning = "完整课件包已保存到 OSS inbox，已进入 OSS-only 解压/索引待处理；不会下载到 ECS。";
+            throw new Error("完整课件包已切换为 ECS worker 导入：历史 OSS course-package 记录不能继续发布。请使用课程压缩包入口触发 raw package 上传。");
           }
           sendJson(res, 200, {
             ok: true,
@@ -5183,9 +7015,7 @@ async function handleAdminApi(req, res) {
           record.status = "queued";
           record.jobId = job.id;
         } else if (wantsAutoPublish) {
-          warning = record.kind === "ispring-package"
-            ? "iSpring 包已直传到 OSS inbox；当前自动发布只支持完整课件包、单个视频和 H5P。"
-            : "该上传类型已直传到 OSS inbox；当前自动发布只支持完整课件包、单个视频和 H5P。";
+          warning = "历史 OSS 直传媒体发布入口已停用；媒体/H5P/iSpring 请通过课程压缩包导入或媒体发布任务处理。";
         }
         ossUploadStore.writeRecord(record);
         sendJson(res, 200, { ok: true, upload: ossUploadStore.publicRecord(record), job, warning });
@@ -5288,25 +7118,40 @@ async function handleAdminApi(req, res) {
     if (requestUrl.pathname === "/api/admin/readiness" && req.method === "GET") {
       const catalog = await readCourseCatalog();
       const courses = await Promise.all(visibleCatalogCourses(catalog).map((courseEntry) => courseReadinessRecord(courseEntry)));
+      const uploadedCourses = courses.filter((courseEntry) => courseEntry.uploaded);
+      const completedCourses = courses.filter((courseEntry) => courseEntry.completed);
       sendJson(res, 200, {
         ok: true,
         generatedAt: new Date().toISOString(),
         courseCount: courses.length,
         courses,
         summary: {
-          missingCourseOutlines: courses.filter((courseEntry) => !courseEntry.readiness.courseOutline.ok).length,
-          missingIntroductions: courses.filter((courseEntry) => !courseEntry.readiness.introduction.ok).length,
-          unitPlanGapCourses: courses.filter((courseEntry) => courseEntry.readiness.unitPlans.missing.length).length,
-          lessonPlanGapCourses: courses.filter((courseEntry) => courseEntry.readiness.lessonPlans.missing.length).length,
-          ispringMissingCourses: courses.filter((courseEntry) => !courseEntry.readiness.ispring.connected).length,
-          textReviewCourses: courses.filter((courseEntry) => courseEntry.readiness.texts.needsReview.length).length,
+          uploadedCourses: uploadedCourses.length,
+          completedCourses: completedCourses.length,
+          displayableCourses: completedCourses.length,
+          displayGapCourses: courses.length - completedCourses.length,
+          nonDisplayableUploadedCourses: uploadedCourses.filter((courseEntry) => !courseEntry.completed).length,
+          missingManifestCourses: courses.filter((courseEntry) => !courseEntry.uploaded).length,
+          missingCourseOutlines: uploadedCourses.filter((courseEntry) => !courseEntry.readiness.courseOutline.ok).length,
+          missingIntroductions: uploadedCourses.filter((courseEntry) => !courseEntry.readiness.introduction.ok).length,
+          unitPlanGapCourses: uploadedCourses.filter((courseEntry) => courseEntry.readiness.unitPlans.missing.length).length,
+          lessonPlanGapCourses: uploadedCourses.filter((courseEntry) => courseEntry.readiness.lessonPlans.missing.length).length,
+          ispringMissingCourses: uploadedCourses.filter((courseEntry) => !courseEntry.readiness.ispring.connected).length,
+          textReviewCourses: uploadedCourses.filter((courseEntry) => courseEntry.readiness.texts.needsReview.length).length,
         },
       });
       return true;
     }
 
     if (requestUrl.pathname === "/api/admin/storage" && req.method === "GET") {
-      sendJson(res, 200, await storageOverview());
+      const summaryOnly = ["1", "true", "yes"].includes(String(requestUrl.searchParams.get("summary") || "").toLowerCase());
+      const refresh = ["1", "true", "yes"].includes(String(requestUrl.searchParams.get("refresh") || "").toLowerCase());
+      sendJson(res, 200, await storageOverview({ summaryOnly, refresh }));
+      return true;
+    }
+
+    if (requestUrl.pathname === "/api/admin/storage/rebuild" && req.method === "POST") {
+      sendJson(res, 200, await storageOverview({ summaryOnly: false, refresh: true }));
       return true;
     }
 
@@ -5322,6 +7167,8 @@ async function handleAdminApi(req, res) {
         courseCount: courses.length,
         courses,
         summary: {
+          uploadedCourses: courses.filter((courseEntry) => courseEntry.uploaded).length,
+          missingManifestCourses: courses.filter((courseEntry) => !courseEntry.uploaded).length,
           directUploads: uploadItems.length,
           textReviews: reviewItems.length,
           externalDecisions: externalItems.length,
@@ -5348,9 +7195,8 @@ async function handleAdminApi(req, res) {
           total: rows.length,
           ispring: rows.filter((row) => row.kind === "ispring").length,
           video: rows.filter((row) => row.kind === "video").length,
-          files: rows.filter((row) => row.kind === "file").length,
+          h5p: rows.filter((row) => row.kind === "h5p").length,
           h5pNeedsRuntime: rows.filter((row) => row.status === "needs-h5p-runtime").length,
-          bookSections: rows.filter((row) => row.kind === "book-section").length,
         },
       });
       return true;
@@ -5396,6 +7242,7 @@ async function handleAdminApi(req, res) {
           actor: adminActor(req),
           action: "portal-user-upsert",
           username: user.username,
+          displayName: user.displayName || "",
           role: user.role,
           courses: user.courses,
           status: user.status,
@@ -5544,7 +7391,7 @@ async function handleAdminApi(req, res) {
 
     const course = (requestUrl.searchParams.get("course") || "ENG3U").toUpperCase();
     if (requestUrl.pathname === "/api/admin/status" && req.method === "GET") {
-      const manifest = await readManifest(course);
+      const { manifest, manifestStatus, manifestError } = await readManifestForAdminStatus(course);
       const lessons = (manifest.units || []).flatMap((unit) => unit.lessons || []);
       const readiness = manifestReadiness(manifest);
       const root = courseRoot(course);
@@ -5554,6 +7401,9 @@ async function handleAdminApi(req, res) {
         ok: true,
         course,
         lifecycle: courseLifecycleRecord(course),
+        uploaded: manifestStatus === "ready",
+        manifestStatus,
+        manifestError,
         units: manifest.units?.length || 0,
         lessons: lessons.length,
         courseDownloads: manifest.courseDownloads?.length || 0,
@@ -5652,6 +7502,22 @@ async function handleAdminApi(req, res) {
       const originalFilename = requestUrl.searchParams.get("filename") || "course-package.zip";
       if (extname(originalFilename).toLowerCase() !== ".zip") throw new Error("Course package upload must be a .zip file.");
       const importId = safeSegment(requestUrl.searchParams.get("importId") || coursePackageId());
+      let capacity = null;
+      try {
+        capacity = await assertCoursePackageEcsCapacity(contentLength);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        writeCoursePackageTask(course, importId, {
+          status: "blocked",
+          phase: "ecs-space-insufficient",
+          filename: originalFilename,
+          totalBytes: contentLength,
+          percent: 0,
+          rawUploadRequired: true,
+          error: message,
+        });
+        throw error;
+      }
       const packageDir = coursePackageDir(course, importId);
       const sourceZip = ensureInside(packageDir, join(packageDir, safeSegment(originalFilename)));
       await mkdir(dirname(sourceZip), { recursive: true });
@@ -5661,6 +7527,7 @@ async function handleAdminApi(req, res) {
         filename: originalFilename,
         bytesReceived: 0,
         totalBytes: contentLength,
+        capacity,
         percent: 0,
         startedAt: new Date().toISOString(),
       });
@@ -5688,11 +7555,13 @@ async function handleAdminApi(req, res) {
         });
         sendJson(res, 200, review);
       } catch (error) {
-        writeCoursePackageTask(course, importId, {
-          status: "failed",
-          phase: "failed",
-          error: error instanceof Error ? error.message : String(error),
-        });
+        if (readCoursePackageTask(course, importId)?.status !== "blocked") {
+          writeCoursePackageTask(course, importId, {
+            status: "failed",
+            phase: "failed",
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
         throw error;
       }
       return true;
@@ -5714,6 +7583,23 @@ async function handleAdminApi(req, res) {
       if (totalBytes > maxCoursePackageUploadBytes) {
         throw new Error(`Course package is too large. Max is ${Math.round(maxCoursePackageUploadBytes / 1024 / 1024)} MB.`);
       }
+      let capacity = null;
+      try {
+        capacity = await assertCoursePackageEcsCapacity(totalBytes || contentLength);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        writeCoursePackageTask(course, importId, {
+          status: "blocked",
+          phase: "ecs-space-insufficient",
+          filename: originalFilename,
+          totalBytes,
+          chunkTotal,
+          percent: 0,
+          rawUploadRequired: true,
+          error: message,
+        });
+        throw error;
+      }
 
       await mkdir(coursePackageChunkDir(course, importId), { recursive: true });
       writeCoursePackageTask(course, importId, {
@@ -5722,6 +7608,7 @@ async function handleAdminApi(req, res) {
         filename: originalFilename,
         totalBytes,
         chunkTotal,
+        capacity,
         startedAt: readCoursePackageTask(course, importId)?.startedAt || new Date().toISOString(),
       });
       const chunkPath = coursePackageChunkPath(course, importId, chunkIndex);
@@ -5767,11 +7654,13 @@ async function handleAdminApi(req, res) {
           filename: originalFilename,
         });
       } catch (error) {
-        writeCoursePackageTask(course, importId, {
-          status: "failed",
-          phase: "failed",
-          error: error instanceof Error ? error.message : String(error),
-        });
+        if (readCoursePackageTask(course, importId)?.status !== "blocked") {
+          writeCoursePackageTask(course, importId, {
+            status: "failed",
+            phase: "failed",
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
         throw error;
       }
       return true;
@@ -5800,7 +7689,17 @@ async function handleAdminApi(req, res) {
             chunkBytes: await directorySize(coursePackageChunkDir(requestedCourse, importId)),
           };
         }
-        sendJson(res, task ? 200 : 404, task ? { ok: true, task } : { ok: false, error: "Course package task not found." });
+        sendJson(res, 200, task ? { ok: true, task } : {
+          ok: true,
+          task: {
+            course: requestedCourse,
+            importId,
+            status: "missing",
+            phase: "idle",
+            error: "",
+            message: "Course package task is no longer active.",
+          },
+        });
         return true;
       }
       const tasks = await latestCoursePackageTasks(requestedCourse);
@@ -5815,11 +7714,21 @@ async function handleAdminApi(req, res) {
       if (!importId) throw new Error("Missing course package importId.");
       await withOperationLock(`course:${requestedCourse}:write`, async () => {
         const result = await commitCoursePackageImport({ course: requestedCourse, importId, actor: adminActor(req) });
-        const media = mediaJobsAutoPublishAfterPackage
-          ? tryCreateMediaJob({ type: "publish-course", course: requestedCourse, actor: adminActor(req) })
-          : { job: null, warning: "" };
+        let storageCache = null;
+        let storageCacheWarning = null;
+        try {
+          storageCache = await refreshStorageCacheForCourse(requestedCourse);
+        } catch (error) {
+          storageCacheWarning = error instanceof Error ? error.message : String(error);
+        }
+        // The manual "confirm/replace course package" path swaps the active manifest just like
+        // the raw-upload callback, so it must also queue the publish job. Otherwise iSpring/video
+        // entries remain on /courseware/... indefinitely instead of being rewritten to CDN.
+        const media = tryCreateMediaJob({ type: "publish-course", course: requestedCourse, actor: adminActor(req) });
         sendJson(res, 200, {
           ...result,
+          storageCache: storageCache ? storageCacheMeta("updated", storageCache) : null,
+          storageCacheWarning,
           mediaJob: media.job,
           mediaJobWarning: media.warning || null,
         });
@@ -5895,6 +7804,13 @@ async function handleAdminApi(req, res) {
           preview: preview?.stdout?.trim() || null,
           previewWarning,
         });
+        let storageCache = null;
+        let storageCacheWarning = null;
+        try {
+          storageCache = await refreshStorageCacheForCourse(upload.course);
+        } catch (error) {
+          storageCacheWarning = error instanceof Error ? error.message : String(error);
+        }
         const media = mediaJobsAutoPublishAfterUpload
           ? tryCreateMediaJob({ type: "publish-course", course: upload.course, actor: adminActor(req) })
           : { job: null, warning: "" };
@@ -5910,6 +7826,8 @@ async function handleAdminApi(req, res) {
           lightweightPreviewWarning,
           preview: preview?.stdout?.trim() || null,
           previewWarning,
+          storageCache: storageCache ? storageCacheMeta("updated", storageCache) : null,
+          storageCacheWarning,
           mediaJob: media.job,
           mediaJobWarning: media.warning || null,
         });
@@ -5965,6 +7883,7 @@ async function handlePortalApi(req, res) {
         ok: true,
         ...publicPortalSession({
           username: user.username,
+          displayName: user.displayName || "",
           role: user.role,
           courses: user.courses,
         }),
@@ -6003,8 +7922,6 @@ async function handlePortalApi(req, res) {
           ispring: rows.filter((row) => row.kind === "ispring").length,
           video: rows.filter((row) => row.kind === "video").length,
           h5p: rows.filter((row) => row.kind === "h5p").length,
-          file: rows.filter((row) => row.kind === "file").length,
-          bookSection: rows.filter((row) => row.kind === "book-section").length,
         },
       });
       return true;
@@ -6024,18 +7941,29 @@ async function handlePortalApi(req, res) {
       }
       const path = toPosixPath(body.path || "");
       const previewPath = toPosixPath(body.previewPath || "");
-      if (!path && !previewPath) {
-        sendJson(res, 400, { ok: false, error: "A local resource path or preview path is required." });
+      const url = cleanExternalUrl(body.url || "");
+      const previewUrl = cleanExternalUrl(body.previewUrl || "");
+      const downloadUrl = cleanExternalUrl(body.downloadUrl || "");
+      if (!path && !previewPath && !url && !previewUrl && !downloadUrl) {
+        sendJson(res, 400, { ok: false, error: "A local resource path, preview path, or trusted URL is required." });
+        return true;
+      }
+      const kind = String(body.kind || "").toLowerCase();
+      if (!shareableEmbedKinds.has(kind)) {
+        sendJson(res, 400, { ok: false, error: "Only iSpring, video, H5P, and interactive resources can generate public share links." });
         return true;
       }
       const days = Number(body.expiresInDays || 30);
       const expiresInSeconds = Math.round(Math.max(1, Math.min(days, 3650)) * 24 * 60 * 60);
       const token = shareTokenForResource({
         course: requestedCourse,
-        kind: body.kind || "file",
+        kind,
         label: body.label || basename(path || previewPath),
         path,
         previewPath,
+        url,
+        previewUrl,
+        downloadUrl,
         expiresInSeconds,
       });
       const payload = verifyEmbedToken(token);
@@ -6074,6 +8002,125 @@ async function handleShareRequest(req, res, requestUrl) {
   }
   sendHtml(res, 200, renderSharePage(req, token, payload));
   return true;
+}
+
+function shouldUseLinkedVideoActivityPage(course, requestedPath, filePath) {
+  if (safeSegment(course).toUpperCase() !== "BBI2O") return false;
+  if (extname(filePath).toLowerCase() !== ".html") return false;
+  const normalizedPath = toPosixPath(requestedPath || "");
+  return /^localized-moodle-activities\/.+\/index\.html$/i.test(normalizedPath);
+}
+
+function labelFromVideoBlock(block, src) {
+  const captionMatch = /<figcaption\b[^>]*>([\s\S]*?)<\/figcaption>/i.exec(block);
+  const captionText = captionMatch?.[1]
+    ?.replace(/<[^>]+>/g, " ")
+    ?.replace(/\s+/g, " ")
+    ?.trim();
+  if (captionText) return captionText;
+  const titleMatch = /\btitle=(["'])([\s\S]*?)\1/i.exec(block);
+  if (titleMatch?.[2]) return titleMatch[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const anchorMatch = /<a\b[^>]*>([\s\S]*?)<\/a>/i.exec(block);
+  const anchorText = anchorMatch?.[1]
+    ?.replace(/<[^>]+>/g, " ")
+    ?.replace(/\s+/g, " ")
+    ?.trim();
+  if (anchorText) return anchorText;
+  try {
+    const pathPart = new URL(src, "https://local.invalid/").pathname;
+    return decodeURIComponent(pathPart.split("/").filter(Boolean).pop() || "Open video");
+  } catch {
+    return "Open video";
+  }
+}
+
+function videoSrcFromBlock(block) {
+  for (const pattern of [
+    /<source\b[^>]*\b(?:data-src|src)\s*=\s*(["'])(https?:\/\/[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?|[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?)\1/i,
+    /<video\b[^>]*\b(?:data-src|src)\s*=\s*(["'])(https?:\/\/[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?|[^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?)\1/i,
+  ]) {
+    const match = pattern.exec(block);
+    if (match?.[2]) return match[2];
+  }
+  return "";
+}
+
+function injectLinkedVideoStyle(html) {
+  if (/ossd-linked-video-list/i.test(html)) return html;
+  const style = `<style>
+.ossd-linked-video-list{display:grid;gap:10px;margin:18px 0;}
+.ossd-linked-video-item{align-items:center;background:#f7fbff;border:1px solid #c8def5;border-radius:6px;display:flex;gap:12px;justify-content:space-between;padding:12px 14px;}
+.ossd-linked-video-name{color:#002b55;font-weight:700;overflow-wrap:anywhere;}
+.ossd-linked-video-action{border:1px solid #6fa3dc;border-radius:5px;color:#00396f;font-weight:700;padding:7px 11px;text-decoration:none;white-space:nowrap;}
+.ossd-linked-video-action:hover{background:#eaf4ff;}
+</style>`;
+  if (/<\/head>/i.test(html)) return html.replace(/<\/head>/i, `${style}\n$&`);
+  return `${style}\n${html}`;
+}
+
+function renderLinkedVideoItem(src, label) {
+  return `<div class="ossd-linked-video-item">
+  <span class="ossd-linked-video-name">${htmlEscape(label)}</span>
+  <a class="ossd-linked-video-action" href="${htmlEscape(src)}" target="_blank" rel="noopener">播放</a>
+</div>`;
+}
+
+function linkedActivityVideoEmbedUrl(req, course, htmlPath, rawHref, label) {
+  if (!embedTokenSecret) return rawHref;
+  const coursePath = htmlReferenceValueToCoursePath(course, htmlPath, rawHref);
+  if (!coursePath || !isPlayableCoursewareAsset(coursePath)) return rawHref;
+  const lessonId = resourceIdFor(htmlPath).toUpperCase();
+  const token = embedTokenForResource({
+    course,
+    kind: "video",
+    path: coursePath,
+    label: label || basename(coursePath),
+    section: "activity",
+    lessonId,
+  });
+  const resourceId = resourceIdFor(coursePath);
+  return `${publicOrigin(req)}/embed/video/${encodeURIComponent(safeSegment(course).toUpperCase())}/${lessonId}/${resourceId}?token=${encodeURIComponent(token)}`;
+}
+
+function replaceLinkedVideoAnchorsWithEmbedLinks(html, req, course, htmlPath) {
+  let changed = false;
+  const body = String(html || "").replace(/<a\b([^>]*\bhref=(["'])([^"']+\.(?:mp4|webm|mov|m4v)(?:\?[^"']*)?)\2[^>]*)>([\s\S]*?)<\/a>/gi, (match, attrs, _quote, href, innerHtml) => {
+    const label = innerHtml.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() || basename(href.split(/[?#]/)[0] || "Video");
+    const embedUrl = linkedActivityVideoEmbedUrl(req, course, htmlPath, href, label);
+    if (embedUrl === href) return match;
+    changed = true;
+    return `<a${attrs.replace(/\bhref=(["'])([^"']+)\1/i, `href="${htmlEscape(embedUrl)}"`)}>${innerHtml}</a>`;
+  });
+  return { html: body, changed };
+}
+
+function replaceMultiVideoEmbedsWithLinks(html, req, course, htmlPath) {
+  const body = String(html || "");
+  const videoBlocks = Array.from(body.matchAll(/<figure\b[\s\S]*?<video\b[\s\S]*?<\/video>[\s\S]*?<\/figure>|<video\b[\s\S]*?<\/video>/gi));
+  const linkableVideos = videoBlocks
+    .map((match) => {
+      const block = match[0];
+      const src = videoSrcFromBlock(block);
+      if (!src) return null;
+      const label = labelFromVideoBlock(block, src);
+      return { block, src: linkedActivityVideoEmbedUrl(req, course, htmlPath, src, label), label };
+    })
+    .filter(Boolean);
+
+  const linkedAnchors = replaceLinkedVideoAnchorsWithEmbedLinks(body, req, course, htmlPath);
+  if (linkableVideos.length < 2) {
+    return linkedAnchors.changed ? { html: linkedAnchors.html, changed: true } : { html, changed: false };
+  }
+
+  let nextHtml = linkedAnchors.html;
+  for (const item of linkableVideos) {
+    nextHtml = nextHtml.replace(item.block, renderLinkedVideoItem(item.src, item.label));
+  }
+  if (!/class=(["'])[^"']*\bossd-linked-video-list\b[^"']*\1/i.test(nextHtml)) {
+    nextHtml = nextHtml.replace(/(<div class="ossd-linked-video-item">[\s\S]*?<\/div>)/, '<div class="ossd-linked-video-list">$1</div>');
+  }
+  nextHtml = injectLinkedVideoStyle(nextHtml);
+  return { html: nextHtml, changed: true };
 }
 
 async function sendFile(req, res, filePath) {
@@ -6178,7 +8225,34 @@ const server = createServer(async (req, res) => {
       res.end("Forbidden");
       return;
     }
-    await sendFile(req, res, filePath);
+    try {
+      const requestedPath = requestedCourse ? pathFromCoursewarePath(pathname) : "";
+      if (
+        requestedCourse
+        && !requestUrl.searchParams.has("download")
+        && shouldUseLinkedVideoActivityPage(requestedCourse, requestedPath, filePath)
+      ) {
+        const html = await readFile(filePath, "utf8");
+        const linkedVideoPage = replaceMultiVideoEmbedsWithLinks(html, req, requestedCourse, requestedPath);
+        if (linkedVideoPage.changed) {
+          sendHtml(res, 200, linkedVideoPage.html);
+          return;
+        }
+      }
+      if (
+        requestedCourse
+        && !requestUrl.searchParams.has("download")
+        && shouldUseCoursewareIspringCdnBase(requestedCourse, requestedPath, filePath)
+      ) {
+        const html = await readFile(filePath, "utf8");
+        sendHtml(res, 200, injectIspringEmbedCompatibility(html, coursewareAssetDirectoryHref(requestedCourse, requestedPath)));
+        return;
+      }
+      await sendFile(req, res, filePath);
+    } catch (error) {
+      if (requestedCourse && await sendCoursewareCdnFallback(req, res, requestedCourse, pathFromCoursewarePath(pathname))) return;
+      throw error;
+    }
   } catch (error) {
     res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     res.end(process.env.DEBUG_NOT_FOUND === "1" ? `Not found\n${error instanceof Error ? error.stack || error.message : String(error)}` : "Not found");

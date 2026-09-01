@@ -3,150 +3,6 @@
   "defaultCourse": "ENG3U",
   "courses": [
     {
-      "code": "ASM3M",
-      "title": "ASM3M · ASM3M",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/ASM3M/course-manifest.json",
-      "baseUrl": "/courseware/ASM3M/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "AVI1O",
-      "title": "AVI1O · AVI1O",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/AVI1O/course-manifest.json",
-      "baseUrl": "/courseware/AVI1O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "AVI2O",
-      "title": "AVI2O · AVI2O",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/AVI2O/course-manifest.json",
-      "baseUrl": "/courseware/AVI2O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "AVI3M",
-      "title": "AVI3M · AVI3M",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/AVI3M/course-manifest.json",
-      "baseUrl": "/courseware/AVI3M/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "BAF3M",
-      "title": "BAF3M · BAF3M",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/BAF3M/course-manifest.json",
-      "baseUrl": "/courseware/BAF3M/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "BBB4M",
-      "title": "BBB4M · International Business Fundamentals",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/BBB4M/course-manifest.json",
-      "baseUrl": "/courseware/BBB4M/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "BBI1O",
-      "title": "BBI1O · Introduction to Business",
-      "level": "Grade 9/10",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/BBI1O/course-manifest.json",
-      "baseUrl": "/courseware/BBI1O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "BBI2O",
-      "title": "BBI2O · BBI2O",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/BBI2O/course-manifest.json",
-      "baseUrl": "/courseware/BBI2O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "BOH4M",
-      "title": "BOH4M · Business Leadership: Management Fundamentals",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/BOH4M/course-manifest.json",
-      "baseUrl": "/courseware/BOH4M/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "BTT1O",
-      "title": "BTT1O · BTT1O",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/BTT1O/course-manifest.json",
-      "baseUrl": "/courseware/BTT1O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "CGC1D",
-      "title": "CGC1D · CGC1D",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/CGC1D/course-manifest.json",
-      "baseUrl": "/courseware/CGC1D/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "CGW4U",
-      "title": "CGW4U · Canadian and World Issues",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/CGW4U/course-manifest.json",
-      "baseUrl": "/courseware/CGW4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "CHC2D",
-      "title": "CHC2D · Canadian History since World War I",
-      "level": "Grade 10",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/CHC2D/course-manifest.json",
-      "baseUrl": "/courseware/CHC2D/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "CHV2O",
-      "title": "CHV2O · Civics and Citizenship",
-      "level": "Grade 10",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/CHV2O/course-manifest.json",
-      "baseUrl": "/courseware/CHV2O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "CIA4U",
-      "title": "CIA4U · CIA4U",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/CIA4U/course-manifest.json",
-      "baseUrl": "/courseware/CIA4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "ENG2D",
-      "title": "ENG2D · ENG2D",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/ENG2D/course-manifest.json",
-      "baseUrl": "/courseware/ENG2D/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
       "code": "ENG3U",
       "title": "ENG3U · English",
       "level": "Grade 11",
@@ -156,58 +12,22 @@
       "notes": "iSpring courseware included."
     },
     {
-      "code": "ENG4U",
-      "title": "ENG4U · English",
-      "level": "Grade 12",
+      "code": "ENG1D",
+      "title": "ENG1D · English, Grade 9, Academic",
+      "level": "Grade 9",
       "status": "ready",
-      "manifestUrl": "/courseware/ENG4U/course-manifest.json",
-      "baseUrl": "/courseware/ENG4U/",
-      "notes": "Moodle book lessons, local documents, videos, H5P, and iSpring courseware included."
-    },
-    {
-      "code": "EPS3O",
-      "title": "EPS3O · EPS3O",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/EPS3O/course-manifest.json",
-      "baseUrl": "/courseware/EPS3O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "ESLAO",
-      "title": "ESLAO · ESLAO",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/ESLAO/course-manifest.json",
-      "baseUrl": "/courseware/ESLAO/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "ESLBO",
-      "title": "ESLBO · ESLBO",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/ESLBO/course-manifest.json",
-      "baseUrl": "/courseware/ESLBO/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "ESLCO",
-      "title": "ESLCO · ESLCO",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/ESLCO/course-manifest.json",
-      "baseUrl": "/courseware/ESLCO/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "manifestUrl": "/courseware/ENG1D/course-manifest.json",
+      "baseUrl": "/courseware/ENG1D/",
+      "notes": "St. Mary Moodle new-site course id 74 localized: section 0 preserved, 4 units, 29 Moodle book lessons, 29 local iSpring packages embedded in lesson pages and exposed as playable resources, 59 H5P references across 52 distinct local H5P packages, 34 local videos, and ordinary documents/PDFs attached under owning pages."
     },
     {
       "code": "ESLDO",
       "title": "ESLDO · ESL Level 4",
       "level": "ESL",
-      "status": "planning-only",
+      "status": "ready",
       "manifestUrl": "/courseware/ESLDO/course-manifest.json",
       "baseUrl": "/courseware/ESLDO/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "notes": "Moodle book lessons, local documents, videos, H5P, and iSpring courseware included."
     },
     {
       "code": "ESLEO",
@@ -219,22 +39,67 @@
       "notes": "Unit-first courseware with local iSpring, Moodle book sections, plans, and downloadable resources."
     },
     {
-      "code": "GLC2O",
-      "title": "GLC2O · Career Studies",
+      "code": "CHC2D",
+      "title": "Canadian History since World War I, Grade 10, Academic",
       "level": "Grade 10",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/GLC2O/course-manifest.json",
-      "baseUrl": "/courseware/GLC2O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "status": "ready",
+      "manifestUrl": "/courseware/CHC2D/course-manifest.json",
+      "baseUrl": "/courseware/CHC2D/",
+      "notes": "Legacy Moodle activity package localized; user-provided legal core textbook Think History: Canadian History Since 1914 is now included in the course text area."
     },
     {
-      "code": "HFA4U",
-      "title": "HFA4U · Nutrition and Health",
+      "code": "CHV2O",
+      "title": "Civics and Citizenship, Grade 10, Open",
+      "level": "Grade 10",
+      "status": "ready",
+      "manifestUrl": "/courseware/CHV2O/course-manifest.json",
+      "baseUrl": "/courseware/CHV2O/",
+      "notes": "St. Mary Moodle new-site course id 81 localized: 4 units, 17 lessons, 71 Moodle activities, 16 local iSpring lessons, 33 local H5P previews; no missing local file references."
+    },
+    {
+      "code": "GLC2O",
+      "title": "Career Studies, Grade 10, Open",
+      "level": "Grade 10",
+      "status": "ready",
+      "manifestUrl": "/courseware/GLC2O/course-manifest.json",
+      "baseUrl": "/courseware/GLC2O/",
+      "notes": "St. Mary Moodle course id 78 localized from new-structure course: 4 units, 15 Moodle book lessons plus Unit 4 culminating project, 15 local iSpring packages, activity pages and attachments preserved."
+    },
+    {
+      "code": "FSF1D",
+      "title": "FSF1D · Core French",
+      "level": "Grade 9",
+      "status": "ready",
+      "manifestUrl": "/courseware/FSF1D/course-manifest.json",
+      "baseUrl": "/courseware/FSF1D/",
+      "notes": "St. Mary Moodle course localized from course id 80: course introduction, course overview, 4 Moodle Book units, 20 lessons, final exam/project section, teacher answer keys, local DOCX/PDF resources, H5P previews, and source audit; no matching local textbook was identified."
+    },
+    {
+      "code": "HSB4U",
+      "title": "Challenge and Change in Society, Grade 12, University Preparation",
       "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/HFA4U/course-manifest.json",
-      "baseUrl": "/courseware/HFA4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "status": "ready",
+      "manifestUrl": "/courseware/HSB4U/course-manifest.json",
+      "baseUrl": "/courseware/HSB4U/",
+      "notes": "St. Mary Moodle V2.0 course localized from course id 67: course overview, 4 Moodle units including Unit 4: Final Examination, 20 Moodle book lessons, teacher packet, local iSpring, Moodle H5P activities, external H5P embeds, DOCX/PDF resources, previews, and Ontario curriculum guidance document."
+    },
+    {
+      "code": "MPM2D",
+      "title": "MPM2D · Principles of Mathematics",
+      "level": "Grade 10",
+      "status": "ready",
+      "manifestUrl": "/courseware/MPM2D/course-manifest.json",
+      "baseUrl": "/courseware/MPM2D/",
+      "notes": "Moodle book lessons, localized iSpring where available, H5P, videos, documents, PDFs, previews, course outline, official curriculum, and source audit are packaged; U03L08 iSpring source returns 404 and is recorded."
+    },
+    {
+      "code": "SNC2D",
+      "title": "Science, Grade 10, Academic",
+      "level": "Grade 10",
+      "status": "ready",
+      "manifestUrl": "/courseware/SNC2D/course-manifest.json",
+      "baseUrl": "/courseware/SNC2D/",
+      "notes": "Moodle book lessons, localized iSpring, H5P, videos, documents/PDFs, previews, course outline, official curriculum, source audit, and user-provided legal ON Science 10 core textbook are packaged."
     },
     {
       "code": "HFC3M",
@@ -243,268 +108,421 @@
       "status": "ready",
       "manifestUrl": "/courseware/HFC3M/course-manifest.json",
       "baseUrl": "/courseware/HFC3M/",
-      "notes": "Moodle activities and files localized; unavailable legacy MP4 positions are preserved as video placeholders."
-    },
-    {
-      "code": "HFN1O",
-      "title": "HFN1O · HFN1O",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/HFN1O/course-manifest.json",
-      "baseUrl": "/courseware/HFN1O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "HHS4U",
-      "title": "HHS4U · Families in Canada",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/HHS4U/course-manifest.json",
-      "baseUrl": "/courseware/HHS4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "ICS2O",
-      "title": "ICS2O · ICS2O",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/ICS2O/course-manifest.json",
-      "baseUrl": "/courseware/ICS2O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "notes": "Moodle activity course localized with 7 units, 45 lessons, local documents, videos, previews, and source audit; Moodle shell exposes no iSpring packages."
     },
     {
       "code": "ICS3U",
       "title": "ICS3U · Introduction to Computer Studies",
       "level": "Grade 11",
-      "status": "planning-only",
+      "status": "ready",
       "manifestUrl": "/courseware/ICS3U/course-manifest.json",
       "baseUrl": "/courseware/ICS3U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "ICS4U",
-      "title": "ICS4U · ICS4U",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/ICS4U/course-manifest.json",
-      "baseUrl": "/courseware/ICS4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "LKBCU",
-      "title": "LKBCU · LKBCU",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/LKBCU/course-manifest.json",
-      "baseUrl": "/courseware/LKBCU/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "LKBDU",
-      "title": "LKBDU · International Languages, Simplified Chinese",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/LKBDU/course-manifest.json",
-      "baseUrl": "/courseware/LKBDU/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "MAP4C",
-      "title": "MAP4C · Foundations for College Mathematics",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/MAP4C/course-manifest.json",
-      "baseUrl": "/courseware/MAP4C/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "MBF3C",
-      "title": "MBF3C · MBF3C",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/MBF3C/course-manifest.json",
-      "baseUrl": "/courseware/MBF3C/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "notes": "Moodle book lessons, localized iSpring, Moodle course/final/teacher/unit activities, documents/PDFs, official curriculum, and source audit are prepared; iSpring/video playback resources are non-downloadable."
     },
     {
       "code": "MCR3U",
       "title": "MCR3U · Functions",
       "level": "Grade 11",
-      "status": "planning-only",
+      "status": "ready",
       "manifestUrl": "/courseware/MCR3U/course-manifest.json",
       "baseUrl": "/courseware/MCR3U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "MCV4U",
-      "title": "MCV4U · Calculus and Vectors",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/MCV4U/course-manifest.json",
-      "baseUrl": "/courseware/MCV4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "MDM4U",
-      "title": "MDM4U · Mathematics of Data Management",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/MDM4U/course-manifest.json",
-      "baseUrl": "/courseware/MDM4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "MHF4U",
-      "title": "MHF4U · Advanced Functions",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/MHF4U/course-manifest.json",
-      "baseUrl": "/courseware/MHF4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "MPM1D",
-      "title": "MPM1D · MPM1D",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/MPM1D/course-manifest.json",
-      "baseUrl": "/courseware/MPM1D/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "MPM2D",
-      "title": "MPM2D · Principles of Mathematics",
-      "level": "Grade 10",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/MPM2D/course-manifest.json",
-      "baseUrl": "/courseware/MPM2D/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "MTH1W",
-      "title": "MTH1W · MTH1W",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/MTH1W/course-manifest.json",
-      "baseUrl": "/courseware/MTH1W/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "OLC4O",
-      "title": "OLC4O · OLC4O",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/OLC4O/course-manifest.json",
-      "baseUrl": "/courseware/OLC4O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "PPL1O",
-      "title": "PPL1O · PPL1O",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/PPL1O/course-manifest.json",
-      "baseUrl": "/courseware/PPL1O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "PPL3O",
-      "title": "PPL3O · PPL3O",
-      "level": "Unknown",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/PPL3O/course-manifest.json",
-      "baseUrl": "/courseware/PPL3O/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "notes": "Moodle book lessons, localized iSpring where provided by Moodle, H5P, videos, documents, previews, course outline, and source audit are packaged."
     },
     {
       "code": "SBI3U",
       "title": "SBI3U · Biology",
       "level": "Grade 11",
-      "status": "planning-only",
+      "status": "ready",
       "manifestUrl": "/courseware/SBI3U/course-manifest.json",
       "baseUrl": "/courseware/SBI3U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "SBI4U",
-      "title": "SBI4U · Biology",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/SBI4U/course-manifest.json",
-      "baseUrl": "/courseware/SBI4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "notes": "Moodle book lessons, localized iSpring, H5P, videos, documents/PDFs, previews, course outline, official curriculum, and source audit are packaged; no confirmed legal textbook title/file was identified."
     },
     {
       "code": "SCH3U",
       "title": "SCH3U · Chemistry",
       "level": "Grade 11",
-      "status": "planning-only",
+      "status": "ready",
       "manifestUrl": "/courseware/SCH3U/course-manifest.json",
       "baseUrl": "/courseware/SCH3U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "SCH4U",
-      "title": "SCH4U · Chemistry",
-      "level": "Grade 12",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/SCH4U/course-manifest.json",
-      "baseUrl": "/courseware/SCH4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "SNC1D",
-      "title": "SNC1D · Science",
-      "level": "Grade 9",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/SNC1D/course-manifest.json",
-      "baseUrl": "/courseware/SNC1D/",
-      "notes": "Planning documents imported; iSpring not yet connected."
-    },
-    {
-      "code": "SNC2D",
-      "title": "SNC2D · Science",
-      "level": "Grade 10",
-      "status": "planning-only",
-      "manifestUrl": "/courseware/SNC2D/course-manifest.json",
-      "baseUrl": "/courseware/SNC2D/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "notes": "Moodle book, iSpring, H5P, documents, PDFs, and available videos localized."
     },
     {
       "code": "SPH3U",
       "title": "SPH3U · Physics",
       "level": "Grade 11",
-      "status": "planning-only",
+      "status": "ready",
       "manifestUrl": "/courseware/SPH3U/course-manifest.json",
       "baseUrl": "/courseware/SPH3U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "notes": "Moodle book lessons, localized iSpring, H5P, videos, documents, previews, course outline, and source audit are packaged."
+    },
+    {
+      "code": "BBB4M",
+      "title": "BBB4M · International Business Fundamentals",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/BBB4M/course-manifest.json",
+      "baseUrl": "/courseware/BBB4M/",
+      "notes": "Moodle book lessons, localized iSpring, Moodle course/final/unit activities, documents/PDFs, official curriculum, and source audit are prepared; iSpring/video playback resources are non-downloadable."
+    },
+    {
+      "code": "BOH4M",
+      "title": "BOH4M · Business Leadership: Management Fundamentals",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/BOH4M/course-manifest.json",
+      "baseUrl": "/courseware/BOH4M/",
+      "notes": "Moodle book lessons, localized iSpring, Moodle course/final/teacher/unit activities, documents/PDFs, official curriculum, and source audit are prepared; iSpring/video playback resources are non-downloadable."
+    },
+    {
+      "code": "CGW4U",
+      "title": "CGW4U · World Issues: A Geographic Analysis",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/CGW4U/course-manifest.json",
+      "baseUrl": "/courseware/CGW4U/",
+      "notes": "St. Mary Moodle V2.0 course localized: course overview, 4 units, 24 Moodle book lessons, course/final/teacher/unit activities, DOCX/PDF/MP4 resources, previews, and teacher answer keys; external iSpring/H5P embeds are audited but not displayed until local packages are available."
+    },
+    {
+      "code": "ENG4U",
+      "title": "ENG4U · English",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/ENG4U/course-manifest.json",
+      "baseUrl": "/courseware/ENG4U/",
+      "notes": "Moodle lesson structure, iSpring, course resources, evaluations, reflection logs, final/culminating materials, teacher answer keys, and public-domain core texts are localized."
+    },
+    {
+      "code": "HFA4U",
+      "title": "HFA4U · Nutrition and Health",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/HFA4U/course-manifest.json",
+      "baseUrl": "/courseware/HFA4U/",
+      "notes": "Current Moodle-visible HFA4U Unit 1 is packaged with local iSpring, external H5P, DOCX/PDF resources, previews, official curriculum, and source audit; Moodle shell currently exposes no Unit 2-4 books or course outline, and eclass draftfile links are recorded as unavailable."
+    },
+    {
+      "code": "HHS4U",
+      "title": "Families in Canada, Grade 12, University Preparation",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/HHS4U/course-manifest.json",
+      "baseUrl": "/courseware/HHS4U/",
+      "notes": "Legacy Moodle activity package localized: 7 units, 145 activity groups, 250 local resource records; two current Moodle resources returned 404."
+    },
+    {
+      "code": "LKBDU",
+      "title": "International Languages, Simplified Chinese, Level 4, University",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/LKBDU/course-manifest.json",
+      "baseUrl": "/courseware/LKBDU/",
+      "notes": "Moodle Chinese course localized: 5 units, 95 activity groups, 167 local resource records; literary resources indexed."
+    },
+    {
+      "code": "MCV4U",
+      "title": "MCV4U · Calculus and Vectors",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/MCV4U/course-manifest.json",
+      "baseUrl": "/courseware/MCV4U/",
+      "notes": "Moodle book lessons, iSpring packages, local documents, videos, H5P, and course outline included; textbook references audited but no matching legal local textbook found."
+    },
+    {
+      "code": "MDM4U",
+      "title": "MDM4U · Mathematics of Data Management",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/MDM4U/course-manifest.json",
+      "baseUrl": "/courseware/MDM4U/",
+      "notes": "Moodle book lessons, localized iSpring, H5P, videos, documents, PDFs, previews, course outline, official curriculum, and source audit are packaged; Unit 5 Moodle project lessons have no matching local lesson plans."
+    },
+    {
+      "code": "MHF4U",
+      "title": "MHF4U · Advanced Functions",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/MHF4U/course-manifest.json",
+      "baseUrl": "/courseware/MHF4U/",
+      "notes": "Moodle book lessons, local documents, videos, H5P, and iSpring courseware included."
+    },
+    {
+      "code": "SBI4U",
+      "title": "SBI4U · Biology",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/SBI4U/course-manifest.json",
+      "baseUrl": "/courseware/SBI4U/",
+      "notes": "Moodle book lessons, localized iSpring/video, course resources, unit evaluations/reflections, local documents/PDFs, previews, course outline, official curriculum, and source audit are packaged; no confirmed legal textbook title/file has been identified."
+    },
+    {
+      "code": "SES4U",
+      "title": "SES4U · Earth and Space Science",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/SES4U/course-manifest.json",
+      "baseUrl": "/courseware/SES4U/",
+      "notes": "St. Mary Moodle V2.0 course localized: course overview, 5 units, 29 Moodle book lessons, local iSpring, H5P, Moodle course/final/teacher/unit activities, DOCX/PDF resources, previews, and official curriculum; iSpring/video playback resources are non-downloadable."
+    },
+    {
+      "code": "SCH4U",
+      "title": "SCH4U · Chemistry",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/SCH4U/course-manifest.json",
+      "baseUrl": "/courseware/SCH4U/",
+      "notes": "Authenticated Moodle Book import complete; localized lessons, iSpring, H5P, videos, documents, quizzes, and activity pages."
     },
     {
       "code": "SPH4U",
       "title": "SPH4U · Physics",
       "level": "Grade 12",
-      "status": "planning-only",
+      "status": "ready",
       "manifestUrl": "/courseware/SPH4U/course-manifest.json",
       "baseUrl": "/courseware/SPH4U/",
-      "notes": "Planning documents imported; iSpring not yet connected."
+      "notes": "Moodle book lessons, localized iSpring, H5P, videos, documents, previews, course outline, and source audit are packaged."
     },
     {
-      "code": "ZZZEMPTY",
-      "title": "ZZZEMPTY",
-      "level": "",
+      "code": "SNC1D",
+      "title": "Science, Grade 9, Academic",
+      "level": "Grade 9",
       "status": "ready",
-      "manifestUrl": "/courseware/ZZZEMPTY/course-manifest.json",
-      "baseUrl": "/courseware/ZZZEMPTY/",
-      "notes": "Imported whole-course package."
+      "manifestUrl": "/courseware/SNC1D/course-manifest.json",
+      "baseUrl": "/courseware/SNC1D/",
+      "notes": "Legacy Moodle activity package localized: 11 units, 76 lessons/activity entries; textbook IMS included, chapter PDF links blocked by external OSS."
     },
     {
-      "code": "ZZZSMOKE",
-      "title": "ZZZSMOKE · ZZZSMOKE",
-      "level": "",
+      "code": "BBI1O",
+      "title": "Introduction to Business, Grade 9, Open",
+      "level": "Grade 9",
       "status": "ready",
-      "manifestUrl": "/courseware/ZZZSMOKE/course-manifest.json",
-      "baseUrl": "/courseware/ZZZSMOKE/",
-      "notes": "Imported whole-course package."
+      "manifestUrl": "/courseware/BBI1O/course-manifest.json",
+      "baseUrl": "/courseware/BBI1O/",
+      "notes": "Legacy Moodle activity package localized: 7 units, 50 activity groups, 140 local resource records."
+    },
+    {
+      "code": "ASM3M",
+      "title": "Media Arts, Grade 11, University/College",
+      "level": "Grade 11",
+      "status": "ready",
+      "manifestUrl": "/courseware/ASM3M/course-manifest.json",
+      "baseUrl": "/courseware/ASM3M/",
+      "notes": "Legacy Moodle media-arts package localized: 5 units, 58 activity groups, 103 local resource records. No separate current course outline was exposed."
+    },
+    {
+      "code": "AVI1O",
+      "title": "Visual Arts, Grade 9, Open",
+      "level": "Grade 9",
+      "status": "ready",
+      "manifestUrl": "/courseware/AVI1O/course-manifest.json",
+      "baseUrl": "/courseware/AVI1O/",
+      "notes": "Legacy Moodle visual-arts package localized: 6 units, 58 activity groups, 106 local resource records; 15 external video target(s) marked unavailable."
+    },
+    {
+      "code": "AVI2O",
+      "title": "Visual Arts, Grade 10, Open",
+      "level": "Grade 10",
+      "status": "ready",
+      "manifestUrl": "/courseware/AVI2O/course-manifest.json",
+      "baseUrl": "/courseware/AVI2O/",
+      "notes": "Legacy Moodle visual-arts package localized: 5 units, 67 activity groups, 90 local resource records; 17 URL target(s) marked unavailable."
+    },
+    {
+      "code": "AVI3M",
+      "title": "Visual Arts, Grade 11, University/College",
+      "level": "Grade 11",
+      "status": "ready",
+      "manifestUrl": "/courseware/AVI3M/course-manifest.json",
+      "baseUrl": "/courseware/AVI3M/",
+      "notes": "Moodle lesson package localized: 5 units, 52 activity groups, 115 local resource records."
+    },
+    {
+      "code": "AVI4M",
+      "title": "Visual Arts, Grade 12, University",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/AVI4M/course-manifest.json",
+      "baseUrl": "/courseware/AVI4M/",
+      "notes": "St. Mary Moodle course localized: course overview, 4 units, 22 Moodle book lessons, local iSpring, local H5P, course/final/teacher/unit activities, DOCX/PDF resources, previews, and answer keys."
+    },
+    {
+      "code": "BAF3M",
+      "title": "Financial Accounting Fundamentals, Grade 11, University/College",
+      "level": "Grade 11",
+      "status": "ready",
+      "manifestUrl": "/courseware/BAF3M/course-manifest.json",
+      "baseUrl": "/courseware/BAF3M/",
+      "notes": "Legacy Moodle activity package localized; user-provided legal core textbook Principles of Accounting, 4th Edition is now included in the course text area."
+    },
+    {
+      "code": "BAT4M",
+      "title": "Financial Accounting Principles, Grade 12, University/College",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/BAT4M/course-manifest.json",
+      "baseUrl": "/courseware/BAT4M/",
+      "notes": "St. Mary Moodle course localized: 4 units, 29 lessons, 145 book sections, 30 local iSpring presentations, 46 local H5P embeds."
+    },
+    {
+      "code": "BBI2O",
+      "title": "Introduction to Business, Grade 10, Open",
+      "level": "Grade 10",
+      "status": "ready",
+      "manifestUrl": "/courseware/BBI2O/course-manifest.json",
+      "baseUrl": "/courseware/BBI2O/",
+      "notes": "Legacy Moodle activity package localized: 7 sections, 60 activity groups, 126 local resource records."
+    },
+    {
+      "code": "BTT1O",
+      "title": "Information and Communication Technology in Business, Grade 9, Open",
+      "level": "Grade 9",
+      "status": "ready",
+      "manifestUrl": "/courseware/BTT1O/course-manifest.json",
+      "baseUrl": "/courseware/BTT1O/",
+      "notes": "Legacy Moodle activity package localized: 5 units, 5 activity groups; course outline not exposed in current Moodle shell."
+    },
+    {
+      "code": "CGC1D",
+      "title": "Issues in Canadian Geography, Grade 9 Academic",
+      "level": "Grade 9",
+      "status": "ready",
+      "manifestUrl": "/courseware/CGC1D/course-manifest.json",
+      "baseUrl": "/courseware/CGC1D/",
+      "notes": "Legacy Moodle activity package localized: 5 units, 8 activity groups; no textbook exposed in Moodle."
+    },
+    {
+      "code": "CIA4U",
+      "title": "Analysing Current Economic Issues, Grade 12, University",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/CIA4U/course-manifest.json",
+      "baseUrl": "/courseware/CIA4U/",
+      "notes": "Legacy Moodle activity package localized: 9 units, 110 activity groups; 19 current Moodle file resources returned 404."
+    },
+    {
+      "code": "ENG2D",
+      "title": "English, Grade 10, Academic",
+      "level": "Grade 10",
+      "status": "ready",
+      "manifestUrl": "/courseware/ENG2D/course-manifest.json",
+      "baseUrl": "/courseware/ENG2D/",
+      "notes": "St. Mary Moodle V2.0 course localized from course id 75: course introduction, course overview, 4 Moodle book units, 22 lessons, 22 localized iSpring lessons, 36 localized H5P activities, final examination/culminating section, Teacher Packet answer key, 72 localized Moodle activities, DOCX/PDF/video resources, and generated document previews."
+    },
+    {
+      "code": "EPS3O",
+      "title": "Presentation and Speaking Skills, Grade 11, Open",
+      "level": "Grade 11",
+      "status": "ready",
+      "manifestUrl": "/courseware/EPS3O/course-manifest.json",
+      "baseUrl": "/courseware/EPS3O/",
+      "notes": "Legacy Moodle activity package localized: 5 units, 64 activity groups, 126 local resource records."
+    },
+    {
+      "code": "ESLAO",
+      "title": "English as a Second Language, ESL Level 1, Open",
+      "level": "ESL",
+      "status": "ready",
+      "manifestUrl": "/courseware/ESLAO/course-manifest.json",
+      "baseUrl": "/courseware/ESLAO/",
+      "notes": "Legacy Moodle activity package localized: 6 units, 70 activity groups, 100 local resource records; one Learning Log URL and one external MP4 were unavailable."
+    },
+    {
+      "code": "ESLBO",
+      "title": "ESLBO · English as a Second Language, ESL Level 2, Open",
+      "level": "ESL Level 2",
+      "status": "ready",
+      "manifestUrl": "/courseware/ESLBO/course-manifest.json",
+      "baseUrl": "/courseware/ESLBO/",
+      "notes": "Activity-based legacy Moodle course localized; no Moodle Book or iSpring activities found; 8 external OSS media/file links returned HTTP 403 and are recorded as unavailable."
+    },
+    {
+      "code": "ESLCO",
+      "title": "ESLCO · ESL Level 3",
+      "level": "ESL Level 3",
+      "status": "ready",
+      "manifestUrl": "/courseware/ESLCO/course-manifest.json",
+      "baseUrl": "/courseware/ESLCO/",
+      "notes": "Moodle book lessons, iSpring, H5P, video, course outline, and local previews verified."
+    },
+    {
+      "code": "HFN1O",
+      "title": "Food and Nutrition, Grade 9 or 10, Open",
+      "level": "Grade 9 or 10",
+      "status": "ready",
+      "manifestUrl": "/courseware/HFN1O/course-manifest.json",
+      "baseUrl": "/courseware/HFN1O/",
+      "notes": "Legacy Moodle activity package localized: 7 units, 74 activity groups, 118 local resource records."
+    },
+    {
+      "code": "ICS2O",
+      "title": "Introduction to Computer Studies, Grade 10, Open",
+      "level": "Grade 10",
+      "status": "ready",
+      "manifestUrl": "/courseware/ICS2O/course-manifest.json",
+      "baseUrl": "/courseware/ICS2O/",
+      "notes": "Legacy esunnybrook activity course normalized from Moodle sections: 3 units, 31 lesson/activity groups, 20 unit assessment item(s). Official Ontario Computer Studies curriculum guidance is included; the course outline identifies no official textbook."
+    },
+    {
+      "code": "ICS4U",
+      "title": "Computer Science, Grade 12, University",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/ICS4U/course-manifest.json",
+      "baseUrl": "/courseware/ICS4U/",
+      "notes": "Legacy Moodle activity package localized: 4 units, 26 numbered lessons; 16 Moodle resources currently 404."
+    },
+    {
+      "code": "LKBCU",
+      "title": "International Languages, Simplified Chinese, Level 2, University",
+      "level": "Grade 11",
+      "status": "ready",
+      "manifestUrl": "/courseware/LKBCU/course-manifest.json",
+      "baseUrl": "/courseware/LKBCU/",
+      "notes": "Moodle Chinese course localized: 5 units, 79 activity groups, 162 local resource records; folder packages and text index included."
+    },
+    {
+      "code": "MPM1D",
+      "title": "Principles of Mathematics, Grade 9, Academic",
+      "level": "Grade 9",
+      "status": "ready",
+      "manifestUrl": "/courseware/MPM1D/course-manifest.json",
+      "baseUrl": "/courseware/MPM1D/",
+      "notes": "Legacy Moodle mathematics package localized: 10 units, 115 activity groups, 170 local resource records; 7 unavailable/empty URL target(s) documented."
+    },
+    {
+      "code": "MTH1W",
+      "title": "Mathematics, Grade 9, De-Streamed",
+      "level": "Grade 9",
+      "status": "ready",
+      "manifestUrl": "/courseware/MTH1W/course-manifest.json",
+      "baseUrl": "/courseware/MTH1W/",
+      "notes": "Legacy Moodle activity package localized: 6 units, 28 topic groups; no textbook exposed in Moodle."
+    },
+    {
+      "code": "OLC4O",
+      "title": "OLC4O · Ontario Secondary School Literacy Course",
+      "level": "Grade 12",
+      "status": "ready",
+      "manifestUrl": "/courseware/OLC4O/course-manifest.json",
+      "baseUrl": "/courseware/OLC4O/",
+      "notes": "St. Mary Moodle V2.0 course localized from course id 69: course overview, 3 units, 19 Moodle book lessons, local H5P, Moodle course/culminating/teacher/unit activities, DOCX/PDF resources, generated teacher plans with previews, official Ontario OSSLC curriculum guidance, source audit, and answer keys; no separate commercial textbook package was identified."
+    },
+    {
+      "code": "PPL1O",
+      "title": "Healthy Active Living Education, Grade 9, Open",
+      "level": "Grade 9",
+      "status": "ready",
+      "manifestUrl": "/courseware/PPL1O/course-manifest.json",
+      "baseUrl": "/courseware/PPL1O/",
+      "notes": "Legacy Moodle activity package localized: 4 units, 12 lessons; unit plans localized as Moodle folder package."
+    },
+    {
+      "code": "PPL3O",
+      "title": "Healthy Active Living Education, Grade 11, Open",
+      "level": "Grade 11",
+      "status": "ready",
+      "manifestUrl": "/courseware/PPL3O/course-manifest.json",
+      "baseUrl": "/courseware/PPL3O/",
+      "notes": "Legacy Moodle activity package localized: 4 units, 16 lessons; recorded classes retained as wrappers where direct video download was blocked."
     }
   ]
 }

@@ -1,12 +1,13 @@
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, extname, join, relative, resolve } from "node:path";
 import { inflateSync } from "node:zlib";
 
 const projectRoot = resolve(import.meta.dirname, "..");
 const workspaceRoot = resolve(projectRoot, "..");
 const coursewareRoot = join(workspaceRoot, "courseware");
-const queuePath = join(projectRoot, "deployment", "moodle-ispring-embed-queue.json");
-const reportPath = join(projectRoot, "deployment", "ispring-localization-report.json");
+const queuePath = readArg("--queue") ? resolve(projectRoot, readArg("--queue")) : join(projectRoot, "deployment", "moodle-ispring-embed-queue.json");
+const reportPath = readArg("--report") ? resolve(projectRoot, readArg("--report")) : join(projectRoot, "deployment", "ispring-localization-report.json");
+const REQUEST_TIMEOUT_MS = Math.max(15000, Number(process.env.ISPRING_REQUEST_TIMEOUT_MS || 45000));
 const ua =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
 
@@ -34,6 +35,20 @@ function toPosix(path) {
 
 function safeSegment(value) {
   return String(value || "item").replace(/[^A-Za-z0-9_.-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") || "item";
+}
+
+function sectionSlug(value) {
+  return safeSegment(String(value || "ispring").trim().toLowerCase());
+}
+
+function rowKey(row) {
+  return `${row.course || ""}|${normalizeLessonId(row.lessonId)}`;
+}
+
+function targetLessonSegment(row) {
+  const duplicateCount = duplicateLessonCounts.get(rowKey(row)) || 0;
+  if (duplicateCount <= 1) return row.lessonId;
+  return `${row.lessonId}-${sectionSlug(row.section || row.sectionLabel || row.title || "ispring")}`;
 }
 
 function splitSetCookie(value) {
@@ -65,13 +80,19 @@ class CookieJar {
 async function request(url, options = {}, redirects = 0) {
   const headers = new Headers(options.headers || {});
   headers.set("user-agent", ua);
-  const response = await fetch(url, { ...options, headers, redirect: "manual" });
-  if ([301, 302, 303, 307, 308].includes(response.status) && response.headers.get("location") && redirects < 8) {
-    const next = new URL(response.headers.get("location"), url).toString();
-    const method = [301, 302, 303].includes(response.status) ? "GET" : options.method || "GET";
-    return request(next, { ...options, method, body: method === "GET" ? undefined : options.body }, redirects + 1);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, { ...options, headers, redirect: "manual", signal: controller.signal });
+    if ([301, 302, 303, 307, 308].includes(response.status) && response.headers.get("location") && redirects < 8) {
+      const next = new URL(response.headers.get("location"), url).toString();
+      const method = [301, 302, 303].includes(response.status) ? "GET" : options.method || "GET";
+      return request(next, { ...options, method, body: method === "GET" ? undefined : options.body }, redirects + 1);
+    }
+    return response;
+  } finally {
+    clearTimeout(timer);
   }
-  return response;
 }
 
 function extractContentId(url) {
@@ -146,9 +167,10 @@ function extractAssetUrls(text, baseUrl, packageRootUrl) {
     if (!raw || raw.startsWith("data:") || raw.startsWith("blob:") || raw.startsWith("javascript:") || raw.startsWith("#")) return;
     if (/^(mailto|tel):/i.test(raw)) return;
     if (/^https?$/i.test(raw) || raw.endsWith("/https") || raw.endsWith("/http")) return;
-    if (/[<>"'{}()[\]+^$\\]/.test(raw)) return;
+    const rawWithoutFragment = String(raw).split("#")[0];
+    if (/[<>"'{}()[\]+^$\\]/.test(rawWithoutFragment)) return;
     try {
-      const clean = raw.replace(/&amp;/g, "&");
+      const clean = rawWithoutFragment.replace(/&amp;/g, "&");
       const url = new URL(clean, clean.startsWith("data/") ? packageRootUrl : baseUrl);
       if (url.origin === "https://hexstruct.ispring.com") found.add(url.toString());
     } catch {
@@ -175,6 +197,142 @@ function extractPresentationInfoAssetUrls(text, baseUrl, packageRootUrl) {
     }
   }
   return [...found];
+}
+
+function collectPlayerDataSourcePaths(value, out = new Set()) {
+  if (typeof value === "string") {
+    if (/^(data|assets|content|res)\//i.test(value)) out.add(value);
+  } else if (Array.isArray(value)) {
+    for (const item of value) collectPlayerDataSourcePaths(item, out);
+  } else if (value && typeof value === "object") {
+    for (const item of Object.values(value)) collectPlayerDataSourcePaths(item, out);
+  }
+  return out;
+}
+
+function escapeScriptJson(value) {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
+
+async function downloadRollPreviewAsset(url, targetRoot, rel) {
+  const response = await request(url, { headers: { referer: "https://hexstruct.ispring.com/" } });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const bytes = Buffer.from(await response.arrayBuffer());
+  const target = join(targetRoot, rel);
+  mkdirSync(dirname(target), { recursive: true });
+  writeFileSync(target, bytes);
+  return bytes.length;
+}
+
+function copyReusableRollPreviewLanguage(courseRoot, targetRoot, rel) {
+  const target = join(targetRoot, rel);
+  if (existsSync(target)) return { bytes: statSync(target).size, source: "existing" };
+  const candidates = [
+    join(coursewareRoot, "BAF3M", "ispring-localized/unit-00/course-overview/lng/en-US.1740f3.json"),
+    join(coursewareRoot, "BAT4M", "ispring-localized/unit-00/course-overview/lng/en-US.1740f3.json"),
+    join(coursewareRoot, "SNC1D", "ispring-localized/unit-00/course-overview/lng/en-US.1740f3.json"),
+    join(coursewareRoot, "SES4U", "ispring-localized/unit-00/course-overview/lng/en-US.1740f3.json"),
+    join(coursewareRoot, "BAF3M", "ispring-localized/unit-00/course-overview/lng/en-US.c9165f.json"),
+    join(coursewareRoot, "BAT4M", "ispring-localized/unit-00/course-overview/lng/en-US.c9165f.json"),
+    join(coursewareRoot, "SNC1D", "ispring-localized/unit-00/course-overview/lng/en-US.c9165f.json"),
+    join(coursewareRoot, "SES4U", "ispring-localized/unit-00/course-overview/lng/en-US.c9165f.json"),
+  ];
+  const source = candidates.find((candidate) => existsSync(candidate));
+  if (!source) throw new Error(`Missing reusable roll-preview language file for ${rel}`);
+  mkdirSync(dirname(target), { recursive: true });
+  copyFileSync(source, target);
+  return { bytes: statSync(target).size, source: toPosix(relative(courseRoot, source)) };
+}
+
+async function ensureRollPreviewPresentation(row, embed, mirror) {
+  const playerPath = new URL(embed.playerUrl).pathname;
+  if (!playerPath.includes("/roll-preview/")) return { files: [], failures: [] };
+
+  const courseRoot = join(coursewareRoot, row.course);
+  const targetRoot = join(courseRoot, mirror.targetRoot);
+  const indexPath = join(targetRoot, "index.html");
+  const presentationPath = join(targetRoot, "presentation.html");
+  const playerData = JSON.parse(JSON.stringify(embed.preview?.playerData || {}));
+  if (!existsSync(indexPath) || !playerData || !Object.keys(playerData).length) {
+    return { files: [], failures: [{ url: row.url, error: "Missing roll-preview shell or playerData" }] };
+  }
+
+  const files = [];
+  const failures = [];
+  const origin = "https://hexstruct.ispring.com";
+  const languageRels = ["lng/en-US.1740f3.json", "lng/en-US.c9165f.json"];
+
+  for (const rel of languageRels) {
+    const url = `${origin}/roll-preview/${rel}`;
+    try {
+      files.push({
+        url,
+        path: toPosix(relative(courseRoot, join(targetRoot, rel))),
+        bytes: await downloadRollPreviewAsset(url, targetRoot, rel),
+        status: "downloaded",
+      });
+    } catch (error) {
+      try {
+        const fallback = copyReusableRollPreviewLanguage(courseRoot, targetRoot, rel);
+        files.push({
+          url,
+          path: toPosix(relative(courseRoot, join(targetRoot, rel))),
+          bytes: fallback.bytes,
+          status: fallback.source === "existing" ? "reused-existing" : "copied-fallback",
+          fallbackSource: fallback.source,
+        });
+      } catch (fallbackError) {
+        failures.push({ url, error: String(error?.message || error), fallbackError: String(fallbackError?.message || fallbackError) });
+      }
+    }
+  }
+
+  const resourceBase = new URL(playerData.resourcesBaseUrl || "/", origin);
+  for (const rel of collectPlayerDataSourcePaths(playerData)) {
+    if (rel.startsWith("data/") && /\.(woff2?|ttf|eot)$/i.test(rel)) continue;
+    const localRel = toPosix(join("resources", rel));
+    const url = new URL(rel, resourceBase).toString();
+    try {
+      files.push({
+        url,
+        path: toPosix(relative(courseRoot, join(targetRoot, localRel))),
+        bytes: await downloadRollPreviewAsset(url, targetRoot, localRel),
+        status: "downloaded",
+      });
+    } catch (error) {
+      failures.push({ url, error: String(error?.message || error) });
+    }
+  }
+
+  playerData.resourcesBaseUrl = "resources/";
+  playerData.playerI18nUrl = "lng/en-US.1740f3.json";
+  playerData.editorDocumentUrl = "";
+
+  const starter = `
+<script>
+window.addEventListener("load", () => {
+  const playerData = ${escapeScriptJson(JSON.stringify(playerData))};
+  const start = () => {
+    if (typeof window.createPreviewPlayer === "function") {
+      window.createPreviewPlayer(playerData, "en-US");
+    } else {
+      window.setTimeout(start, 50);
+    }
+  };
+  start();
+});
+</script>`;
+
+  let shell = readFileSync(indexPath, "utf8");
+  shell = shell.replace(/\s*<\/body>/i, `${starter}\n</body>`);
+  writeFileSync(presentationPath, shell, "utf8");
+  files.push({
+    url: embed.playerUrl,
+    path: toPosix(relative(courseRoot, presentationPath)),
+    bytes: statSync(presentationPath).size,
+    status: "generated",
+  });
+  return { files, failures };
 }
 
 function likelyPackageUrls(playerUrl) {
@@ -209,7 +367,7 @@ function localPathForUrl(rootDir, rootUrl, assetUrl) {
 
 async function mirrorPlayerPackage(row, playerUrl) {
   const courseRoot = join(coursewareRoot, row.course);
-  const targetRoot = join(courseRoot, "ispring-localized", `unit-${String(row.unit).padStart(2, "0")}`, row.lessonId);
+  const targetRoot = join(courseRoot, "ispring-localized", `unit-${String(row.unit).padStart(2, "0")}`, targetLessonSegment(row));
   mkdirSync(targetRoot, { recursive: true });
   const pending = [{ url: playerUrl, optional: false }, ...likelyPackageUrls(playerUrl).map((url) => ({ url, optional: true }))];
   const seen = new Set();
@@ -313,6 +471,9 @@ function patchManifest(reportRows) {
           if (row.status === "partial") {
             record.localizationStatus = "partial";
             record.failedAssets = row.failures || [];
+          } else {
+            record.localizationStatus = "localized";
+            record.failedAssets = [];
           }
           lesson.ispring = lesson.ispring || [];
           const index = lesson.ispring.findIndex((item) => item.path === record.path || item.source === record.source);
@@ -332,6 +493,86 @@ function patchManifest(reportRows) {
     manifest.sourceAudit.ispringExpected = rows.length;
     manifest.sourceAudit.ispringComplete = rows.filter((row) => row.status === "localized").length;
     manifest.sourceAudit.ispringPartial = rows.filter((row) => row.status === "partial").length;
+    manifest.sourceAudit.ispringExternalEmbedsPending = rows.filter((row) => !["localized", "partial"].includes(row.status)).length;
+    if (changed) writeJson(manifestPath, manifest);
+    patched.push({ course, changed });
+  }
+  return patched;
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function htmlHref(fromRelPath, toRelPath) {
+  return toPosix(relative(dirname(fromRelPath), toRelPath)).split("/").map((part) => encodeURIComponent(part)).join("/");
+}
+
+function iframeHtml(row, pageRel) {
+  const src = htmlHref(pageRel, row.entryPath);
+  return `<div class="localized-ispring"><iframe src="${src}" width="1500" height="600" frameborder="0" scrolling="auto" allowfullscreen="allowfullscreen" loading="lazy" title="${escapeHtml(row.title || row.lessonTitle || row.lessonId)}"></iframe></div>`;
+}
+
+function injectIspringStyles(html) {
+  if (/\.localized-ispring\b/.test(html)) return html;
+  const css = [
+    "    .localized-ispring { display: block; margin: 16px auto 24px; max-width: 100%; width: 100%; }",
+    "    .localized-ispring iframe { border: 0; display: block; height: min(72vh, 760px); min-height: 640px; width: 100%; }",
+    "",
+  ].join("\n");
+  return html.replace(/(\s+\.portal-note\s*\{[^}]+\}\s*)/, `$1${css}`);
+}
+
+function patchCoursewarePages(reportRows) {
+  const byCourse = new Map();
+  for (const row of reportRows.filter((item) => ["localized", "partial"].includes(item.status))) {
+    const rows = byCourse.get(row.course) || [];
+    rows.push(row);
+    byCourse.set(row.course, rows);
+  }
+  const patched = [];
+  for (const [course, rows] of byCourse.entries()) {
+    const manifestPath = join(coursewareRoot, course, "course-manifest.json");
+    if (!existsSync(manifestPath)) continue;
+    const manifest = readJson(manifestPath);
+    let changed = 0;
+    for (const row of rows) {
+      for (const unit of manifest.units || []) {
+        for (const lesson of unit.lessons || []) {
+          if (normalizeLessonId(lesson.id) !== row.lessonId) continue;
+          const matchingSections = (lesson.bookSections || []).filter((section) => {
+            if (!section?.path || section.type !== "html") return false;
+            if (!row.section) return true;
+            return String(section.sectionLabel || "").trim().toLowerCase() === String(row.section).trim().toLowerCase();
+          });
+          const candidateSections = [...matchingSections, ...(lesson.bookSections || []).filter((section) => !matchingSections.includes(section))];
+          for (const section of candidateSections) {
+            if (!section?.path) continue;
+            const pagePath = join(coursewareRoot, course, section.path);
+            if (!existsSync(pagePath)) continue;
+            let html = readFileSync(pagePath, "utf8");
+            if (html.includes(row.entryPath) || html.includes(htmlHref(section.path, row.entryPath))) break;
+            if (!/<div class="portal-note">Interactive media pending local package; external playback was not embedded\.<\/div>/.test(html)) continue;
+            const before = html;
+            html = injectIspringStyles(html).replace(
+              /<div class="portal-note">Interactive media pending local package; external playback was not embedded\.<\/div>/,
+              iframeHtml(row, section.path),
+            );
+            if (html !== before) {
+              writeFileSync(pagePath, html, "utf8");
+              section.bytes = Buffer.byteLength(html, "utf8");
+              section.textPreview = String(section.textPreview || "").replace(/\s*Interactive media pending local package; external playback was not embedded\./g, "");
+              changed += 1;
+              break;
+            }
+          }
+        }
+      }
+    }
     if (changed) writeJson(manifestPath, manifest);
     patched.push({ course, changed });
   }
@@ -350,29 +591,39 @@ if (courseArg) rows = rows.filter((row) => row.course === courseArg);
 if (startArg > 0) rows = rows.slice(startArg);
 if (limitArg > 0) rows = rows.slice(0, limitArg);
 
+const duplicateLessonCounts = new Map();
+for (const row of rows) {
+  const key = rowKey(row);
+  duplicateLessonCounts.set(key, (duplicateLessonCounts.get(key) || 0) + 1);
+}
+
 const report = {
   generatedAt: new Date().toISOString(),
   rows: [],
   failures: [],
   manifestPatched: [],
+  pagesPatched: [],
 };
 
 for (const row of rows) {
   try {
     const embed = await getEmbedInfo(row);
     const mirror = await mirrorPlayerPackage(row, embed.playerUrl);
+    const rollPreview = await ensureRollPreviewPresentation(row, embed, mirror);
+    const failures = [...mirror.failures, ...rollPreview.failures];
+    const files = [...mirror.files, ...rollPreview.files];
     const localized = {
       ...row,
-      status: mirror.failures.length ? "partial" : "localized",
+      status: failures.length ? "partial" : "localized",
       title: embed.preview.title || embed.info.title,
       contentId: embed.contentId,
       playerUrl: embed.playerUrl,
       entryPath: mirror.entryPath,
       targetRoot: mirror.targetRoot,
-      fileCount: mirror.files.length,
-      bytes: mirror.files.reduce((sum, file) => sum + (file.bytes || 0), 0),
+      fileCount: files.length,
+      bytes: files.reduce((sum, file) => sum + (file.bytes || 0), 0),
       optionalMisses: mirror.optionalMisses,
-      failures: mirror.failures,
+      failures,
     };
     report.rows.push(localized);
     console.log(`${localized.status} ${row.course} ${row.lessonId}: ${mirror.files.length} files, ${mirror.failures.length} failures`);
@@ -384,6 +635,7 @@ for (const row of rows) {
 }
 
 report.manifestPatched = patchManifest(report.rows);
+report.pagesPatched = patchCoursewarePages(report.rows);
 writeJson(reportPath, report);
 
 const localizedCount = report.rows.filter((row) => row.status === "localized").length;

@@ -69,9 +69,6 @@ const context = {
       renderJobLogDetail(job, logs) {
         return `log:${job?.id}:${logs.stdout}:${logs.stderr}`;
       },
-      renderUploadDetail(upload, { relatedJob }) {
-        return `upload:${upload.id}:${relatedJob?.id}`;
-      },
     },
     confirm(message) {
       confirms.push(message);
@@ -114,10 +111,6 @@ assert.match(confirms.at(-1), /可发布资源：610/);
 assert.match(confirms.at(-1), /已跳过非播放文件：11618/);
 assert.match(confirms.at(-1), /视频、H5P 和 iSpring/);
 assert.equal((await actions.checkReadiness()).job.type, "check-readiness");
-
-actions.showUploadDetail("upl-1");
-assert.match(details.at(-1).title, /OSS 直传详情/);
-assert.equal(details.at(-1).html, "upload:upl-1:job-1");
 
 await actions.showJobLog("job-1");
 assert.match(details.at(-1).title, /媒体任务详情/);

@@ -1,0 +1,20 @@
+{
+  "course": "CHV2O",
+  "moodleCourseId": 41,
+  "title": "Civics and Citizenship, Grade 10, Open",
+  "sections": [
+    { "id": 483, "unit": 0, "title": "Introduction" },
+    { "id": 484, "unit": 1, "title": "Unit 1: Political Inquiry and Skill Development" },
+    { "id": 485, "unit": 2, "title": "Unit 2: Civic Awareness" },
+    { "id": 486, "unit": 3, "title": "Unit 3: Civic Engagement and Action" },
+    { "id": 487, "unit": 4, "title": "ISP and Final Exam" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline|success criteria", "role": "course_outline" },
+    { "pattern": "lesson plans?", "role": "lesson_plan_reference" },
+    { "pattern": "final exam|test", "role": "assessment" },
+    { "pattern": "discussion", "role": "discussion" },
+    { "pattern": "log|teacher observation|conversation", "role": "reflection" },
+    { "pattern": "primary and secondary|apa|government|citizen|electoral|political|united nations|peacekeep|indigenous|resume|cover letter|job|brochure|pamphlet|story board|campaign|powerpoint|presentation", "role": "assignment" }
+  ]
+}

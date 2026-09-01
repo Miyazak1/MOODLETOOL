@@ -5,7 +5,7 @@ const projectRoot = resolve(import.meta.dirname, "..");
 const workspaceRoot = resolve(projectRoot, "..");
 const coursewareRoot = join(workspaceRoot, "courseware");
 const deploymentRoot = join(projectRoot, "deployment");
-const queuePath = join(deploymentRoot, "moodle-media-localization-queue.json");
+const queuePath = readArg("--queue") ? resolve(projectRoot, readArg("--queue")) : join(deploymentRoot, "moodle-media-localization-queue.json");
 
 loadEnvFile(join(projectRoot, ".env"));
 

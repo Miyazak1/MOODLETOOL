@@ -110,6 +110,7 @@ const server = startServer();
 try {
   if (server) await sleep(1500);
   results.push(await check(joinUrl(baseUrl, "/"), "app shell"));
+  results.push(await check(joinUrl(baseUrl, "/favicon.ico"), "favicon"));
 
   const catalogRead = await readJson(joinUrl(baseUrl, "/course-catalog.json"), "course catalog");
   results.push(catalogRead.result);
@@ -172,10 +173,12 @@ try {
     .flatMap((unit) => unit.lessons || [])
     .flatMap((item) => item.downloads || [])
     .find((item) => item.type === "mp4");
-  if (firstVideo) {
+  const firstVideoUrl = firstVideo?.url || firstVideo?.path;
+  if (firstVideoUrl) {
     results.push(
-      await check(joinUrl(baseUrl, resourceUrl(firstVideo.path, course.baseUrl)), `${course.code} video range`, {
+      await check(joinUrl(baseUrl, resourceUrl(firstVideoUrl, course.baseUrl)), `${course.code} video range`, {
         headers: { Range: "bytes=0-1023" },
+        skipExternal: true,
       }),
     );
   }

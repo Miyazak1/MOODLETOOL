@@ -100,13 +100,22 @@ function writeJson(path, data) {
 
 function isIspringPackageAsset(relPath) {
   const normalized = `/${toPosix(relPath).toLowerCase()}`;
-  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/");
+  return normalized.includes("/html5-package/") || normalized.includes("/html5-package-admin/") || normalized.includes("/ispring-localized/");
 }
 
 function isPlayableAsset(relPath) {
   const normalized = toPosix(relPath);
   const ext = extname(normalized).toLowerCase();
   return playableVideoExts.has(ext) || ext === ".h5p" || isIspringPackageAsset(normalized);
+}
+
+function assetKind(relPath) {
+  const normalized = toPosix(relPath);
+  const ext = extname(normalized).toLowerCase();
+  if (isIspringPackageAsset(normalized)) return "ispring";
+  if (playableVideoExts.has(ext)) return "video";
+  if (ext === ".h5p") return "h5p";
+  return ext ? ext.slice(1) : "other";
 }
 
 function ossListPrefix(course = "") {
@@ -177,7 +186,19 @@ function mergeRegistry(indexedObjects) {
     assets: [],
   });
   const indexedAssets = indexedObjects.map((item) => item.objectKey);
+  const indexedRecords = indexedObjects.map((item) => ({
+    course: item.course,
+    kind: assetKind(item.relativePath),
+    source: "cdn",
+    objectKey: item.objectKey,
+    relativePath: item.relativePath,
+    ossUri: item.ossUri,
+    url: cdnBaseUrl ? `${cdnBaseUrl}/${item.course}/${item.relativePath.split("/").map(encodeURIComponent).join("/")}` : "",
+    cdnUrl: cdnBaseUrl ? `${cdnBaseUrl}/${item.course}/${item.relativePath.split("/").map(encodeURIComponent).join("/")}` : "",
+    bytes: item.sizeBytes || 0,
+  }));
   const oldAssets = Array.isArray(existing.assets) ? existing.assets : [];
+  const oldRecords = Array.isArray(existing.assetRecords) ? existing.assetRecords : [];
   const courseSet = new Set(indexedObjects.map((item) => item.course));
   const replaceAll = args.all || !courses.length;
   const retained = replaceAll
@@ -187,7 +208,19 @@ function mergeRegistry(indexedObjects) {
         const course = safeCourse(afterPrefix.split("/")[0] || "");
         return !courseSet.has(course);
       });
+  const retainedRecords = replaceAll
+    ? []
+    : oldRecords.filter((record) => {
+        const afterPrefix = String(record?.objectKey || "").startsWith(`${objectPrefix}/`) ? String(record.objectKey).slice(objectPrefix.length + 1) : "";
+        const course = safeCourse(afterPrefix.split("/")[0] || record?.course || "");
+        return !courseSet.has(course);
+      });
   const assets = [...new Set([...retained, ...indexedAssets])].sort();
+  const recordMap = new Map();
+  for (const record of [...retainedRecords, ...indexedRecords]) {
+    if (record?.objectKey) recordMap.set(record.objectKey, record);
+  }
+  const assetRecords = [...recordMap.values()].sort((a, b) => String(a.objectKey).localeCompare(String(b.objectKey)));
   return {
     ...existing,
     generatedAt: new Date().toISOString(),
@@ -197,6 +230,7 @@ function mergeRegistry(indexedObjects) {
     objectPrefix,
     assetCount: assets.length,
     assets,
+    assetRecords,
   };
 }
 

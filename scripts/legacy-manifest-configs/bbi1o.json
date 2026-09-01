@@ -1,0 +1,23 @@
+{
+  "course": "BBI1O",
+  "moodleCourseId": 30,
+  "title": "Introduction to Business, Grade 9, Open",
+  "sections": [
+    { "id": 362, "unit": 0, "title": "Introduction" },
+    { "id": 363, "unit": 1, "title": "Unit 1: Personal Finance" },
+    { "id": 364, "unit": 2, "title": "Unit 2: Business Fundamentals and Functions of Business" },
+    { "id": 365, "unit": 3, "title": "Unit 3: Entrepreneurship" },
+    { "id": 366, "unit": 4, "title": "Unit 4: International Business" },
+    { "id": 367, "unit": 5, "title": "Culminating Project" },
+    { "id": 368, "unit": 6, "title": "Final Exam" },
+    { "id": 369, "unit": 7, "title": "Teacher Evaluation and Comments" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline", "role": "course_outline" },
+    { "pattern": "unit plans?", "role": "unit_plan" },
+    { "pattern": "reading materials", "role": "reading_material" },
+    { "pattern": "final exam|test", "role": "assessment" },
+    { "pattern": "learning log|observation|conversation|comments|learning skills", "role": "reflection" },
+    { "pattern": "finance|rent|budget|future|business|entrepreneur|dictionary|company|communication|international|trade|nafta|immigration|case study|assignment|culminating|project|event|grocery|manual|food truck|investors|sanctions", "role": "assignment" }
+  ]
+}

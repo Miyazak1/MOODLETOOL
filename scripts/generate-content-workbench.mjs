@@ -34,6 +34,10 @@ function groupedByCourse(items) {
   return map;
 }
 
+function isExcludedCourseCode(course) {
+  return /C$/i.test(String(course || "").trim());
+}
+
 function completionStatus(row) {
   if (row.blockers.length) return "blocked-by-content";
   if (row.important.length) return "needs-course-content";
@@ -143,7 +147,7 @@ const reviews = groupedByCourse(uploadGap.reviewItems || []);
 const externals = groupedByCourse(uploadGap.externalItems || []);
 const onlineSummaries = byKey(online.courseSummaries || [], "course");
 
-const rows = readinessReports.map((report) => {
+const rows = readinessReports.filter((report) => !isExcludedCourseCode(report.course?.code)).map((report) => {
   const course = report.course?.code || "";
   const uploadCourse = uploadCourses.get(course) || {};
   const onlineCourse = onlineSummaries.get(course) || {};

@@ -19,6 +19,8 @@ DEFAULT_SOURCE = Path(
 )
 
 COURSE_META: dict[str, dict[str, str]] = {
+    "BAT4M": {"title": "Financial Accounting Principles", "grade": "Grade 12"},
+    "AVI4M": {"title": "Visual Arts", "grade": "Grade 12"},
     "BBB4M": {"title": "International Business Fundamentals", "grade": "Grade 12"},
     "BBI1O": {"title": "Introduction to Business", "grade": "Grade 9/10"},
     "BOH4M": {"title": "Business Leadership: Management Fundamentals", "grade": "Grade 12"},
@@ -33,13 +35,13 @@ COURSE_META: dict[str, dict[str, str]] = {
     "HFA4U": {"title": "Nutrition and Health", "grade": "Grade 12"},
     "HFC3M": {"title": "Food and Culture", "grade": "Grade 11"},
     "HHS4U": {"title": "Families in Canada", "grade": "Grade 12"},
+    "HSB4U": {"title": "Challenge and Change in Society", "grade": "Grade 12"},
     "ICS3U": {"title": "Introduction to Computer Studies", "grade": "Grade 11"},
     "LKBDU": {"title": "International Languages, Simplified Chinese", "grade": "Grade 12"},
     "MCR3U": {"title": "Functions", "grade": "Grade 11"},
     "MCV4U": {"title": "Calculus and Vectors", "grade": "Grade 12"},
     "MDM4U": {"title": "Mathematics of Data Management", "grade": "Grade 12"},
     "MHF4U": {"title": "Advanced Functions", "grade": "Grade 12"},
-    "MAP4C": {"title": "Foundations for College Mathematics", "grade": "Grade 12"},
     "MPM2D": {"title": "Principles of Mathematics", "grade": "Grade 10"},
     "SBI3U": {"title": "Biology", "grade": "Grade 11"},
     "SBI4U": {"title": "Biology", "grade": "Grade 12"},
@@ -50,6 +52,13 @@ COURSE_META: dict[str, dict[str, str]] = {
     "SPH3U": {"title": "Physics", "grade": "Grade 11"},
     "SPH4U": {"title": "Physics", "grade": "Grade 12"},
 }
+
+
+def is_excluded_course_code(code: str) -> bool:
+    normalized = code.strip().upper()
+    if normalized.endswith("C"):
+        return True
+    return any(marker in normalized for marker in ("BACKUP", "OLDSITE", "ZZZEMPTY", "ZZZSMOKE"))
 
 
 def course_record(course_dir: Path) -> dict[str, Any]:
@@ -71,13 +80,13 @@ def course_record(course_dir: Path) -> dict[str, Any]:
 def build_options(source: Path, default_course: str) -> dict[str, Any]:
     if not source.exists():
         raise FileNotFoundError(f"Source directory does not exist: {source}")
-    courses = [course_record(path) for path in sorted(source.iterdir()) if path.is_dir()]
+    courses = [course_record(path) for path in sorted(source.iterdir()) if path.is_dir() and not is_excluded_course_code(path.name)]
     courses = [course for course in courses if course["planningFileCount"] > 0]
     existing_codes = {course["code"] for course in courses}
     if COURSEWARE_ROOT.exists():
         for course_dir in sorted(COURSEWARE_ROOT.iterdir()):
             code = course_dir.name.upper()
-            if not course_dir.is_dir() or code in existing_codes:
+            if not course_dir.is_dir() or code in existing_codes or is_excluded_course_code(code):
                 continue
             manifest_path = course_dir / "course-manifest.json"
             if manifest_path.exists():

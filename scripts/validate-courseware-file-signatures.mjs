@@ -40,6 +40,7 @@ function collectFileRecords(manifest) {
     if (item?.path) records.push({ item, owner });
     if (item?.previewPath) records.push({ item: { ...item, path: item.previewPath, type: extname(item.previewPath).slice(1) }, owner: `${owner} preview` });
     if (item?.downloadPath) records.push({ item: { ...item, path: item.downloadPath, type: extname(item.downloadPath).slice(1) }, owner: `${owner} download` });
+    for (const [index, attachment] of (item?.attachments || []).entries()) add(attachment, `${owner} attachment ${index + 1}`);
   };
 
   for (const item of manifest.courseDownloads || []) add(item, "course download");
@@ -50,6 +51,7 @@ function collectFileRecords(manifest) {
     if (unit.unitPlan) add(unit.unitPlan, `unit ${unit.unit} plan`);
     for (const lesson of unit.lessons || []) {
       if (lesson.lessonPlan) add(lesson.lessonPlan, `${lesson.id} lesson plan`);
+      for (const item of lesson.bookSections || []) add(item, `${lesson.id} book section`);
       for (const item of lesson.downloads || []) add(item, `${lesson.id} download`);
       for (const item of lesson.textExports || []) add(item, `${lesson.id} text export`);
       for (const item of lesson.ispring || []) add(item, `${lesson.id} iSpring`);
@@ -73,7 +75,9 @@ function validateSignature(path) {
   const suffix = extname(path).toLowerCase();
   if (!CHECKED_TYPES.has(suffix)) return null;
   const signature = signatureFor(path);
-  if (ZIP_TYPES.has(suffix) && !signature.startsWithPk) return `${suffix.slice(1).toUpperCase()} file does not start with ZIP/PK signature.`;
+  if (ZIP_TYPES.has(suffix) && !signature.startsWithPk && !(suffix === ".docx" && signature.startsWithOle)) {
+    return `${suffix.slice(1).toUpperCase()} file does not start with ZIP/PK signature.`;
+  }
   if (suffix === ".pdf" && !signature.startsWithPdf) return "PDF file does not start with %PDF signature.";
   if (suffix === ".doc" && !signature.startsWithOle) return "DOC file does not start with OLE compound document signature.";
   if (/<!doctype html|<html|用户名|密码|登录|password|login/i.test(signature.textProbe)) {

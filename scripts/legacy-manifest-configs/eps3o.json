@@ -1,0 +1,21 @@
+{
+  "course": "EPS3O",
+  "moodleCourseId": 10,
+  "title": "Presentation and Speaking Skills, Grade 11, Open",
+  "sections": [
+    { "id": 49, "unit": 0, "title": "Introduction" },
+    { "id": 50, "unit": 1, "title": "Unit 1: Understanding Presentations - Speaking for Yourself" },
+    { "id": 51, "unit": 2, "title": "Unit 2: Understanding Presentations - Speaking for the Classroom" },
+    { "id": 52, "unit": 3, "title": "Unit 3: Making Presentations - Speaking for the Workplace" },
+    { "id": 53, "unit": 4, "title": "Unit 4: Making Presentations - Speaking for the Community" },
+    { "id": 54, "unit": 5, "title": "Final Evaluation" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline", "role": "course_outline" },
+    { "pattern": "lesson[- ]?plans?", "role": "lesson_plan_reference" },
+    { "pattern": "teacher.*comments|learning skills|observation|conversation", "role": "teacher_resource" },
+    { "pattern": "final exam|final project|graded assignment|test|assessment", "role": "assessment" },
+    { "pattern": "learning log|exit card|reflection", "role": "reflection" },
+    { "pattern": "lesson|presentation|speaking|speech|workplace|classroom|community|activity|assignment|rubric|checklist|folder", "role": "lesson_material" }
+  ]
+}

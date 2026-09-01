@@ -1,0 +1,20 @@
+{
+  "course": "AVI3M",
+  "moodleCourseId": 68,
+  "title": "Visual Arts, Grade 11, University/College",
+  "sections": [
+    { "id": 735, "unit": 0, "title": "Announcements" },
+    { "id": 736, "unit": 1, "title": "Unit 1: Elements and Principles of Art" },
+    { "id": 737, "unit": 2, "title": "Unit 2: Art Criticism" },
+    { "id": 738, "unit": 3, "title": "Unit 3: Art of Earliest Times and Ancient Art" },
+    { "id": 739, "unit": 4, "title": "Unit 4: Late Nineteenth Century and Post-Impressionism" },
+    { "id": 741, "unit": 5, "title": "ISP and Final Exam" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline|attendance policy|learning skills|learning log", "role": "course_document" },
+    { "pattern": "course outline", "role": "course_outline" },
+    { "pattern": "quiz|test|exam|isp|final|assessment", "role": "assessment" },
+    { "pattern": "conversation|observation|reflection|learning log", "role": "reflection" },
+    { "pattern": "elements|principles|art|architecture|sculpture|crafts|media|criticism|aesthetic|history|painting|drawing|prehistoric|egypt|impressionist|artist statement|assignment|lesson|review", "role": "lesson_material" }
+  ]
+}

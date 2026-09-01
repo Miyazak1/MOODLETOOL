@@ -9,6 +9,24 @@ export interface FileResource {
   previewUrl?: string;
   source?: string;
   bytes?: number;
+  attachments?: FileResource[];
+  ispring?: ISpringEntry[];
+  unit?: number;
+  lesson?: number;
+  moodleActivityId?: string;
+  parentSection?: string;
+  sourceSection?: number;
+  sectionKey?: string;
+  sectionTitle?: string;
+  sectionOrder?: number;
+  sectionPath?: string;
+  sourceGroup?: string;
+  teacherOnly?: boolean;
+  teacherUse?: string;
+  textPreview?: string;
+  sortOrder?: number;
+  mode?: string;
+  localizedPackagePath?: string;
 }
 
 export interface MoodleEmbedRow {
@@ -17,7 +35,7 @@ export interface MoodleEmbedRow {
   lesson: number;
   lessonId: string;
   lessonTitle: string;
-  kind: "ispring" | "video" | "h5p" | "book-section" | "file";
+  kind: "ispring" | "video" | "h5p" | "interactive" | "book-section" | "file";
   label: string;
   path: string;
   status: string;
@@ -74,6 +92,7 @@ export interface Lesson {
   lessonPlan: FileResource | null;
   ispring: ISpringEntry[];
   downloads: FileResource[];
+  handsOn?: FileResource[];
   bookSections?: BookSectionResource[];
   resourceCounts: Record<string, number>;
 }
@@ -92,9 +111,57 @@ export interface Unit {
   title: string;
   coreTexts: string[];
   unitPlan: FileResource | null;
-  unitResources: Record<string, string>;
+  unitResources: Record<string, string | FileResource | FileResource[]>;
   summary: UnitSummary;
   lessons: Lesson[];
+}
+
+export interface TeacherPrepResourceGroup {
+  playables: FileResource[];
+  studentFiles: FileResource[];
+  teacherFiles: FileResource[];
+  references: FileResource[];
+}
+
+export interface TeacherPrepLesson {
+  id: string;
+  unit: number;
+  lesson: number;
+  title: string;
+  pacing: string;
+  focus: string;
+  learningGoals: string[];
+  successCriteria: string[];
+  beforeClass: string[];
+  inClass: string[];
+  afterClass: string[];
+  assessment: string[];
+  resourceGroups: TeacherPrepResourceGroup;
+  evidence: string[];
+  suggestedNotes: string[];
+}
+
+export interface TeacherPrepUnit {
+  unit: number;
+  title: string;
+  pacing: string;
+  focus: string;
+  keyConcepts: string[];
+  assessmentPlan: string[];
+  teacherMoves: string[];
+  lessons: TeacherPrepLesson[];
+}
+
+export interface TeacherPrepGuide {
+  generatedAt: string;
+  title: string;
+  purpose: string;
+  evidencePolicy: string;
+  pacingModel: string;
+  coursePriorities: string[];
+  planningReferences: FileResource[];
+  externalReferences?: ExternalLinkResource[];
+  units: TeacherPrepUnit[];
 }
 
 export interface TextRegistryEntry {
@@ -124,6 +191,9 @@ export interface CourseManifest {
     lessonCount?: number;
     ispringExpected?: number;
     ispringComplete?: number;
+    moodleBookCount?: number;
+    activityItemCount?: number;
+    notes?: string;
     resourceCoverage?: {
       uniqueCovered?: number;
       uniqueTotal?: number;
@@ -139,7 +209,11 @@ export interface CourseManifest {
     secondary: string;
   };
   courseDownloads: FileResource[];
+  courseSections?: FileResource[];
+  evaluations?: FileResource[];
+  teacherResources?: FileResource[];
   texts: TextRegistryEntry[];
+  teacherPrep?: TeacherPrepGuide;
   units: Unit[];
 }
 
@@ -182,52 +256,4 @@ export interface MoodleCourseResourceIndex {
   generatedAt: string;
   source: string;
   courses: MoodleCourseResourceIndexEntry[];
-}
-
-export interface CourseRoadmapEntry {
-  course: string;
-  title: string;
-  level: string;
-  status: string;
-  phase: string;
-  priority: number;
-  moodle: {
-    coursePage: string;
-    outlineStatus: string;
-    outlineUrl: string;
-    bookCount: number;
-    numberedLessonCount: number;
-  };
-  readiness: {
-    units: number;
-    lessons: number;
-    unitPlans: number;
-    lessonPlans: number;
-    lessonPlanExpected: number;
-    missingCourseOutline: boolean;
-    missingIntroduction: boolean;
-    missingUnitPlans: number;
-    missingLessonPlans: number;
-    textsNeedingReview: number;
-    linkOnlyTexts: number;
-  };
-  queue: {
-    status: string;
-    targetFilename: string;
-    hasUrl: boolean;
-  };
-  localEvidence: {
-    courseOutlines: number;
-    unitPlans: number;
-    lessonPlans: number;
-    ispringFiles: number;
-    outlineExamples: string[];
-  };
-  nextActions: string[];
-}
-
-export interface CourseRoadmap {
-  schemaVersion: number;
-  generatedAt: string;
-  courses: CourseRoadmapEntry[];
 }

@@ -1,0 +1,23 @@
+{
+  "course": "AVI1O",
+  "moodleCourseId": 5,
+  "title": "Visual Arts, Grade 9, Open",
+  "sections": [
+    { "id": 8, "unit": 0, "title": "Introduction" },
+    { "id": 9, "unit": 1, "title": "Unit 1: Elements and Principles of Design" },
+    { "id": 10, "unit": 2, "title": "Unit 2: Shading and Details of Portraiture" },
+    { "id": 11, "unit": 3, "title": "Unit 3: Color Theory" },
+    { "id": 12, "unit": 4, "title": "Unit 4: Printmaking" },
+    { "id": 13, "unit": 5, "title": "Unit 5: Sculpting" },
+    { "id": 14, "unit": 6, "title": "Final Evaluation" },
+    { "id": 15, "unit": 0, "title": "Teacher Evaluation" }
+  ],
+  "roleRules": [
+    { "pattern": "course outline", "role": "course_outline" },
+    { "pattern": "supplies|everyday a sketch|learning skills|work habits", "role": "course_document" },
+    { "pattern": "teacher.*comments|teacher.*only", "role": "teacher_private_review" },
+    { "pattern": "learning log|kwl|enter card|exit card|self[- ]?evaluation|self[- ]?assessment", "role": "reflection" },
+    { "pattern": "final exam|culminating|quiz|assignment|assessment|activity|exercise|questions|chart|project|aol|afl|aal", "role": "assessment" },
+    { "pattern": "elements|principles|line|shape|form|value|texture|space|color|colour|balance|contrast|emphasis|repetition|shading|portrait|grid|printmaking|linocut|sculpt|mask|clay|video|tutorial|lesson", "role": "lesson_material" }
+  ]
+}

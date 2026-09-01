@@ -75,6 +75,7 @@
   function uploadKindLabel(kind) {
     const labels = {
       "course-package": "完整课件包",
+      "course-package-raw": "完整课件包 Raw",
       video: "视频",
       h5p: "H5P",
       "ispring-package": "iSpring 包",
@@ -133,11 +134,11 @@
         detail: `${course?.publishedCount || 0}/${course?.fileCount || 0} 可播放资源`,
       };
     }
-    if (state === "empty") {
+    if (state === "no-media" || state === "empty" || course?.mediaStatus === "not-required") {
       return {
-        className: "meta-line",
-        label: "无可发布媒体",
-        detail: course?.localFileCount ? `${course.localFileCount} local files` : "0 local files",
+        className: "status-ok",
+        label: "暂无可发布媒体",
+        detail: course?.localFileCount ? `课程壳已建立 · ${course.localFileCount} local files` : "课程壳已建立",
       };
     }
     return {
@@ -576,161 +577,6 @@
     `;
   }
 
-  function uploadTimeline(upload, jobs = []) {
-    const relatedJob = upload?.jobId ? jobs.find((job) => job.id === upload.jobId) : null;
-    const uploadDone = ["uploaded", "importing", "ready", "needs-review", "imported", "queued"].includes(upload?.status);
-    const uploadFailed = ["failed", "expired", "cancelled"].includes(upload?.status);
-    const importStarted = Boolean(upload?.importId || upload?.importStatus);
-    const importDone = ["committed", "ready", "imported", "indexed", "indexed-with-warnings"].includes(upload?.importStatus) || ["imported", "queued"].includes(upload?.status);
-    const importFailed = upload?.status === "needs-review" || upload?.importStatus === "needs-review" || uploadFailed;
-    const ossOnlyPackage = upload?.kind === "course-package" && (upload?.importMode === "oss-only" || String(upload?.importStatus || "").startsWith("oss-") || upload?.ossOnly === true);
-    const ossExtractWaiting = ossOnlyPackage && upload?.importStatus === "oss-extract-required";
-    const ossExtracted = ossOnlyPackage && upload?.importStatus === "oss-extracted";
-    const ossIndexing = ossOnlyPackage && upload?.importStatus === "oss-index-queued";
-    const publishStarted = Boolean(upload?.jobId);
-    const publishDone = ["succeeded", "ready"].includes(relatedJob?.status);
-    const publishIssue = ["failed", "warning", "cancelled", "interrupted"].includes(relatedJob?.status) || Boolean(upload?.mediaJobWarning);
-
-    const steps = [
-      {
-        label: "直传 OSS",
-        state: uploadFailed ? "issue" : uploadDone ? "done" : "active",
-        detail: uploadFailed ? "上传异常" : uploadDone ? "对象已保存" : "等待浏览器上传",
-      },
-      {
-        label: "导入课程",
-        state: importFailed ? "issue" : importDone ? "done" : importStarted ? "active" : "",
-        detail: importFailed ? "需要处理" : importDone ? "课程已导入" : importStarted ? upload.importStatus || "导入中" : "等待导入",
-      },
-      {
-        label: "发布媒体",
-        state: publishIssue ? "issue" : publishDone ? "done" : publishStarted ? "active" : "",
-        detail: publishIssue ? "有提示或失败" : publishDone ? "媒体已发布" : publishStarted ? (relatedJob?.progress?.message || relatedJob?.status || "任务排队中") : "等待任务",
-      },
-      {
-        label: "可播放",
-        state: publishIssue ? "issue" : publishDone ? "done" : "",
-        detail: publishIssue ? "请看日志" : publishDone ? "CDN/OSS 就绪" : "等待完成",
-      },
-    ];
-
-    if (upload?.kind !== "course-package") {
-      steps[1] = {
-        label: "归档到 inbox",
-        state: uploadDone ? "done" : uploadFailed ? "issue" : "",
-        detail: uploadDone ? "等待后续处理" : uploadFailed ? "上传异常" : "等待上传",
-      };
-    } else if (ossOnlyPackage) {
-      steps[1] = {
-        label: "OSS 解压",
-        state: uploadFailed ? "issue" : ossExtractWaiting ? "active" : (ossExtracted || ossIndexing || importDone) ? "done" : importStarted ? "active" : "",
-        detail: uploadFailed ? "上传异常" : ossExtractWaiting ? "等待 OSS-side 处理" : (ossExtracted || ossIndexing || importDone) ? "已确认" : importStarted ? upload.importStatus || "等待确认" : "等待确认",
-      };
-      steps[2] = {
-        label: "索引 Registry",
-        state: publishIssue && !ossExtractWaiting ? "issue" : importDone ? "done" : ossIndexing || publishStarted ? "active" : "",
-        detail: ossExtractWaiting ? "等待 OSS 解压" : publishIssue ? "有提示或失败" : importDone ? "OSS/CDN 已登记" : ossIndexing ? "索引排队中" : publishStarted ? (relatedJob?.progress?.message || relatedJob?.status || "任务排队中") : "等待索引",
-      };
-      steps[3] = {
-        label: "可播放",
-        state: publishIssue && !ossExtractWaiting ? "issue" : importDone || publishDone ? "done" : "",
-        detail: ossExtractWaiting ? "等待 OSS 解压" : publishIssue ? "请看日志" : importDone || publishDone ? "CDN/OSS 就绪" : "等待完成",
-      };
-    }
-
-    return steps
-      .map((step) => `
-        <div class="media-upload-step ${step.state}">
-          <strong>${escapeHtml(step.label)}</strong>
-          <span>${escapeHtml(step.detail)}</span>
-        </div>
-      `)
-      .join("");
-  }
-
-  function renderUploadCard(upload, jobs = []) {
-    const objectKey = upload?.objectKey || upload?.ossUri || "";
-    const uploadId = escapeHtml(upload?.id || "");
-    const related = upload?.jobId
-      ? `媒体任务 ${upload.jobId}`
-      : upload?.importId
-        ? `${upload?.importMode === "oss-only" ? "OSS 索引任务" : "导入任务"} ${upload.importId}${upload.importStatus ? ` · ${upload.importStatus}` : ""}`
-        : "";
-    return `
-      <article class="media-upload-card">
-        <div>
-          <header>
-            <strong>${escapeHtml(upload?.course || "未识别课程")}</strong>
-            ${uploadStatusLabel(upload?.status)}
-            <span class="meta-line">${escapeHtml(uploadKindLabel(upload?.kind))}</span>
-          </header>
-          <div class="media-upload-card-meta">
-            <span>${escapeHtml(upload?.fileName || "")}</span>
-            <span>${formatBytes(upload?.fileSize || 0)}</span>
-            <span>创建 ${escapeHtml(shortDateTime(upload?.requestedAt) || "-")}</span>
-            <span>完成 ${escapeHtml(shortDateTime(upload?.completedAt) || "-")}</span>
-            ${related ? `<span>${escapeHtml(related)}</span>` : ""}
-          </div>
-          <div class="media-upload-timeline">${uploadTimeline(upload, jobs)}</div>
-          ${objectKey ? `<div class="media-upload-object" title="${escapeHtml(objectKey)}">${escapeHtml(objectKey)}</div>` : ""}
-          ${upload?.ingestMessage ? `<div class="meta-line">${escapeHtml(upload.ingestMessage)}</div>` : ""}
-          ${upload?.error || upload?.mediaJobWarning ? `<div class="media-job-result status-risk">${escapeHtml(upload.error || upload.mediaJobWarning)}</div>` : ""}
-        </div>
-        <div class="media-job-card-actions">
-          <button class="small" type="button" data-media-upload-action="detail" data-upload="${uploadId}">详情</button>
-          ${upload?.jobId ? `<button class="small" type="button" data-media-job-action="log" data-job="${escapeHtml(upload.jobId)}">任务日志</button>` : ""}
-        </div>
-      </article>
-    `;
-  }
-
-  function renderUploadsSection({ uploads = [], jobs = [] } = {}) {
-    const visibleUploads = uploads.slice(0, 20);
-    const cards = visibleUploads.map((upload) => renderUploadCard(upload, jobs)).join("");
-    return `
-      <div class="media-section-title">
-        <h3>OSS 直传记录</h3>
-        <span class="meta-line">${uploads.length ? `最近 ${Math.min(uploads.length, 20)}/${uploads.length} 条` : "暂无直传记录"}</span>
-      </div>
-      <div class="media-upload-card-list">${cards || '<p class="media-job-empty">还没有 OSS 直传记录。</p>'}</div>
-    `;
-  }
-
-  function renderUploadDetail(upload, { relatedJob = null, jobs = [] } = {}) {
-    const items = [
-      ["课程", upload?.course || "未识别"],
-      ["上传类型", uploadKindLabel(upload?.kind)],
-      ["状态", upload?.status],
-      ["文件", upload?.fileName],
-      ["大小", formatBytes(upload?.fileSize || 0)],
-      ["创建", shortDateTime(upload?.requestedAt)],
-      ["完成", shortDateTime(upload?.completedAt)],
-      ["课程识别", upload?.courseSource || ""],
-      ["导入模式", upload?.importMode || ""],
-      ["导入任务", upload?.importId || ""],
-      ["导入状态", upload?.importStatus || ""],
-      ["OSS-only", upload?.ossOnly ? "是" : ""],
-      ["目标前缀", upload?.targetPrefix || ""],
-      ["解压确认", shortDateTime(upload?.extractedAt) || ""],
-      ["解压报告", upload?.extractReport || ""],
-      ["索引完成", shortDateTime(upload?.importedAt) || ""],
-      ["媒体任务", upload?.jobId || ""],
-      ["OSS 对象", upload?.objectKey || upload?.ossUri || ""],
-      ["说明", upload?.ingestMessage || ""],
-    ];
-    const issue = upload?.error || upload?.mediaJobWarning || "";
-    const actions = upload?.jobId
-      ? `<div class="media-detail-actions"><button class="small" type="button" data-media-job-action="log" data-job="${escapeHtml(upload.jobId)}">打开关联任务日志</button></div>`
-      : "";
-    return `
-      <div class="media-detail-grid">${items.map(([label, value]) => detailItem(label, value)).join("")}</div>
-      <div class="media-upload-timeline">${uploadTimeline(upload, jobs)}</div>
-      ${issue ? `<div class="media-job-result status-risk">${escapeHtml(issue)}</div>` : ""}
-      ${relatedJob ? `<h3>关联媒体任务</h3>${renderJobSummary(relatedJob)}` : ""}
-      ${actions}
-    `;
-  }
-
   function ossDirectQueueStatusText(status) {
     const labels = {
       queued: "等待",
@@ -738,6 +584,9 @@
       authorizing: "授权",
       uploading: "上传中",
       verifying: "校验",
+      uploaded: "已上传",
+      importing: "导入中",
+      imported: "已导入",
       done: "完成",
       warning: "提示",
       failed: "失败",
@@ -762,6 +611,7 @@
     const status = item?.status || "";
     const metrics = [
       item?.speedText ? `速度 ${item.speedText}` : "",
+      item?.ossConfirmedText || "",
       item?.etaText ? `剩余约 ${item.etaText}` : "",
     ].filter(Boolean);
     const cancelButton = item?.cancelable
@@ -795,7 +645,7 @@
     const summaryItems = batchItems.length ? batchItems : items;
     const totalBytes = summaryItems.reduce((sum, item) => sum + Number(item?.size || 0), 0);
     const loadedBytes = summaryItems.reduce((sum, item) => {
-      if (["done", "warning"].includes(item?.status)) return sum + Number(item?.size || 0);
+      if (["done", "warning", "uploaded", "importing", "imported"].includes(item?.status)) return sum + Number(item?.size || 0);
       if (!["authorizing", "uploading", "verifying"].includes(item?.status)) return sum;
       return sum + Math.min(Number(item?.loaded || 0), Number(item?.total || item?.size || 0));
     }, 0);
@@ -805,7 +655,8 @@
     const skipped = items.filter((item) => item?.status === "skipped").length;
     const cancelled = items.filter((item) => item?.status === "cancelled").length;
     const uploading = summaryItems.filter((item) => ["authorizing", "uploading", "verifying"].includes(item?.status)).length;
-    const done = summaryItems.filter((item) => ["done", "warning"].includes(item?.status)).length;
+    const importing = summaryItems.filter((item) => item?.status === "importing").length;
+    const done = summaryItems.filter((item) => ["done", "warning", "uploaded", "imported"].includes(item?.status)).length;
     if (summaryItems.length <= 1) return items.map(renderOssDirectQueueItem).join("");
     const summary = `
       <div class="oss-direct-queue-summary">
@@ -814,6 +665,7 @@
         <span>${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}</span>
         <span>批量总进度 ${totalPercent}%</span>
         ${uploading ? `<span>${uploading} 个处理中</span>` : ""}
+        ${importing ? `<span>${importing} 个导入中</span>` : ""}
         ${done ? `<span>${done} 个完成</span>` : ""}
         ${skipped ? `<span>${skipped} 个跳过</span>` : ""}
         ${cancelled ? `<span>${cancelled} 个取消</span>` : ""}
@@ -875,23 +727,27 @@
 
   function uploadProgressFormatter(file) {
     const startedAt = Date.now();
-    let lastAt = startedAt;
-    let lastLoaded = 0;
+    let sampleStartedAt = startedAt;
+    let sampleLoaded = 0;
     let smoothedBytesPerSecond = 0;
     return ({ percent, loaded, total, objectKey }) => {
       const now = Date.now();
-      const elapsedMs = Math.max(1, now - lastAt);
-      const deltaBytes = Math.max(0, loaded - lastLoaded);
-      const instantBytesPerSecond = (deltaBytes / elapsedMs) * 1000;
-      if (instantBytesPerSecond > 0) {
-        smoothedBytesPerSecond = smoothedBytesPerSecond
-          ? smoothedBytesPerSecond * 0.7 + instantBytesPerSecond * 0.3
-          : instantBytesPerSecond;
+      const sampleElapsedMs = Math.max(0, now - sampleStartedAt);
+      const sampleDeltaBytes = Math.max(0, loaded - sampleLoaded);
+      if (sampleElapsedMs >= 1000 || percent >= 100 || loaded >= total) {
+        const instantBytesPerSecond = sampleElapsedMs > 0
+          ? (sampleDeltaBytes / sampleElapsedMs) * 1000
+          : 0;
+        if (instantBytesPerSecond > 0) {
+          smoothedBytesPerSecond = smoothedBytesPerSecond
+            ? smoothedBytesPerSecond * 0.7 + instantBytesPerSecond * 0.3
+            : instantBytesPerSecond;
+        }
+        sampleStartedAt = now;
+        sampleLoaded = loaded;
       }
-      lastAt = now;
-      lastLoaded = loaded;
       const averageBytesPerSecond = loaded > 0 ? loaded / Math.max(1, (now - startedAt) / 1000) : 0;
-      const bytesPerSecond = smoothedBytesPerSecond || averageBytesPerSecond;
+      const bytesPerSecond = smoothedBytesPerSecond || ((now - startedAt) >= 3000 ? averageBytesPerSecond : 0);
       const remainingBytes = Math.max(0, total - loaded);
       const eta = bytesPerSecond > 0 ? remainingBytes / bytesPerSecond : 0;
       const speedText = bytesPerSecond > 0 ? `${formatBytes(bytesPerSecond)}/s` : "计算中";
@@ -949,16 +805,12 @@
     renderOssDirectQueue,
     renderOssDirectQueueItem,
     renderStatGrid,
-    renderUploadCard,
-    renderUploadDetail,
-    renderUploadsSection,
     shortDateTime,
     statItem,
     statusLabel,
     ossDirectQueueStatusText,
     uploadKindLabel,
     uploadProgressFormatter,
-    uploadTimeline,
     uploadStatusLabel,
   };
 })();

@@ -48,6 +48,19 @@ assert.equal(preview.items[0].source, "filename");
 assert.match(preview.warnings.join("\n"), /当前左侧课程是 ENG3U/);
 assert.match(preview.warnings.join("\n"), /完整课件包会按文件名分别上传/);
 
+const rawPreview = upload.createDirectUploadPreview({
+  kind: "course-package-raw",
+  files: [
+    { name: "MCR3U-course-package.zip", size: 1024 },
+    { name: "MDM4U-course-package.zip", size: 2048 },
+  ],
+  selectedCourse: "ENG3U",
+  courseCodes: ["ENG3U", "MCR3U", "MDM4U"],
+});
+assert.equal(rawPreview.ok, true);
+assert.equal(rawPreview.files, 2);
+assert.equal(JSON.stringify(rawPreview.courses), JSON.stringify(["MCR3U", "MDM4U"]));
+
 const mismatchedPreview = upload.createDirectUploadPreview({
   kind: "course-package",
   files: [{ name: "ESLDO-course-package.zip", size: 1024 }],
@@ -185,8 +198,8 @@ assert.equal(queueSnapshots[0][0].course, "ESLDO");
 assert.ok(queueSnapshots.some((items) => items[0].status === "uploading" && items[0].percent === 50));
 assert.ok(queueSnapshots.some((items) => items[0].loaded === 500 && items[0].total === 1000));
 assert.ok(queueSnapshots.some((items) => items[0].speedText === "2 MB/s" && items[0].etaText === "10秒"));
-assert.ok(queueSnapshots.some((items) => items[0].overallText === "500 B / 2.9 KB"));
-assert.ok(queueSnapshots.at(-1).every((item) => item.status === "done"));
+assert.ok(queueSnapshots.every((items) => items.every((item) => item.overallText === undefined)));
+assert.ok(queueSnapshots.at(-1).every((item) => ["done", "importing"].includes(item.status)));
 
 const singleStatuses = [];
 const singleSnapshots = [];
@@ -215,6 +228,64 @@ assert.ok(singleSnapshots.some((items) => items[0].status === "uploading" && ite
 assert.ok(singleSnapshots.some((items) => items[0].speedText === "2 MB/s" && items[0].etaText === "10秒"));
 assert.doesNotMatch(singleStatuses.map((item) => item.title).join("\n"), /正在.*OSS/);
 assert.ok(singleStatuses.some((item) => item.title === "OSS 直传完成"));
+
+const multipartSnapshots = [];
+const multipartApi = {
+  async initOssUpload(payload) {
+    return {
+      ok: true,
+      upload: {
+        id: `multipart-${payload.course}`,
+        course: payload.course,
+        objectKey: `course-import-raw/${payload.course}/${payload.fileName}`,
+        ossUri: `oss://moodletool/course-import-raw/${payload.course}/${payload.fileName}`,
+      },
+      multipart: {
+        partCount: 2,
+        totalBytes: 2000,
+        parts: [
+          { partNumber: 1, start: 0, end: 1000, url: "https://oss.example.test/part1" },
+          { partNumber: 2, start: 1000, end: 2000, url: "https://oss.example.test/part2" },
+        ],
+      },
+    };
+  },
+  async ossUploadParts() {
+    return {
+      ok: true,
+      multipart: {
+        partCount: 2,
+        uploadedBytes: 1000,
+        uploadedPartCount: 1,
+        uploadedParts: [{ partNumber: 1, etag: "etag-1", size: 1000 }],
+      },
+    };
+  },
+  async completeOssUpload(uploadId, payload) {
+    return {
+      ok: true,
+      upload: { id: uploadId, objectKey: payload.objectKey, status: "uploaded" },
+    };
+  },
+};
+const multipartController = upload.createDirectUploadController({
+  api: multipartApi,
+  getKind: () => "course-package-raw",
+  getFiles: () => [
+    { name: "SCH4U-course-package.zip", size: 2000, type: "application/zip", slice: () => ({ size: 1000 }) },
+  ],
+  getSelectedCourse: () => "SCH4U",
+  getCourseCodes: () => ["SCH4U"],
+  getAutoPublish: () => false,
+  onQueueChange: (items) => multipartSnapshots.push(items),
+  uploadMultipartObject: async (_multipart, _file, { onProgress }) => {
+    onProgress?.({ percent: 50, loaded: 1000, total: 2000, partNumber: 1, partCount: 2 });
+    onProgress?.({ percent: 100, loaded: 2000, total: 2000, partNumber: 2, partCount: 2 });
+    return { parts: [{ partNumber: 1, etag: "etag-1" }, { partNumber: 2, etag: "etag-2" }] };
+  },
+});
+await multipartController.uploadSelected();
+assert.ok(multipartSnapshots.some((items) => /OSS确认 1\/2/.test(items[0].ossConfirmedText || "")));
 
 const singleCancelApiCalls = [];
 const singleCancelApi = {

@@ -52,11 +52,15 @@ try {
     "--asset-mode", "hybrid",
     "--cdn-base-url", "https://cdn.example.com/courseware-active",
     "--oss-bucket", "oss://moodletool-courseware",
+    "--oss-access-key-id", "LTAI5tExampleAccessKeyId",
+    "--oss-access-key-secret", "exampleSecretForSmokeOnly1234567890",
   ]);
   const cdnEnv = readFileSync(cdnEnvPath, "utf8");
   if (!cdnEnv.includes("COURSEWARE_ASSET_MODE=hybrid")) throw new Error("Generated CDN env did not set hybrid asset mode.");
   if (!cdnEnv.includes("COURSEWARE_ASSET_BASE_URL=https://cdn.example.com/courseware-active")) throw new Error("Generated CDN env did not set CDN base URL.");
   if (!cdnEnv.includes("OSS_BUCKET_URI=oss://moodletool-courseware")) throw new Error("Generated CDN env did not set OSS bucket URI.");
+  if (!cdnEnv.includes("COURSE_IMPORT_RAW_PREFIX=course-import-raw")) throw new Error("Generated CDN env did not set raw course package prefix.");
+  if (!cdnEnv.includes("OSS_SERVER_ENDPOINT=https://oss-cn-hongkong-internal.aliyuncs.com")) throw new Error("Generated CDN env did not set ECS internal OSS endpoint.");
   run(process.execPath, ["scripts/check-production-env.mjs", "--env", cdnEnvPath]);
 
   console.log("Production env generation smoke passed.");
