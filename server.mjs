@@ -338,13 +338,19 @@ function injectIspringEmbedCompatibility(html, baseHref) {
       }
     };
   </script>`;
-  const baseTag = baseHref && !/<base\s/i.test(html) ? `<base href="${htmlEscape(baseHref)}">` : "";
-  const injection = [baseTag, compatibilityScript].filter(Boolean).join("\n    ");
-  if (!injection) return html;
-  if (/<head(\s[^>]*)?>/i.test(html)) {
-    return html.replace(/<head(\s[^>]*)?>/i, (match) => `${match}\n    ${injection}`);
+  let output = String(html);
+  const baseTag = baseHref ? `<base href="${htmlEscape(baseHref)}">` : "";
+  let baseAlreadyInjected = false;
+  if (baseTag && /<base\b[^>]*>/i.test(output)) {
+    output = output.replace(/<base\b[^>]*>/i, baseTag);
+    baseAlreadyInjected = true;
   }
-  return `${injection}\n${html}`;
+  const missingInjection = [baseAlreadyInjected ? "" : baseTag, compatibilityScript].filter(Boolean).join("\n    ");
+  if (!missingInjection) return output;
+  if (/<head(\s[^>]*)?>/i.test(output)) {
+    return output.replace(/<head(\s[^>]*)?>/i, (match) => `${match}\n    ${missingInjection}`);
+  }
+  return `${missingInjection}\n${output}`;
 }
 
 function patchIspringEmbedJavaScript(js) {

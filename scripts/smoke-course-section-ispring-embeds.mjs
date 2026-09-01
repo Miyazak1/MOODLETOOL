@@ -35,7 +35,7 @@ async function prepareCourse() {
   );
   await writeFile(
     resolve(courseRoot, "ispring-localized", "unit-00", "course-overview", "presentation.html"),
-    '<!doctype html><head><title>Course Overview iSpring</title><script src="./js/index.js"></script></head><body>Course Overview iSpring</body>',
+    '<!doctype html><head><base href="./"><title>Course Overview iSpring</title><script src="./js/index.js"></script></head><body>Course Overview iSpring</body>',
     "utf8",
   );
   await writeFile(
@@ -126,6 +126,9 @@ try {
   }
   const baseHref = /<base href="([^"]+)"/.exec(html)?.[1];
   if (!baseHref) throw new Error(`Signed embed is missing tokenized base href: ${html.slice(0, 500)}`);
+  if (baseHref === "./" || !baseHref.includes("/embed/t/")) {
+    throw new Error(`Signed embed did not replace the package base href: ${html.slice(0, 500)}`);
+  }
   const scriptResponse = await check(new URL("js/index.js", `${baseUrl}${baseHref}`).toString(), "tokenized iSpring script", 200);
   const script = await scriptResponse.text();
   if (script.includes("parent.window.location.hash") || script.includes("parent.window;")) {
