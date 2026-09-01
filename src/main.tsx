@@ -365,10 +365,11 @@ function isEmptyMoodleActivityShell(item: LinkableResource): boolean {
   const category = (item.category || "").toLowerCase();
   if (!category.startsWith("moodle_") || category === "moodle_course_section") return false;
   const role = (item.role || "").toLowerCase();
+  const resourceTarget = item.path || item.previewPath || item.downloadPath || item.url || item.previewUrl || item.downloadUrl;
   if ((category === "moodle_book_section" || role === "lesson_book_section") && (item.path || item.previewPath)) return false;
   if (hasMoodleActivityPage(item)) return false;
   const type = (item.type || "").toLowerCase();
-  if ((item.path || item.previewPath || item.downloadPath) && type && type !== "html" && type !== "htm") return false;
+  if (resourceTarget && type && type !== "html" && type !== "htm") return false;
   return !hasMeaningfulTextContent(item) && !visibleAttachments(item).length;
 }
 
