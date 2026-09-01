@@ -205,6 +205,9 @@ function decodePath(urlPath) {
 
 function resolveRequestPath(urlPath) {
   const decoded = decodePath(urlPath.split("?")[0]);
+  if (decoded === "/favicon.ico") {
+    return join(webRoot, "favicon.svg");
+  }
   if (decoded === "/login") {
     return join(webRoot, "login.html");
   }
