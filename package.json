@@ -139,6 +139,7 @@
     "smoke:production-env": "node scripts/smoke-production-env-check.mjs",
     "smoke:generate-production-env": "node scripts/smoke-generate-production-env.mjs",
     "smoke:deployed-site": "node scripts/smoke-deployed-site.mjs",
+    "smoke:ispring-lazy-cover": "node scripts/smoke-ispring-lazy-cover.mjs",
     "smoke:course-overview-ispring-embed": "node scripts/smoke-course-overview-ispring-embed.mjs",
     "smoke:bbi2o-video-activity-links": "node scripts/smoke-bbi2o-video-activity-links.mjs",
     "validate:manifest": "node scripts/validate-manifest.mjs",

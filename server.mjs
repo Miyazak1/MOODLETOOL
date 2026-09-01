@@ -95,6 +95,7 @@ const ossExtractCallbackSecret = process.env.OSS_EXTRACT_CALLBACK_SECRET || "";
 const embedTokenSecret = process.env.EMBED_TOKEN_SECRET || adminSessionSecret || portalSessionSecret || "";
 const embedTokenMaxAgeSeconds = Number(process.env.EMBED_TOKEN_MAX_AGE_SECONDS || 3650 * 24 * 60 * 60);
 const embedPublicOrigin = process.env.EMBED_PUBLIC_ORIGIN || "";
+const ispringEmbedLazyCoverEnabled = ["1", "true", "yes", "on"].includes(String(process.env.ISPRING_EMBED_LAZY_COVER || "").toLowerCase());
 const shareTokenMaxAgeSeconds = Number(process.env.SHARE_TOKEN_MAX_AGE_SECONDS || 30 * 24 * 60 * 60);
 const loginRateLimitMaxFailures = Number(process.env.LOGIN_RATE_LIMIT_MAX_FAILURES || 8);
 const loginRateLimitWindowMs = Number(process.env.LOGIN_RATE_LIMIT_WINDOW_SECONDS || 15 * 60) * 1000;
@@ -302,6 +303,15 @@ function htmlEscape(value) {
     .replaceAll("'", "&#39;");
 }
 
+function jsStringLiteral(value) {
+  return JSON.stringify(String(value ?? ""))
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
 function directoryHrefForRequest(req) {
   const requestUrl = new URL(req.url || "/", "http://127.0.0.1");
   const pathname = requestUrl.pathname || "/";
@@ -388,6 +398,127 @@ function renderIspringSameOriginEmbedWrapper({ title, src }) {
       src="${htmlEscape(src)}"
       allow="autoplay; fullscreen; clipboard-write; encrypted-media; picture-in-picture"
       allowfullscreen="allowfullscreen"></iframe>
+  </body>
+</html>`;
+}
+
+function renderIspringLazyCoverWrapper({ title, src }) {
+  const safeTitle = title || "iSpring Courseware";
+  const targetLiteral = jsStringLiteral(src);
+  const titleLiteral = jsStringLiteral(safeTitle);
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${htmlEscape(safeTitle)}</title>
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: #f4f7fb;
+        color: #001f3f;
+        font-family: Inter, "Segoe UI", Arial, sans-serif;
+        overflow: hidden;
+      }
+      .cover,
+      .player {
+        width: 100%;
+        height: 100vh;
+      }
+      .cover {
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background:
+          linear-gradient(135deg, rgba(0, 61, 110, .88), rgba(0, 93, 76, .82)),
+          linear-gradient(180deg, #f8fbff, #dfeaf6);
+      }
+      .launch {
+        display: grid;
+        gap: 14px;
+        justify-items: center;
+        width: min(560px, 100%);
+        padding: 32px 26px;
+        border: 1px solid rgba(255, 255, 255, .48);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, .94);
+        box-shadow: 0 22px 50px rgba(0, 31, 63, .22);
+        text-align: center;
+      }
+      h1 {
+        margin: 0;
+        color: #001f3f;
+        font-size: clamp(22px, 4vw, 34px);
+        line-height: 1.18;
+        letter-spacing: 0;
+      }
+      button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 46px;
+        padding: 0 22px;
+        border: 1px solid #003d6e;
+        border-radius: 7px;
+        background: #003d6e;
+        color: #fff;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 3px solid rgba(30, 132, 242, .45);
+        outline-offset: 3px;
+      }
+      .open-link {
+        color: #003d6e;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .player {
+        display: none;
+        border: 0;
+        background: transparent;
+      }
+      body.is-playing .cover {
+        display: none;
+      }
+      body.is-playing .player {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="cover">
+      <section class="launch" aria-label="${htmlEscape(safeTitle)}">
+        <h1>${htmlEscape(safeTitle)}</h1>
+        <button type="button" id="playButton">Play</button>
+        <a class="open-link" href="${htmlEscape(src)}" target="_blank" rel="noopener">Open in new window</a>
+      </section>
+    </main>
+    <script>
+      (function() {
+        var target = ${targetLiteral};
+        var button = document.getElementById("playButton");
+        function loadPlayer() {
+          if (document.querySelector(".player")) return;
+          document.body.className = "is-playing";
+          var iframe = document.createElement("iframe");
+          iframe.className = "player";
+          iframe.title = ${titleLiteral};
+          iframe.allow = "autoplay; fullscreen; clipboard-write; encrypted-media; picture-in-picture";
+          iframe.allowFullscreen = true;
+          iframe.src = target;
+          document.body.appendChild(iframe);
+        }
+        button && button.addEventListener("click", loadPlayer);
+      })();
+    </script>
   </body>
 </html>`;
 }
@@ -2935,6 +3066,14 @@ async function handleEmbedRequest(req, res, requestUrl) {
     : "";
   const assetRawUrl = payloadUrl || coursewareAssetUrl(course, payload.path) || tokenizedRawUrl;
   if (kind === "ispring") {
+    const lazyParam = String(requestUrl.searchParams.get("lazy") || "").toLowerCase();
+    if (ispringEmbedLazyCoverEnabled && lazyParam !== "0" && lazyParam !== "false" && (tokenizedRawUrl || payloadUrl)) {
+      sendHtml(res, 200, renderIspringLazyCoverWrapper({
+        title: payload.label || "iSpring Courseware",
+        src: tokenizedRawUrl || payloadUrl,
+      }));
+      return true;
+    }
     if (payloadUrl) {
       if (isTrustedCoursewareAssetUrl(payloadUrl)) {
         try {
