@@ -69,7 +69,6 @@ class filter_portalembed extends moodle_text_filter {
             . 'title="' . $title . '" '
             . 'width="' . $width . '" '
             . 'height="' . $height . '" '
-            . 'style="display:block;width:100%;max-width:100%;border:0;background:transparent;" '
             . 'frameborder="0" '
             . 'scrolling="auto" '
             . 'sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-presentation allow-modals" '

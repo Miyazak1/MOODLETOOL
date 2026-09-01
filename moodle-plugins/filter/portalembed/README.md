@@ -10,8 +10,6 @@ Supported shortcodes:
 [portal_ispring course="ESLEO" lesson="U01L01" id="87b225257bd8" token="..."]
 ```
 
-The rendered iframe is capped to the Moodle content width (`width:100%; max-width:100%`) so legacy shortcodes with a fixed pixel width do not stretch the page.
-
 Install from a Moodle root:
 
 ```bash
