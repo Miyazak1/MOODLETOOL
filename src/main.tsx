@@ -1,4 +1,4 @@
-import { StrictMode, createContext, useContext, useEffect, useMemo, useState } from "react";
+import { Fragment, StrictMode, createContext, useContext, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import { SUPPORTED_LOCALES, detectInitialLocale, storeLocale, translate } from "./i18n";
@@ -164,6 +164,7 @@ type LinkableResource = {
   textPreview?: string;
   sortOrder?: number;
   mode?: string;
+  ispring?: Lesson["ispring"];
 };
 
 function courseCodeFromBaseUrl(baseUrl: string): string {
@@ -354,6 +355,10 @@ function resourceTypeLabel(item: LinkableResource, t: TFunction): string {
 function isVisibleISpringEntry(item: Lesson["ispring"][number]): boolean {
   const trustedRemote = item.source === "cdn" || item.source === "oss";
   return Boolean(item.path || item.url) && (item.mode !== "external" || trustedRemote);
+}
+
+function visibleCourseSectionISpring(item: LinkableResource): Lesson["ispring"] {
+  return (item.ispring || []).filter(isVisibleISpringEntry);
 }
 
 function isEmptyMoodleActivityShell(item: LinkableResource): boolean {
@@ -780,6 +785,7 @@ function groupedResourceIdentitySet(groups: MoodleSectionGroup[]): Set<string> {
     for (const item of group.items) {
       addResourceKeys(keys, item);
       visibleAttachments(item).forEach((attachment) => addResourceKeys(keys, attachment));
+      visibleCourseSectionISpring(item).forEach((ispring) => addResourceKeys(keys, ispring));
     }
   }
   return keys;
@@ -1689,6 +1695,30 @@ function CourseMoodleSections({
   const { t } = usePortalI18n();
   if (!groups.length) return null;
   const unitTitle = (unitNumber: number) => units.find((unit) => unit.unit === unitNumber)?.title || `Unit ${unitNumber}`;
+  const groupItemCount = (items: LinkableResource[]) => items.reduce((sum, item) => sum + 1 + visibleCourseSectionISpring(item).length, 0);
+  const renderCourseSectionItem = (item: LinkableResource) => (
+    <Fragment key={resourceKey(item)}>
+      <ResourceActions
+        courseBaseUrl={courseBaseUrl}
+        courseCode={courseCode}
+        canShare={canShare}
+        item={item}
+        moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
+        moodleEmbedByPath={moodleEmbedByPath}
+      />
+      {visibleCourseSectionISpring(item).map((ispring, index) => (
+        <ISpringActions
+          courseBaseUrl={courseBaseUrl}
+          courseCode={courseCode}
+          canShare={canShare}
+          item={ispring}
+          key={resourceKey(ispring)}
+          label={ispring.label || (visibleCourseSectionISpring(item).length > 1 ? `iSpring ${index + 1}` : "iSpring")}
+          moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, ispring)}
+        />
+      ))}
+    </Fragment>
+  );
   return (
     <section className="moodle-section-map" id="course-resources" aria-label="Course resource entry points">
       <div className="moodle-section-map-header">
@@ -1696,7 +1726,7 @@ function CourseMoodleSections({
           <p className="eyebrow dark">{t("course.resources")}</p>
           <h3>{t("course.resourceEntry")}</h3>
         </div>
-        <span>{groups.reduce((sum, group) => sum + group.items.length, 0)} {t("label.items")}</span>
+        <span>{groups.reduce((sum, group) => sum + groupItemCount(group.items), 0)} {t("label.items")}</span>
       </div>
       <div className="moodle-section-groups">
         {groups.map((group) => (
@@ -1706,7 +1736,7 @@ function CourseMoodleSections({
                 <h4>{group.title}</h4>
                 {group.description ? <p>{group.description}</p> : null}
               </div>
-              <strong>{group.items.length}</strong>
+              <strong>{groupItemCount(group.items)}</strong>
             </header>
             {group.key === "evaluation" ? (
               <div className="moodle-unit-subgroups">
@@ -1715,37 +1745,17 @@ function CourseMoodleSections({
                     <div className="moodle-unit-subgroup-header">
                       <span>Unit {unitGroup.unit}</span>
                       <strong>{unitTitle(unitGroup.unit)}</strong>
-                      <em>{unitGroup.items.length} {t("label.items")}</em>
+                      <em>{groupItemCount(unitGroup.items)} {t("label.items")}</em>
                     </div>
                     <div className="moodle-section-items">
-                      {unitGroup.items.map((item) => (
-                        <ResourceActions
-                          courseBaseUrl={courseBaseUrl}
-                          courseCode={courseCode}
-                          canShare={canShare}
-                          item={item}
-                          key={resourceKey(item)}
-                          moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
-                          moodleEmbedByPath={moodleEmbedByPath}
-                        />
-                      ))}
+                      {unitGroup.items.map(renderCourseSectionItem)}
                     </div>
                   </section>
                 ))}
               </div>
             ) : (
               <div className="moodle-section-items">
-                {group.items.map((item) => (
-                  <ResourceActions
-                    courseBaseUrl={courseBaseUrl}
-                    courseCode={courseCode}
-                    canShare={canShare}
-                    item={item}
-                    key={resourceKey(item)}
-                    moodleEmbed={moodleEmbedForResource(moodleEmbedByPath, item)}
-                    moodleEmbedByPath={moodleEmbedByPath}
-                  />
-                ))}
+                {group.items.map(renderCourseSectionItem)}
               </div>
             )}
           </article>

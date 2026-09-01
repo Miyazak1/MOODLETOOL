@@ -10,6 +10,7 @@ export interface FileResource {
   source?: string;
   bytes?: number;
   attachments?: FileResource[];
+  ispring?: ISpringEntry[];
   unit?: number;
   lesson?: number;
   moodleActivityId?: string;

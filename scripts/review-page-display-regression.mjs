@@ -599,6 +599,7 @@ function reviewStandaloneCourseShellPage(courseRoot, course, item) {
   const shell = htmlShell(html);
   const displaySections = attachmentDisplaySections(html);
   const attachments = attachmentList(item.attachments).filter(isOrdinaryFileAttachment);
+  const ispring = attachmentList(item.ispring).filter((entry) => entry?.path && existsSync(join(courseRoot, entry.path)));
   const readableChars = stripHtml(html).length;
   if (shell !== "eng3u") {
     addIssue(issues, "error", "standalone-page-non-eng3u-shell", "Standalone course page must use the ENG3U page shell.", context);
@@ -616,9 +617,37 @@ function reviewStandaloneCourseShellPage(courseRoot, course, item) {
     shell,
     readableChars,
     attachments: attachments.length,
+    ispring: ispring.length,
     filesSections: displaySections.length,
     issues,
   };
+}
+
+function reviewCourseSectionPlayableCards(course, manifest) {
+  const issues = [];
+  const frontendPath = join(projectRoot, "src", "main.tsx");
+  const frontend = existsSync(frontendPath) ? readFileSync(frontendPath, "utf8") : "";
+  const rendersCourseSectionIspring = /visibleCourseSectionISpring\(item\)\.map[\s\S]*?<ISpringActions\b/.test(frontend);
+  for (const item of manifest.courseSections || []) {
+    const ispring = attachmentList(item.ispring);
+    if (!ispring.length) continue;
+    if (!item.path || !/^course-sections\//i.test(text(item.path).replaceAll("\\", "/"))) continue;
+    for (const entry of ispring) {
+      const context = {
+        course,
+        sectionLabel: item.label || item.title || "",
+        path: item.path || "",
+        ispringPath: entry.path || entry.url || "",
+      };
+      if (!entry.path && !entry.url) {
+        addIssue(issues, "error", "course-section-ispring-path-missing", "Course section iSpring is missing a playable path or URL.", context);
+      }
+      if (!rendersCourseSectionIspring) {
+        addIssue(issues, "error", "course-section-ispring-standalone-card-missing", "Portal overview renderer does not expose course section iSpring as a standalone card for Moodle embedding.", context);
+      }
+    }
+  }
+  return issues;
 }
 
 function reviewCourse(course) {
@@ -636,7 +665,9 @@ function reviewCourse(course) {
   for (const item of collectStandaloneCourseShellItems(manifest)) {
     pages.push(reviewStandaloneCourseShellPage(courseRoot, course, item));
   }
+  const courseSectionPlayableIssues = reviewCourseSectionPlayableCards(course, manifest);
   const issues = pages.flatMap((page) => page.issues);
+  issues.push(...courseSectionPlayableIssues);
   const shellCounts = pages.reduce((acc, page) => {
     acc[page.shell] = (acc[page.shell] || 0) + 1;
     return acc;
