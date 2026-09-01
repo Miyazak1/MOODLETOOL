@@ -97,6 +97,7 @@
     "smoke:portal-auth": "node scripts/smoke-portal-auth.mjs",
     "smoke:login-rate-limit": "node scripts/smoke-login-rate-limit.mjs",
     "smoke:cdn-assets": "node scripts/smoke-cdn-assets.mjs",
+    "smoke:course-section-ispring-embeds": "node scripts/smoke-course-section-ispring-embeds.mjs",
     "smoke:cdn-published": "node scripts/smoke-cdn-published.mjs",
     "smoke:cdn-published-local": "node scripts/smoke-cdn-published-local.mjs",
     "smoke:admin-media-view": "node scripts/smoke-admin-media-view.mjs",
